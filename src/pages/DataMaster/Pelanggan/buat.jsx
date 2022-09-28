@@ -115,13 +115,13 @@ const BuatPelanggan = () => {
     checked ? setChecked(false) : setChecked(true)
 
     if (checked === false) {
-        setStatus("Active");
-        // console.log('Active');
+      setStatus("Active");
+      // console.log('Active');
     } else {
-        setStatus("Inactive");
-        // console.log('Inactive');
+      setStatus("Inactive");
+      // console.log('Inactive');
     }
-};
+  };
 
   const handleDelete = (key) => {
     const newData = dataSource.filter((item) => item.key !== key);
@@ -438,39 +438,6 @@ const BuatPelanggan = () => {
             </label>
           </div>
         </div>
-        {/* <fieldset className="row mb-3">
-          <legend className="col-form-label col-sm-2 pt-0">Status</legend>
-          <div className="col-sm-10">
-            <div className="form-check">
-              <input
-                onChange={(e) => setStatus(e.target.value)}
-                value="Active"
-                checked={status === "Active"}
-                className="form-check-input"
-                type="radio"
-                name="flexRadioDefault"
-                id="flexRadioDefault1"
-              />
-              <label className="form-check-label" htmlFor="gridRadios1">
-                Aktif
-              </label>
-            </div>
-            <div className="form-check">
-              <input
-                onChange={(e) => setStatus(e.target.value)}
-                value="Inactive"
-                checked={status === "Inactive"}
-                className="form-check-input"
-                type="radio"
-                name="flexRadioDefault"
-                id="flexRadioDefault2"
-              />
-              <label className="form-check-label" htmlFor="gridRadios2">
-                Non-Aktif
-              </label>
-            </div>
-          </div>
-        </fieldset> */}
       </form>
       <form className="  p-3 mb-3 bg-body rounded">
         <Button
