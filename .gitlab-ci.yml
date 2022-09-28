@@ -1,7 +1,5 @@
 stages:
     - build
-    - test
-    - deploy
 
 image: node:lts
 
@@ -22,20 +20,3 @@ build job:
     artifacts:
         paths:
             - build/
-
-test job:
-    stage: test
-    script:
-        - yarn test
-
-deploy staging:
-    image: ruby
-    stage: deploy
-    environment:
-        name: staging
-        url: https://edwin-erp.herokuapp.com/
-    only:
-        - staging
-    script:
-        - gem install faraday -v 1.10.0
-        - dpl --provider=heroku --app=$HEROKU_APP_STAGING --api-key=$HEROKU_API_KEY
