@@ -1,15 +1,97 @@
 import axios from "axios";
 // import MaterialTable from "material-table";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import jsCookie from "js-cookie";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import Url from "../../../Config";
 import "./form.css";
 import SendIcon from "@mui/icons-material/Send";
-import Button from "@mui/material/Button";
 import { useSelector } from "react-redux";
+import { Button, Form, Input, Popconfirm, Switch, Table } from 'antd';
+import Url from "../../../Config";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+
+const EditableContext = React.createContext(null);
+
+const EditableRow = ({ index, ...props }) => {
+  const [form] = Form.useForm();
+  return (
+    <Form form={form} component={false}>
+      <EditableContext.Provider value={form}>
+        <tr {...props} />
+      </EditableContext.Provider>
+    </Form>
+  );
+};
+
+const EditableCell = ({
+  title,
+  editable,
+  children,
+  dataIndex,
+  record,
+  handleSave,
+  ...restProps
+}) => {
+  const [editing, setEditing] = useState(false);
+  const inputRef = useRef(null);
+  const form = useContext(EditableContext);
+  useEffect(() => {
+    if (editing) {
+      inputRef.current.focus();
+    }
+  }, [editing]);
+
+  const toggleEdit = () => {
+    setEditing(!editing);
+    form.setFieldsValue({
+      [dataIndex]: record[dataIndex],
+    });
+  };
+
+  const save = async () => {
+    try {
+      const values = await form.validateFields();
+      toggleEdit();
+      handleSave({ ...record, ...values });
+    } catch (errInfo) {
+      console.log('Save failed:', errInfo);
+    }
+  };
+
+  let childNode = children;
+
+  if (editable) {
+    childNode = editing ? (
+      <Form.Item
+        style={{
+          margin: 0,
+        }}
+        name={dataIndex}
+        rules={[
+          {
+            required: true,
+            message: `${title} is required.`,
+          },
+        ]}
+      >
+        <Input ref={inputRef} onPressEnter={save} onBlur={save} />
+      </Form.Item>
+    ) : (
+      <div
+        className="editable-cell-value-wrap"
+        style={{
+          paddingRight: 24,
+        }}
+        onClick={toggleEdit}
+      >
+        {children}
+      </div>
+    );
+  }
+
+  return <td {...restProps}>{childNode}</td>;
+};
 
 const BuatPelanggan = () => {
   // const token = jsCookie.get("auth");
@@ -24,21 +106,126 @@ const BuatPelanggan = () => {
   const [status, setStatus] = useState('');
   const navigate = useNavigate();
 
-  const [data, setData] = useState([]);
-  const columns = [
-    { title: "ID", field: "id", editable: false },
-    { title: "Alamat", field: "address" },
-    { title: "Kelurahan", field: "urban_village" },
-    { title: "Kecamatan", field: "sub_district" },
-    { title: "Kota", field: "city" },
-    { title: "Kode Pos", field: "postal_code" },
+  const [checked, setChecked] = useState(false);
+
+  const [dataSource, setDataSource] = useState([]);
+  const [count, setCount] = useState(2);
+
+  const onChange = () => {
+    checked ? setChecked(false) : setChecked(true)
+
+    if (checked === false) {
+        setStatus("Active");
+        // console.log('Active');
+    } else {
+        setStatus("Inactive");
+        // console.log('Inactive');
+    }
+};
+
+  const handleDelete = (key) => {
+    const newData = dataSource.filter((item) => item.key !== key);
+    setDataSource(newData);
+  };
+
+  const defaultColumns = [
+    {
+      title: 'No.',
+      dataIndex: 'index',
+      width: '3%',
+      align: 'center',
+      render: (text, record, index) => index + 1
+    },
+    {
+      title: 'Alamat',
+      dataIndex: 'address',
+      width: '30%',
+      editable: true,
+    },
+    {
+      title: 'Kelurahan',
+      editable: true,
+      dataIndex: 'urban_village',
+    },
+    {
+      title: 'Kecamatan',
+      editable: true,
+      dataIndex: 'sub_district',
+    },
+    {
+      title: 'Kota',
+      editable: true,
+      dataIndex: 'city',
+    },
+    {
+      title: 'Kode Pos',
+      editable: true,
+      dataIndex: 'postal_code',
+    },
+    {
+      title: 'operation',
+      dataIndex: 'operation',
+      align: 'center',
+      width: '5%',
+      render: (_, record) =>
+        dataSource.length >= 1 ? (
+          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
+            <Button
+              size='small'
+              type="danger"
+              icon={<DeleteOutlined />}
+            />
+          </Popconfirm>
+        ) : null,
+    },
   ];
+
+  const handleAdd = () => {
+    const newData = {
+      key: count,
+      name: ``,
+      age: '',
+      address: ``,
+    };
+    setDataSource([...dataSource, newData]);
+    setCount(count + 1);
+  };
+
+  const handleSave = (row) => {
+    const newData = [...dataSource];
+    const index = newData.findIndex((item) => row.key === item.key);
+    const item = newData[index];
+    newData.splice(index, 1, { ...item, ...row });
+    setDataSource(newData);
+  };
+
+  const components = {
+    body: {
+      row: EditableRow,
+      cell: EditableCell,
+    },
+  };
+  const columns = defaultColumns.map((col) => {
+    if (!col.editable) {
+      return col;
+    }
+
+    return {
+      ...col,
+      onCell: (record) => ({
+        record,
+        editable: col.editable,
+        dataIndex: col.dataIndex,
+        title: col.title,
+        handleSave,
+      }),
+    };
+  });
 
   const [getCustomer, setGetCustomer] = useState();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(data);
 
     const userData = new FormData();
 
@@ -51,7 +238,7 @@ const BuatPelanggan = () => {
     userData.append("diskon", discount);
     userData.append("status", status);
 
-    data.map((address) => {
+    dataSource.map((address) => {
       console.log(address);
       userData.append("alamat[]", address.address);
       userData.append("kota[]", address.city);
@@ -239,7 +426,19 @@ const BuatPelanggan = () => {
             />
           </div>
         </div>
-        <fieldset className="row mb-3">
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
+          <div className="col-sm-7">
+            <Switch defaultChecked={checked} onChange={onChange} />
+            <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
+              {
+                checked ? "Aktif"
+                  : "Nonaktif"
+              }
+            </label>
+          </div>
+        </div>
+        {/* <fieldset className="row mb-3">
           <legend className="col-form-label col-sm-2 pt-0">Status</legend>
           <div className="col-sm-10">
             <div className="form-check">
@@ -271,66 +470,24 @@ const BuatPelanggan = () => {
               </label>
             </div>
           </div>
-        </fieldset>
+        </fieldset> */}
       </form>
       <form className="  p-3 mb-3 bg-body rounded">
-        {/* <MaterialTable
-          title="Alamat Pelanggan"
-          data={data}
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={handleAdd}
+          style={{
+            marginBottom: 16,
+          }}
+        />
+        <Table
+          components={components}
+          rowClassName={() => 'editable-row'}
+          bordered
+          dataSource={dataSource}
           columns={columns}
-          onChange={(e) => setData(e.target.value)}
-          editable={{
-            onRowAdd: (newRow) =>
-              new Promise((resolve, reject) => {
-                const updatedRows = [
-                  ...data,
-                  { id: data.length + 1, ...newRow },
-                ];
-                setTimeout(() => {
-                  setData(updatedRows);
-                  resolve();
-                }, 2000);
-              }),
-            onRowDelete: (selectedRow) =>
-              new Promise((resolve, reject) => {
-                const index = selectedRow.tableData.id;
-                const updatedRows = [...data];
-                updatedRows.splice(index, 1);
-                setTimeout(() => {
-                  setData(updatedRows);
-                  resolve();
-                }, 2000);
-              }),
-            onRowUpdate: (updatedRow, oldRow) =>
-              new Promise((resolve, reject) => {
-                const index = oldRow.tableData.id;
-                const updatedRows = [...data];
-                updatedRows[index] = updatedRow;
-                setTimeout(() => {
-                  setData(updatedRows);
-                  resolve();
-                }, 2000);
-              }),
-            onBulkUpdate: (selectedRows) =>
-              new Promise((resolve, reject) => {
-                const rows = Object.values(selectedRows);
-                const updatedRows = [...data];
-                let index;
-                rows.map((emp) => {
-                  index = emp.oldData.tableData.id;
-                  updatedRows[index] = emp.newData;
-                });
-                setTimeout(() => {
-                  setData(updatedRows);
-                  resolve();
-                }, 2000);
-              }),
-          }}
-          options={{
-            actionsColumnIndex: -1,
-            addRowPosition: "first",
-          }}
-        /> */}
+        />
         <div className="d-grid mt-3 gap-2 d-md-flex justify-content-md-end">
           <button onClick={handleSubmit} className="btn btn-primary" type="button">
             Simpan <SendIcon className="ms-1" />

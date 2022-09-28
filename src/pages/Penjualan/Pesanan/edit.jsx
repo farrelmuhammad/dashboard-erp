@@ -496,7 +496,7 @@ const EditPesanan = () => {
         />
     }
 
-    const tableToRupiah = (angka,namaMataUang) => {
+    const tableToRupiah = (angka, namaMataUang) => {
         return namaMataUang + ' ' + angka.toLocaleString('id');
     }
 
@@ -506,12 +506,12 @@ const EditPesanan = () => {
             dataIndex: '',
             width: '5%',
             align: 'center',
-            render(text, record,index) {
+            render(text, record, index) {
                 return {
                     props: {
                         style: { background: "#f5f5f5" }
                     },
-                    children: <div>{ index + 1 }</div>
+                    children: <div>{index + 1}</div>
                 };
             }
         },
@@ -523,7 +523,7 @@ const EditPesanan = () => {
                     props: {
                         style: { background: "#f5f5f5" }
                     },
-                    children: <div>{ text }</div>
+                    children: <div>{text}</div>
                 };
             }
         },
@@ -537,7 +537,7 @@ const EditPesanan = () => {
                 return {
                     props: {
                     },
-                    children: <div>{ formatQuantity(text) }</div>
+                    children: <div>{formatQuantity(text)}</div>
                 };
             }
         },
@@ -551,7 +551,7 @@ const EditPesanan = () => {
                     props: {
                         style: { background: "#f5f5f5" }
                     },
-                    children: <div>{ text }</div>
+                    children: <div>{text}</div>
                 };
             }
         },
@@ -565,7 +565,7 @@ const EditPesanan = () => {
                 return {
                     props: {
                     },
-                    children: <div>{ formatRupiah(text) }</div>
+                    children: <div>{formatRupiah(text)}</div>
                 };
             }
         },
@@ -710,27 +710,27 @@ const EditPesanan = () => {
                         let totalDiscount = total - getPercent;
                         let getPpn = (totalDiscount * record.ppn) / 100;
                         if (checked) {
-                            grandTotalAmount = tableToRupiah(totalDiscount,"Rp");
+                            grandTotalAmount = tableToRupiah(totalDiscount, "Rp");
                         } else {
-                            grandTotalAmount = tableToRupiah(totalDiscount + getPpn,"Rp");
+                            grandTotalAmount = tableToRupiah(totalDiscount + getPpn, "Rp");
                         }
                     } else if (pilihanDiskon[index] == 'nominal') {
                         // console.log("masuk nominal")
                         let total = (record.quantity * record.price) - jumlahDiskon[index];
                         let getPpn = (total * record.ppn) / 100;
                         if (checked) {
-                            grandTotalAmount = tableToRupiah(total,"Rp");
+                            grandTotalAmount = tableToRupiah(total, "Rp");
                         } else {
-                            grandTotalAmount = tableToRupiah(total + getPpn,"Rp");
+                            grandTotalAmount = tableToRupiah(total + getPpn, "Rp");
                         }
                     } else {
-                        grandTotalAmount =  tableToRupiah(record.quantity * Number(record.price),"Rp");
+                        grandTotalAmount = tableToRupiah(record.quantity * Number(record.price), "Rp");
                     }
                     return {
                         props: {
-                            style: { background:  "#f5f5f5" }
-                        }, 
-                        children : grandTotalAmount
+                            style: { background: "#f5f5f5" }
+                        },
+                        children: grandTotalAmount
                     }
                 }
         },

@@ -82,36 +82,60 @@ export default function Login() {
 
   return (
     <>
-      <section class="vh-100" style={{ backgroundColor: "#fff" }}>
+      <section class="h-120 gradient-form" style={{ backgroundColor: "#eee" }}>
         <div class="container py-5 h-100">
           <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-              <div class="card shadow-2-strong" style={{ borderRadius: "1rem" }}>
-                <div class="card-body p-5 text-center">
+            <div class="col-xl-10">
+              <div class="card rounded-3 text-black">
+                <div class="row g-0">
+                  <div class="col-lg-6">
+                    <div class="card-body p-md-5 mx-md-4">
 
-                  <h3 class="mb-5">Sign in</h3>
+                      <div class="text-center">
+                        <img src={Logo}
+                          style={{ width: "100px" }} alt="logo" />
+                        <h4 class="mt-1 mb-3 pb-2">PT. BMA - Dashboard</h4>
+                      </div>
 
-                  <div class="form-outline mb-4">
-                    <input
-                      type="text"
-                      class="form-control form-control-lg"
-                      onChange={e => setUserName(e.target.value)}
-                    />
-                    <label class="form-label">Username</label>
+                      <form onSubmit={handleSubmit}>
+                        <p class="mt-1 mb-3 pb-2">Please login to your account</p>
+
+                        <div class="form-outline mb-2">
+                          <input
+                            type="text"
+                            id="form2Example11"
+                            class="form-control"
+                            onChange={e => setUserName(e.target.value)}
+                          />
+                          <label class="form-label" for="form2Example11">Username</label>
+                        </div>
+
+                        <div class="form-outline mb-2">
+                          <input
+                            type="password"
+                            id="form2Example22"
+                            class="form-control"
+                            onChange={e => setPassword(e.target.value)}
+                          />
+                          <label class="form-label" for="form2Example22">Password</label>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                          <button class="btn btn-primary" type="submit">Login</button>
+                        </div>
+
+                      </form>
+
+                    </div>
                   </div>
-
-                  <div class="form-outline mb-4">
-                    <input
-                      type="password"
-                      id="typePasswordX-2"
-                      class="form-control form-control-lg"
-                      onChange={e => setPassword(e.target.value)}
-                    />
-                    <label class="form-label" for="typePasswordX-2">Password</label>
+                  <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
+                    <div class="text-white px-3 py-4 p-md-5 mx-md-4">
+                      <h4 class="mb-4">We are more than just a company</h4>
+                      <p class="small mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+                        exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    </div>
                   </div>
-
-                  <button class="btn btn-primary btn-lg btn-block" type="submit" onClick={handleSubmit}>Login</button>
-
                 </div>
               </div>
             </div>

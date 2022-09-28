@@ -28,6 +28,7 @@ import NotAuthorized from './pages/NotAuthorized';
 import SkeletonPage from './pages/SkeletonPage';
 import axios from 'axios';
 import Url from './Config';
+import Logo from './pages/Logo.jpeg'
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -486,7 +487,10 @@ function App() {
                   backgroundColor: "white",
                 }}
               >
-                <h1 className='title-sidebar'>BMA</h1>
+                <div className='text-center'>
+                  <img src={Logo}
+                    style={{ width: "60px" }} alt="logo" />
+                </div>
                 {/* <img src="https://www.edwinconsultant.com/assets/img/logo.png" className='logo-header-sidebar' alt='Logo' /> */}
               </Header>
             </Affix>

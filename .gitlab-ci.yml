@@ -1,5 +1,6 @@
 stages:
     - build
+    - deploy
 
 image: node:lts
 
@@ -20,3 +21,14 @@ build job:
     artifacts:
         paths:
             - build/
+
+deploy job:
+    stage: deploy
+    only:
+        - main
+    environment:
+        name: production
+        url: https://secondhand-fe3.vercel.app
+    script:
+        - yarn global add vercel
+        - DEPLOYMENT_URL=$(VERCEL_ORG_ID=$VERCEL_ORG_ID VERCEL_PROJECT_ID=$VERCEL_PROJECT_ID vercel --confirm -t $VERCEL_TOKEN --prod)
