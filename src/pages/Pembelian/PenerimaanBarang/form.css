@@ -1,0 +1,9 @@
+.form-input {
+    /* display: flex; */
+    width: 100%;
+    margin-top: 2rem;
+}
+
+.header-cetak{
+    font-size: 12px;
+}

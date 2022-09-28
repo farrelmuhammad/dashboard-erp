@@ -1,0 +1,14 @@
+.form-input {
+    /* display: flex; */
+    width: 100%;
+    margin-top: 2rem;
+}
+
+.select-diskon{
+    background-color: transparent!important;
+    border: none!important;
+    width: 70px!important;
+    padding: 2px!important;
+    font-size: 12px!important
+}
+

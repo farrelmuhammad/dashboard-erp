@@ -1,0 +1,11 @@
+.form-input {
+    /* display: flex; */
+    width: 100%;
+    margin-top: 2rem;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.text-no-data{
+    color: #6c757d!important;
+}
