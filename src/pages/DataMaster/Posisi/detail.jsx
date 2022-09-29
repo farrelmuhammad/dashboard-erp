@@ -6,13 +6,13 @@
 // import TableHead from "@mui/material/TableHead";
 // import TablePagination from "@mui/material/TablePagination";
 // import TableRow from "@mui/material/TableRow";
-// import SendIcon from "@mui/icons-material/Send";
-// import Button from "@mui/material/Button";
+// 
+// 
 // import InfoIcon from '@mui/icons-material/Info';
 // import EditIcon from '@mui/icons-material/Edit';
 // import DeleteIcon from '@mui/icons-material/Delete';
 import axios from "axios";
-import jsCookie from "js-cookie";
+
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -20,7 +20,7 @@ import Url from "../../../Config";
 import "./form.css";
 
 const DetailPosisi = () => {
-  // const token = jsCookie.get("auth");
+  // const auth = useSelector(state => state.auth);
   const auth = useSelector(state => state.auth);
   const { id } = useParams();
   const [data, setData] = useState([]);

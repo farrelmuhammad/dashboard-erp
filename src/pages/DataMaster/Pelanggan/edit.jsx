@@ -1,44 +1,15 @@
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
 import axios from "axios";
 import React, { useEffect } from "react";
-import jsCookie from "js-cookie";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
-import SendIcon from "@mui/icons-material/Send";
-import Button from "@mui/material/Button";
-import EditIcon from '@mui/icons-material/Edit';
-import CancelIcon from "@mui/icons-material/Cancel";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-import {
-  Box,
-  Checkbox,
-  IconButton,
-  Input,
-  Modal,
-  TextField,
-  Typography,
-} from "@mui/material";
-// import MaterialTable from "material-table";
 import { useSelector } from "react-redux";
-// import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-// import EditIcon from "@mui/icons-material/Edit";
-// import DeleteIcon from "@mui/icons-material/Delete";
-// import { TextField } from "@mui/material";
-// import CheckIcon from "@mui/icons-material/Check";
+import { Button } from "antd";
+import { SendOutlined } from "@ant-design/icons";
 
 const EditPelanggan = () => {
-  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
@@ -371,98 +342,29 @@ const EditPelanggan = () => {
           </div>
         </fieldset>
         <div className="d-grid mt-3 gap-2 d-md-flex justify-content-md-end">
-          <button onClick={handleUpdate} className="btn btn-primary" type="button">
-            Simpan <SendIcon className="ms-1" />
-          </button>
-          {/* <Button
-          onClick={handleSubmit}
-          variant="contained"
-          endIcon={<SendIcon />}
-        >
-          Simpan
-        </Button> */}
+          <Button
+            type="primary"
+            icon={<SendOutlined />}
+            size="large"
+            onClick={handleUpdate}
+          >
+            Submit
+          </Button>
         </div>
       </form>
       <form className="  p-3 mb-3 bg-body rounded">
-        {/* <MaterialTable
-          title="Alamat Pelanggan"
-          data={address}
-          columns={columns}
-          onChange={(e) => setAddress(e.target.value)}
-          editable={{
-            onRowAdd: (newRow) =>
-              new Promise((resolve, reject) => {
-                const updatedRows = [
-                  ...address,
-                  { id: address.length + 1, ...newRow },
-                ];
-                setTimeout(() => {
-                  setAddress(updatedRows);
-                  resolve();
-                }, 2000);
-              }),
-            onRowDelete: (selectedRow) =>
-              new Promise((resolve, reject) => {
-                const index = selectedRow.tableData.id;
-                const updatedRows = [...address];
-                updatedRows.splice(index, 1);
-                setTimeout(() => {
-                  setAddress(updatedRows);
-                  resolve();
-                }, 2000);
-              }),
-            onRowUpdate: (updatedRow, oldRow) =>
-              new Promise((resolve, reject) => {
-                const index = oldRow.tableData.id;
-                const updatedRows = [...address];
-                updatedRows[index] = updatedRow;
-                setTimeout(() => {
-                  setAddress(updatedRows);
-                  resolve();
-                }, 2000);
-              }),
-            onBulkUpdate: (selectedRows) =>
-              new Promise((resolve, reject) => {
-                const rows = Object.values(selectedRows);
-                const updatedRows = [...address];
-                let index;
-                rows.map((emp) => {
-                  index = emp.oldData.tableData.id;
-                  updatedRows[index] = emp.newData;
-                });
-                setTimeout(() => {
-                  setAddress(updatedRows);
-                  resolve();
-                }, 2000);
-              }),
-          }}
-          options={{
-            actionsColumnIndex: -1,
-            addRowPosition: "first",
-          }}
-        /> */}
+
         <div className="d-grid mt-3 gap-2 d-md-flex justify-content-md-end">
-          <button onClick={handleAddress} className="btn btn-primary" type="button">
-            Simpan <SendIcon className="ms-1" />
-          </button>
-          {/* <Button
-          onClick={handleSubmit}
-          variant="contained"
-          endIcon={<SendIcon />}
-        >
-          Simpan
-        </Button> */}
+          <Button
+            type="primary"
+            icon={<SendOutlined />}
+            size="large"
+            onClick={handleAddress}
+          >
+            Submit
+          </Button>
         </div>
       </form>
-      {/* <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-        <Button
-          onClick={handleUpdate}
-          variant="contained"
-          endIcon={<SendIcon />}
-        >
-          Simpan
-        </Button>
-      </div> */}
     </>
   );
 };

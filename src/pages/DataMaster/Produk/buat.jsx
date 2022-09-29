@@ -1,18 +1,17 @@
 import axios from "axios";
-import jsCookie from "js-cookie";
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
-import SendIcon from "@mui/icons-material/Send";
-import Button from "@mui/material/Button";
-import { Autocomplete, TextField } from "@mui/material";
 import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
+import { Button } from "antd";
+import { SendOutlined } from "@ant-design/icons";
 
 const BuatProduk = () => {
-  // const token = jsCookie.get("auth");
+  // const auth = useSelector(state => state.auth);
   const auth = useSelector(state => state.auth);
   const [name, setName] = useState('');
   const [alias, setAlias] = useState('');
@@ -496,11 +495,12 @@ const BuatProduk = () => {
       </form>
       <div className="d-grid gap-2 d-md-flex justify-content-md-end">
         <Button
+          type="primary"
+          icon={<SendOutlined />}
+          size="large"
           onClick={handleSubmit}
-          variant="contained"
-          endIcon={<SendIcon />}
         >
-          Simpan
+          Submit
         </Button>
       </div>
     </>

@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ReturTable from '../../../components/moleculles/ReturTable'
 import axios from 'axios'
-import Url from '../../../Config'
+import Url from "../../../Config";
 import { useSelector } from 'react-redux'
 
 const Retur = () => {

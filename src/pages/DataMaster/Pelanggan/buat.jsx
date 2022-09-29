@@ -1,15 +1,12 @@
 import axios from "axios";
-// import MaterialTable from "material-table";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import jsCookie from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "./form.css";
-import SendIcon from "@mui/icons-material/Send";
 import { useSelector } from "react-redux";
 import { Button, Form, Input, Popconfirm, Switch, Table } from 'antd';
 import Url from "../../../Config";
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
 
 const EditableContext = React.createContext(null);
 
@@ -94,7 +91,7 @@ const EditableCell = ({
 };
 
 const BuatPelanggan = () => {
-  // const token = jsCookie.get("auth");
+  // const auth = useSelector(state => state.auth);
   const auth = useSelector(state => state.auth);
   const [name, setName] = useState('');
   const [bussiness_ent, setBussiness_ent] = useState('');
@@ -456,9 +453,14 @@ const BuatPelanggan = () => {
           columns={columns}
         />
         <div className="d-grid mt-3 gap-2 d-md-flex justify-content-md-end">
-          <button onClick={handleSubmit} className="btn btn-primary" type="button">
-            Simpan <SendIcon className="ms-1" />
-          </button>
+          <Button
+            type="primary"
+            icon={<SendOutlined />}
+            size="large"
+            onClick={handleSubmit}
+          >
+            Submit
+          </Button>
         </div>
       </form>
     </>

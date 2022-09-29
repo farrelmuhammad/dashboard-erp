@@ -2,20 +2,18 @@ import * as React from "react";
 import axios from "axios";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import jsCookie from "js-cookie";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
-import SendIcon from "@mui/icons-material/Send";
-import Button from "@mui/material/Button";
 import ReactSelect from "react-select";
 import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
+import { Button } from "antd";
+import { SendOutlined } from "@ant-design/icons";
 
 const EditPengguna = ({ defaultOptionValueEmp, defaultOptionValueGroups }) => {
-  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [code, setCode] = useState("");
   const [username, setUsername] = useState("");
@@ -136,11 +134,11 @@ const EditPengguna = ({ defaultOptionValueEmp, defaultOptionValueGroups }) => {
 
   const getEmployees = async (inputValue) => {
     return axios(`${Url}/employees?limit=10&name=${inputValue}`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    })
       .then((res) => {
         setEmployeesData(res.data.data)
         console.log(res.data.data)
@@ -221,17 +219,17 @@ const EditPengguna = ({ defaultOptionValueEmp, defaultOptionValueGroups }) => {
                 Karyawan
               </label>
               <div className="col-sm-10">
-              <AsyncSelect
-                placeholder="Masukkan Karyawan..."
-                cacheOptions
-                defaultOptions
-                value={optionsEmployees.find(op => {
-                  return op.value === employees
-               })}
-                onChange={handleSingleChange}
-                loadOptions={loadOptions}
-              />
-              {/* <ReactSelect
+                <AsyncSelect
+                  placeholder="Masukkan Karyawan..."
+                  cacheOptions
+                  defaultOptions
+                  value={optionsEmployees.find(op => {
+                    return op.value === employees
+                  })}
+                  onChange={handleSingleChange}
+                  loadOptions={loadOptions}
+                />
+                {/* <ReactSelect
                 value={optionsEmployees.filter((obj) =>
                   employees.includes(obj.value)
                 )}
@@ -284,13 +282,13 @@ const EditPengguna = ({ defaultOptionValueEmp, defaultOptionValueGroups }) => {
                 Username
               </label>
               <div className="col-sm-10">
-                    <input
-                      type="Nama"
-                      className="form-control"
-                      id="inputNama3"
-                      defaultValue={data.username}
-                      onChange={(e) => setUsername(e.target.value)}
-                    />
+                <input
+                  type="Nama"
+                  className="form-control"
+                  id="inputNama3"
+                  defaultValue={data.username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
                 {formik.errors.username && formik.touched.username && (
                   <p>{formik.errors.username}</p>
                 )}
@@ -301,13 +299,13 @@ const EditPengguna = ({ defaultOptionValueEmp, defaultOptionValueGroups }) => {
                 Kata Sandi
               </label>
               <div className="col-sm-10">
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="inputpassword"
-                      defaultValue={data.password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
+                <input
+                  type="password"
+                  className="form-control"
+                  id="inputpassword"
+                  defaultValue={data.password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
                 {formik.errors.password && formik.touched.password && (
                   <p>{formik.errors.password}</p>
                 )}
@@ -331,11 +329,12 @@ const EditPengguna = ({ defaultOptionValueEmp, defaultOptionValueGroups }) => {
             </div>
             <div className="d-grid gap-2 d-md-flex justify-content-md-end">
               <Button
+                type="primary"
+                icon={<SendOutlined />}
+                size="large"
                 onClick={handleSubmit}
-                variant="contained"
-                endIcon={<SendIcon />}
               >
-                Simpan
+                Submit
               </Button>
             </div>
           </form>

@@ -156,7 +156,7 @@ function App() {
         <Link to="/goodsrequest" />
         Permintaan Barang
       </Menu.Item>
-      <Menu.Item key="48">
+      <Menu.Item key="47">
         <Link to="/goodstransfer" />
         Transfer Barang
       </Menu.Item>
@@ -298,7 +298,7 @@ function App() {
         <Link to="/" />
         PIB
       </Menu.Item>
-      <Menu.Item key="47">
+      <Menu.Item key="88">
         <Link to="/" />
         Credit Note
       </Menu.Item>
@@ -387,7 +387,7 @@ function App() {
         <Link to="/goodsrequest" />
         Permintaan Barang
       </Menu.Item>
-      <Menu.Item key="48">
+      <Menu.Item key="49">
         <Link to="/goodstransfer" />
         Transfer Barang
       </Menu.Item>

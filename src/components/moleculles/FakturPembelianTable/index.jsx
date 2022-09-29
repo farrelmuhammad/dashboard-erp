@@ -3,7 +3,7 @@ import 'antd/dist/antd.css';
 import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Tag } from 'antd';
 import axios from 'axios';
-import Url from '../../../Config';
+import Url from "../../../Config";;
 import jsCookie from 'js-cookie'
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';

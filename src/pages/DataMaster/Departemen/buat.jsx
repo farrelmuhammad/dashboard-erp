@@ -1,28 +1,14 @@
-// import Paper from "@mui/material/Paper";
-// import Table from "@mui/material/Table";
-// import TableBody from "@mui/material/TableBody";
-// import TableCell from "@mui/material/TableCell";
-// import TableContainer from "@mui/material/TableContainer";
-// import TableHead from "@mui/material/TableHead";
-// import TablePagination from "@mui/material/TablePagination";
-// import TableRow from "@mui/material/TableRow";
-import SendIcon from "@mui/icons-material/Send";
-import Button from "@mui/material/Button";
-// import InfoIcon from "@mui/icons-material/Info";
-// import EditIcon from "@mui/icons-material/Edit";
-// import DeleteIcon from "@mui/icons-material/Delete";
+import { SendOutlined } from "@ant-design/icons";
+import { Button } from "antd";
 import axios from "axios";
-import jsCookie from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
-// import { Checkbox } from "@mui/material";
 
 const BuatDepartemen = () => {
-  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -150,7 +136,7 @@ const BuatDepartemen = () => {
   //     await axios.delete(`${Url}department_employees/D-00012?kode=${id}`,{
   //         headers: {
   //             'Accept': 'application/json',
-  //             'Authorization': `Bearer ${token}`
+  //             'Authorization': `Bearer ${auth.token}`
   //         }
   //     })
   //     setData();
@@ -268,11 +254,12 @@ const BuatDepartemen = () => {
           </div> */}
           <div className="d-grid gap-2 d-md-flex justify-content-md-end">
             <Button
+              type="primary"
+              icon={<SendOutlined />}
+              size="large"
               onClick={handleSubmit}
-              variant="contained"
-              endIcon={<SendIcon />}
             >
-              Simpan
+              Submit
             </Button>
           </div>
         </form>

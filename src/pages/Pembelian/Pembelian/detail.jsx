@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import jsCookie from "js-cookie";
 import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
 import axios from 'axios';
-import Url from '../../../Config';
+import Url from "../../../Config";;
 import { Table, Tag } from 'antd';
 import { useSelector } from 'react-redux';
 import { useReactToPrint } from 'react-to-print';

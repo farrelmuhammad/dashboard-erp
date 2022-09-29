@@ -1,28 +1,17 @@
-// import Paper from "@mui/material/Paper";
-// import Table from "@mui/material/Table";
-// import TableBody from "@mui/material/TableBody";
-// import TableCell from "@mui/material/TableCell";
-// import TableContainer from "@mui/material/TableContainer";
-// import TableHead from "@mui/material/TableHead";
-// import TablePagination from "@mui/material/TablePagination";
-// import TableRow from "@mui/material/TableRow";
-import SendIcon from "@mui/icons-material/Send";
-import Button from "@mui/material/Button";
 import axios from "axios";
-import jsCookie from "js-cookie";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
-// import { Checkbox } from "@mui/material";
 import React from "react";
-// import Select from "react-select";
 import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
+import { Button } from "antd";
+import { SendOutlined } from "@ant-design/icons";
 
 const BuatKaryawan = () => {
-  // const token = jsCookie.get("auth");
+  // const auth = useSelector(state => state.auth);
   const auth = useSelector(state => state.auth);
   const [nip, setNip] = useState("");
   const [name, setName] = useState("");
@@ -512,69 +501,14 @@ const BuatKaryawan = () => {
             </div>
           </fieldset>
         </form>
-        {/* <form className="  p-3 mb-3 bg-body rounded">
-          <div className="p-2 mb-1 bg-body rounded">
-            <div className="text-title text-start">
-              <h4 className="title fw-bold mb-1">Pilih Gudang</h4>
-            </div>
-          </div>
-          <Paper sx={{ width: "100%", overflow: "hidden" }}>
-            <TableContainer sx={{ maxHeight: 440 }}>
-              <Table stickyHeader aria-label="sticky table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Kode</TableCell>
-                    <TableCell>Nama Gudang</TableCell>
-                    <TableCell>Alamat</TableCell>
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {getWarehouse
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((d) => {
-                      return (
-                        <TableRow
-                          hover
-                          role="checkbox"
-                          tabIndex={-1}
-                          key={d.id}
-                        >
-                          <TableCell>{d.id}</TableCell>
-                          <TableCell>{d.name}</TableCell>
-                          <TableCell>{d.address}</TableCell>
-                          <TableCell>
-                            <Checkbox
-                              key={d.id}
-                              value={d.id}
-                              id={d.id}
-                              onChange={handleCheck}
-                            />
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={getEmployee.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </Paper>
-        </form> */}
         <div className="d-grid gap-2 d-md-flex justify-content-md-end">
           <Button
+            type="primary"
+            icon={<SendOutlined />}
+            size="large"
             onClick={handleSubmit}
-            variant="contained"
-            endIcon={<SendIcon />}
           >
-            Simpan
+            Submit
           </Button>
         </div>
       </>

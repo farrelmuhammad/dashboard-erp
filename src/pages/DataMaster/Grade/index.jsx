@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import jsCookie from 'js-cookie'
+
 import Url from '../../../Config'
 import axios from 'axios'
 import GradeTable from '../../../components/moleculles/GradeTable'

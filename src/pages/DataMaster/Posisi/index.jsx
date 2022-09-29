@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import jsCookie from "js-cookie";
+
 import Url from "../../../Config";
 import axios from "axios";
 import PosisiTable from "../../../components/moleculles/PosisiTable";
@@ -9,7 +9,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 
 const Posisi = () => {
-  // const token = jsCookie.get("auth");
+  // const auth = useSelector(state => state.auth);
   const auth = useSelector(state => state.auth);
   const [userAccess, setUserAccess] = useState([]);
 

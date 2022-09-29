@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import jsCookie from "js-cookie";
+
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Url from '../../../Config';
 import { useSelector } from 'react-redux';
 
 export const DetailKategori = () => {
-    // const token = jsCookie.get("auth");
+    // const auth = useSelector(state => state.auth);
     const auth = useSelector(state => state.auth);
     const { id } = useParams();
     const [data, setData] = useState([]);

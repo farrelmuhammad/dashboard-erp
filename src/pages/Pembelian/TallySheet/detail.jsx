@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
 import Search from 'antd/lib/transfer/search'
 import axios from 'axios'
-import Url from '../../../Config';
+import Url from "../../../Config";;
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import ReactDataSheet from 'react-datasheet'

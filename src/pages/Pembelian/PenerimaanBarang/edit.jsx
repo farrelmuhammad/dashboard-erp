@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import Url from '../../../Config';
+import Url from "../../../Config";;
 import { Button, Modal, Checkbox, Space, Table, Tag } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import Search from 'antd/lib/transfer/search';

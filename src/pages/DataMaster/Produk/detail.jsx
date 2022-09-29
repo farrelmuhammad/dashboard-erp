@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import jsCookie from 'js-cookie';
+;
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Url from '../../../Config';
