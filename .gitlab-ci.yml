@@ -22,13 +22,22 @@ build job:
         paths:
             - build/
 
-deploy job:
+deploy_preview:
+    stage: deploy
+    except:
+        - main
+    script:
+        - npm install --global vercel
+        - vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
+        - vercel build --token=$VERCEL_TOKEN
+        - vercel deploy --prebuilt  --token=$VERCEL_TOKEN
+
+deploy_production:
     stage: deploy
     only:
         - main
-    environment:
-        name: main
-        url: https://edwin-vite-39o1.vercel.app
     script:
-        - yarn global add vercel
-        - DEPLOYMENT_URL=$(VERCEL_ORG_ID=$VERCEL_ORG_ID VERCEL_PROJECT_ID=$VERCEL_PROJECT_ID vercel --confirm -t $VERCEL_TOKEN --prod)
+        - npm install --global vercel
+        - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+        - vercel build --prod --token=$VERCEL_TOKEN
+        - vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
