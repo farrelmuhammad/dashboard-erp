@@ -38,6 +38,6 @@ deploy_production:
         - main
     script:
         - npm install --global vercel
-        - vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+        - vercel pull --yes --environment=production --token=$VERCEL_TOKEN --force
         - vercel build --prod --token=$VERCEL_TOKEN
         - vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
