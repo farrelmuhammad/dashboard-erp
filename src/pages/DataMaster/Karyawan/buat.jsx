@@ -227,8 +227,10 @@ const BuatKaryawan = () => {
                 type="kode"
                 className="form-control"
                 id="inputKode3"
-                value={getEmployee}
-                readOnly={getEmployee}
+                // value={getEmployee}
+                // readOnly={getEmployee}
+                value="Otomatis"
+                disabled
               />
             </div>
           </div>

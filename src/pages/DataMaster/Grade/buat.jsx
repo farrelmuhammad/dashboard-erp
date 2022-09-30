@@ -133,8 +133,10 @@ const BuatGrade = () => {
               <input
                 type="kode"
                 className="form-control"
-                value={getGrade}
-                readOnly={getGrade}
+                // value={getGrade}
+                // readOnly={getGrade}
+                value="Otomatis"
+                disabled
               />
             </div>
           </div>

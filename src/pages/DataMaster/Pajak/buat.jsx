@@ -140,9 +140,11 @@ const BuatPajak = () => {
                 className="form-control"
                 id="inputKode3"
                 // onChange={e => setId(e.target.value)}
-                value={getTaxes}
-                readOnly={getTaxes}
-              // disabled="true"
+                // value={getTaxes}
+                // readOnly={getTaxes}
+                // disabled="true"
+                value="Otomatis"
+                disabled
               />
             </div>
           </div>

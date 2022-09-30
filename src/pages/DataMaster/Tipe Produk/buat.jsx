@@ -69,8 +69,8 @@ const BuatTipeProduk = ({ addType }) => {
           Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
         }
       });
-      
-      addType(name, description, product)
+
+    addType(name, description, product)
   };
 
   // const handleCheck = (event) => {
@@ -142,8 +142,10 @@ const BuatTipeProduk = ({ addType }) => {
                 className="form-control"
                 id="inputKode3"
                 // onChange={e => setId(e.target.value)}
-                value={getType}
-                readOnly={getType}
+                // value={getType}
+                // readOnly={getType}
+                value="Otomatis"
+                disabled
               />
             </div>
           </div>

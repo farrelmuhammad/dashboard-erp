@@ -229,8 +229,10 @@ const BuatProduk = () => {
               type="kode"
               className="form-control"
               id="inputKode3"
-              value={getProduct}
-              readOnly={getProduct}
+              // value={getProduct}
+              // readOnly={getProduct}
+              value="Otomatis"
+              disabled
             />
           </div>
         </div>

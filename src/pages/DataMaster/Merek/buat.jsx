@@ -127,8 +127,10 @@ const BuatMerek = () => {
                 className="form-control"
                 id="inputKode3"
                 // onChange={e => setId(e.target.value)}
-                value={getBrand}
-                readOnly={getBrand}
+                // value={getBrand}
+                // readOnly={getBrand}
+                value="Otomatis"
+                disabled
               />
             </div>
           </div>

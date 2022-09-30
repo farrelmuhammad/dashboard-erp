@@ -317,8 +317,10 @@ const BuatPelanggan = () => {
               type="kode"
               className="form-control"
               id="inputKode3"
-              value={getCustomer}
-              readOnly={getCustomer}
+              // value={getCustomer}
+              // readOnly={getCustomer}
+              value="Otomatis"
+              disabled
             />
           </div>
         </div>

@@ -125,8 +125,10 @@ const BuatGrup = () => {
                 className="form-control"
                 id="inputKode3"
                 // onChange={e => setId(e.target.value)}
-                value={getGroup}
-                readOnly={getGroup}
+                // value={getGroup}
+                // readOnly={getGroup}
+                value="Otomatis"
+                disabled
               />
             </div>
           </div>

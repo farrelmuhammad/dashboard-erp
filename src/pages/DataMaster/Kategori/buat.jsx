@@ -137,8 +137,10 @@ const BuatKategori = () => {
                 className="form-control"
                 id="inputKode3"
                 // onChange={e => setId(e.target.value)}
-                value={getCategory}
-                readOnly={getCategory}
+                // value={getCategory}
+                // readOnly={getCategory}
+                value="Otomatis"
+                disabled
               />
             </div>
           </div>

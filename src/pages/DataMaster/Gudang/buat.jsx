@@ -115,7 +115,9 @@ const BuatGudang = () => {
                 type="kode"
                 className="form-control"
                 id="inputKode3"
-                value={getWarehouse}
+                // value={getWarehouse}
+                // disabled
+                value="Otomatis"
                 disabled
               />
             </div>
