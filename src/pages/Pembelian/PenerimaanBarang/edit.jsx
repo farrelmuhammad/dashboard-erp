@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import Url from "../../../Config";;
+import Url from '../../../Config';
 import { Button, Modal, Checkbox, Space, Table, Tag } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import Search from 'antd/lib/transfer/search';
@@ -159,10 +159,10 @@ const EditPenerimaanBarang = () => {
             title: 'Stn',
             dataIndex: 'unit',
         },
-        {
-            title: 'Action',
-            dataIndex: 'action',
-        },
+        // {
+        //     title: 'Action',
+        //     dataIndex: 'action',
+        // },
 
     ];
 
@@ -173,15 +173,15 @@ const EditPenerimaanBarang = () => {
                 product_name: item.product_name,
                 quantity: item.quantity,
                 unit: item.unit,
-                action:
-                    <Space size="middle">
-                        <Button
-                            size='small'
-                            type="danger"
-                            icon={<DeleteOutlined />}
-                            onClick={() => { hapusIndexProduct(i) }}
-                        />
-                    </Space>
+                // action:
+                //     <Space size="middle">
+                //         <Button
+                //             size='small'
+                //             type="danger"
+                //             icon={<DeleteOutlined />}
+                //             onClick={() => { hapusIndexProduct(i) }}
+                //         />
+                //     </Space>
             }))
         ]
 

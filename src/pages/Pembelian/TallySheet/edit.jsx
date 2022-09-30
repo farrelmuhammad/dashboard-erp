@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
 import Search from 'antd/lib/transfer/search'
 import axios from 'axios'
-import Url from "../../../Config";;
+import Url from '../../../Config';
 import { useNavigate, useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import ReactDataSheet from 'react-datasheet'
@@ -43,6 +43,8 @@ const EditTallySheet = () => {
     const [qty, setQty] = useState([]);
     const [box, setBox] = useState([])
     const [totalTallySheet, setTotalTallySheet] = useState([])
+    const [quantityPO, setQuantityPO] = useState()
+    // const [quantityTally, setQuantityPO] = useState()
     const valueRenderer = (cell) => cell.value;
     const onContextMenu = (e, cell, i, j) =>
         cell.readOnly ? e.preventDefault() : null;
@@ -82,6 +84,8 @@ const EditTallySheet = () => {
                             boxes_unit: getData.tally_sheet_details[i].boxes_unit,
                             product_name: getData.tally_sheet_details[i].product_name,
                             action: getData.tally_sheet_details[i].action,
+                            purchase_order_qty: getData.tally_sheet_details[i].purchase_order_qty,
+                            tally_sheets_qty: getData.tally_sheet_details[i].tally_sheets_qty,
                             key: "lama"
                         })
 
@@ -110,7 +114,7 @@ const EditTallySheet = () => {
                                     }
                                     else if (y <= getData.tally_sheet_details[i].boxes.length && x == 1) {
                                         kolom.push(
-                                            { value: getData.tally_sheet_details[i].boxes[y - 1].quantity }
+                                            { value: getData.tally_sheet_details[i].boxes[y - 1].quantity.replace('.', ',') }
                                         );
 
                                         kuantitas.push(getData.tally_sheet_details[i].boxes[y - 1].quantity);
@@ -149,16 +153,17 @@ const EditTallySheet = () => {
     }, []);
 
     useEffect(() => {
+        console.log(getTallySheet.supplier_id)
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_purchase_orders?kode=${query}&id_pemasok=${getTallySheet.supplier_id}`, {
+            const res = await axios.get(`${Url}/tally_sheet_ins_available_purchase_orders?kode=${query}&id_pemasok=${getTallySheet.supplier_id}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            console.log(res.data)
-            setGetDataProduct(res.data);
-            setGetDataDetailPO(res.data.map(d => d.purchase_order_details))
+            console.log(res.data.data)
+            setGetDataProduct(res.data.data);
+            setGetDataDetailPO(res.data.data.map(d => d.purchase_order_details))
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -243,7 +248,7 @@ const EditTallySheet = () => {
             for (let a = 1; a < data[x].length; a++) {
                 for (let b = 1; b < data[x][a].length; b++) {
                     if (data[x][a][b].value != 0) {
-                        totTly[x] = Number(totTly[x]) + Number(data[x][a][b].value);
+                        totTly[x] = Number(totTly[x]) + Number(data[x][a][b].value.replace(',', '.'));
                     }
                 }
             }
@@ -304,27 +309,19 @@ const EditTallySheet = () => {
                     id_produk: product[i].id_produk,
                     id_pesanan_pembelian: product[i].id_pesanan_pembelian,
                     code: product[i].code,
-                    boxes_quantity: totTly[i],
+                    boxes_quantity: totTly[i].toString(),
                     number_of_boxes: total[i],
                     boxes_unit: product[i].boxes_unit,
                     product_name: product[i].product_name,
-                    action: product[i].action,
+                    action: totTly[i] + product[i].tally_sheets_qty >= product[i].purchase_order_qty ? 'Done' : 'Next delivery',
+                    purchase_order_qty: product[i].purchase_order_qty,
+                    tally_sheets_qty: product[i].tally_sheets_qty,
+                    key: product[i].key
                 })
             }
             else {
-                tmp.push({
-                    id_produk: product[i].id_produk,
-                    id_pesanan_pembelian: product[i].id_pesanan_pembelian,
-                    code: product[i].code,
-                    boxes_quantity: product[i].boxes_quantity,
-                    number_of_boxes: product[i].number_of_boxes,
-                    boxes_unit: product[i].boxes_unit,
-                    product_name: product[i].product_name,
-                    action: product[i].action,
-                })
+                tmp.push(product[i])
             }
-            // let tempData = []
-            // kuantitas = []
 
         }
         console.log(tmp)
@@ -336,6 +333,9 @@ const EditTallySheet = () => {
         setLoadingTable(true);
         // for (let x = 0; x < dataTS.length; x++) {
         product.splice(index, 1);
+        data.splice(index, 1);
+        setIndexPO(0)
+        console.log(product)
 
         Swal.fire({
             icon: 'success',
@@ -343,103 +343,105 @@ const EditTallySheet = () => {
             text: 'Data berhasil dihapus',
         }).then(() => setLoadingTable(false));
         // }
+        
         // console.log(dataTS)
 
     }
 
+
     const dataPurchase =
         [...product.map((item, i) => ({
-            code: item.code,
-            product_name: item.product_name,
-            quantity: item.boxes_quantity,
-            unit: item.boxes_unit,
-            box:
-                <>
+                code: item.code,
+                product_name: item.product_name,
+                quantity: item.boxes_quantity.replace('.', ','),
+                unit: item.boxes_unit,
+                box:
+                    <>
 
-                    <a onClick={() => klikTampilSheet(i)} style={{ color: "#1890ff" }}>
-                        {item.number_of_boxes}
-                    </a>
-                    <Modal
-                        centered
-                        visible={modal2Visible2}
-                        onCancel={() => setModal2Visible2(false)}
-                        onOk={() => setModal2Visible2(false)}
-                        width={1000}
-                    >
-                        <div className="text-title text-start">
-                            <div className="row">
-                                <div className="col">
-                                    <div className="row">
-                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
-                                        <div className="col-sm-3">
-                                            <input
-                                                value={product[indexPO].code}
-                                                type="Nama"
-                                                className="form-control"
-                                                id="inputNama3"
-                                                disabled
-                                            />
+                        <a onClick={() => klikTampilSheet(i)} style={{ color: "#1890ff" }}>
+                            {item.number_of_boxes}
+                        </a>
+                        <Modal
+                            centered
+                            visible={modal2Visible2}
+                            onCancel={() => setModal2Visible2(false)}
+                            onOk={() =>   setModal2Visible2(false)}
+                            width={1000}
+                        >
+                            <div className="text-title text-start">
+                                <div className="row">
+                                    <div className="col">
+                                        <div className="row">
+                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
+                                            <div className="col-sm-3">
+                                                <input
+                                                    value={product[indexPO].code}
+                                                    type="Nama"
+                                                    className="form-control"
+                                                    id="inputNama3"
+                                                    disabled
+                                                />
+                                            </div>
+                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
+                                            <div className="col-sm-3">
+                                                <input
+                                                    value={quantityPO}
+                                                    type="Nama"
+                                                    className="form-control"
+                                                    id="inputNama3"
+                                                    disabled
+                                                />
+
+                                            </div>
                                         </div>
-                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
-                                        <div className="col-sm-3">
-                                            <input
-                                                value={product[indexPO].boxes_quantity}
-                                                type="Nama"
-                                                className="form-control"
-                                                id="inputNama3"
-                                                disabled
-                                            />
+                                        <div className="row mb-1 mt-2">
+                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
+                                            <div className="col-sm-3">
+                                                <input
+                                                    value={product[indexPO].product_name}
+                                                    type="Nama"
+                                                    className="form-control"
+                                                    id="inputNama3"
+                                                    disabled
+                                                />
 
+                                            </div>
+                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
+                                            <div className="col-sm-3">
+                                                <input
+                                                    value={product[indexPO].boxes_quantity.replace('.', ',')}
+                                                    type="Nama"
+                                                    className="form-control"
+                                                    id="inputNama3"
+                                                    disabled
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="row mb-1 mt-2">
-                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
-                                        <div className="col-sm-3">
-                                            <input
-                                                value={product[indexPO].product_name}
-                                                type="Nama"
-                                                className="form-control"
-                                                id="inputNama3"
-                                                disabled
-                                            />
-
-                                        </div>
-                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
-                                        <div className="col-sm-3">
-                                            <input
-                                                value={product[indexPO].boxes_quantity}
-                                                type="Nama"
-                                                className="form-control"
-                                                id="inputNama3"
-                                                disabled
-                                            />
-                                        </div>
+                                    <div className="w-10" style={{ overflowY: "scroll", height: "300px", display: loadingSpreedSheet ? "none" : 'block' }}>
+                                        <ReactDataSheet
+                                            data={data[indexPO]}
+                                            valueRenderer={valueRenderer}
+                                            onContextMenu={onContextMenu}
+                                            onCellsChanged={onCellsChanged}
+                                        />
                                     </div>
-                                </div>
-                                <div className="w-10" style={{ overflowY: "scroll", height: "300px", display: loadingSpreedSheet ? "none" : 'block' }}>
-                                    <ReactDataSheet
-                                        data={data[indexPO]}
-                                        valueRenderer={valueRenderer}
-                                        onContextMenu={onContextMenu}
-                                        onCellsChanged={onCellsChanged}
-                                    />
                                 </div>
                             </div>
-                        </div>
-                    </Modal>
-                </>,
+                        </Modal>
+                    </>,
 
-            status: item.action === 'Done' ? <Tag color="green">{item.action}</Tag> : item.action === 'Next delivery' ? <Tag color="orange">{item.action}</Tag> : <Tag color="red">{item.action}</Tag>,
-            action: <Space size="middle">
-                <Button
-                    size='small'
-                    type="danger"
-                    icon={<DeleteOutlined />}
-                    onClick={() => { hapusIndexProduct(i) }}
-                />
-            </Space>
+                status: item.action === 'Done' ? <Tag color="green">{item.action}</Tag> : item.action === 'Next delivery' ? <Tag color="orange">{item.action}</Tag> : <Tag color="red">{item.action}</Tag>,
+                action: <Space size="middle">
+                    <Button
+                        size='small'
+                        type="danger"
+                        icon={<DeleteOutlined />}
+                        onClick={() => { hapusIndexProduct(i) }}
+                    />
+                </Space>
 
-        }))
+            }))
 
         ];
 
@@ -490,6 +492,8 @@ const EditTallySheet = () => {
             for (let i = 0; i <= product.length; i++) {
                 if (i == product.length) {
                     for (let x = 0; x < value.purchase_order_details.length; x++) {
+                        let qtyAwal = value.purchase_order_details[x].quantity;
+                        let qtyAkhir = value.purchase_order_details[x].tally_sheets_qty;
                         tmp.push({
                             id_produk: value.purchase_order_details[x].product_id,
                             id_pesanan_pembelian: value.id,
@@ -498,7 +502,9 @@ const EditTallySheet = () => {
                             number_of_boxes: 0,
                             boxes_unit: value.purchase_order_details[x].unit,
                             product_name: value.purchase_order_details[x].product_name,
-                            action: value.status,
+                            action: qtyAkhir >= qtyAwal ? 'Done' : 'Next delivery',
+                            purchase_order_qty: qtyAwal,
+                            tally_sheets_qty: qtyAkhir,
                             key: "baru"
                         })
 
@@ -812,6 +818,9 @@ const EditTallySheet = () => {
 
     function klikTampilSheet(indexPO) {
         console.log(data)
+        // console.log(product[indexPO].purchase_order_qty)
+        // setQuantityTally(product[indexPO].boxes_quantity)
+        setQuantityPO(product[indexPO].purchase_order_qty)
         setIndexPO(indexPO);
         setModal2Visible2(true);
 
@@ -888,7 +897,7 @@ const EditTallySheet = () => {
                                 onClick={() => setModal2Visible(true)}
                             />
                             <Modal
-                                title="Tambah Produk"
+                                title="Tambah Pesanan"
                                 centered
                                 visible={modal2Visible}
                                 onCancel={() => setModal2Visible(false)}
@@ -965,13 +974,13 @@ const EditTallySheet = () => {
                                     Simpan
                                 </button></>
                     }
-                <button
-                    type="button"
-                    className="btn btn-warning rounded m-1">
-                    Cetak
-                </button>
-            </div>
-        </form>
+                    <button
+                        type="button"
+                        className="btn btn-warning rounded m-1">
+                        Cetak
+                    </button>
+                </div>
+            </form>
             {/* <form className="  p-3 mb-5 bg-body rounded">
                 <div className="text-title text-start mb-4">
                     <div class="row">

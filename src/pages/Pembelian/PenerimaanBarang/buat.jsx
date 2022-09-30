@@ -2,7 +2,7 @@ import './form.css'
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Url from "../../../Config";;
+import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
 import Select from "react-select";
@@ -183,14 +183,14 @@ const BuatPenerimaanBarang = () => {
                 width: '10%',
                 key: 'name',
             },
-            {
-                title: 'Action',
-                dataIndex: 'action',
-                align: 'center',
-                width: '10%',
-                key: 'operation',
+            // {
+            //     title: 'Action',
+            //     dataIndex: 'action',
+            //     align: 'center',
+            //     width: '10%',
+            //     key: 'operation',
 
-            },
+            // },
         ];
 
         const dataPurchase =
@@ -199,15 +199,15 @@ const BuatPenerimaanBarang = () => {
                 product_name: item.product_name,
                 quantity: item.boxes_quantity,
                 unit: item.boxes_unit,
-                action:
-                    <Space size="middle">
-                        <Button
-                            size='small'
-                            type="danger"
-                            icon={<DeleteOutlined />}
-                            onClick={() => { hapusIndexProduct(record.key, i) }}
-                        />
-                    </Space>,
+                // action:
+                //     <Space size="middle">
+                //         <Button
+                //             size='small'
+                //             type="danger"
+                //             icon={<DeleteOutlined />}
+                //             onClick={() => { hapusIndexProduct(record.key, i) }}
+                //         />
+                //     </Space>,
             }))
 
             ];

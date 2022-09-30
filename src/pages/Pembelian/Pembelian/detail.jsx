@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import jsCookie from "js-cookie";
 import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
 import axios from 'axios';
-import Url from "../../../Config";;
+import Url from '../../../Config';
 import { Table, Tag } from 'antd';
 import { useSelector } from 'react-redux';
 import { useReactToPrint } from 'react-to-print';
@@ -29,7 +29,7 @@ export const DetailPesananPembelian = () => {
     const [tanggalAwal, setTanggalAwal] = useState();
     const [tanggalAkhir, setTanggalAkhir] = useState();
     const [namaPenerima, setNamaPenerima] = useState();
-    const [brand, setBrand]  = useState([])
+    const [brand, setBrand] = useState([])
 
     const convertToRupiahTabel = (angka) => {
         return namaMataUang + ' ' + Number(angka).toLocaleString('id')
@@ -215,10 +215,10 @@ export const DetailPesananPembelian = () => {
                 let po = getData[0].purchase_order_details;
                 let arrBrand = []
                 let total = 0;
-                for(let i =0; i<po.length; i++){
-                       
-                            arrBrand.push(po[i].product.brand.name);
-                        
+                for (let i = 0; i < po.length; i++) {
+
+                    arrBrand.push(po[i].product.brand.name);
+
                 }
                 const hasilBrand = [...new Set(arrBrand)];
                 setBrand(hasilBrand);
@@ -241,7 +241,7 @@ export const DetailPesananPembelian = () => {
       position: fixed;
       bottom:0mm;
       width: 100%;
-      height: 50px;
+      height: 900px;
       font-size: 15px;
       color: #fff;
       /* For testing */
@@ -260,12 +260,26 @@ export const DetailPesananPembelian = () => {
     body {
       marginBottom:50px
     }
-}`;
+    }`;
+    
     const handlePrint = useReactToPrint({
+        // content: () => {
+        //     const tableStat = componentRef.current;
+        //     const PrintElem = document.createElement('div');
+        //     const header =  
+        //       `<div class="page-footer">
+        //         <div class="page-number"></div>
+        //       </div>`;
+        //     PrintElem.innerHTML = header;
+        //     PrintElem.appendChild(tableStat);
+        //     return PrintElem;
+        //   },
+
         content: () => componentRef.current,
         copyStyles: true,
-        pageStyle: {pageStyle}
+        pageStyle: pageStyle
     })
+
     if (loading) {
         return (
             <div></div>
@@ -371,10 +385,10 @@ export const DetailPesananPembelian = () => {
                             <div className='mb-2 mt-4' ><b>Condition of Purchase</b></div>
                             <div className='d-flex'>
                                 <label style={{ width: "150px" }}>Brand</label>
-                                <div >: 
+                                <div >:
                                     {
-                                        brand.map((item , i) => (
-                                           <> {item}</>
+                                        brand.map((item, i) => (
+                                            <> {item}</>
                                         ))
                                     }
 
@@ -416,9 +430,7 @@ export const DetailPesananPembelian = () => {
                     </div>
 
                     <div className='d-flex flex-column align-contents-end ps-4 pe-4' style={{ width: "200px", marginLeft: "auto", marginTop: "200px" }}>
-                        <div className='text-center' >Drew Feig</div>
-                        <div ><hr></hr></div>
-                        <div className='text-center'>Administrator</div>
+                        <div className='text-center' >Dhany Saputra</div>
                     </div>
                 </div>
             </div>
@@ -559,8 +571,8 @@ export const DetailPesananPembelian = () => {
                                     value={tanggalAwal}
                                     disabled
                                 />
-                               <div className='ms-2 me-2' style={{ paddingTop: "13px!important" }}>s.d</div>
-                                 <input
+                                <div className='ms-2 me-2' style={{ paddingTop: "13px!important" }}>s.d</div>
+                                <input
                                     id="startDate"
                                     className=" form-control"
                                     type="date"

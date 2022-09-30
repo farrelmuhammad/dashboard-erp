@@ -14,3 +14,7 @@
     border:none;
     box-shadow: 0 0 10px #719ECE;
   }
+
+  .edit-disabled{
+    background-color: transparent;
+  }

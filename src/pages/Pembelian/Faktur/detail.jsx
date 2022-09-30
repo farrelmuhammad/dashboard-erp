@@ -2,7 +2,7 @@ import './form.css'
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Url from "../../../Config";;
+import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
 import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd'
@@ -12,86 +12,8 @@ import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import ReactSelect from 'react-select';
+import CurrencyFormat from 'react-currency-format';
 import { useSelector } from 'react-redux';
-
-const EditableContext = createContext(null);
-const EditableRow = ({ index, ...props }) => {
-    const [form] = Form.useForm();
-    return (
-        <Form form={form} component={false}>
-            <EditableContext.Provider value={form}>
-                <tr {...props} />
-            </EditableContext.Provider>
-        </Form>
-    );
-};
-
-const EditableCell = ({
-    title,
-    editable,
-    children,
-    dataIndex,
-    record,
-    handleSave,
-    ...restProps
-}) => {
-    const [editing, setEditing] = useState(false);
-    const inputRef = useRef(null);
-    const form = useContext(EditableContext);
-    useEffect(() => {
-        if (editing) {
-            inputRef.current.focus();
-        }
-    }, [editing]);
-
-    const toggleEdit = () => {
-        setEditing(!editing);
-        form.setFieldsValue({
-            [dataIndex]: record[dataIndex],
-        });
-    };
-
-    const save = async () => {
-        try {
-            const values = await form.validateFields();
-            toggleEdit();
-            handleSave({ ...record, ...values });
-        } catch (errInfo) {
-            console.log('Save failed:', errInfo);
-        }
-    };
-
-    let childNode = children;
-
-    if (editable) {
-        childNode = editing ? (
-            <Form.Item
-                style={{
-                    margin: 0,
-                }}
-                name={dataIndex}
-                rules={[
-                    {
-                        required: true,
-                        message: `${title} is required.`,
-                    },
-                ]}
-            >
-                {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
-            </Form.Item>
-        ) : (
-            <div
-                className="editable-cell-value-wrap"
-                onClick={toggleEdit}
-            >
-                {children}
-            </div>
-        );
-    }
-
-    return <td {...restProps}>{childNode}</td>;
-};
 
 
 const DetailFakturPembelian = () => {
@@ -109,43 +31,44 @@ const DetailFakturPembelian = () => {
     const navigate = useNavigate();
     const [grup, setGrup] = useState("Lokal")
     const [impor, setImpor] = useState(false);
+    const [loading, setLoading] = useState(true)
 
     const { id } = useParams();
 
     //state return data from database
 
-    const [getDataProduct, setGetDataProduct] = useState();
-    const [isLoading, setIsLoading] = useState(false);
-
     const [subTotal, setSubTotal] = useState("");
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
     const [totalPpn, setTotalPpn] = useState("");
     const [grandTotal, setGrandTotal] = useState("");
-    const [checked, setChecked] = useState("");
+    const [dataHeader, setDataHeader] = useState([])
+    const [dataSupplier, setDataSupplier] = useState()
+    const [dataBarang, setDataBarang] = useState([])
 
-    const [selectedValue, setSelectedCustomer] = useState(null);
-    const [modal2Visible, setModal2Visible] = useState(false);
-
-    const [term, setTerm] = useState();
-    const [muatan, setMuatan] = useState();
-    const [ctn, setCtn] = useState();
-    const [alamat, setAlamat] = useState();
-    const [kontainer, setKontainer] = useState()
-
-    const handleChangeCustomer = (value) => {
-        setSelectedCustomer(value);
-        setCustomer(value.id);
-        setAddress(value.customer_addresses)
-    };
-    // load options using API call
-    const loadOptionsCustomer = (inputValue) => {
-        return fetch(`${Url}/select_suppliers?limit=10&nama=${inputValue}`, {
+    useEffect(() => {
+        getDataFaktur();
+    }, [])
+    const getDataFaktur = async () => {
+        await axios.get(`${Url}/select_purchase_invoices/dua?id=${id}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
-    };
+        })
+            .then((res) => {
+                let getData = res.data[0]
+                setDataHeader(getData);
+                setGrup(getData.supplier._group)
+                setDataSupplier(getData.supplier)
+                setDataBarang(getData.purchase_invoice_details)
+                setLoading(false);
+            })
+            .catch((err) => {
+                // Jika Gagal
+                console.log(err);
+            });
+    }
+
 
     useEffect(() => {
         if (grup == "Impor") {
@@ -157,101 +80,95 @@ const DetailFakturPembelian = () => {
 
     }, [grup])
 
-    const components = {
-        body: {
-            row: EditableRow,
-            cell: EditableCell,
-        },
-    };
-
     const defaultColumns = [
         {
-            title: 'No.Transaksi',
-            dataIndex: '',
-            width: '5%',
-            align: 'center',
-            render: (text, record, index) => index + 1,
-        },
-        {
             title: 'Nama Produk',
-            dataIndex: 'delivery_note_details',
-            render: (delivery_note_details) => delivery_note_details.map(service => service.product_alias_name).join(),
+            dataIndex: 'nama',
         },
         {
             title: 'Qty',
-            dataIndex: 'delivery_note_details',
+            dataIndex: 'qty',
             width: '10%',
             align: 'center',
-            render: (delivery_note_details) => delivery_note_details.map(service => service.quantity).join(),
-            // editable: true,
         },
         {
             title: 'Stn',
-            dataIndex: 'delivery_note_details',
+            dataIndex: 'stn',
             width: '5%',
             align: 'center',
-            render: (delivery_note_details) => delivery_note_details.map(service => service.unit).splice(1, 1),
         },
         {
             title: 'Harga',
             dataIndex: 'price',
             width: '10%',
             align: 'center',
-            editable: true,
-            render: (text) => <a>Rp. {text}</a>,
         },
         {
             title: 'Discount',
-            dataIndex: 'nominal_disc',
+            dataIndex: 'diskon',
             width: '10%',
             align: 'center',
-            editable: true,
-            render: (text) => <a>Rp. {text}</a>,
-        },
-        {
-            title: 'PPN',
-            dataIndex: 'ppn',
-            width: '10%',
-            align: 'center',
-            editable: true,
-            render: (text) => <a>{text} %</a>,
         },
         {
             title: 'Jumlah',
             dataIndex: 'total',
             width: '14%',
             align: 'center',
-            render:
-                (text, record) => {
-                    let total = (record.quantity * record.price) - record.nominal_disc;
-                    let getPercent = (total * record.discount) / 100;
-                    let totalDiscount = total - getPercent;
-                    let getPpn = (totalDiscount * record.ppn) / 100;
-                    if (checked) {
-                        return totalDiscount;
-                    } else {
-                        return totalDiscount + getPpn;
-                    }
-                }
+
         },
     ];
 
-    const columns = defaultColumns.map((col) => {
-        if (!col.editable) {
-            return col;
-        }
 
-        return {
-            ...col,
-            onCell: (record) => ({
-                record,
-                editable: col.editable,
-                dataIndex: col.dataIndex,
-                title: col.title,
-                handleSave,
-            }),
-        };
-    });
+    const dataTBPenerimaan =
+        [...dataBarang.map((item, i) => ({
+            nama: item.product_name,
+            qty: item.quantity,
+            stn: item.unit,
+            price: item.price,
+            diskon:
+                <>
+                    {
+                        item.discount_percentage == 0 && item.fixed_discount == 0 ? <div>-</div> :
+                            item.discount_percentage != 0 ?
+                                <div className='d-flex p-1' style={{ height: "100%" }} >
+                                    <input disabled className=' text-center editable-input edit-disabled'  value={item.discount_percentage.replace('.', ',')} key="diskon" />
+
+                                    <option selected value="persen" > %</option>
+                                </div> :
+                                item.fixed_discount != 0 ?
+                                    <div className='d-flex p-1' style={{ height: "100%" }}>
+                                        <CurrencyFormat disabled className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={item.fixed_discount} key="diskon" />
+
+                                        <option selected value="nominal">matauang</option>
+
+
+                                    </div> : null
+                    }
+
+                </>,
+            total: item.subtotal,
+        }))
+
+        ]
+
+
+
+    // const columns = defaultColumns.map((col) => {
+    //     if (!col.editable) {
+    //         return col;
+    //     }
+
+    //     return {
+    //         ...col,
+    //         onCell: (record) => ({
+    //             record,
+    //             editable: col.editable,
+    //             dataIndex: col.dataIndex,
+    //             title: col.title,
+    //             handleSave,
+    //         }),
+    //     };
+    // });
 
 
 
@@ -261,100 +178,8 @@ const DetailFakturPembelian = () => {
         const item = newData[index];
         newData.splice(index, 1, { ...item, ...row });
         setProduct(newData);
-        let check_checked = checked;
-        calculate(product, check_checked);
     };
 
-    const calculate = (product, check_checked) => {
-        let subTotal = 0;
-        let totalDiscount = 0;
-        let totalNominalDiscount = 0;
-        let grandTotalDiscount = 0;
-        let getPpnDiscount = 0;
-        let allTotalDiscount = 0;
-        let totalPpn = 0;
-        let grandTotal = 0;
-        let getPpn = 0;
-        let total = 0;
-        product.map((values) => {
-            if (check_checked) {
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
-
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                subTotal += ((total - getPpnDiscount) * 100) / (100 + values.ppn);
-                allTotalDiscount += total - getPpnDiscount;
-                totalPpn = allTotalDiscount - subTotal;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
-                setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
-                setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
-            } else {
-                subTotal += (values.quantity * values.price);
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
-
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                allTotalDiscount = total - getPpnDiscount;
-                getPpn = (allTotalDiscount * values.ppn) / 100;
-                totalPpn += getPpn;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
-                setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
-                setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
-            }
-        })
-    }
-
-    const handleCheck = (event) => {
-        var updatedList = [...product];
-        if (event.target.checked) {
-            updatedList = [...product, event.target.value];
-        } else {
-            updatedList.splice(product.indexOf(event.target.value), 1);
-        }
-        setProduct(updatedList);
-        setSource(updatedList.map(p => p.delivery_note_details))
-        console.log(updatedList.map(p => p.delivery_note_details.map(prod => prod)))
-    };
-
-    const columnsModal = [
-        {
-            title: 'No. Pesanan',
-            dataIndex: 'code',
-        },
-        {
-            title: 'Supplier',
-            align: 'center',
-            dataIndex: 'supplier_id',
-        },
-        {
-            title: 'Total',
-            align: 'center',
-            dataIndex: 'total',
-        },
-        {
-            title: 'actions',
-            dataIndex: 'address',
-            width: '15%',
-            align: 'center',
-            render: (_, record) => (
-                <>
-                    <Checkbox
-                        value={record}
-                        onChange={handleCheck}
-                    // defaultChecked={record[getProduct]}
-                    />
-                </>
-            )
-        },
-    ];
 
     const columAkun = [
         {
@@ -362,310 +187,28 @@ const DetailFakturPembelian = () => {
             dataIndex: '',
             width: '5%',
             align: 'center',
-            render: (text, record, index) => index + 1,
         },
         {
             title: 'Deskripsi',
             dataIndex: 'delivery_note_details',
-            render: (delivery_note_details) => delivery_note_details.map(service => service.product_alias_name).join(),
         },
         {
             title: 'Jumlah',
             dataIndex: 'total',
             width: '14%',
             align: 'center',
-            render:
-                (text, record) => {
-                    let total = (record.quantity * record.price) - record.nominal_disc;
-                    let getPercent = (total * record.discount) / 100;
-                    let totalDiscount = total - getPercent;
-                    let getPpn = (totalDiscount * record.ppn) / 100;
-                    if (checked) {
-                        return totalDiscount;
-                    } else {
-                        return totalDiscount + getPpn;
-                    }
-                }
+
         },
     ];
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const userData = new URLSearchParams();
-        userData.append("tanggal", date);
-        userData.append("tipe", fakturType);
-        userData.append("penerima", customer);
-        userData.append("catatan", description);
-        userData.append("alamat_penerima", address);
-        userData.append("status", "Submitted");
-        // product.map((p) => {
-        //     console.log(p);
-        //     userData.append("nama_alias_produk[]", p.alias_name);
-        //     userData.append("kuantitas[]", p.quantity);
-        //     userData.append("satuan[]", p.unit);
-        //     userData.append("harga[]", p.price);
-        //     userData.append("persentase_diskon[]", p.discount);
-        //     userData.append("diskon_tetap[]", p.nominal_disc);
-        //     userData.append("ppn[]", p.ppn);
-        // });
-        userData.append("termasuk_pajak", checked);
-
-        for (var pair of userData.entries()) {
-            console.log(pair[0] + ', ' + pair[1]);
-        }
-
-        // axios({
-        //     method: "post",
-        //     url: `${Url}/sales_invoices`,
-        //     data: userData,
-        //     headers: {
-        //         Accept: "application/json",
-        //         Authorization: `Bearer ${auth.token}`,
-        //     },
-        // })
-        //     .then(function (response) {
-        //         //handle success
-        //         Swal.fire(
-        //             "Berhasil Ditambahkan",
-        //             ` Masuk dalam list`,
-        //             "success"
-        //         );
-        //         navigate("/pesanan");
-        //     })
-        //     .catch((err) => {
-        //         if (err.response) {
-        //             console.log("err.response ", err.response);
-        //             Swal.fire({
-        //                 icon: "error",
-        //                 title: "Oops...",
-        //                 text: err.response.data.error.nama,
-        //             });
-        //         } else if (err.request) {
-        //             console.log("err.request ", err.request);
-        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        //         } else if (err.message) {
-        //             // do something other than the other two
-        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        //         }
-        //     });
-    };
-
-    const handleDraft = async (e) => {
-        e.preventDefault();
-        const userData = new URLSearchParams();
-        userData.append("tanggal", date);
-        userData.append("tipe", fakturType);
-        userData.append("penerima", customer);
-        userData.append("catatan", description);
-        userData.append("alamat_penerima", address);
-        userData.append("status", "Draft");
-        // product.map((p) => {
-        //     console.log(p);
-        //     userData.append("nama_alias_produk[]", p.alias_name);
-        //     userData.append("kuantitas[]", p.quantity);
-        //     userData.append("satuan[]", p.unit);
-        //     userData.append("harga[]", p.price);
-        //     userData.append("persentase_diskon[]", p.discount);
-        //     userData.append("diskon_tetap[]", p.nominal_disc);
-        //     userData.append("ppn[]", p.ppn);
-        // });
-        userData.append("termasuk_pajak", checked);
-
-        for (var pair of userData.entries()) {
-            console.log(pair[0] + ', ' + pair[1]);
-        }
-
-        // axios({
-        //     method: "post",
-        //     url: `${Url}/sales_invoices`,
-        //     data: userData,
-        //     headers: {
-        //         Accept: "application/json",
-        //         Authorization: `Bearer ${auth.token}`,
-        //     },
-        // })
-        //     .then(function (response) {
-        //         //handle success
-        //         Swal.fire(
-        //             "Berhasil Ditambahkan",
-        //             ` Masuk dalam list`,
-        //             "success"
-        //         );
-        //         navigate("/pesanan");
-        //     })
-        //     .catch((err) => {
-        //         if (err.response) {
-        //             console.log("err.response ", err.response);
-        //             Swal.fire({
-        //                 icon: "error",
-        //                 title: "Oops...",
-        //                 text: err.response.data.error.nama,
-        //             });
-        //         } else if (err.request) {
-        //             console.log("err.request ", err.request);
-        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        //         } else if (err.message) {
-        //             // do something other than the other two
-        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        //         }
-        //     });
-    };
-    const TableData =
-        [
-            {
-                id: 24,
-                code: "BM220803-SJ001",
-                date: "2022-08-03",
-                customer_id: 2,
-                customer_address_id: 3,
-                recipient: 1,
-                recipient_address: 1,
-                vehicle: "sadas",
-                sender: "asda",
-                notes: "asdasd",
-                status: "Submitted",
-                is_delivered: 1,
-                sales_invoice_id: null,
-                drafted_by: 2,
-                last_edited_by: 2,
-                last_edited_at: "2022-08-19 15:33:49",
-                submitted_by: 2,
-                submitted_at: "2022-08-19 15:33:49",
-                delivered_by: 2,
-                delivered_at: "2022-08-22 16:24:58",
-                done_by: null,
-                done_at: null,
-                created_at: "2022-08-19T08:33:49.000000Z",
-                updated_at: "2022-08-22T09:24:58.000000Z",
-                delivery_note_details: [
-                    {
-                        id: 1,
-                        delivery_note_id: 24,
-                        tally_sheet_id: 8,
-                        sales_order_id: 1,
-                        product_id: 3,
-                        product_alias_name: "Bagian 1 Grade 1 Merk 2",
-                        product_name: "Bagian 1 Grade 1 IW Tipe 1 Merk 2",
-                        quantity: 1,
-                        unit: "kg",
-                        returned: 0,
-                        created_at: "2022-08-19T08:33:49.000000Z",
-                        updated_at: "2022-08-19T08:33:49.000000Z"
-                    },
-                    {
-                        id: 2,
-                        delivery_note_id: 24,
-                        tally_sheet_id: 9,
-                        sales_order_id: 1,
-                        product_id: 3,
-                        product_alias_name: "Bagian 1 Grade 1 Merk 2",
-                        product_name: "Bagian 1 Grade 1 IW Tipe 1 Merk 2",
-                        quantity: 1,
-                        unit: "kg",
-                        returned: 0,
-                        created_at: "2022-08-19T08:33:49.000000Z",
-                        updated_at: "2022-08-19T08:33:49.000000Z"
-                    }
-                ],
-                customer: {
-                    id: 2,
-                    code: "CUS-00002",
-                    name: "Pelanggan 2",
-                    business_entity: "PT",
-                    phone_number: "2",
-                    email: "E2",
-                    npwp: "2",
-                    term: 2,
-                    discount: 2,
-                    status: "Active",
-                    created_at: "2022-08-15T04:22:12.000000Z",
-                    updated_at: "2022-08-15T04:22:12.000000Z"
-                },
-            },
-            {
-                id: 27,
-                code: "BM220802-SJ001",
-                date: "2022-08-02",
-                customer_id: 2,
-                customer_address_id: 3,
-                recipient: null,
-                recipient_address: null,
-                vehicle: "asdasd",
-                sender: "asda",
-                notes: "adad",
-                status: "Submitted",
-                is_delivered: 0,
-                sales_invoice_id: null,
-                drafted_by: 2,
-                last_edited_by: 2,
-                last_edited_at: "2022-08-19 15:35:25",
-                submitted_by: 2,
-                submitted_at: "2022-08-19 15:35:25",
-                delivered_by: null,
-                delivered_at: null,
-                done_by: null,
-                done_at: null,
-                created_at: "2022-08-19T08:35:25.000000Z",
-                updated_at: "2022-08-19T08:35:25.000000Z",
-                delivery_note_details: [
-                    {
-                        id: 3,
-                        delivery_note_id: 27,
-                        tally_sheet_id: 10,
-                        sales_order_id: 1,
-                        product_id: 3,
-                        product_alias_name: "Bagian 1 Grade 1 Merk 2",
-                        product_name: "Bagian 1 Grade 1 IW Tipe 1 Merk 2",
-                        quantity: 1,
-                        unit: "kg",
-                        returned: 0,
-                        created_at: "2022-08-19T08:35:25.000000Z",
-                        updated_at: "2022-08-19T08:35:25.000000Z"
-                    },
-                    {
-                        id: 4,
-                        delivery_note_id: 27,
-                        tally_sheet_id: 11,
-                        sales_order_id: 1,
-                        product_id: 3,
-                        product_alias_name: "Bagian 1 Grade 1 Merk 2",
-                        product_name: "Bagian 1 Grade 1 IW Tipe 1 Merk 2",
-                        quantity: 1,
-                        unit: "kg",
-                        returned: 0,
-                        created_at: "2022-08-19T08:35:25.000000Z",
-                        updated_at: "2022-08-19T08:35:25.000000Z"
-                    }
-                ],
-                customer:
-                {
-                    id: 2,
-                    code: "CUS-00002",
-                    name: "Pelanggan 2",
-                    business_entity: "PT",
-                    phone_number: "2",
-                    email: "E2",
-                    npwp: "2",
-                    term: 2,
-                    discount: 2,
-                    status: "Active",
-                    created_at: "2022-08-15T04:22:12.000000Z",
-                    updated_at: "2022-08-15T04:22:12.000000Z"
-                },
-            }
-        ]
 
 
-    const optionsType = [
-        {
-            value: "Lokal",
-            label: "Lokal"
-        },
-        {
-            value: "Standar",
-            label: "Standar"
-        }
-    ]
+    if (loading) {
+        return (
+            <div></div>
+        )
+    }
+
 
     return (
         <>
@@ -682,7 +225,7 @@ const DetailFakturPembelian = () => {
                                     id="startDate"
                                     className="form-control"
                                     type="date"
-                                    value="sds"
+                                    value={dataHeader.date}
                                     disabled
                                 />
                             </div>
@@ -694,7 +237,7 @@ const DetailFakturPembelian = () => {
                                     id="startDate"
                                     className="form-control"
                                     type="text"
-                                    value="sds"
+                                    value={grup}
                                     disabled
                                 />
                             </div>
@@ -706,7 +249,7 @@ const DetailFakturPembelian = () => {
                                     id="startDate"
                                     className="form-control"
                                     type="text"
-                                    value="sds"
+                                    value={dataHeader.code}
                                     disabled
                                 />
                             </div>
@@ -718,23 +261,23 @@ const DetailFakturPembelian = () => {
                                     id="startDate"
                                     className="form-control"
                                     type="text"
-                                    value="sds"
+                                    value={dataSupplier.name}
                                     disabled
                                 />
                             </div>
                         </div>
-                        <div className="row mb-3">
+                        {/* <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Alamat</label>
                             <div className="col-sm-7">
                                 <input
                                     id="startDate"
                                     className="form-control"
                                     type="text"
-                                    value="sds"
+                                    value={dataSupplier.address}
                                     disabled
                                 />
                             </div>
-                        </div>
+                        </div> */}
                         <div className="row mb-3" style={{ display: impor ? "flex" : "none" }}>
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label" >No. Kontainer</label>
                             <div className="col-sm-7">
@@ -805,7 +348,7 @@ const DetailFakturPembelian = () => {
                 <div className="text-title text-start mb-4">
                     <div className="row">
                         <div className="col">
-                            <h4 className="title fw-normal">Daftar Pesanan</h4>
+                            <h4 className="title fw-normal">Daftar Penerimaan Pesanan</h4>
                         </div>
                         {/* <div className="col text-end me-2">
                             <Button
@@ -857,12 +400,12 @@ const DetailFakturPembelian = () => {
                         </div> */}
                     </div>
                     <Table
-                        components={components}
+                        // components={components}
                         rowClassName={() => 'editable-row'}
                         bordered
                         pagination={false}
-                        dataSource={TableData}
-                        columns={columns}
+                        dataSource={dataTBPenerimaan}
+                        columns={defaultColumns}
                         onChange={(e) => setProduct(e.target.value)}
                     />
                 </div>
@@ -870,7 +413,7 @@ const DetailFakturPembelian = () => {
                     <div className="row mb-3">
                         <label htmlFor="inputNama3" className="col-sm-2 ps-3 col-form-label">Biaya Lain</label>
                         <div className="col-sm-5">
-                            <ReactSelect
+                            {/* <ReactSelect
                                 className="basic-single"
                                 placeholder="Pilih Akun..."
                                 classNamePrefix="select"
@@ -880,15 +423,15 @@ const DetailFakturPembelian = () => {
                                 getOptionValue={(e) => e.value}
                                 options={optionsType}
                                 onChange={(e) => setFakturType(e.value)}
-                            />
+                            /> */}
                         </div>
                     </div>
                     <Table
-                        components={components}
+                        // components={components}
                         rowClassName={() => 'editable-row'}
                         bordered
                         pagination={false}
-                        dataSource={TableData}
+                        // dataSource={TableData}
                         columns={columAkun}
                         onChange={(e) => setProduct(e.target.value)}
                     />
@@ -897,7 +440,7 @@ const DetailFakturPembelian = () => {
                     <div className="row mb-3">
                         <label htmlFor="inputNama3" className="col-sm-2 ps-3 col-form-label">Credit Note</label>
                         <div className="col-sm-5">
-                            <ReactSelect
+                            {/* <ReactSelect
                                 className="basic-single"
                                 placeholder="Pilih Credit Note..."
                                 classNamePrefix="select"
@@ -907,15 +450,15 @@ const DetailFakturPembelian = () => {
                                 getOptionValue={(e) => e.value}
                                 options={optionsType}
                                 onChange={(e) => setFakturType(e.value)}
-                            />
+                            /> */}
                         </div>
                     </div>
                     <Table
-                        components={components}
+                        // components={components}
                         rowClassName={() => 'editable-row'}
                         bordered
                         pagination={false}
-                        dataSource={TableData}
+                        // dataSource={TableData}
                         columns={columAkun}
                         onChange={(e) => setProduct(e.target.value)}
                     />
@@ -989,29 +532,7 @@ const DetailFakturPembelian = () => {
                         </div>
                     </div>
                 </div>
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
-                    <button
-                        type="button"
-                        className="btn btn-success rounded m-1"
-                        value="Draft"
-                        onClick={handleDraft}
-                    >
-                        Simpan
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-primary rounded m-1"
-                        value="Submitted"
-                        onClick={handleSubmit}
-                    >
-                        Submit
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-warning rounded m-1">
-                        Cetak
-                    </button>
-                </div>
+
             </form>
         </>
     )

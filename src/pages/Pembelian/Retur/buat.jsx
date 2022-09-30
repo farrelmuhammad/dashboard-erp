@@ -2,7 +2,7 @@ import './form.css'
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Url from "../../../Config";;
+import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
 import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd'
@@ -13,86 +13,6 @@ import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import ReactSelect from 'react-select';
 import { useSelector } from 'react-redux';
-
-const EditableContext = createContext(null);
-
-const EditableRow = ({ index, ...props }) => {
-    const [form] = Form.useForm();
-    return (
-        <Form form={form} component={false}>
-            <EditableContext.Provider value={form}>
-                <tr {...props} />
-            </EditableContext.Provider>
-        </Form>
-    );
-};
-
-const EditableCell = ({
-    title,
-    editable,
-    children,
-    dataIndex,
-    record,
-    handleSave,
-    ...restProps
-}) => {
-    const [editing, setEditing] = useState(false);
-    const inputRef = useRef(null);
-    const form = useContext(EditableContext);
-    useEffect(() => {
-        if (editing) {
-            inputRef.current.focus();
-        }
-    }, [editing]);
-
-    const toggleEdit = () => {
-        setEditing(!editing);
-        form.setFieldsValue({
-            [dataIndex]: record[dataIndex],
-        });
-    };
-
-    const save = async () => {
-        try {
-            const values = await form.validateFields();
-            toggleEdit();
-            handleSave({ ...record, ...values });
-        } catch (errInfo) {
-            console.log('Save failed:', errInfo);
-        }
-    };
-
-    let childNode = children;
-
-    if (editable) {
-        childNode = editing ? (
-            <Form.Item
-                style={{
-                    margin: 0,
-                }}
-                name={dataIndex}
-                rules={[
-                    {
-                        required: true,
-                        message: `${title} is required.`,
-                    },
-                ]}
-            >
-                {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
-            </Form.Item>
-        ) : (
-            <div
-                className="editable-cell-value-wrap"
-                onClick={toggleEdit}
-            >
-                {children}
-            </div>
-        );
-    }
-
-    return <td {...restProps}>{childNode}</td>;
-};
 
 const BuatReturPembelian = () => {
     // const auth.token = jsCookie.get("auth");
@@ -122,10 +42,7 @@ const BuatReturPembelian = () => {
     const [totalPpn, setTotalPpn] = useState("");
     const [grandTotal, setGrandTotal] = useState("");
     const [checked, setChecked] = useState("");
-
-    const [selectedValue, setSelectedCustomer] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
-
     const [term, setTerm] = useState();
     const [muatan, setMuatan] = useState();
     const [ctn, setCtn] = useState();
@@ -133,20 +50,110 @@ const BuatReturPembelian = () => {
     const [kontainer, setKontainer] = useState();
     const [referensi, setReferensi] = useState()
 
-    const handleChangeCustomer = (value) => {
-        setSelectedCustomer(value);
-        setCustomer(value.id);
-        setAddress(value.customer_addresses)
+    const [selectedValue, setSelectedCustomer] = useState(null);
+    const [selectedSupplier, setSelectedSupplier] = useState(null);
+    const [selectedFaktur, setSelectedFaktur] = useState(null);
+    const [fakturId, setFakturId] = useState();
+    const [supplierId, setSupplierId] = useState()
+    const [tampilPilihProduk, setTampilPilihProduk] = useState(false)
+    const [tampilPilihFaktur, setTampilPilihFaktur] = useState(false)
+    const [dataFaktur, setDataFaktur] = useState([])
+
+
+    // supplier 
+    const handleChangeSupplier = (value) => {
+        setSelectedSupplier(value);
+        setTampilPilihFaktur(true)
+        setSupplierId(value.id);
     };
-    // load options using API call
-    const loadOptionsCustomer = (inputValue) => {
-        return fetch(`${Url}/select_suppliers?limit=10&nama=${inputValue}`, {
+    const loadOptionsSupplier = (inputValue) => {
+        return fetch(`${Url}/select_suppliers?nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
         }).then((res) => res.json());
     };
+
+    // faktur 
+    useEffect(() => {
+        axios.get(`${Url}/select_purchase_invoices/all?status=Submitted&id_pemasok=${supplierId}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => {
+            let tmp = []
+            for (let i = 0; i < res.data.length; i++) {
+
+                tmp.push({
+                    value: res.data[i].id,
+                    label: res.data[i].code,
+                    info: res.data[i]
+                });
+            }
+
+            setDataFaktur(tmp)
+        }
+        );
+    }, [supplierId])
+
+    // produkFaktur 
+    const [produkFaktur, setProdukFaktur] = useState([])
+    useEffect(() => {
+        axios.get(`${Url}/select_purchase_invoices/all?id=${fakturId}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => {
+            let tmp = []
+            let data = res.data[0]
+            for (let x = 0; x < data.purchase_invoice_details.lenght; x++) {
+                tmp.push({
+                    value: data.purchase_invoice_details[x].id,
+                    label: data.purchase_invoice_details[x].product_name,
+                    info: data.purchase_invoice_details[x],
+                })
+            }
+
+
+            setProdukFaktur(tmp)
+        }
+        );
+    }, [fakturId])
+
+    const handleChangeFaktur = (value) => {
+
+        setSelectedFaktur(value);
+        setFakturId(value.value);
+        setTampilPilihProduk(true)
+    };
+
+    // cari pesanan dari faktur 
+    const [tampilProduk, setTampilProduk] = useState([])
+    const handleChangePilih = (value) => {
+        // console.log(value)
+        // let newData = [...tampilProduk];
+
+        // newData.push({
+        //     id: value.info.id,
+        //     code: value.info.code,
+        //     name: value.info.name,
+        //     jumlah: 0,
+        // })
+        // setTampilProduk(newData);
+    };
+    // const loadOptionsPilih = (inputValue) => {
+    //     return fetch(`${Url}/select_purchase_invoices/all?id=${fakturId}`, {
+    //         headers: {
+    //             Accept: "application/json",
+    //             Authorization: `Bearer ${auth.token}`,
+    //         },
+    //     }).then((res) => res.json());
+    // };
+
+
 
     useEffect(() => {
         // getSalesOrderDetails()
@@ -200,7 +207,7 @@ const BuatReturPembelian = () => {
             title: 'Nama Produk',
             dataIndex: 'code',
         },
-       
+
         {
             title: 'actions',
             dataIndex: 'address',
@@ -380,28 +387,7 @@ const BuatReturPembelian = () => {
             }
         })
     }
-    const components = {
-        body: {
-            row: EditableRow,
-            cell: EditableCell,
-        },
-    };
-    const columns = defaultColumns.map((col) => {
-        if (!col.editable) {
-            return col;
-        }
 
-        return {
-            ...col,
-            onCell: (record) => ({
-                record,
-                editable: col.editable,
-                dataIndex: col.dataIndex,
-                title: col.title,
-                handleSave,
-            }),
-        };
-    });
 
     const handleCheck = (event) => {
         var updatedList = [...product];
@@ -774,12 +760,29 @@ const BuatReturPembelian = () => {
                                     placeholder="Pilih Supplier..."
                                     cacheOptions
                                     defaultOptions
-                                    value={selectedValue}
+                                    value={selectedSupplier}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsCustomer}
-                                    onChange={handleChangeCustomer}
+                                    loadOptions={loadOptionsSupplier}
+                                    onChange={handleChangeSupplier}
                                 />
+                            </div>
+                        </div>
+                        <div className="row mb-3" style={{ display: tampilPilihFaktur ? "flex" : "none" }}>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label" >Faktur</label>
+                            <div className="col-sm-7">
+                                <ReactSelect
+                                    className="basic-single"
+                                    placeholder="Pilih Faktur..."
+                                    classNamePrefix="select"
+                                    isLoading={isLoading}
+                                    isSearchable
+                                    getOptionLabel={(e) => e.label}
+                                    getOptionValue={(e) => e.value}
+                                    options={dataFaktur}
+                                    onChange={(e) => handleChangeFaktur(e)}
+                                />
+
                             </div>
                         </div>
                         <div className="row mb-3">
@@ -793,36 +796,7 @@ const BuatReturPembelian = () => {
                                 />
                             </div>
                         </div>
-                        {/* <div className="row mb-3" style={{ display: impor ? "flex" : "none" }}>
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label" >No. Kontainer</label>
-                            <div className="col-sm-7">
-                                <input
-                                    type="Nama"
-                                    className="form-control"
-                                    id="inputNama3"
-                                    onChange={(e) => setKontainer(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                        <div className="row mb-3" style={{ display: impor ? "flex" : "none" }}>
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label" >Term</label>
-                            <div className="col-sm-7">
-                                <select
-                                    onChange={(e) => setTerm(e.target.value)}
-                                    id="grupSelect"
-                                    className="form-select"
-                                >
-                                    <option>Pilih Term</option>
-                                    <option value="CIF">
-                                        CIF
-                                    </option>
-                                    <option value="CFR">
-                                        CFR
-                                    </option>
 
-                                </select>
-                            </div>
-                        </div> */}
                     </div>
                     <div className="col">
                         <div className="row mb-3" style={{ display: impor ? "flex" : "none" }}>
@@ -876,28 +850,21 @@ const BuatReturPembelian = () => {
                         <div className="col">
                             <h4 className="title fw-normal">Daftar Pesanan</h4>
                         </div>
-                        <div className="col text-end me-2">
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
-                            />
-
-                        </div>
                     </div>
-                    <div className="row mt-4  mb-3">
-                        <label htmlFor="inputNama3" className="col-sm-2 ps-3 col-form-label">Cari Pesanan</label>
+                    <div className="row mt-4  mb-3" style={{ display: tampilPilihProduk ? "flex" : "none" }}>
+                        <label htmlFor="inputNama3" className="col-sm-2 ps-3 col-form-label">Cari Produk</label>
                         <div className="col-sm-5">
+
                             <ReactSelect
                                 className="basic-single"
-                                placeholder="Pilih Pesanan..."
+                                placeholder="Pilih Produk..."
                                 classNamePrefix="select"
                                 isLoading={isLoading}
                                 isSearchable
                                 getOptionLabel={(e) => e.label}
                                 getOptionValue={(e) => e.value}
-                                options={optionsType}
-                                onChange={() => setModal2Visible(true)}
+                                options={produkFaktur}
+                                onChange={(e) => handleChangePilih(e)}
                             />
                         </div>
                         <Modal
@@ -906,15 +873,7 @@ const BuatReturPembelian = () => {
                             visible={modal2Visible}
                             onCancel={() => setModal2Visible(false)}
                             width={800}
-                            // footer={[
-                            //     <Button
-                            //         key="submit"
-                            //         type="primary"
 
-                            //     >
-                            //         Tambah
-                            //     </Button>,
-                            // ]}
                             footer={null}
                         >
                             <div className="text-title text-start">
@@ -943,12 +902,12 @@ const BuatReturPembelian = () => {
                         </Modal>
                     </div>
                     <Table
-                        components={components}
+                        // components={components}
                         rowClassName={() => 'editable-row'}
                         bordered
                         pagination={false}
                         dataSource={TableData}
-                        columns={columns}
+                        // columns={columns}
                         onChange={(e) => setProduct(e.target.value)}
                     />
                 </div>

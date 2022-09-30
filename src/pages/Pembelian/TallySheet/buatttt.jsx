@@ -2,7 +2,7 @@ import './form.css'
 import jsCookie from "js-cookie";
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Url from "../../../Config";;
+import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
 import { Badge, Button, Checkbox, Dropdown, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tag } from 'antd'

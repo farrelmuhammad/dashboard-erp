@@ -2,7 +2,7 @@ import './form.css'
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Url from "../../../Config";;
+import Url from '../../../Config';
 import axios from 'axios';
 import Select from "react-select";
 import { Button, Checkbox, Form, Input, InputNumber, Modal, Space, Table, Tag } from 'antd'
@@ -436,7 +436,7 @@ const BuatPesananPembelian = () => {
             align: 'center',
             render: (text, record, index) => {
                 return <div class="input-group input-group-sm mb-3">
-                    <input style={{ width: "30px" }} type="text" class="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} defaultValue={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
+                    <input style={{ width: "30px" }} type="text" class="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} value={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
                             <select
@@ -567,24 +567,38 @@ const BuatPesananPembelian = () => {
         var updatedList = [...product];
         if (event.target.checked) {
             updatedList = [...product, event.target.value];
+            let tmp = [];
+            let tmpJumlah = [];
+            for (let i = 0; i < updatedList.length; i++) {
+                if (updatedList[i].id == event.target.value.id) {
+                    tmp[i] = '%';
+                    tmpJumlah[i] = 0;
+                    
+                }
+                else {
+                    tmp[i] = pilihanDiskon[i];
+                    tmpJumlah[i] = jumlahDiskon[i]
+                   
+                }
+
+            }
+            setPilihanDiskon(tmp);
+            setJumlahDiskon(tmpJumlah)
         } else {
-            for (let i = 0; i < product.length; i++) {
-                if (updatedList[i] == event.target.value) {
+            console.log(updatedList)
+            for (let i = 0; i < updatedList.length; i++) {
+                if (updatedList[i].id == event.target.value.id) {
                     updatedList.splice(i, 1);
+                    jumlahDiskon.splice(i, 1);
+                    pilihanDiskon.splice(i, 1)
                 }
             }
 
+            console.log(jumlahDiskon)
+
         }
         setProduct(updatedList);
-        let tmp = [];
-        let tmpJumlah = [];
-        for (let i = 0; i < updatedList.length; i++) {
-            tmp[i] = '%';
-            tmpJumlah[i] = 0;
-        }
-        setPilihanDiskon(tmp);
-        setJumlahDiskon(tmpJumlah)
-        console.log(tmp)
+
     };
 
     const getNewCodePurchase = async () => {
@@ -874,7 +888,7 @@ const BuatPesananPembelian = () => {
                                     </option>
 
                                 </select>
-                               
+
                             </div>
                         </div>
 
@@ -890,8 +904,8 @@ const BuatPesananPembelian = () => {
                                     type="date"
                                     onChange={(e) => setTanggalAwal(e.target.value)}
                                 />
-                                 <div className='ms-2 me-2' style={{paddingTop: "13px!important"}}>s.d</div>
-                               
+                                <div className='ms-2 me-2' style={{ paddingTop: "13px!important" }}>s.d</div>
+
                                 <input
                                     id="startDate"
                                     className="form-control"
@@ -910,7 +924,7 @@ const BuatPesananPembelian = () => {
                             />
                         </div>
 
-                        
+
                         <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Catatan</label>
                         <div className="row mb-3">
                             <div className="col-sm-10">

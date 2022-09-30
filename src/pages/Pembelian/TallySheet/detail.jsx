@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
 import Search from 'antd/lib/transfer/search'
 import axios from 'axios'
-import Url from "../../../Config";;
+import Url from '../../../Config';
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import ReactDataSheet from 'react-datasheet'
@@ -82,7 +82,7 @@ export const DetailTallySheet = () => {
                                     }
                                     else if (y<= getData.tally_sheet_details[i].boxes.length && x == 1) {
                                         kolom.push(
-                                            { value: getData.tally_sheet_details[i].boxes[y-1].quantity , readOnly: true}
+                                            { value: getData.tally_sheet_details[i].boxes[y-1].quantity.replace('.', ',') , readOnly: true}
                                         );
                                     }
                                     else {
@@ -111,7 +111,9 @@ export const DetailTallySheet = () => {
             });
     }, []);
 
+    const [quantityPO, setQuantityPO] = useState("0")
     function klikTampilSheet(indexPO) {
+        setQuantityPO(detailTallySheet[indexPO].purchase_order_qty)
         console.log(indexPO)
         console.log(data)
         setIndexPO(indexPO);
@@ -171,7 +173,7 @@ export const DetailTallySheet = () => {
             [...detailTallySheet.map((item, i) => ({
                 code: item.purchase_order.code,
                 product_name: item.product_name,
-                quantity: item.boxes_quantity,
+                quantity: item.boxes_quantity.replace('.', ','),
                 unit: item.boxes_unit,
                 box:
                     <>
@@ -203,7 +205,7 @@ export const DetailTallySheet = () => {
                                             <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
                                             <div className="col-sm-3">
                                                 <input
-                                                    value={detailTallySheet[indexPO].boxes_quantity}
+                                                    value={quantityPO.replace('.', ',')}
                                                     type="Nama"
                                                     className="form-control"
                                                     id="inputNama3"
@@ -227,7 +229,7 @@ export const DetailTallySheet = () => {
                                             <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
                                             <div className="col-sm-3">
                                                 <input
-                                                    value={detailTallySheet[indexPO].boxes_quantity}
+                                                    value={detailTallySheet[indexPO].boxes_quantity.replace('.', ',')}
                                                     type="Nama"
                                                     className="form-control"
                                                     id="inputNama3"

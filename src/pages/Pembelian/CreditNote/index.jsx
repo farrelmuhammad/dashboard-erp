@@ -3,17 +3,18 @@ import { Link } from 'react-router-dom'
 import jsCookie from 'js-cookie'
 import Url from '../../../Config'
 import axios from 'axios'
-import PelunasanTable from '../../../components/moleculles/PelunasanTable'
+import TallyTable from '../../../components/moleculles/TallyTable'
 import { PlusOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
+import TallyPembelianTable from '../../../components/moleculles/TallyPembelianTable'
+import PenerimaanBarangTable from '../../../components/moleculles/PenerimaanBarangTable'
 import { useSelector } from 'react-redux'
-import PembayaranPembelianTable from '../../../components/moleculles/PembayaranPembelianTable'
+import CreditNoteTable from '../../../components/moleculles/CreditNoteTable'
 
-const PembayaranPembelian = () => {
+const CreditNote = () => {
   // const token = jsCookie.get('auth')
   const [userAccess, setUserAccess] = useState([])
   const auth = useSelector(state => state.auth);
-
 
   useEffect(() => {
     axios.get(`${Url}/get_user_access_rights?ability_name=create-tax`, {
@@ -33,13 +34,13 @@ const PembayaranPembelian = () => {
       <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
         <div className="row">
           <div className="col text-title text-start">
-            <h3 className="title fw-bold">Pembayaran Pembelian</h3>
+            <h3 className="title fw-bold">Credit Note</h3>
           </div>
           {userAccess?.map(d => {
             if (d.ability_name === "create-tax") {
               return (
                 <div className="col button-add text-end me-3">
-                  <Link to="/pembayaranpembelian/buat">
+                  <Link to="/creditnote/buat">
                     <Button
                       type="primary"
                       icon={<PlusOutlined />}
@@ -50,7 +51,7 @@ const PembayaranPembelian = () => {
             }
           })}
         </div>
-        <PembayaranPembelianTable />
+        <CreditNoteTable />
       </div>
     )
   } else {
@@ -58,9 +59,9 @@ const PembayaranPembelian = () => {
       <div className="text-title text-start">
         <h3 className="title fw-bold">Daftar Pajak</h3>
       </div>
-      <PembayaranPembelianTable />
+      <CreditNoteTable />
     </div>
   }
 }
 
-export default PembayaranPembelian;
+export default CreditNote;

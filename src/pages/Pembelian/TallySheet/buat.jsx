@@ -3,7 +3,7 @@ import React from "react";
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Url from "../../../Config";;
+import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
 import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tag } from 'antd'
@@ -164,7 +164,8 @@ const BuatTallySheet = () => {
                 for (let a = 1; a < data[x][i].length; a++) {
                     for (let b = 1; b < data[x][i][a].length; b++) {
                         if (data[x][i][a][b].value != 0) {
-                            total[i] = Number(total[i]) + Number(data[x][i][a][b].value);
+                            total[i] = Number(total[i]) + Number(data[x][i][a][b].value.replace(',', '.'));
+
                         }
                     }
                 }
@@ -172,6 +173,27 @@ const BuatTallySheet = () => {
             arrTotal[x] = total;
         }
         setTotalTallySheet(arrTotal);
+
+        let arrStatus = []
+        for (let x = 0; x < product.length; x++) {
+
+            let stts = []
+            for (let i = 0; i < product[x].purchase_order_details.length; i++) {
+                // status 
+                let qtyPO = product[x].purchase_order_details[i].quantity;
+                let qtySebelumnya = product[x].purchase_order_details[i].tally_sheets_qty;
+                if (arrTotal[x][i] + qtySebelumnya >= qtyPO) {
+                    stts.push('Done')
+                }
+                else if (arrTotal[x][i] + qtySebelumnya < qtyPO) {
+                    stts.push('Next Delivery')
+                }
+
+            }
+            arrStatus[x] = stts;
+        }
+        console.log(arrStatus)
+        setStatusPO(arrStatus)
     }, [data]);
 
 
@@ -266,6 +288,7 @@ const BuatTallySheet = () => {
                         for (let a = 1; a < data[x][i].length; a++) {
                             for (let b = 1; b < data[x][i][a].length; b++) {
                                 if (data[x][i][a][b].value != 0) {
+                                    // kuantitas.push([data[x][i][a][b].value.replace(',', '.')]);
                                     kuantitas.push([data[x][i][a][b].value]);
                                     total[i] = Number(total[i]) + Number(1);
                                 }
@@ -297,11 +320,8 @@ const BuatTallySheet = () => {
                     }
                     else {
 
+                        // tempKuantitas.push(kuantitasBox[x][i].replace(',', '.'));
                         tempKuantitas.push(kuantitasBox[x][i]);
-                        // for(let b=0; b<kuantitasBox[x][i].length; b++){
-                        //     kuantitas.push(kuantitasBox[x][i][b]);
-                        // }
-                        // kuantitas.push(kuantitasBox[x][i]);
                     }
                     total.push(totalBox[x][i]);
 
@@ -320,8 +340,6 @@ const BuatTallySheet = () => {
         cell.readOnly ? e.preventDefault() : null;
 
     function klikTambahBaris() {
-        console.log(indexPO)
-        console.log(data)
         let hasilData = [];
         let tmpData = [];
         for (let x = 0; x < product.length; x++) {
@@ -355,7 +373,7 @@ const BuatTallySheet = () => {
                 tmpData.push(data[x]);
             }
         }
-        console.log(tmpData);
+
         setData(tmpData);
     }
 
@@ -389,7 +407,7 @@ const BuatTallySheet = () => {
             }
         }
 
-        console.log(tmpData);
+
         setData(tmpData);
 
     }
@@ -401,6 +419,7 @@ const BuatTallySheet = () => {
         let stts = [];
         let arrStatus = []
         let qtyPO = product[idxPesanan].purchase_order_details[i].quantity;
+        let qtySebelumnya = product[idxPesanan].purchase_order_details[i].tally_sheets_qty;
 
         for (let x = 0; x < product.length; x++) {
             tmp = [];
@@ -409,11 +428,11 @@ const BuatTallySheet = () => {
                     if (i === indexPO) {
                         tmp[i] = 0;
                         tmp[i] = totalTallySheet[x][i];
-                        
-                        if(totalTallySheet[x][i] >= qtyPO){
+
+                        if (totalTallySheet[x][i] + qtySebelumnya >= qtyPO) {
                             stts[i] = 'Done'
                         }
-                        else if(totalTallySheet[x][i] < qtyPO){
+                        else if (totalTallySheet[x][i] + qtySebelumnya < qtyPO) {
                             stts[i] = 'Next Delivery'
                         }
                     }
@@ -430,25 +449,38 @@ const BuatTallySheet = () => {
                 arrStatus.push(statusPO[x])
             }
         }
-        console.log(arrStatus[idxPesanan][indexPO])
+
         setQuantity(arrtmp);
         setStatusPO(arrStatus);
         setModal2Visible2(false)
     }
 
     function hapusIndexProduct(i, idx) {
-        setLoadingTable(true);
-        console.log(product)
+        console.log(statusPO)
+        setLoadingTable(true)
         for (let x = 0; x < product.length; x++) {
             for (let y = 0; y < product[x].purchase_order_details.length; y++) {
-                console.log(product[x].purchase_order_details.length)
                 if (x == i && y == idx) {
+                    console.log(product[x].purchase_order_details.length);
+                    console.log(product[x].purchase_order_details);
                     if (product[x].purchase_order_details.length == 1) {
                         data.splice(x, 1)
                         quantity.splice(x, 1)
                         totalBox.splice(x, 1)
                         product.splice(x, 1);
+                        // setProduct([]);
                         statusPO.splice(x, 1)
+
+                        setIdxPesanan(0)
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: 'Data berhasil dihapus',
+                        }).then(() => {
+                            console.log(statusPO)
+                            setLoadingTable(false)
+                        });
+
                     }
                     else {
                         data[x].splice(y, 1)
@@ -456,23 +488,30 @@ const BuatTallySheet = () => {
                         quantity[x].splice(y, 1)
                         totalBox[x].splice(y, 1)
                         product[x].purchase_order_details.splice(y, 1);
+
+                        setIdxPesanan(0)
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: 'Data berhasil dihapus',
+                        }).then(() => {
+                            console.log(statusPO)
+                            setLoadingTable(false)
+                        });
+
                     }
-                    setIdxPesanan(0)
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil',
-                        text: 'Data berhasil dihapus',
-                    }).then(() => setLoadingTable(false));
+
                 }
             }
 
+
         }
+
 
     }
 
     function klikTampilSheet(indexProduct, indexPO, productName, quantity) {
-        console.log(indexProduct)
-        setQuantityPO(quantity)
+        setQuantityPO(quantity.replace('.', ','))
         setProductName(productName)
         setIndexPO(indexPO);
         setIdxPesanan(indexProduct);
@@ -530,10 +569,10 @@ const BuatTallySheet = () => {
         const dataPurchase =
             [...product[record.key].purchase_order_details.map((item, i) => ({
                 product_name: item.product_name,
-                quantity: quantity[record.key][i].toFixed(2),
+                quantity: quantity[record.key][i].toFixed(2).replace('.', ','),
                 unit: item.unit,
-                status: statusPO[record.key][i] == '' ?  <Tag color="red">Waiting</Tag> : statusPO[record.key][i] === 'Next Delivery' ? <Tag color="orange">{statusPO[record.key][i]}</Tag> : statusPO[record.key][i] === 'Done' ?  <Tag color="green">{statusPO[record.key][i]}</Tag> : null
-                , 
+                status: statusPO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusPO[record.key][i] === 'Next Delivery' ? <Tag color="orange">{statusPO[record.key][i]}</Tag> : statusPO[record.key][i] === 'Done' ? <Tag color="green">{statusPO[record.key][i]}</Tag> : null
+                ,
                 box:
                     <>
                         <a onClick={() => klikTampilSheet(record.key, i, item.product_name, item.quantity)}>
@@ -596,7 +635,7 @@ const BuatTallySheet = () => {
                                             <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
                                             <div className="col-sm-3">
                                                 <input
-                                                    value={totalTallySheet[idxPesanan][indexPO].toFixed(2)}
+                                                    value={totalTallySheet[idxPesanan][indexPO].toFixed(2).replace('.', ',')}
                                                     type="Nama"
                                                     className="form-control"
                                                     id="inputNama3"
@@ -622,7 +661,7 @@ const BuatTallySheet = () => {
                                             onClick={() => klikTambahBaris()}
                                         />
                                         {
-                                            data[idxPesanan][indexPO].length-2 > 0 ?
+                                            data[idxPesanan][indexPO].length - 2 > 0 ?
                                                 <Button
                                                     className='ms-2'
                                                     size='small'
@@ -742,14 +781,14 @@ const BuatTallySheet = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_purchase_orders?kode=${query}&id_pemasok=${supplier}&status=Submitted`, {
+            const res = await axios.get(`${Url}/tally_sheet_ins_available_purchase_orders?kode=${query}&id_pemasok=${supplier}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
-            setGetDataDetailPO(res.data.map(d => d.purchase_order_details))
+            setGetDataProduct(res.data.data);
+            setGetDataDetailPO(res.data.data.map(d => d.purchase_order_details))
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -792,7 +831,6 @@ const BuatTallySheet = () => {
     ];
 
     const handleCheck = (event) => {
-        console.log(event.target.value)
         var updatedList = [...product];
         let arrData = [];
         let arrBox = [];
@@ -802,6 +840,13 @@ const BuatTallySheet = () => {
         if (event.target.checked) {
             updatedList = [...product, event.target.value];
 
+
+            //masukkan status lagi 
+            // let arrStatus = []
+            // let arrTotal = [];
+
+            // setStatusPO(arrStatus)
+
             // tambah data pas di checked 
             if (data.length == 0) {
                 for (let i = 0; i < updatedList.length; i++) {
@@ -810,6 +855,7 @@ const BuatTallySheet = () => {
                     let qty = [];
                     let stts = []
                     let tempBox = [];
+
                     for (let x = 0; x < updatedList[i].purchase_order_details.length; x++) {
                         tempData.push([
                             [
@@ -956,10 +1002,11 @@ const BuatTallySheet = () => {
                                 { value: '' },
                             ]
                         ]);
+                        stts.push('Next Delivery')
                         tempKuantitas.push(0);
                         qty.push(0);
                         tempBox.push(0);
-                        stts.push('')
+
 
                     }
                     arrStatus.push(stts)
@@ -971,40 +1018,7 @@ const BuatTallySheet = () => {
             }
             else {
 
-                for (let i = 0; i < updatedList.length; i++) {
-                    let tempKuantitas = [];
-                    if (i == updatedList.length - 1) {
-                        for (let x = 0; x < updatedList[i].purchase_order_details.length; x++) {
-                            tempKuantitas.push(0);
-                        }
-                        arrKuantitas[i] = tempKuantitas;
-                    }
-                    else {
-                        arrKuantitas[i] = kuantitasBox[i]
-                    }
-                }
-
-                for (let i = 0; i < updatedList.length; i++) {
-                    let qty = [];
-                    let tempBox = [];
-                    let stts = [];
-                    if (i == updatedList.length - 1) {
-                        for (let x = 0; x < updatedList[i].purchase_order_details.length; x++) {
-                            qty.push(0);
-                            tempBox.push(0);
-                            stts.push('')
-                        }
-                        arrStatus[i] = stts;
-                        arrqty[i] = qty;
-                        arrBox[i] = tempBox;
-                    }
-                    else {
-                        arrStatus[i] = statusPO[i]
-                        arrBox[i] = totalBox[i];
-                        arrqty[i] = quantity[i]
-                    }
-                }
-
+                // setting data 
                 for (let i = 0; i < updatedList.length; i++) {
                     let tempData = [];
                     if (i == updatedList.length - 1) {
@@ -1164,20 +1178,74 @@ const BuatTallySheet = () => {
 
                 }
 
+                // memasukkan ulang kuantitas box 
+                for (let i = 0; i < updatedList.length; i++) {
+                    let tempKuantitas = [];
+                    if (i == updatedList.length - 1) {
+                        for (let x = 0; x < updatedList[i].purchase_order_details.length; x++) {
+                            tempKuantitas.push(0);
+                        }
+                        arrKuantitas[i] = tempKuantitas;
+                    }
+                    else {
+                        arrKuantitas[i] = kuantitasBox[i]
+                    }
+                }
+
+                // memasukkan jumlah box, dan jumlah keseluruhan box || status
+                for (let i = 0; i < updatedList.length; i++) {
+                    let qty = [];
+                    let tempBox = [];
+                    let stts = [];
+
+                    // ini jika data yang bertambah 
+                    if (i == updatedList.length - 1) {
+                        for (let x = 0; x < updatedList[i].purchase_order_details.length; x++) {
+                            qty.push(0);
+                            tempBox.push(0);
+                            stts.push('Next Delivery')
+                        }
+                        arrStatus[i] = stts;
+                        arrqty[i] = qty;
+                        arrBox[i] = tempBox;
+                    }
+                    else {
+                        // arrStatus[i] = statusPO[i]
+
+                        // for (let x = 0; x < updatedList.length; x++) {
+                        //     let stts = []
+                        //     for (let i = 0; i < updatedList[x].purchase_order_details.length; i++) {
+                        //         // status 
+
+                        //         let qtyPO = updatedList[x].purchase_order_details[i].quantity;
+                        //         let qtySebelumnya = updatedList[x].purchase_order_details[i].tally_sheets_qty;
+
+                        //         stts.push('Next Delivery')
+
+                        //     }
+                        // }
+
+                        arrStatus[i] = statusPO[i];
+                        arrBox[i] = totalBox[i];
+                        arrqty[i] = quantity[i]
+                    }
+                }
+
+
+
             }
             setKuantitasBox(arrKuantitas);
             setData(arrData);
             setTotalBox(arrBox);
+            console.log(arrStatus)
             setStatusPO(arrStatus);
             setQuantity(arrqty);
             setGetDataDetailPO(updatedList.map(d => d.purchase_order_details))
 
         }
         else {
-
-            // console.log(data);
-            // console.log(data.length)
-            // console.log("proses")
+            console.log(updatedList)
+            console.log(event.target.value)
             for (let i = 0; i < updatedList.length; i++) {
                 if (updatedList[i] == event.target.value) {
                     updatedList.splice(i, 1);
@@ -1186,18 +1254,15 @@ const BuatTallySheet = () => {
                     statusPO.splice(i, 1);
                     totalBox.splice(i, 1);
                     quantity.splice(i, 1);
+                    console.log("harusnya kehapus")
                 }
             }
-
-            // console.log(data);
-            // console.log(data.length)
+            console.log(statusPO)
             setIdxPesanan(0)
-            // console.log(updatedList)
             setGetDataDetailPO(updatedList.map(d => d.purchase_order_details))
 
         }
         setProduct(updatedList);
-        // setProduct 
     };
 
     const getNewCodeTally = async () => {
@@ -1436,7 +1501,7 @@ const BuatTallySheet = () => {
                                 onClick={() => setModal2Visible(true)}
                             />
                             <Modal
-                                title="Tambah Produk"
+                                title="Tambah Pesanan"
                                 centered
                                 visible={modal2Visible}
                                 onCancel={() => setModal2Visible(false)}
