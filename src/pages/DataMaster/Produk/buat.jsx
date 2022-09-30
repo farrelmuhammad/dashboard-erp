@@ -7,7 +7,7 @@ import Url from "../../../Config";
 import "./form.css";
 import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
-import { Button } from "antd";
+import { Button, Switch } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 
 const BuatProduk = () => {
@@ -28,6 +28,7 @@ const BuatProduk = () => {
   const [discount, setDiscount] = useState('');
   const [taxes_id, setTaxes_id] = useState('');
   const [status, setStatus] = useState('');
+  const [checked, setChecked] = useState(false);
   const navigate = useNavigate();
 
   const [getProduct, setGetProduct] = useState();
@@ -127,7 +128,7 @@ const BuatProduk = () => {
 
   const handleChangePackaging = (value) => {
     setSelectedPackaging(value);
-    setPackaging_id(value.id);
+    setPackaging_id(value.name);
   };
   // load options using API call
   const loadOptionsPackaging = (inputValue) => {
@@ -142,8 +143,8 @@ const BuatProduk = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const userData = new FormData();
-    userData.append("nama", name);
-    userData.append("nama_alias", alias);
+    // userData.append("nama", name);
+    // userData.append("nama_alias", alias);
     userData.append("bagian", pieces_id);
     userData.append("grup", group);
     userData.append("kategori", category_id);
@@ -157,6 +158,11 @@ const BuatProduk = () => {
     userData.append("pajak", taxes_id);
     userData.append("jenis_kemasan", packaging_id);
     userData.append("status", status);
+
+    // for (var pair of userData.entries()) {
+    //   console.log(pair[0] + ', ' + pair[1]);
+    // }
+
     axios({
       method: "post",
       url: `${Url}/products`,
@@ -210,6 +216,18 @@ const BuatProduk = () => {
       });
   }
 
+  const onChange = () => {
+    checked ? setChecked(false) : setChecked(true)
+
+    if (checked === false) {
+      setStatus("Active");
+      // console.log('Active');
+    } else {
+      setStatus("Inactive");
+      // console.log('Inactive');
+    }
+  };
+
   useEffect(() => {
     getCodeById()
   }, []);
@@ -245,8 +263,8 @@ const BuatProduk = () => {
               type="kode"
               className="form-control"
               id="inputKode3"
-              readOnly="Data di isi dari sistem"
-              onChange={(e) => setName(e.target.value)}
+              value="Otomatis"
+              disabled
             />
           </div>
         </div>
@@ -259,8 +277,8 @@ const BuatProduk = () => {
               type="Nama"
               className="form-control"
               id="inputNama3"
-              readOnly="Data di isi dari sistem"
-              onChange={(e) => setAlias(e.target.value)}
+              value="Otomatis"
+              disabled
             />
           </div>
         </div>
@@ -454,46 +472,25 @@ const BuatProduk = () => {
               cacheOptions
               defaultOptions
               value={selectedValue6}
-              getOptionLabel={(e) => e.name}
+              getOptionLabel={(e) => e.type}
               getOptionValue={(e) => e.id}
               loadOptions={loadOptionsTaxes}
               onChange={handleChangeTaxes}
             />
           </div>
         </div>
-        <fieldset className="row mb-3">
-          <legend className="col-form-label col-sm-2 pt-0">Status</legend>
-          <div className="col-sm-10">
-            <div className="form-check">
-              <input
-                onChange={(e) => setStatus(e.target.value)}
-                value="Aktif"
-                checked={status === "Aktif"}
-                className="form-check-input"
-                type="radio"
-                name="gridRadios"
-                id="gridRadios1"
-              />
-              <label className="form-check-label" htmlFor="gridRadios1">
-                Aktif
-              </label>
-            </div>
-            <div className="form-check">
-              <input
-                onChange={(e) => setStatus(e.target.value)}
-                value="Arsip"
-                checked={status === "Arsip"}
-                className="form-check-input"
-                type="radio"
-                name="gridRadios"
-                id="gridRadios2"
-              />
-              <label className="form-check-label" htmlFor="gridRadios2">
-                Arsip
-              </label>
-            </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
+          <div className="col-sm-7">
+            <Switch defaultChecked={checked} onChange={onChange} />
+            <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
+              {
+                checked ? "Aktif"
+                  : "Nonaktif"
+              }
+            </label>
           </div>
-        </fieldset>
+        </div>
       </form>
       <div className="d-grid gap-2 d-md-flex justify-content-md-end">
         <Button
