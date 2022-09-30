@@ -957,7 +957,7 @@ const BuatTally = () => {
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
-    }, [query])
+    }, [query, customer])
 
     // Column for modal input product
     const columnsModal = [

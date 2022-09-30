@@ -19,7 +19,7 @@ const SuratJalanTable = () => {
     const [getDataSO, setGetDataSO] = useState([]);
     const [status, setStatus] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [checked, setChecked] = useState(true);
+    const [checked, setChecked] = useState('');
     const [cuy, setCuy] = useState("");
 
     const [visible, setVisible] = useState(false);
@@ -114,9 +114,11 @@ const SuratJalanTable = () => {
     // };
 
     const onChange = (e) => {
+        // console.log('checked = ', e.target.checked);
         setChecked(e.target.checked);
-        console.log(checked);
-    }
+    };
+
+    // console.log('checked = ', checked);
 
     const deleteDeliveryNotes = async (id) => {
         await axios.delete(`${Url}/delivery_notes/${id}`, {
