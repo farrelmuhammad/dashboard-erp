@@ -384,7 +384,7 @@ const BuatProduk = () => {
               placeholder="Pilih..."
               cacheOptions
               defaultOptions
-              value={selectedValue5}
+              value={selectedValue7}
               getOptionLabel={(e) => e.name}
               getOptionValue={(e) => e.id}
               loadOptions={loadOptionsPackaging}
