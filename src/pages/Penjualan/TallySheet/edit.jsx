@@ -1,10 +1,10 @@
 import './form.css'
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, PageHeader, Select, Space, Table, Tag } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, PageHeader, Select, Skeleton, Space, Table, Tag } from 'antd'
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
@@ -100,16 +100,20 @@ const EditTally = () => {
     const [description, setDescription] = useState('');
     const [status, setStatus] = useState("");
     const [customer, setCustomer] = useState("");
+    const [customerName, setCustomerName] = useState("");
     const [warehouse, setWarehouse] = useState("");
+    const [warehouseName, setWarehouseName] = useState("");
     const [product, setProduct] = useState([]);
     const [productSelect, setProductSelect] = useState([]);
     const [query, setQuery] = useState("");
-    const [getCode, setGetCode] = useState('');
+    const [code, setCode] = useState('');
     const navigate = useNavigate();
 
     const [getDataProduct, setGetDataProduct] = useState('');
     const [getDataDetailSO, setGetDataDetailSO] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const [getTallySheet, setGetTallySheet] = useState([])
 
     const [subTotal, setSubTotal] = useState("");
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
@@ -136,6 +140,117 @@ const EditTally = () => {
     const [indexPO, setIndexPO] = useState(0);
     const [kuantitasBox, setKuantitasBox] = useState([]);
     const [idxPesanan, setIdxPesanan] = useState(0);
+
+    const { id } = useParams();
+
+    useEffect(() => {
+        axios.get(`${Url}/tally_sheets?id=${id}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        })
+            .then((res) => {
+                const getData = res.data.data[0];
+                setGetTallySheet(getData)
+                setCustomer(getData.customer.id)
+                setCustomerName(getData.customer.name)
+                setWarehouse(getData.warehouse.id)
+                setWarehouseName(getData.warehouse.name)
+                setIsLoading(false)
+                // setDetailTallySheet(getData.tally_sheet_details);
+                setStatus(getData.status);
+                console.log(getData);
+                let arrData = [];
+                let tmpQty = []
+                let tmpBox = []
+                let tmpTally = []
+                let arrKuantitas = []
+                let kuantitas = [];
+                let tmp = []
+                let huruf = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+
+                if (data.length == 0) {
+
+                    for (let i = 0; i < getData.tally_sheet_details.length; i++) {
+                        let tempData = []
+                        kuantitas = []
+                        tmp.push({
+                            id_produk: getData.tally_sheet_details[i].product_id,
+                            id_pesanan_pembelian: getData.tally_sheet_details[i].purchase_order.id,
+                            code: getData.tally_sheet_details[i].purchase_order.code,
+                            boxes_quantity: getData.tally_sheet_details[i].boxes_quantity,
+                            number_of_boxes: getData.tally_sheet_details[i].number_of_boxes,
+                            boxes_unit: getData.tally_sheet_details[i].boxes_unit,
+                            product_name: getData.tally_sheet_details[i].product_name,
+                            action: getData.tally_sheet_details[i].action,
+                            purchase_order_qty: getData.tally_sheet_details[i].purchase_order_qty,
+                            tally_sheets_qty: getData.tally_sheet_details[i].tally_sheets_qty,
+                            key: "lama"
+                        })
+
+                        tmpBox.push(getData.tally_sheet_details[i].number_of_boxes);
+                        tmpTally.push(getData.tally_sheet_details[i].boxes_quantity)
+                        for (let x = 0; x <= 10; x++) {
+                            let baris = []
+                            let kolom = [];
+                            for (let y = 0; y <= 10; y++) {
+                                if (x == 0) {
+                                    if (y == 0) {
+                                        kolom.push({ readOnly: true, value: "" })
+                                    }
+                                    else {
+                                        kolom.push({ value: huruf[y - 1], readOnly: true })
+                                    }
+
+                                }
+                                else {
+                                    if (y == 0) {
+                                        kolom.push(
+                                            { readOnly: true, value: x }
+
+                                        );
+
+                                    }
+                                    else if (y <= getData.tally_sheet_details[i].boxes.length && x == 1) {
+                                        kolom.push(
+                                            { value: getData.tally_sheet_details[i].boxes[y - 1].quantity.replace('.', ',') }
+                                        );
+
+                                        kuantitas.push(getData.tally_sheet_details[i].boxes[y - 1].quantity);
+
+
+                                    }
+                                    else {
+                                        kolom.push(
+                                            { value: '' },
+                                        );
+                                    }
+                                    baris.push(kolom)
+
+                                }
+
+
+                            }
+                            tempData.push(kolom);
+                        }
+                        arrKuantitas.push(kuantitas);
+                        arrData.push(tempData)
+                    }
+                    setProduct(tmp)
+                    setKuantitasBox(arrKuantitas);
+                    setTotalTallySheet(tmpTally);
+                    setData(arrData);
+                    setQty(tmpQty);
+                    setBox(tmpBox)
+
+                    setLoading(false);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
 
     useEffect(() => {
         let arrTotal = [];
@@ -1563,6 +1678,19 @@ const EditTally = () => {
             });
     };
 
+    if (isLoading) {
+        return (
+            <>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+            </>
+        )
+    }
+
     return (
         <>
             <PageHeader
@@ -1579,6 +1707,7 @@ const EditTally = () => {
                                     id="startDate"
                                     className="form-control"
                                     type="date"
+                                    value={getTallySheet.date}
                                     onChange={(e) => setDate(e.target.value)}
                                 />
                             </div>
@@ -1587,10 +1716,10 @@ const EditTally = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Pesanan</label>
                             <div className="col-sm-7">
                                 <input
-                                    value="Otomatis"
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
+                                    value={getTallySheet.code}
                                     disabled
                                 />
                             </div>
@@ -1602,6 +1731,7 @@ const EditTally = () => {
                                     placeholder="Pilih Pelanggan..."
                                     cacheOptions
                                     defaultOptions
+                                    defaultInputValue={customerName}
                                     value={selectedValue}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
@@ -1617,6 +1747,7 @@ const EditTally = () => {
                                     placeholder="Pilih Gudang..."
                                     cacheOptions
                                     defaultOptions
+                                    defaultInputValue={warehouseName}
                                     value={selectedValue2}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
@@ -1634,6 +1765,7 @@ const EditTally = () => {
                                     className="form-control"
                                     id="form4Example3"
                                     rows="4"
+                                    value={getTallySheet.notes}
                                     onChange={(e) => setDescription(e.target.value)}
                                 />
                             </div>
@@ -1699,7 +1831,6 @@ const EditTally = () => {
                         type="button"
                         className="btn btn-success rounded m-1"
                         value="Draft"
-                        onChange={(e) => setStatus(e.target.value)}
                         onClick={handleDraft}
                     >
                         Simpan
@@ -1708,7 +1839,6 @@ const EditTally = () => {
                         type="button"
                         className="btn btn-primary rounded m-1"
                         value="Submitted"
-                        onChange={(e) => setStatus(e.target.value)}
                         onClick={handleSubmit}
                     >
                         Submit
