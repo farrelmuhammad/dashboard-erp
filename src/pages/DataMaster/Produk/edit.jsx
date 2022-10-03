@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import Url from '../../../Config';
 import './form.css'
 import { useSelector } from 'react-redux';
-import { Button, Switch } from 'antd';
+import { Button, PageHeader, Skeleton, Switch } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
 import AsyncSelect from "react-select/async";
 
@@ -226,7 +226,6 @@ const EditProduk = () => {
         })
             .then(function (response) {
                 const getData = response.data.data[0]
-                setData(getData);
                 setCode(getData.code)
                 setName(getData.name)
                 setAlias(getData.alias_name)
@@ -270,263 +269,269 @@ const EditProduk = () => {
         }
     };
 
-    if (data) {
+    if (isLoading) {
         return (
             <>
-                <div>
-                    <form className="  p-3 mb-3 bg-body rounded">
-                        <div className="text-title text-start mb-4">
-                            <h3 className="title fw-bold">Edit Produk</h3>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputKode3" className="col-sm-2 col-form-label">Kode</label>
-                            <div className="col-sm-10">
-                                <input
-                                    type="kode"
-                                    className="form-control"
-                                    value={code}
-                                    disabled
-                                    id="inputKode3"
-                                />
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputKode3" className="col-sm-2 col-form-label">Nama Produk</label>
-                            <div className="col-sm-10">
-                                <input
-                                    type="kode"
-                                    className="form-control"
-                                    id="inputKode3"
-                                    defaultValue={name}
-                                    disabled
-                                    onChange={e => setName(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Alias</label>
-                            <div className="col-sm-10">
-                                <input
-                                    type="Nama"
-                                    className="form-control"
-                                    id="inputNama3"
-                                    defaultValue={alias}
-                                    disabled
-                                    onChange={e => setAlias(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Grup</label>
-                            <div className="col-sm-10">
-                                <select onChange={e => setGroup(e.target.value)} id="Typeselect" className="form-select">
-                                    <option>Pilih Grup</option>
-                                    <option value="Lokal" selected={group === "Lokal"}>Lokal</option>
-                                    <option value="Import" selected={group === "Import"}>Import</option>
-                                    <option value="Meatshop" selected={group === "Meatshop"}>Meatshop</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Bagian</label>
-                            <div className="col-sm-10">
-                                <AsyncSelect
-                                    placeholder="Pilih Bagian..."
-                                    cacheOptions
-                                    defaultOptions
-                                    defaultInputValue={pieces_name}
-                                    value={selectedValue}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsPieces}
-                                    onChange={handleChangePieces}
-                                />
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Kategori</label>
-                            <div className="col-sm-10">
-                                <AsyncSelect
-                                    placeholder="Pilih Kategori..."
-                                    cacheOptions
-                                    defaultOptions
-                                    defaultInputValue={category_name}
-                                    value={selectedValue2}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsCategory}
-                                    onChange={handleChangeCategory}
-                                />
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Grade</label>
-                            <div className="col-sm-10">
-                                <AsyncSelect
-                                    placeholder="Pilih Grade..."
-                                    cacheOptions
-                                    defaultOptions
-                                    defaultInputValue={grade_name}
-                                    value={selectedValue3}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsGrades}
-                                    onChange={handleChangeGrades}
-                                />
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Tipe</label>
-                            <div className="col-sm-10">
-                                <AsyncSelect
-                                    placeholder="Pilih Tipe..."
-                                    cacheOptions
-                                    defaultOptions
-                                    defaultInputValue={type_name}
-                                    value={selectedValue4}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsTypes}
-                                    onChange={handleChangeTypes}
-                                />
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Merek</label>
-                            <div className="col-sm-10">
-                                <AsyncSelect
-                                    placeholder="Pilih Merek..."
-                                    cacheOptions
-                                    defaultOptions
-                                    defaultInputValue={brands_name}
-                                    value={selectedValue5}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsBrands}
-                                    onChange={handleChangeBrands}
-                                />
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Satuan</label>
-                            <div className="col-sm-10">
-                                <select onChange={e => setUnit(e.target.value)} id="Typeselect" className="form-select">
-                                    <option>Pilih Satuan</option>
-                                    <option value="kg" selected={unit === "kg"}>Kg</option>
-                                    <option value="pack" selected={unit === "pack"}>Pack</option>
-                                    <option value="ekor" selected={unit === "ekor"}>Ekor</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-                                Packaging Type
-                            </label>
-                            <div className="col-sm-10">
-                                <AsyncSelect
-                                    placeholder="Pilih..."
-                                    cacheOptions
-                                    defaultOptions
-                                    defaultInputValue={packaging_id}
-                                    value={selectedValue7}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsPackaging}
-                                    onChange={handleChangePackaging}
-                                />
-                            </div>
-                        </div>
-                    </form>
-                    <form className="  p-3 mb-3 bg-body rounded">
-                        <div className="text-title text-start mb-4">
-                            <h3 className="title fw-bold">Lain-lain</h3>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputKode3" className="col-sm-2 col-form-label">Harga Beli</label>
-                            <div className="col-sm-10">
-                                <input
-                                    type="kode"
-                                    className="form-control"
-                                    id="inputKode3"
-                                    defaultValue={buy_price}
-                                    onChange={e => setBuy_price(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Harga Jual</label>
-                            <div className="col-sm-10">
-                                <input
-                                    type="Nama"
-                                    className="form-control"
-                                    id="inputNama3"
-                                    defaultValue={sell_price}
-                                    onChange={e => setSell_price(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Diskon</label>
-                            <div className="col-sm-5">
-                                <input
-                                    type="Nama"
-                                    className="form-control"
-                                    id="inputNama3"
-                                    defaultValue={discount}
-                                    onChange={e => setDiscount(e.target.value)}
-                                />
-                            </div>
-                            <div className="col-sm-1">
-                                <span className="input-group-text" id="addon-wrapping">%</span>
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Pajak</label>
-                            <div className="col-sm-10">
-                                <AsyncSelect
-                                    placeholder="Pilih Pajak..."
-                                    cacheOptions
-                                    defaultOptions
-                                    defaultInputValue={taxes_name}
-                                    value={selectedValue6}
-                                    getOptionLabel={(e) => e.type}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsTaxes}
-                                    onChange={handleChangeTaxes}
-                                />
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
-                            <div className="col-sm-7">
-                                <Switch defaultChecked={status} onChange={onChange} />
-                                <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
-                                    {
-                                        checked ? "Aktif"
-                                            : "Nonaktif"
-                                    }
-                                </label>
-                            </div>
-                        </div>
-                        <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <Button
-                                type="primary"
-                                icon={<SendOutlined />}
-                                size="large"
-                                onClick={handleUpdate}
-                            >
-                                Submit
-                            </Button>
-                        </div>
-                    </form>
-                </div>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
             </>
         )
-    } else {
-        <div>Loading Data</div>
     }
 
+    return (
+        <>
+            <PageHeader
+                className="bg-body rounded mb-2"
+                onBack={() => window.history.back()}
+                title="Edit Produk"
+            >
+                <div className="row mb-3">
+                    <label htmlFor="inputKode3" className="col-sm-2 col-form-label">Kode</label>
+                    <div className="col-sm-10">
+                        <input
+                            type="kode"
+                            className="form-control"
+                            value={code}
+                            disabled
+                            id="inputKode3"
+                        />
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <label htmlFor="inputKode3" className="col-sm-2 col-form-label">Nama Produk</label>
+                    <div className="col-sm-10">
+                        <input
+                            type="kode"
+                            className="form-control"
+                            id="inputKode3"
+                            defaultValue={name}
+                            disabled
+                            onChange={e => setName(e.target.value)}
+                        />
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Alias</label>
+                    <div className="col-sm-10">
+                        <input
+                            type="Nama"
+                            className="form-control"
+                            id="inputNama3"
+                            defaultValue={alias}
+                            disabled
+                            onChange={e => setAlias(e.target.value)}
+                        />
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Grup</label>
+                    <div className="col-sm-10">
+                        <select onChange={e => setGroup(e.target.value)} id="Typeselect" className="form-select">
+                            <option>Pilih Grup</option>
+                            <option value="Lokal" selected={group === "Lokal"}>Lokal</option>
+                            <option value="Import" selected={group === "Import"}>Import</option>
+                            <option value="Meatshop" selected={group === "Meatshop"}>Meatshop</option>
+                        </select>
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Bagian</label>
+                    <div className="col-sm-10">
+                        <AsyncSelect
+                            placeholder="Pilih Bagian..."
+                            cacheOptions
+                            defaultOptions
+                            defaultInputValue={pieces_name}
+                            value={selectedValue}
+                            getOptionLabel={(e) => e.name}
+                            getOptionValue={(e) => e.id}
+                            loadOptions={loadOptionsPieces}
+                            onChange={handleChangePieces}
+                        />
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Kategori</label>
+                    <div className="col-sm-10">
+                        <AsyncSelect
+                            placeholder="Pilih Kategori..."
+                            cacheOptions
+                            defaultOptions
+                            defaultInputValue={category_name}
+                            value={selectedValue2}
+                            getOptionLabel={(e) => e.name}
+                            getOptionValue={(e) => e.id}
+                            loadOptions={loadOptionsCategory}
+                            onChange={handleChangeCategory}
+                        />
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Grade</label>
+                    <div className="col-sm-10">
+                        <AsyncSelect
+                            placeholder="Pilih Grade..."
+                            cacheOptions
+                            defaultOptions
+                            defaultInputValue={grade_name}
+                            value={selectedValue3}
+                            getOptionLabel={(e) => e.name}
+                            getOptionValue={(e) => e.id}
+                            loadOptions={loadOptionsGrades}
+                            onChange={handleChangeGrades}
+                        />
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Tipe</label>
+                    <div className="col-sm-10">
+                        <AsyncSelect
+                            placeholder="Pilih Tipe..."
+                            cacheOptions
+                            defaultOptions
+                            defaultInputValue={type_name}
+                            value={selectedValue4}
+                            getOptionLabel={(e) => e.name}
+                            getOptionValue={(e) => e.id}
+                            loadOptions={loadOptionsTypes}
+                            onChange={handleChangeTypes}
+                        />
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Merek</label>
+                    <div className="col-sm-10">
+                        <AsyncSelect
+                            placeholder="Pilih Merek..."
+                            cacheOptions
+                            defaultOptions
+                            defaultInputValue={brands_name}
+                            value={selectedValue5}
+                            getOptionLabel={(e) => e.name}
+                            getOptionValue={(e) => e.id}
+                            loadOptions={loadOptionsBrands}
+                            onChange={handleChangeBrands}
+                        />
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Satuan</label>
+                    <div className="col-sm-10">
+                        <select onChange={e => setUnit(e.target.value)} id="Typeselect" className="form-select">
+                            <option>Pilih Satuan</option>
+                            <option value="kg" selected={unit === "kg"}>Kg</option>
+                            <option value="pack" selected={unit === "pack"}>Pack</option>
+                            <option value="ekor" selected={unit === "ekor"}>Ekor</option>
+                        </select>
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+                        Packaging Type
+                    </label>
+                    <div className="col-sm-10">
+                        <AsyncSelect
+                            placeholder="Pilih..."
+                            cacheOptions
+                            defaultOptions
+                            defaultInputValue={packaging_id}
+                            value={selectedValue7}
+                            getOptionLabel={(e) => e.name}
+                            getOptionValue={(e) => e.id}
+                            loadOptions={loadOptionsPackaging}
+                            onChange={handleChangePackaging}
+                        />
+                    </div>
+                </div>
+            </PageHeader>
+
+            <PageHeader
+                className="bg-body rounded mb-2"
+                title="Lain - lain"
+            >
+                <div className="row mb-3">
+                    <label htmlFor="inputKode3" className="col-sm-2 col-form-label">Harga Beli</label>
+                    <div className="col-sm-10">
+                        <input
+                            type="kode"
+                            className="form-control"
+                            id="inputKode3"
+                            defaultValue={buy_price}
+                            onChange={e => setBuy_price(e.target.value)}
+                        />
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Harga Jual</label>
+                    <div className="col-sm-10">
+                        <input
+                            type="Nama"
+                            className="form-control"
+                            id="inputNama3"
+                            defaultValue={sell_price}
+                            onChange={e => setSell_price(e.target.value)}
+                        />
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Diskon</label>
+                    <div className="col-sm-5">
+                        <input
+                            type="Nama"
+                            className="form-control"
+                            id="inputNama3"
+                            defaultValue={discount}
+                            onChange={e => setDiscount(e.target.value)}
+                        />
+                    </div>
+                    <div className="col-sm-1">
+                        <span className="input-group-text" id="addon-wrapping">%</span>
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Pajak</label>
+                    <div className="col-sm-10">
+                        <AsyncSelect
+                            placeholder="Pilih Pajak..."
+                            cacheOptions
+                            defaultOptions
+                            defaultInputValue={taxes_name}
+                            value={selectedValue6}
+                            getOptionLabel={(e) => e.type}
+                            getOptionValue={(e) => e.id}
+                            loadOptions={loadOptionsTaxes}
+                            onChange={handleChangeTaxes}
+                        />
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
+                    <div className="col-sm-7">
+                        <Switch defaultChecked={status} onChange={onChange} />
+                        <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
+                            {
+                                checked ? "Aktif"
+                                    : "Nonaktif"
+                            }
+                        </label>
+                    </div>
+                </div>
+                <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <Button
+                        type="primary"
+                        icon={<SendOutlined />}
+                        size="large"
+                        onClick={handleUpdate}
+                    >
+                        Submit
+                    </Button>
+                </div>
+            </PageHeader>
+        </>
+    )
 }
+
 
 
 export default EditProduk

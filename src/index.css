@@ -49,6 +49,10 @@ code {
   overflow: auto;
 } */
 
+  /* .site-page-header {
+    border: 1px solid rgb(235, 237, 240);
+  } */
+
 .gradient-custom-2 {
   /* fallback for old browsers */
   background: #fccb90;

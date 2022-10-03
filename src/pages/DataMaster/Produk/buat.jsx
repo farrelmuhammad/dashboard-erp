@@ -7,7 +7,7 @@ import Url from "../../../Config";
 import "./form.css";
 import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
-import { Button, Switch } from "antd";
+import { Button, PageHeader, Switch } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 
 const BuatProduk = () => {
@@ -234,10 +234,12 @@ const BuatProduk = () => {
 
   return (
     <>
-      <form className="  p-3 mb-3 bg-body rounded">
-        <div className="text-title text-start mb-4">
-          <h3 className="title fw-bold">Buat Produk</h3>
-        </div>
+
+      <PageHeader
+        className="bg-body rounded mb-2"
+        onBack={() => window.history.back()}
+        title="Buat Produk"
+      >
         <div className="row mb-3">
           <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
             Kode
@@ -410,11 +412,12 @@ const BuatProduk = () => {
             />
           </div>
         </div>
-      </form>
-      <form className="  p-3 mb-3 bg-body rounded">
-        <div className="text-title text-start mb-4">
-          <h3 className="title fw-bold">Lain-lain</h3>
-        </div>
+      </PageHeader>
+
+      <PageHeader
+        className="bg-body rounded mb-2"
+        title="Lain - lain"
+      >
         <div className="row mb-3">
           <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
             Harga Beli
@@ -491,17 +494,20 @@ const BuatProduk = () => {
             </label>
           </div>
         </div>
-      </form>
-      <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-        <Button
-          type="primary"
-          icon={<SendOutlined />}
-          size="large"
-          onClick={handleSubmit}
-        >
-          Submit
-        </Button>
-      </div>
+
+        <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+          <Button
+            type="primary"
+            icon={<SendOutlined />}
+            size="large"
+            onClick={handleSubmit}
+          >
+            Submit
+          </Button>
+        </div>
+      </PageHeader>
+
+
     </>
   );
 };

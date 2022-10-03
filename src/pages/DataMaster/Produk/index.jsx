@@ -6,7 +6,7 @@ import axios from 'axios'
 
 import ProdukTable from '../../../components/moleculles/ProdukTable'
 
-import { Button } from 'antd'
+import { Button, Descriptions, PageHeader, Skeleton } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { useSelector } from 'react-redux'
 
@@ -30,36 +30,78 @@ const Produk = () => {
 
   if (userAccess) {
     return (
-      <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
-        <div className="row">
-          <div className="col text-title text-start">
-            <h5 className="title fw-bold">Daftar Produk</h5>
-          </div>
-          {userAccess?.map(d => {
-            if (d.ability_name === "create-product") {
-              return (
-                <div className="col button-add text-end me-3">
+      <>
+        {userAccess?.map(d => {
+          if (d.ability_name === "create-product") {
+            return (
+              <PageHeader
+                ghost={false}
+                onBack={() => window.history.back()}
+                title="Daftar Produk"
+                extra={[
                   <Link to="/produk/buat">
                     <Button
                       type="primary"
                       icon={<PlusOutlined />}
                     />
-                  </Link>
-                </div>
-              )
-            }
-          })}
-        </div>
-        <ProdukTable />
-      </div>
+                  </Link>,
+                ]}
+              >
+                <ProdukTable />
+              </PageHeader>
+            )
+          }
+        })}
+      </>
+      // <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
+      //   <div className="row">
+      //     <div className="col text-title text-start">
+      //       <h5 className="title fw-bold">Daftar Produk</h5>
+      //     </div>
+      //     {userAccess?.map(d => {
+      //       if (d.ability_name === "create-product") {
+      //         return (
+      //           <div className="col button-add text-end me-3">
+      //             <Link to="/produk/buat">
+      //               <Button
+      //                 type="primary"
+      //                 icon={<PlusOutlined />}
+      //               />
+      //             </Link>
+      //           </div>
+      //         )
+      //       }
+      //     })}
+      //   </div>
+      //   <ProdukTable />
+      // </div>
     )
   } else {
-    <div>
-      <div className="text-title text-start">
-        <h5 className="title fw-bold">Daftar Produk</h5>
-      </div>
-      <ProdukTable />
-    </div>
+    return (
+      <>
+        <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Daftar Produk"
+          // extra={[
+          //   <Link to="/produk/buat">
+          //     <Button
+          //       type="primary"
+          //       icon={<PlusOutlined />}
+          //     />
+          //   </Link>,
+          // ]}
+        >
+          <ProdukTable />
+        </PageHeader>
+      </>
+    )
+    // <div>
+    //   <div className="text-title text-start">
+    //     <h5 className="title fw-bold">Daftar Produk</h5>
+    //   </div>
+    //   <ProdukTable />
+    // </div>
   }
 }
 
