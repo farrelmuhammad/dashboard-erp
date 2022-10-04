@@ -1,12 +1,12 @@
 import './form.css'
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
 // import Select from 'react-select';
-import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Modal, PageHeader, Select, Skeleton, Space, Table, Tag } from 'antd'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
@@ -103,15 +103,17 @@ const EditSuratJalan = () => {
     const [description, setDescription] = useState('');
     const [sender, setSender] = useState("");
     const [customer, setCustomer] = useState("");
+    const [customerName, setCustomerName] = useState("");
     const [address, setAddress] = useState("");
     const [product, setProduct] = useState('');
     const [tally, setTally] = useState([]);
     const [query, setQuery] = useState("");
     const [getCode, setGetCode] = useState('');
     const navigate = useNavigate();
+    const { id } = useParams();
 
     const [getDataProduct, setGetDataProduct] = useState();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const [subTotal, setSubTotal] = useState("");
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
@@ -122,6 +124,27 @@ const EditSuratJalan = () => {
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [selectedValue2, setSelectedAddress] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
+
+    useEffect(() => {
+        axios.get(`${Url}/delivery_notes?id=${id}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        })
+            .then((res) => {
+                const getData = res.data.data[0]
+                setGetCode(getData.code)
+                setDate(getData.date)
+                setCustomer(getData.customer.id)
+                setCustomerName(getData.customer.name)
+                setVehicle(getData.vehicle)
+                setDescription(getData.notes)
+                setSender(getData.sender)
+                setIsLoading(false)
+                console.log(getData);
+            })
+    }, [])
 
     const expandedRowRender = (product) => {
         // const handleAdd = () => {
@@ -187,10 +210,6 @@ const EditSuratJalan = () => {
             },
         }).then((res) => res.json());
     };
-
-    useEffect(() => {
-        getNewCodeSales()
-    })
 
     useEffect(() => {
         const getProduct = async () => {
@@ -355,24 +374,6 @@ const EditSuratJalan = () => {
         setTally(updatedList.map(d => d.id));
     };
 
-
-    const getNewCodeSales = async () => {
-        await axios.get(`${Url}/get_new_sales_order_code?tanggal=${date}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then((res) => {
-                setGetCode(res.data.data);
-            })
-            .catch((err) => {
-                // Jika Gagal
-                console.log(err);
-            });
-    }
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         const userData = new FormData();
@@ -477,12 +478,26 @@ const EditSuratJalan = () => {
             });
     };
 
+    if (isLoading) {
+        return (
+            <>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+            </>
+        )
+    }
+
     return (
         <>
-            <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <h4 className="title fw-bold">Buat Surat Jalan</h4>
-                </div>
+            <PageHeader
+                className="bg-body rounded mb-2"
+                onBack={() => window.history.back()}
+                title="Edit Surat Jalan"
+            >
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -492,6 +507,7 @@ const EditSuratJalan = () => {
                                     id="startDate"
                                     className="form-control"
                                     type="date"
+                                    value={date}
                                     onChange={(e) => setDate(e.target.value)}
                                 />
                             </div>
@@ -515,6 +531,7 @@ const EditSuratJalan = () => {
                                     placeholder="Pilih Pelanggan..."
                                     cacheOptions
                                     defaultOptions
+                                    defaultInputValue={customerName}
                                     value={selectedValue}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
@@ -555,7 +572,7 @@ const EditSuratJalan = () => {
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Kendaraan</label>
                             <div className="col-sm-7">
                                 <input
-                                    // value={getCode}
+                                    value={vehicle}
                                     type="Nama"
                                     className="form-control"
                                     onChange={(e) => setVehicle(e.target.value)}
@@ -566,7 +583,7 @@ const EditSuratJalan = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pengirim</label>
                             <div className="col-sm-7">
                                 <input
-                                    // value={getCode}
+                                    value={sender}
                                     type="Nama"
                                     className="form-control"
                                     onChange={(e) => setSender(e.target.value)}
@@ -579,80 +596,79 @@ const EditSuratJalan = () => {
                                 className="form-control"
                                 id="form4Example3"
                                 rows="4"
+                                value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                             />
                         </div>
                     </div>
                 </div>
-            </form>
-            <form className="p-3 mb-5 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <div className="row">
-                        <div className="col">
-                            <h4 className="title fw-normal">Daftar Tally Sheet</h4>
-                        </div>
-                        <div className="col text-end me-2">
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
-                            />
-                            <Modal
-                                title="Tambah Produk"
-                                centered
-                                visible={modal2Visible}
-                                onCancel={() => setModal2Visible(false)}
-                                // footer={[
-                                //     <Button
-                                //         key="submit"
-                                //         type="primary"
+            </PageHeader>
 
-                                //     >
-                                //         Tambah
-                                //     </Button>,
-                                // ]}
-                                footer={null}
-                            >
-                                <div className="text-title text-start">
-                                    <div className="row">
-                                        <div className="col mb-3">
-                                            <Search
-                                                placeholder="Cari Produk..."
-                                                style={{
-                                                    width: 400,
-                                                }}
-                                                onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                            />
-                                        </div>
-                                        <Table
-                                            columns={columnsModal}
-                                            dataSource={getDataProduct}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
-                                    </div>
+            <PageHeader
+                ghost={false}
+                title="Daftar Pesanan"
+                extra={[
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => setModal2Visible(true)}
+                    />,
+                    <Modal
+                        title="Tambah Tally Sheet"
+                        centered
+                        visible={modal2Visible}
+                        onCancel={() => setModal2Visible(false)}
+                        // footer={[
+                        //     <Button
+                        //         key="submit"
+                        //         type="primary"
+
+                        //     >
+                        //         Tambah
+                        //     </Button>,
+                        // ]}
+                        footer={null}
+                    >
+                        <div className="text-title text-start">
+                            <div className="row">
+                                <div className="col mb-3">
+                                    <Search
+                                        placeholder="Cari Tally Sheet..."
+                                        style={{
+                                            width: 400,
+                                        }}
+                                        onChange={(e) => setQuery(e.target.value.toLowerCase())}
+                                    />
                                 </div>
-                            </Modal>
+                                <Table
+                                    columns={columnsModal}
+                                    dataSource={getDataProduct}
+                                    scroll={{
+                                        y: 250,
+                                    }}
+                                    pagination={false}
+                                    loading={isLoading}
+                                    size="middle"
+                                />
+                            </div>
                         </div>
-                    </div>
-                    <Table
-                        components={components}
-                        bordered
-                        pagination={false}
-                        dataSource={product}
-                        columns={columns}
-                        expandable={{
-                            expandedRowRender,
-                            defaultExpandedRowKeys: ['0'],
-                        }}
-                    // onChange={(e) => setProduct(e.id)}
-                    />
-                </div>
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                    </Modal>,
+                ]}
+            >
+                <Table
+                    components={components}
+                    bordered
+                    pagination={false}
+                    dataSource={product}
+                    columns={columns}
+                    expandable={{
+                        expandedRowRender,
+                        defaultExpandedRowKeys: ['0'],
+                    }}
+                // onChange={(e) => setProduct(e.id)}
+                />
+
+                <div className="btn-group mt-2" role="group" aria-label="Basic mixed styles example">
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -675,7 +691,7 @@ const EditSuratJalan = () => {
                         Cetak
                     </button>
                 </div>
-            </form>
+            </PageHeader>
         </>
     )
 }

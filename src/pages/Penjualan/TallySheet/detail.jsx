@@ -1,12 +1,12 @@
 import './form.css'
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tag } from 'antd'
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
+import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, PageHeader, Select, Skeleton, Space, Table, Tag } from 'antd'
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
@@ -98,6 +98,7 @@ const DetailTally = () => {
     // const auth.token = jsCookie.get("auth");
     const auth = useSelector(state => state.auth);
     const [date, setDate] = useState(null);
+    const [code, setCode] = useState("");
     const [referensi, setReferensi] = useState('');
     const [description, setDescription] = useState('');
     const [status, setStatus] = useState("");
@@ -111,7 +112,7 @@ const DetailTally = () => {
 
     const [getDataProduct, setGetDataProduct] = useState('');
     const [getDataDetailSO, setGetDataDetailSO] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const [subTotal, setSubTotal] = useState("");
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
@@ -138,6 +139,27 @@ const DetailTally = () => {
         [{ value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }],
         [{ value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }],
     ]);
+
+    const { id } = useParams();
+
+    useEffect(() => {
+        axios.get(`${Url}/tally_sheets?id=${id}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        })
+            .then((res) => {
+                const getData = res.data.data[0]
+                setCode(getData.code)
+                setDate(getData.date)
+                setCustomer(getData.customer.name)
+                setWarehouse(getData.warehouse.name)
+                setDescription(getData.notes)
+                setLoading(false)
+                console.log(getData);
+            })
+    }, [])
 
     const expandedRowRender = (product) => {
         const handleAddBox = () => {
@@ -505,33 +527,6 @@ const DetailTally = () => {
         },
     ];
 
-    const handleChangeCustomer = (value) => {
-        setSelectedCustomer(value);
-        setCustomer(value.id);
-    };
-    // load options using API call
-    const loadOptionsCustomer = (inputValue) => {
-        return fetch(`${Url}/select_customers?limit=10&nama=${inputValue}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        }).then((res) => res.json());
-    };
-
-    const handleChangeWarehouse = (value) => {
-        setSelectedWarehouse(value);
-        setWarehouse(value.id);
-    };
-    // load options using API call
-    const loadOptionsWarehouse = (inputValue) => {
-        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        }).then((res) => res.json());
-    };
 
     const handleChangeProduct = (value) => {
         setSelectedProduct(value);
@@ -616,149 +611,34 @@ const DetailTally = () => {
         console.log(updatedList.map(d => d.sales_order_details));
     };
 
-    // const getNewCodeTally = async () => {
-    //     await axios.get(`${Url}/get_new_tally_sheet_code/sales_orders?tanggal=${date}`, {
-    //         headers: {
-    //             Accept: "application/json",
-    //             Authorization: `Bearer ${auth.token}`,
-    //         },
-    //     })
-    //         .then((res) => {
-    //             setGetCode(res.data.data);
-    //             console.log(res.data.data)
-    //         })
-    //         .catch((err) => {
-    //             // Jika Gagal
-    //             console.log(err);
-    //         });
-    // }
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const userData = new FormData();
-        userData.append("tanggal", date);
-        userData.append("referensi", referensi);
-        userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("status", "Submitted");
-        product.map((p) => {
-            console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("harga[]", p.price);
-            userData.append("persentase_diskon[]", p.discount);
-            userData.append("diskon_tetap[]", p.nominal_disc);
-            userData.append("ppn[]", p.ppn);
-        });
-        userData.append("termasuk_pajak", checked);
-
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
-
-        axios({
-            method: "post",
-            url: `${Url}/tally_sheets`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/pesanan");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
-            });
-    };
-
-    const handleDraft = async (e) => {
-        e.preventDefault();
-        const userData = new FormData();
-        userData.append("tanggal", date);
-        userData.append("referensi", referensi);
-        userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("status", "Draft");
-        product.map((p) => {
-            console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("harga[]", p.price);
-            userData.append("persentase_diskon[]", p.discount);
-            userData.append("diskon_tetap[]", p.nominal_disc);
-            userData.append("ppn[]", p.ppn);
-        });
-        userData.append("termasuk_pajak", checked);
-
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
-
-        axios({
-            method: "post",
-            url: `${Url}/tally_sheets`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/pesanan");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
-            });
-    };
+    if (loading) {
+        return (
+            <>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+            </>
+        )
+    }
 
     return (
         <>
-            <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <h4 className="title fw-bold">Buat Tally Sheet</h4>
-                </div>
+            <PageHeader
+                className="bg-body rounded mb-2"
+                onBack={() => window.history.back()}
+                title="Detail Tally Sheet"
+                extra={[
+                    <Link to={`/tally/edit/${id}`}>
+                        <Button
+                            type="primary"
+                            icon={<EditOutlined />}
+                        />
+                    </Link>,
+                ]}
+            >
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -768,7 +648,8 @@ const DetailTally = () => {
                                     id="startDate"
                                     className="form-control"
                                     type="date"
-                                    onChange={(e) => setDate(e.target.value)}
+                                    value={date}
+                                    disabled
                                 />
                             </div>
                         </div>
@@ -776,7 +657,7 @@ const DetailTally = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Pesanan</label>
                             <div className="col-sm-7">
                                 <input
-                                    value="Otomatis"
+                                    value={code}
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
@@ -787,31 +668,17 @@ const DetailTally = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pelanggan</label>
                             <div className="col-sm-7">
-                                <AsyncSelect
-                                    placeholder="Pilih Pelanggan..."
-                                    cacheOptions
-                                    defaultOptions
-                                    value={selectedValue}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsCustomer}
-                                    onChange={handleChangeCustomer}
-                                />
+                                <select disabled="true" id="PelangganSelect" className="form-select">
+                                    <option>{customer}</option>
+                                </select>
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang</label>
                             <div className="col-sm-7">
-                                <AsyncSelect
-                                    placeholder="Pilih Gudang..."
-                                    cacheOptions
-                                    defaultOptions
-                                    value={selectedValue2}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsWarehouse}
-                                    onChange={handleChangeWarehouse}
-                                />
+                                <select disabled="true" id="PelangganSelect" className="form-select">
+                                    <option>{warehouse}</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -823,95 +690,27 @@ const DetailTally = () => {
                                     className="form-control"
                                     id="form4Example3"
                                     rows="4"
-                                    onChange={(e) => setDescription(e.target.value)}
+                                    value={description}
+                                    disabled
                                 />
                             </div>
                         </div>
                     </div>
                 </div>
-            </form>
-            <form className="p-3 mb-5 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <div className="row">
-                        <div className="col">
-                            <h4 className="title fw-normal">Daftar Pesanan</h4>
-                        </div>
-                        <div className="col text-end me-2">
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
-                            />
-                            <Modal
-                                title="Tambah Produk"
-                                centered
-                                visible={modal2Visible}
-                                onCancel={() => setModal2Visible(false)}
-                                width={1000}
-                                footer={null}
-                            >
-                                <div className="text-title text-start">
-                                    <div className="row">
-                                        <div className="col mb-3">
-                                            <Search
-                                                placeholder="Cari Produk..."
-                                                style={{
-                                                    width: 400,
-                                                }}
-                                                onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                            />
-                                        </div>
-                                        <Table
-                                            columns={columnsModal}
-                                            dataSource={dataSelect}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
-                                    </div>
-                                </div>
-                            </Modal>
-                        </div>
-                    </div>
-                    <Table
-                        bordered
-                        pagination={false}
-                        dataSource={product.map(d => d.details)}
-                        // expandable={{ expandedRowRender }}
-                        columns={defaultColumns}
-                        onChange={(e) => setProduct(e.target.value)}
-                    />
-                </div>
+            </PageHeader>
 
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
-                    <button
-                        type="button"
-                        className="btn btn-success rounded m-1"
-                        value="Draft"
-                        onChange={(e) => setStatus(e.target.value)}
-                        onClick={handleDraft}
-                    >
-                        Simpan
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-primary rounded m-1"
-                        value="Submitted"
-                        onChange={(e) => setStatus(e.target.value)}
-                        onClick={handleSubmit}
-                    >
-                        Submit
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-warning rounded m-1">
-                        Cetak
-                    </button>
-                </div>
-            </form>
+            <PageHeader
+                ghost={false}
+                title="Daftar Pesanan"
+            >
+                <Table
+                    bordered
+                    pagination={false}
+                    dataSource={product}
+                    // expandable={{ expandedRowRender }}
+                    columns={defaultColumns}
+                />
+            </PageHeader>
         </>
     )
 }

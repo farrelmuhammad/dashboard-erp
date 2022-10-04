@@ -34,7 +34,6 @@ const TallySheet = () => {
             return (
               <PageHeader
                 ghost={false}
-                onBack={() => window.history.back()}
                 title="Daftar Tally Sheet"
                 extra={[
                   <Link to="/tally/buat">
