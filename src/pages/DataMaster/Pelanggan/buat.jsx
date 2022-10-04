@@ -1,12 +1,16 @@
 import axios from "axios";
+// import MaterialTable from "material-table";
 import React, { useContext, useEffect, useRef, useState } from "react";
+import jsCookie from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "./form.css";
+import SendIcon from "@mui/icons-material/Send";
 import { useSelector } from "react-redux";
 import { Button, Form, Input, Popconfirm, Switch, Table } from 'antd';
 import Url from "../../../Config";
-import { DeleteOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { Grid } from "@material-ui/core";
 
 const EditableContext = React.createContext(null);
 
@@ -91,7 +95,7 @@ const EditableCell = ({
 };
 
 const BuatPelanggan = () => {
-  // const auth = useSelector(state => state.auth);
+  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [name, setName] = useState('');
   const [bussiness_ent, setBussiness_ent] = useState('');
@@ -317,10 +321,8 @@ const BuatPelanggan = () => {
               type="kode"
               className="form-control"
               id="inputKode3"
-              // value={getCustomer}
-              // readOnly={getCustomer}
-              value="Otomatis"
-              disabled
+              value={getCustomer}
+              readOnly={getCustomer}
             />
           </div>
         </div>
@@ -439,6 +441,8 @@ const BuatPelanggan = () => {
         </div>
       </form>
       <form className="  p-3 mb-3 bg-body rounded">
+      <h5 className="title fw-bold">Tambah Alamat Pelanggan</h5>
+      <Grid container justify="flex-end">
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -447,6 +451,7 @@ const BuatPelanggan = () => {
             marginBottom: 16,
           }}
         />
+        </Grid>
         <Table
           components={components}
           rowClassName={() => 'editable-row'}
@@ -455,14 +460,9 @@ const BuatPelanggan = () => {
           columns={columns}
         />
         <div className="d-grid mt-3 gap-2 d-md-flex justify-content-md-end">
-          <Button
-            type="primary"
-            icon={<SendOutlined />}
-            size="large"
-            onClick={handleSubmit}
-          >
-            Submit
-          </Button>
+          <button onClick={handleSubmit} className="btn btn-primary" type="button">
+            Simpan <SendIcon className="ms-1" />
+          </button>
         </div>
       </form>
     </>

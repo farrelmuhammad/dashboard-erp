@@ -1,6 +1,6 @@
 import * as React from "react";
 import axios from "axios";
-
+import jsCookie from "js-cookie";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Url from "../../../Config";
@@ -8,7 +8,7 @@ import "./form.css";
 import { useSelector } from "react-redux";
 
 const DetailGrade = () => {
-  // const auth = useSelector(state => state.auth);
+  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const { id } = useParams();
   const [data, setData] = useState([]);

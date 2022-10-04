@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-
+import jsCookie from 'js-cookie'
 import Url from '../../../Config'
 import axios from 'axios'
-
+import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import TipeProdukTable from '../../../components/moleculles/TipeProdukTable'
-
+import { IconButton } from '@mui/material'
+import AddBoxIcon from '@mui/icons-material/AddBox';
 import { Button } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { useSelector } from 'react-redux'
@@ -19,7 +20,7 @@ const TipeProduk = () => {
   //   axios.get(`${Url}/get_user_access_rights?ability_name=create-type`, {
   //     headers: {
   //       'Accept': 'application/json',
-  //       'Authorization': `Bearer ${auth.token}`
+  //       'Authorization': `Bearer ${token}`
   //     }
   //   })
   //     .then(res => {

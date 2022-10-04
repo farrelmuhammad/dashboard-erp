@@ -1,17 +1,29 @@
+// import Paper from "@mui/material/Paper";
+// import Table from "@mui/material/Table";
+// import TableBody from "@mui/material/TableBody";
+// import TableCell from "@mui/material/TableCell";
+// import TableContainer from "@mui/material/TableContainer";
+// import TableHead from "@mui/material/TableHead";
+// import TablePagination from "@mui/material/TablePagination";
+// import TableRow from "@mui/material/TableRow";
+import SendIcon from "@mui/icons-material/Send";
+import Button from "@mui/material/Button";
 import axios from "axios";
+import jsCookie from "js-cookie";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
+// import { Checkbox } from "@mui/material";
 import React from "react";
+// import Select from "react-select";
 import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
-import { Button } from "antd";
-import { SendOutlined } from "@ant-design/icons";
+import { PageHeader, Switch} from 'antd';
 
 const BuatKaryawan = () => {
-  // const auth = useSelector(state => state.auth);
+  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [nip, setNip] = useState("");
   const [name, setName] = useState("");
@@ -71,6 +83,19 @@ const BuatKaryawan = () => {
         Authorization: `Bearer ${auth.token}`,
       },
     }).then((res) => res.json());
+  };
+
+  const [checked, setChecked] = useState(false);
+  const onChange = () => {
+    checked ? setChecked(false) : setChecked(true)
+
+    if (checked === false) {
+      setStatus("Active");
+      // console.log('Active');
+    } else {
+      setStatus("Inactive");
+      // console.log('Inactive');
+    }
   };
 
   // useEffect(()=>{
@@ -214,10 +239,12 @@ const BuatKaryawan = () => {
   if (getWarehouse?.length > 0) {
     return (
       <>
+       <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Buat Karyawan">
+          </PageHeader>
         <form className="  p-3 mb-3 bg-body rounded">
-          <div className="text-title text-start mb-4">
-            <h3 className="title fw-bold">Buat Karyawan</h3>
-          </div>
           <div className="row mb-3">
             <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
               Kode
@@ -227,10 +254,8 @@ const BuatKaryawan = () => {
                 type="kode"
                 className="form-control"
                 id="inputKode3"
-                // value={getEmployee}
-                // readOnly={getEmployee}
-                value="Otomatis"
-                disabled
+                value={getEmployee}
+                readOnly={getEmployee}
               />
             </div>
           </div>
@@ -469,7 +494,21 @@ const BuatKaryawan = () => {
               />
             </div>
           </div>
-          <fieldset className="row mb-3">
+
+          <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
+          <div className="col-sm-7">
+            <Switch defaultChecked={checked} onChange={onChange} />
+            <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
+              {
+                checked ? "Aktif"
+                  : "Nonaktif"
+              }
+            </label>
+          </div>
+        </div>
+
+          {/* <fieldset className="row mb-3">
             <legend className="col-form-label col-sm-2 pt-0">Status</legend>
             <div className="col-sm-10">
               <div className="form-check">
@@ -501,16 +540,71 @@ const BuatKaryawan = () => {
                 </label>
               </div>
             </div>
-          </fieldset>
+          </fieldset> */}
         </form>
+        {/* <form className="  p-3 mb-3 bg-body rounded">
+          <div className="p-2 mb-1 bg-body rounded">
+            <div className="text-title text-start">
+              <h4 className="title fw-bold mb-1">Pilih Gudang</h4>
+            </div>
+          </div>
+          <Paper sx={{ width: "100%", overflow: "hidden" }}>
+            <TableContainer sx={{ maxHeight: 440 }}>
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Kode</TableCell>
+                    <TableCell>Nama Gudang</TableCell>
+                    <TableCell>Alamat</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {getWarehouse
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((d) => {
+                      return (
+                        <TableRow
+                          hover
+                          role="checkbox"
+                          tabIndex={-1}
+                          key={d.id}
+                        >
+                          <TableCell>{d.id}</TableCell>
+                          <TableCell>{d.name}</TableCell>
+                          <TableCell>{d.address}</TableCell>
+                          <TableCell>
+                            <Checkbox
+                              key={d.id}
+                              value={d.id}
+                              id={d.id}
+                              onChange={handleCheck}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 100]}
+              component="div"
+              count={getEmployee.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Paper>
+        </form> */}
         <div className="d-grid gap-2 d-md-flex justify-content-md-end">
           <Button
-            type="primary"
-            icon={<SendOutlined />}
-            size="large"
             onClick={handleSubmit}
+            variant="contained"
+            endIcon={<SendIcon />}
           >
-            Submit
+            Simpan
           </Button>
         </div>
       </>

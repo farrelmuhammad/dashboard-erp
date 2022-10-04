@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import 'antd/dist/antd.css';
-import { CloseOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { CloseOutlined, DeleteOutlined, EditOutlined, CheckCircleOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Tag } from 'antd';
 import axios from 'axios';
-import Url from "../../../Config";;
+import Url from '../../../Config';
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -18,6 +18,33 @@ const PesananPembelianTable = () => {
     const [namaMataUang, setNamaMataUang] = useState();
     // const token = jsCookie.get('auth')
     const auth = useSelector(state => state.auth);
+
+    const forceDonePurchaseOrder = async (id, code) => {
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Status akan diubah menjadi done",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios({
+                    method: "patch",
+                    url: `${Url}/purchase_orders/force_done/${id}`,
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${auth.token}`,
+                    },
+                })
+
+                getPesananPembelian()
+                Swal.fire("Berhasil Diubah!", `${code} Done`, "success");
+
+            }
+        })
+    }
 
     const deletePurchaseOrders = async (id, code) => {
         Swal.fire({
@@ -59,7 +86,7 @@ const PesananPembelianTable = () => {
                 try {
                     const datakirim = new FormData();
                     datakirim.append("", '');
-        
+
                     axios({
                         method: "patch",
                         url: `${Url}/purchase_orders/cancel/${id}`,
@@ -69,7 +96,7 @@ const PesananPembelianTable = () => {
                             Authorization: `Bearer ${auth.token}`,
                         },
                     })
-        
+
                     getPesananPembelian();
                     Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
                 }
@@ -80,7 +107,7 @@ const PesananPembelianTable = () => {
             }
         })
 
-       
+
     };
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -411,10 +438,20 @@ const PesananPembelianTable = () => {
                                 />
                             </Link>
                         </Space>
-                    ) : (
+                    ) : item.status == 'Processed' ? (
                         <>
+                            <Space size="middle">
+                                {/* <Link to={`/pesananpembelian/detail/${item.id}`}> */}
+                                    <Button
+                                        style={{ backgroundColor: "green", color: "white" }}
+                                        size='small'
+                                        icon={<CheckCircleOutlined />}
+                                        onClick={() => forceDonePurchaseOrder(item.id, item.code)}
+                                    />
+                                {/* </Link> */}
+                            </Space>
                         </>
-                    )}
+                    ) : null}
                 </>
         }))
 

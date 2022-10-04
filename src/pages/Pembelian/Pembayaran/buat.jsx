@@ -12,93 +12,16 @@ import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
+import CurrencyFormat from 'react-currency-format';
 
 const { Text } = Typography;
 
-const EditableContext = createContext(null);
-
-const EditableRow = ({ index, ...props }) => {
-    const [form] = Form.useForm();
-    return (
-        <Form form={form} component={false}>
-            <EditableContext.Provider value={form}>
-                <tr {...props} />
-            </EditableContext.Provider>
-        </Form>
-    );
-};
-
-const EditableCell = ({
-    title,
-    editable,
-    children,
-    dataIndex,
-    record,
-    handleSave,
-    ...restProps
-}) => {
-    const [editing, setEditing] = useState(false);
-    const inputRef = useRef(null);
-    const form = useContext(EditableContext);
-    useEffect(() => {
-        if (editing) {
-            inputRef.current.focus();
-        }
-    }, [editing]);
-
-    const toggleEdit = () => {
-        setEditing(!editing);
-        form.setFieldsValue({
-            [dataIndex]: record[dataIndex],
-        });
-    };
-
-    const save = async () => {
-        try {
-            const values = await form.validateFields();
-            toggleEdit();
-            handleSave({ ...record, ...values });
-        } catch (errInfo) {
-            console.log('Save failed:', errInfo);
-        }
-    };
-
-    let childNode = children;
-
-    if (editable) {
-        childNode = editing ? (
-            <Form.Item
-                style={{
-                    margin: 0,
-                }}
-                name={dataIndex}
-                rules={[
-                    {
-                        required: true,
-                        message: `${title} is required.`,
-                    },
-                ]}
-            >
-                {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
-            </Form.Item>
-        ) : (
-            <div
-                className="editable-cell-value-wrap"
-                onClick={toggleEdit}
-            >
-                {children}
-            </div>
-        );
-    }
-
-    return <td {...restProps}>{childNode}</td>;
-};
 
 const BuatPembayaranPembelian = () => {
     // const auth.token = jsCookie.get("auth");
     const [date, setDate] = useState(null);
     const [referensi, setReferensi] = useState('');
+    const [kurs, setKurs] = useState('');
     const [description, setDescription] = useState('');
     const [status, setStatus] = useState("");
     const [customer, setCustomer] = useState("");
@@ -109,8 +32,9 @@ const BuatPembayaranPembelian = () => {
     const navigate = useNavigate();
     const auth = useSelector(state => state.auth);
 
-    const [getDataProduct, setGetDataProduct] = useState();
+    const [getDataFaktur, setGetDataFaktur] = useState();
     const [isLoading, setIsLoading] = useState(false);
+    const [tampilTabel, setTampilTabel] = useState(true)
 
     const [subTotal, setSubTotal] = useState("");
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
@@ -122,13 +46,32 @@ const BuatPembayaranPembelian = () => {
     const [selectedValue2, setSelectedCOA] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
 
-    const handleChangeCustomer = (value) => {
-        setSelectedCustomer(value);
-        setCustomer(value.id);
+    const [selectedSupplier, setSelectedSupplier] = useState()
+    const [selectedMataUang, setSelectedMataUang] = useState()
+    const [supplierId, setSupplierId] = useState('')
+    const [mataUangId, setMataUangId] = useState()
+    const [selectedBank, setSelectedBank] = useState()
+    const [bankId, setBankId] = useState()
+    const [totalAkhir, setTotalAkhir] = useState('-');
+    const [sisaAkhir, setSisaAkhir] = useState('-')
+
+
+
+    function klikEnter(event) {
+        if (event.code == "Enter") {
+            event.target.blur()
+        }
+    }
+
+
+
+    // select supplier 
+    const handleChangeSupplier = (value) => {
+        setSelectedSupplier(value);
+        setSupplierId(value.id);
     };
-    // load options using API call
-    const loadOptionsCustomer = (inputValue) => {
-        return fetch(`${Url}/select_customers?limit=10&nama=${inputValue}`, {
+    const loadOptionsSupplier = (inputValue) => {
+        return fetch(`${Url}/select_suppliers?nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -136,38 +79,80 @@ const BuatPembayaranPembelian = () => {
         }).then((res) => res.json());
     };
 
-    const handleChangeCOA = (value) => {
-        setSelectedCOA(value);
-        setCOA(value.id);
+    // select mata uang 
+    const handleChangeMataUang = (value) => {
+        setSelectedMataUang(value);
+        setMataUangId(value.id);
     };
-    // load options using API call
-    const loadOptionsCOA = (inputValue) => {
-        return fetch(`${Url}/select_chart_of_accounts?limit=10&nama=${inputValue}`, {
+    const loadOptionsMataUang = (inputValue) => {
+        return fetch(`${Url}/select_currencies?nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
         }).then((res) => res.json());
     };
+
+
+    // select bank/kas 
+    const handleChangeBank = (value) => {
+        setSelectedBank(value);
+        setBankId(value.id);
+    };
+    const loadOptionsBank = (inputValue) => {
+        return fetch(`${Url}/select_chart_of_accounts?nama=${inputValue}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.json());
+    };
+
 
     useEffect(() => {
-        getNewCodeSales()
+        getNewCode()
     })
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_sales_invoices?nama_alias=${query}`, {
+            const res = await axios.get(`${Url}/select_purchase_invoices/all?status=Submitted&id_pemasok=${supplierId}&kode=${query}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
+            console.log(res.data)
+            setGetDataFaktur(res.data);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
     }, [query])
 
+    function klikUbahTotal(index, value) {
+        let tmp = []
+        let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+        // let sisa = 0
+        // let total = 0;
+
+        // setting data baru 
+        for (let i = 0; i < product.length; i++) {
+            if (i == index) {
+                tmp.push({
+                    code: product[i].code,
+                    total: product[i].total,
+                    sisa: product[i].total - hasil,
+                    bayar: hasil,
+                    idFaktur: product[i].idFaktur
+                })
+
+            }
+            else {
+                tmp.push(product[i])
+            }
+        }
+        setProduct(tmp)
+
+    }
     // Column for modal input product
     const columnsModal = [
         {
@@ -177,8 +162,11 @@ const BuatPembayaranPembelian = () => {
         },
         {
             title: 'Supplier',
-            dataIndex: 'customer_id',
+            // dataIndex: 'customer_id',
             align: 'center',
+            render: (text, record, index) => (
+                <>{getDataFaktur[index].supplier.name}</>
+            )
         },
         {
             title: 'Total',
@@ -220,11 +208,6 @@ const BuatPembayaranPembelian = () => {
             dataIndex: 'sisa',
             width: '25%',
             align: 'center',
-            // render: (record) => (
-            //     <>
-            //         <a>0</a>
-            //     </>
-            // )
         },
         {
             title: 'Dibayarkan',
@@ -232,127 +215,74 @@ const BuatPembayaranPembelian = () => {
             width: '25%',
             align: 'center',
             editable: true,
-            // render: (record) => {
-            //     let pay = 0;
-            //     if (record.pays !== 0) {
-            //         return pay += record.pays
-            //     } 
-            //     else {
-            //         return pay
-            //     }
-            // }
         },
     ];
 
-    // const handleChange = () => {
-    //     setChecked(!checked);
-    //     let check_checked = !checked;
-    //     calculate(product, check_checked);
-    // };
 
-    const handleSave = (row) => {
-        const newData = [...product];
-        const index = newData.findIndex((item) => row.id === item.id);
-        const item = newData[index];
-        newData.splice(index, 1, { ...item, ...row });
-        setProduct(newData);
-        let check_checked = checked;
-        calculate(product, check_checked);
-    };
+    const dataFaktur =
+        [...product.map((item, i) => ({
+            code: item.code,
+            total: <CurrencyFormat prefix='Rp ' disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.total} key="total" />,
+            sisa: <CurrencyFormat prefix='Rp ' disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.sisa} key="sisa" />,
+            pays: <CurrencyFormat prefix='Rp ' className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.bayar} onChange={(e) => klikUbahTotal(i, e.target.value)} key="pay" />,
 
-    const calculateInvoice = (product) => {
-        let total = 0;
-        let pay = 0;
-        let sisa = 0;
-        product.map((values) => {
-            total = values.pays - values.total;
+        }))
 
-        })
-    }
+        ]
 
-    const calculate = (product, check_checked) => {
-        let subTotal = 0;
-        let totalDiscount = 0;
-        let totalNominalDiscount = 0;
-        let grandTotalDiscount = 0;
-        let getPpnDiscount = 0;
-        let allTotalDiscount = 0;
-        let totalPpn = 0;
-        let grandTotal = 0;
-        let getPpn = 0;
-        let total = 0;
-        product.map((values) => {
-            if (check_checked) {
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
-
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                subTotal += ((total - getPpnDiscount) * 100) / (100 + values.ppn);
-                allTotalDiscount += total - getPpnDiscount;
-                totalPpn = allTotalDiscount - subTotal;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
-                setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
-                setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
-            } else {
-                subTotal += (values.quantity * values.price);
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
-
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                allTotalDiscount = total - getPpnDiscount;
-                getPpn = (allTotalDiscount * values.ppn) / 100;
-                totalPpn += getPpn;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
-                setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
-                setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
-            }
-        })
-    }
-
-    const components = {
-        body: {
-            row: EditableRow,
-            cell: EditableCell,
-        },
-    };
-    const columns = defaultColumns.map((col) => {
-        if (!col.editable) {
-            return col;
-        }
-
-        return {
-            ...col,
-            onCell: (record) => ({
-                record,
-                editable: col.editable,
-                dataIndex: col.dataIndex,
-                title: col.title,
-                handleSave,
-            }),
-        };
-    });
 
     const handleCheck = (event) => {
         var updatedList = [...product];
+        let data = event.target.value
+
+
         if (event.target.checked) {
-            updatedList = [...product, event.target.value];
-        } else {
-            updatedList.splice(product.indexOf(event.target.value), 1);
+            // updatedList = [...product, event.target.value];
+            let tmp = []
+            if (updatedList.length == 0) {
+                tmp.push({
+                    code: data.code,
+                    total: data.total,
+                    sisa: 0,
+                    bayar: 0,
+                    idFaktur: data.id
+                })
+            }
+            else {
+                for (let i = 0; i <= updatedList.length; i++) {
+                    if (updatedList.length == i) {
+                        tmp.push({
+                            code: data.code,
+                            total: data.total,
+                            sisa: 0,
+                            bayar: 0,
+                            idFaktur: data.id
+                        })
+                    }
+                    else {
+
+                        tmp.push(product[i])
+                    }
+
+                }
+            }
+            setProduct(tmp)
         }
-        setProduct(updatedList);
+        else {
+            for (let i = 0; i < product.length; i++) {
+                console.log(product[i].idFaktur);
+                if (product[i].idFaktur == data.id) {
+                    product.splice(i, 1);
+
+                }
+            }
+
+        }
     };
 
 
-    const getNewCodeSales = async () => {
-        await axios.get(`${Url}/get_new_sales_invoice_payment_code?tanggal=${date}`, {
+    const getNewCode = async () => {
+        await axios.get(`${Url}/get_new_purchase_invoice_payment_draft_code?tanggal=${date}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -369,32 +299,26 @@ const BuatPembayaranPembelian = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const userData = new FormData();
-        userData.append("tanggal", date);
-        userData.append("referensi", referensi);
-        userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("status", "Submitted");
-        product.map((p) => {
-            console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("harga[]", p.price);
-            userData.append("persentase_diskon[]", p.discount);
-            userData.append("diskon_tetap[]", p.nominal_disc);
-            userData.append("ppn[]", p.ppn);
-        });
-        userData.append("termasuk_pajak", checked);
+        const dataKirim = new FormData();
+        dataKirim.append("tanggal", date);
+        dataKirim.append("referensi", referensi);
+        dataKirim.append("kurs", kurs);
+        dataKirim.append("pemasok", supplierId);
+        dataKirim.append("status", "Submitted");
+        dataKirim.append("mata_uang", mataUangId);
+        dataKirim.append("bagan_akun", bankId);
+        dataKirim.append("catatan", description)
 
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
+        product.map((p) => {
+            dataKirim.append("id_faktur_pembelian[]", p.idFaktur);
+            dataKirim.append("terbayar[]", p.bayar);
+        });
+
 
         axios({
             method: "post",
-            url: `${Url}/sales_invoice_payments`,
-            data: userData,
+            url: `${Url}/purchase_invoice_payments`,
+            data: dataKirim,
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -407,7 +331,7 @@ const BuatPembayaranPembelian = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/pesanan");
+                navigate("/pembayaranpembelian");
             })
             .catch((err) => {
                 if (err.response) {
@@ -429,32 +353,25 @@ const BuatPembayaranPembelian = () => {
 
     const handleDraft = async (e) => {
         e.preventDefault();
-        const userData = new FormData();
-        userData.append("tanggal", date);
-        userData.append("referensi", referensi);
-        userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("status", "Draft");
-        product.map((p) => {
-            console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("harga[]", p.price);
-            userData.append("persentase_diskon[]", p.discount);
-            userData.append("diskon_tetap[]", p.nominal_disc);
-            userData.append("ppn[]", p.ppn);
-        });
-        userData.append("termasuk_pajak", checked);
+        const dataKirim = new FormData();
+        dataKirim.append("tanggal", date);
+        dataKirim.append("referensi", referensi);
+        dataKirim.append("kurs", kurs);
+        dataKirim.append("pemasok", supplierId);
+        dataKirim.append("status", "Draft");
+        dataKirim.append("mata_uang", mataUangId);
+        dataKirim.append("bagan_akun", bankId);
+        dataKirim.append("catatan", description)
 
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
+        product.map((p) => {
+            dataKirim.append("id_faktur_pembelian[]", p.idFaktur);
+            dataKirim.append("terbayar[]", p.bayar);
+        });
 
         axios({
             method: "post",
-            url: `${Url}/sales_invoice_payments`,
-            data: userData,
+            url: `${Url}/purchase_invoice_payments`,
+            data: dataKirim,
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -467,7 +384,7 @@ const BuatPembayaranPembelian = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/pesanan");
+                navigate("/pembayaranpembelian");
             })
             .catch((err) => {
                 if (err.response) {
@@ -487,20 +404,6 @@ const BuatPembayaranPembelian = () => {
             });
     };
 
-    const dataFaktur = [
-        {
-            id: 1,
-            code: 'BMA-001',
-            total: 10000,
-            pays: 0
-        },
-        {
-            id: 2,
-            code: 'BMA-002',
-            total: 10000,
-            pays: 0
-        }
-    ]
 
     return (
         <>
@@ -540,11 +443,11 @@ const BuatPembayaranPembelian = () => {
                                     placeholder="Pilih Pelanggan..."
                                     cacheOptions
                                     defaultOptions
-                                    value={selectedValue}
+                                    value={selectedSupplier}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsCustomer}
-                                    onChange={handleChangeCustomer}
+                                    loadOptions={loadOptionsSupplier}
+                                    onChange={handleChangeSupplier}
                                 />
                             </div>
                         </div>
@@ -555,11 +458,11 @@ const BuatPembayaranPembelian = () => {
                                     placeholder="Pilih Bank..."
                                     cacheOptions
                                     defaultOptions
-                                    value={selectedValue}
+                                    value={selectedBank}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsCustomer}
-                                    onChange={handleChangeCustomer}
+                                    loadOptions={loadOptionsBank}
+                                    onChange={handleChangeBank}
                                 />
                             </div>
                         </div>
@@ -567,14 +470,14 @@ const BuatPembayaranPembelian = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
                             <div className="col-sm-7">
                                 <AsyncSelect
-                                    placeholder="Pilih Pelanggan..."
+                                    placeholder="Pilih Mata Uang..."
                                     cacheOptions
                                     defaultOptions
-                                    value={selectedValue}
+                                    value={selectedMataUang}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsCustomer}
-                                    onChange={handleChangeCustomer}
+                                    loadOptions={loadOptionsMataUang}
+                                    onChange={handleChangeMataUang}
                                 />
                             </div>
                         </div>
@@ -587,6 +490,7 @@ const BuatPembayaranPembelian = () => {
                                 <input
                                     type="Nama"
                                     className="form-control"
+                                    onChange={(e) => setKurs(e.target.value)}
                                     id="inputNama3"
                                 />
                             </div>
@@ -594,21 +498,14 @@ const BuatPembayaranPembelian = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Total</label>
                             <div className="col-sm-7">
-                                <input
-                                    type="Nama"
-                                    className="form-control"
-                                    id="inputNama3"
-                                />
+                                <CurrencyFormat prefix='Rp ' disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={totalAkhir} key="total" />
+
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Sisa</label>
                             <div className="col-sm-7">
-                                <input
-                                    type="Nama"
-                                    className="form-control"
-                                    id="inputNama3"
-                                />
+                                <CurrencyFormat prefix='Rp ' disabled className='edit-disabled  form-control' thousandSeparator={'.'} decimalSeparator={','} value={sisaAkhir} key="sisa" />
                             </div>
                         </div>
                         <div className="row mb-3">
@@ -617,6 +514,7 @@ const BuatPembayaranPembelian = () => {
                                 <input
                                     type="Nama"
                                     className="form-control"
+                                    onChange={(e) => setReferensi(e.target.value)}
                                     id="inputNama3"
                                 />
                             </div>
@@ -637,26 +535,17 @@ const BuatPembayaranPembelian = () => {
                                 onClick={() => setModal2Visible(true)}
                             />
                             <Modal
-                                title="Tambah Pembauyaran Pembelian"
+                                title="Tambah Faktur Pembelian"
                                 centered
                                 visible={modal2Visible}
                                 onCancel={() => setModal2Visible(false)}
-                                // footer={[
-                                //     <Button
-                                //         key="submit"
-                                //         type="primary"
-
-                                //     >
-                                //         Tambah
-                                //     </Button>,
-                                // ]}
                                 footer={null}
                             >
                                 <div className="text-title text-start">
                                     <div className="row">
                                         <div className="col mb-3">
                                             <Search
-                                                placeholder="Cari No Transaksi..."
+                                                placeholder="Cari No Faktur..."
                                                 style={{
                                                     width: 400,
                                                 }}
@@ -665,7 +554,7 @@ const BuatPembayaranPembelian = () => {
                                         </div>
                                         <Table
                                             columns={columnsModal}
-                                            dataSource={getDataProduct}
+                                            dataSource={getDataFaktur}
                                             scroll={{
                                                 y: 250,
                                             }}
@@ -679,35 +568,30 @@ const BuatPembayaranPembelian = () => {
                         </div>
                     </div>
                     <Table
-                        components={components}
-                        rowClassName={() => 'editable-row'}
                         bordered
                         pagination={false}
                         dataSource={dataFaktur}
-                        columns={columns}
+                        // loading={isLoading}
+                        columns={defaultColumns}
                         onChange={(e) => setProduct(e.target.value)}
                         summary={(pageData) => {
-                            let totalTotal = 0;
-                            pageData.forEach(({ total }) => {
-                                totalTotal = total;
+                            let totalAkhir = 0;
+                            let sisaAkhir = 0;
+                            pageData.forEach(({ sisa, pays }) => {
+                                totalAkhir += Number(pays.props.value);
+                                sisaAkhir += Number(sisa.props.value);
+                                setTotalAkhir(totalAkhir)
+                                setSisaAkhir(sisaAkhir)
                             });
                             return (
                                 <>
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={3} className="text-end">Total yang dibayarkan</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <Text type="danger">{totalTotal}</Text>
+                                            <CurrencyFormat prefix='Rp ' disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={totalAkhir} key="pay" />
+
                                         </Table.Summary.Cell>
-                                        {/* <Table.Summary.Cell index={2}>
-                                            <Text>{totalRepayment}</Text>
-                                        </Table.Summary.Cell> */}
                                     </Table.Summary.Row>
-                                    {/* <Table.Summary.Row>
-                                        <Table.Summary.Cell index={0}>Balance</Table.Summary.Cell>
-                                        <Table.Summary.Cell index={1} colSpan={2}>
-                                            <Text type="danger">{totalBorrow - totalRepayment}</Text>
-                                        </Table.Summary.Cell>
-                                    </Table.Summary.Row> */}
                                 </>
                             );
                         }}

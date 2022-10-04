@@ -3,7 +3,7 @@ import 'antd/dist/antd.css';
 import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Tag } from 'antd';
 import axios from 'axios';
-import Url from "../../../Config";;
+import Url from '../../../Config';
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -212,11 +212,12 @@ const AdjustmentTable = () => {
             // key: 'status',
             align: 'center',
             width: '20%',
-            // render: (_, { status }) => (
-            //     <>
-            //         {status === 'publish' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
-            //     </>
-            // ),
+            render: (_, { status }) => (
+                <>
+                    {status === 'publish' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
+
+                </>
+            ),
             ...getColumnSearchProps('status'),
         },
         {
@@ -225,7 +226,18 @@ const AdjustmentTable = () => {
             align: 'center',
             render: (_, record) => (
                 <>
-                    <Space size="middle">
+                    {record.status === 'publish' ? (
+                        <Space size="middle">
+                        <Link to={`/adjustment/detail/${record.id}`}>
+                            <Button
+                                size='small'
+                                type="primary"
+                                icon={<InfoCircleOutlined />}
+                            />
+                        </Link>
+                    </Space>
+                    ) : (
+                        <Space size="middle">
                         <Link to={`/adjustment/detail/${record.id}`}>
                             <Button
                                 size='small'
@@ -247,6 +259,7 @@ const AdjustmentTable = () => {
                             onClick={() => deleteAdjustment(record.id)}
                         />
                     </Space>
+                    )}
                 </>
             ),
         },

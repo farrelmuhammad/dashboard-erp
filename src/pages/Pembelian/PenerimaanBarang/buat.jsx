@@ -412,12 +412,14 @@ const BuatPenerimaanBarang = () => {
         formData.append("pemasok", supplierId);
         formData.append("referensi", description);
 
-        formData.append("gudang", gudang);
+        // formData.append("gudang", gudang);
 
         for (let x = 0; x < productTampil.length; x++) {
+            formData.append("id_tally_sheet[]", productTampil[x].id);
+            console.log(productTampil[x].id)
             for (let y = 0; y < productTampil[x].tally_sheet_details.length; y++) {
                 formData.append("id_pesanan_penjualan[]", product[x].tally_sheet_details[y].purchase_order.id)
-                formData.append("id_tally_sheet[]", product[x].tally_sheet_details[y].id);
+                // formData.append("id_tally_sheet[]", product[x].tally_sheet_details[y].id);
                 formData.append("kuantitas_produk_box[]", product[x].tally_sheet_details[y].boxes_quantity);
             }
         }
@@ -473,7 +475,7 @@ const BuatPenerimaanBarang = () => {
         formData.append("pemasok", supplierId);
         formData.append("referensi", description);
 
-        formData.append("gudang", gudang);
+        // formData.append("gudang", gudang);
 
         for (let x = 0; x < productTampil.length; x++) {
             formData.append("id_tally_sheet[]", productTampil[x].id);

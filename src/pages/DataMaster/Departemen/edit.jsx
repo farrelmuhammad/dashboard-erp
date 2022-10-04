@@ -1,16 +1,29 @@
-
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import SendIcon from "@mui/icons-material/Send";
+import Button from "@mui/material/Button";
+// import InfoIcon from "@mui/icons-material/Info";
+// import EditIcon from "@mui/icons-material/Edit";
+// import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
+import jsCookie from "js-cookie";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
+import { Checkbox } from "@mui/material";
 import { useSelector } from "react-redux";
-import { Button } from "antd";
-import { SendOutlined } from "@ant-design/icons";
 
 const EditDepartemen = () => {
+  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [nama, setNama] = useState('');
   const [deskripsi, setDeskripsi] = useState('');
@@ -29,7 +42,7 @@ const EditDepartemen = () => {
 
   useEffect(() => {
     fetchDepartment()
-  }, [])
+  },[])
 
   const fetchDepartment = async (e) => {
     axios
@@ -45,7 +58,7 @@ const EditDepartemen = () => {
         const getData = response.data.data[0]
         console.log(getData)
         setNama(getData.name)
-        setDeskripsi(getData.description)
+        setDeskripsi(getData.description) 
       })
       .catch((err) => {
         // Jika Gagal
@@ -128,7 +141,7 @@ const EditDepartemen = () => {
       });
   }, []);
 
-  if (data) {
+  if(data){
     return (
       <>
         <form className="  p-3 mb-3 bg-body rounded">
@@ -154,13 +167,13 @@ const EditDepartemen = () => {
               Nama Departemen
             </label>
             <div className="col-sm-10">
-              <input
-                type="Name"
-                className="form-control"
-                id="inputNama3"
-                defaultValue={nama}
-                onChange={(e) => setNama(e.target.value)}
-              />
+                <input
+                  type="Name"
+                  className="form-control"
+                  id="inputNama3"
+                  defaultValue={nama}
+                  onChange={(e) => setNama(e.target.value)}
+                />
             </div>
           </div>
           <div className="row mb-3">
@@ -168,23 +181,80 @@ const EditDepartemen = () => {
               Keterangan
             </label>
             <div className="col-sm-10">
-              <textarea
-                className="form-control"
-                id="form4Example3"
-                rows="4"
-                defaultValue={deskripsi}
-                onChange={(e) => setDeskripsi(e.target.value)}
-              />
+                <textarea
+                  className="form-control"
+                  id="form4Example3"
+                  rows="4"
+                  defaultValue={deskripsi}
+                  onChange={(e) => setDeskripsi(e.target.value)}
+                />
             </div>
           </div>
+          {/* <div className="p-2 mb-2 bg-body rounded">
+            <div className="text-title text-start">
+              <h4 className="title fw-bold mb-2">Masukkan Karyawan</h4>
+            </div>
+            <Paper sx={{ width: "100%", overflow: "hidden" }}>
+              <TableContainer sx={{ maxHeight: 440 }}>
+                <Table stickyHeader aria-label="sticky table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Nama Karyawan</TableCell>
+                      <TableCell>Departmen</TableCell>
+                      <TableCell>Posisi</TableCell>
+                      <TableCell>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {getEmployee
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((d) => {
+                        return (
+                          <TableRow
+                            hover
+                            role="checkbox"
+                            tabIndex={-1}
+                            key={d.id}
+                          >
+                            <TableCell>{d.name}</TableCell>
+                            <TableCell>{d.department_id}</TableCell>
+                            <TableCell>{d.position_id}</TableCell>
+                            <TableCell>
+                              <Checkbox
+                                key={d.id}
+                                value={d.id}
+                                id={d.id}
+                                onChange={handleCheck}
+                              />
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[10, 25, 100]}
+                component="div"
+                count={getEmployee.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </Paper>
+          </div> */}
           <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+            {/* <button onClick={handleSubmit} className="btn btn-success" type="submit">Simpan</button> */}
             <Button
-              type="primary"
-              icon={<SendOutlined />}
-              size="large"
               onClick={handleUpdate}
+              variant="contained"
+              endIcon={<SendIcon />}
             >
-              Submit
+              Simpan
             </Button>
           </div>
         </form>

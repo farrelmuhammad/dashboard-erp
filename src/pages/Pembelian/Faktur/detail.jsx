@@ -44,6 +44,9 @@ const DetailFakturPembelian = () => {
     const [dataHeader, setDataHeader] = useState([])
     const [dataSupplier, setDataSupplier] = useState()
     const [dataBarang, setDataBarang] = useState([])
+    const [biaya, setBiaya] = useState([])
+    const [getStatus, setGetStatus] = useState()
+    const [mataUang, setMataUang] = useState('Rp ')
 
     useEffect(() => {
         getDataFaktur();
@@ -57,10 +60,17 @@ const DetailFakturPembelian = () => {
         })
             .then((res) => {
                 let getData = res.data[0]
+                setBiaya(getData.purchase_invoice_costs)
+                setGetStatus(getData.status)
                 setDataHeader(getData);
                 setGrup(getData.supplier._group)
                 setDataSupplier(getData.supplier)
                 setDataBarang(getData.purchase_invoice_details)
+                if(getData.purchase_invoice_details[0].currency_name){
+
+                    setMataUang(getData.purchase_invoice_details[0].currency_name)
+                }
+                console.log(getData.purchase_invoice_details)
                 setLoading(false);
             })
             .catch((err) => {
@@ -124,7 +134,7 @@ const DetailFakturPembelian = () => {
             nama: item.product_name,
             qty: item.quantity,
             stn: item.unit,
-            price: item.price,
+            price:  mataUang + ' ' + Number(item.price).toLocaleString('id'),
             diskon:
                 <>
                     {
@@ -139,36 +149,32 @@ const DetailFakturPembelian = () => {
                                     <div className='d-flex p-1' style={{ height: "100%" }}>
                                         <CurrencyFormat disabled className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={item.fixed_discount} key="diskon" />
 
-                                        <option selected value="nominal">matauang</option>
+                                        <option selected value="nominal">{mataUang}</option>
 
 
                                     </div> : null
                     }
 
                 </>,
-            total: item.subtotal,
+            total:  mataUang + ' ' + Number(item.total).toLocaleString('id'),
         }))
 
         ]
 
 
 
-    // const columns = defaultColumns.map((col) => {
-    //     if (!col.editable) {
-    //         return col;
-    //     }
+        
+    const convertToRupiah = (angka) => {
+        // console.log(angka)
+        let hasil = mataUang + ' ' + Number(angka).toLocaleString('id')
+        return <input
+            value={hasil}
+            readOnly="true"
+            className="form-control form-control-sm"
+            id="colFormLabelSm"
+        />
+    }
 
-    //     return {
-    //         ...col,
-    //         onCell: (record) => ({
-    //             record,
-    //             editable: col.editable,
-    //             dataIndex: col.dataIndex,
-    //             title: col.title,
-    //             handleSave,
-    //         }),
-    //     };
-    // });
 
 
 
@@ -184,13 +190,13 @@ const DetailFakturPembelian = () => {
     const columAkun = [
         {
             title: 'No.Akun',
-            dataIndex: '',
+            dataIndex: 'code',
             width: '5%',
             align: 'center',
         },
         {
             title: 'Deskripsi',
-            dataIndex: 'delivery_note_details',
+            dataIndex: 'desc',
         },
         {
             title: 'Jumlah',
@@ -200,6 +206,16 @@ const DetailFakturPembelian = () => {
 
         },
     ];
+
+    const dataBiaya = 
+    [...biaya.map((item , i) => ({
+        code: item.chart_of_account.code,
+        desc: item.description,
+        total: mataUang + ' ' + Number(item.total).toLocaleString('id')
+
+    }))
+
+    ]
 
 
 
@@ -341,6 +357,13 @@ const DetailFakturPembelian = () => {
                                 />
                             </div>
                         </div>
+
+                        <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Status</label>
+                            <div className="col-sm-4 p-1">
+                                {getStatus === 'Submitted' ? <Tag color="blue">{getStatus}</Tag> : getStatus === 'Draft' ? <Tag color="orange">{getStatus}</Tag> : getStatus === 'Done' ? <Tag color="green">{getStatus}</Tag> : <Tag color="red">{getStatus}</Tag>}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -411,27 +434,13 @@ const DetailFakturPembelian = () => {
                 </div>
                 <div>
                     <div className="row mb-3">
-                        <label htmlFor="inputNama3" className="col-sm-2 ps-3 col-form-label">Biaya Lain</label>
-                        <div className="col-sm-5">
-                            {/* <ReactSelect
-                                className="basic-single"
-                                placeholder="Pilih Akun..."
-                                classNamePrefix="select"
-                                isLoading={isLoading}
-                                isSearchable
-                                getOptionLabel={(e) => e.label}
-                                getOptionValue={(e) => e.value}
-                                options={optionsType}
-                                onChange={(e) => setFakturType(e.value)}
-                            /> */}
-                        </div>
+                        <label htmlFor="inputNama3" className="col-sm-5 ps-3 col-form-label">Biaya Lain</label>
                     </div>
                     <Table
-                        // components={components}
                         rowClassName={() => 'editable-row'}
                         bordered
                         pagination={false}
-                        // dataSource={TableData}
+                        dataSource={dataBiaya}
                         columns={columAkun}
                         onChange={(e) => setProduct(e.target.value)}
                     />
@@ -467,68 +476,23 @@ const DetailFakturPembelian = () => {
                     <div className="col-6">
                         <div className="d-flex justify-content-end mb-3">
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">Subtotal</label>
-                            <div className="col-sm-6">
-                                <input
-                                    defaultValue={subTotal}
-                                    readOnly="true"
-                                    type="number"
-                                    className="form-control form-control-sm"
-                                    id="colFormLabelSm"
-                                // placeholder='(Total Qty X harga) per item + ... '
-                                />
-                            </div>
+                            <div className="col-sm-6">{convertToRupiah(dataHeader.subtotal)}</div>
                         </div>
                         <div className="d-flex justify-content-end mb-3">
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">Diskon</label>
-                            <div className="col-sm-6">
-                                <input
-                                    defaultValue={grandTotalDiscount}
-                                    readOnly="true"
-                                    type="number"
-                                    className="form-control form-control-sm"
-                                    id="colFormLabelSm"
-                                // placeholder='(total disc/item) ditotal semua'
-                                />
-                            </div>
+                            <div className="col-sm-6">{convertToRupiah(dataHeader.discount)}</div>
                         </div>
                         <div className="d-flex justify-content-end mb-3">
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">Uang Muka</label>
-                            <div className="col-sm-6">
-                                <input
-                                    defaultValue={totalPpn}
-                                    readOnly="true"
-                                    type="number"
-                                    className="form-control form-control-sm"
-                                    id="colFormLabelSm"
-                                // placeholder='ppn per item di total semua row'
-                                />
-                            </div>
+                            <div className="col-sm-6">{convertToRupiah(dataHeader.down_payment)}</div>
                         </div>
                         <div className="d-flex justify-content-end mb-3">
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">PPN</label>
-                            <div className="col-sm-6">
-                                <input
-                                    defaultValue={totalPpn}
-                                    readOnly="true"
-                                    type="number"
-                                    className="form-control form-control-sm"
-                                    id="colFormLabelSm"
-                                // placeholder='ppn per item di total semua row'
-                                />
-                            </div>
+                            <div className="col-sm-6">{convertToRupiah(dataHeader.ppn)}</div>
                         </div>
                         <div className="d-flex justify-content-end mb-3">
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">Total</label>
-                            <div className="col-sm-6">
-                                <input
-                                    defaultValue={grandTotal}
-                                    readOnly="true"
-                                    type="number"
-                                    className="form-control form-control-sm"
-                                    id="colFormLabelSm"
-                                // placeholder='subtotal - diskon + ppn'
-                                />
-                            </div>
+                            <div className="col-sm-6">{convertToRupiah(dataHeader.total)}</div>
                         </div>
                     </div>
                 </div>

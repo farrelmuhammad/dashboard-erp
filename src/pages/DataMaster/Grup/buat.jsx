@@ -2,13 +2,17 @@ import "./form.css";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import jsCookie from "js-cookie";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
+import SendIcon from "@mui/icons-material/Send";
+import Button from "@mui/material/Button";
+import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
 import { useSelector } from "react-redux";
-import { Button } from "antd";
-import { SendOutlined } from "@ant-design/icons";
+import { PageHeader} from 'antd';
 
 const BuatGrup = () => {
+  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -111,10 +115,13 @@ const BuatGrup = () => {
   if (getModules?.length > 0) {
     return (
       <>
-        <form className="  p-3 mb-3 bg-body rounded">
-          <div className="text-title text-start mb-4">
-            <h3 className="title fw-bold">Buat Grup Pengguna</h3>
-          </div>
+        <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Buat Grup Pengguna">
+          </PageHeader>
+
+        <form className="  p-3 mb-3 bg-body rounded">  
           <div className="row mb-3">
             <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
               Kode
@@ -125,10 +132,8 @@ const BuatGrup = () => {
                 className="form-control"
                 id="inputKode3"
                 // onChange={e => setId(e.target.value)}
-                // value={getGroup}
-                // readOnly={getGroup}
-                value="Otomatis"
-                disabled
+                value={getGroup}
+                readOnly={getGroup}
               />
             </div>
           </div>
@@ -162,7 +167,7 @@ const BuatGrup = () => {
             <div className="text-title text-start">
               <h4 className="title fw-bold mb-2">Hak Akses</h4>
             </div>
-            {/* <div className="container">
+            <div className="container">
               <div className="row">
                 {getModules.map(
                   (d) =>
@@ -181,6 +186,20 @@ const BuatGrup = () => {
                               <FormGroup>
                                 {menu.access_rights.map((ar) => {
                                   return (
+                                    // <div className="d-flex flex-column mb-3">
+                                    //   <div className="p-2">
+                                    //   <FormControlLabel
+                                    //   control={<Checkbox />}
+                                    //   onChange={handleCheck}
+                                    //   label={ar.ability_name}
+                                    //   // value={
+                                    //   //   access.module_id ||
+                                    //   //   access.module_menu_id ||
+                                    //   //   access.id
+                                    //   // }
+                                    //   />
+                                    //   </div>
+                                    // </div>
                                     <FormControlLabel
                                       control={<Checkbox />}
                                       onChange={handleCheck}
@@ -190,6 +209,18 @@ const BuatGrup = () => {
                                       />
                                   );
                                 })}
+                                {/* <FormControlLabel
+                                  control={<Checkbox />}
+                                  label="Read"
+                                  />
+                                <FormControlLabel
+                                  control={<Checkbox />}
+                                  label="Update"
+                                  />
+                                <FormControlLabel
+                                  control={<Checkbox />}
+                                  label="Delete"
+                                  /> */}
                               </FormGroup>
                             </div>
                           </div>
@@ -200,17 +231,16 @@ const BuatGrup = () => {
                   // )
                 )}
               </div>
-            </div> */}
+            </div>
           </div>
           <div className="d-grid gap-2 d-md-flex justify-content-md-end">
             {/* <button className="btn btn-success" type="button" onClick={handleSubmit}>Simpan</button> */}
             <Button
-              type="primary"
-              icon={<SendOutlined />}
-              size="large"
               onClick={handleSubmit}
+              variant="contained"
+              endIcon={<SendIcon />}
             >
-              Submit
+              Simpan
             </Button>
           </div>
         </form>

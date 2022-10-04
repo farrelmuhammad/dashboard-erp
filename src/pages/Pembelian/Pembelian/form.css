@@ -53,3 +53,11 @@
 
 
   } */
+
+ .tabel-cetak{
+  color: red;
+    /* padding: 5px 10px!important; */
+  }
+  .header-cetak{
+    font-size: 10px!important;
+  }

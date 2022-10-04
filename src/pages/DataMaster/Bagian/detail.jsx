@@ -1,12 +1,12 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
-
+import jsCookie from "js-cookie";
 import Url from '../../../Config';
 import { useSelector } from 'react-redux';
 
 export const DetailBagian = () => {
-    // const auth = useSelector(state => state.auth);
+    // const token = jsCookie.get("auth");
     const auth = useSelector(state => state.auth);
     const { id } = useParams();
     const [data, setData] = useState([]);

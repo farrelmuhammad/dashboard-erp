@@ -1,14 +1,16 @@
 import axios from 'axios';
+import jsCookie from 'js-cookie';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Url from '../../../Config';
 import './form.css'
+import SendIcon from '@mui/icons-material/Send';
+import Button from '@mui/material/Button';
 import { useSelector } from 'react-redux';
-import { Button } from 'antd';
-import { SendOutlined } from '@ant-design/icons';
 
 const EditGrup = () => {
+    // const token = jsCookie.get('auth')
     const auth = useSelector(state => state.auth);
     const [kode, setKode] = useState();
     const [name, setName] = useState();
@@ -142,13 +144,9 @@ const EditGrup = () => {
                         </div>
                     </div>
                     <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <Button
-                            type="primary"
-                            icon={<SendOutlined />}
-                            size="large"
-                            onClick={handleUpdate}
-                        >
-                            Submit
+                        {/* <button className="btn btn-success" type="button" onClick={handleUpdate}>Simpan</button> */}
+                        <Button onClick={handleUpdate} variant="contained" endIcon={<SendIcon />}>
+                            Simpan
                         </Button>
                     </div>
                 </form>

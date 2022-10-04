@@ -270,7 +270,7 @@ const EditAdjustment = () => {
     };
     const handleSave = (row) => {
         const newData = [...product];
-        const index = newData.findIndex((item) => row.id === item.id);
+        const index = newData.findIndex((item) => row.product_id === item.product_id);
         const item = newData[index];
         newData.splice(index, 1, { ...item, ...row });
         setProduct(newData);

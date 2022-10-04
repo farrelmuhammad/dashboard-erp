@@ -336,7 +336,7 @@ const BuatFakturPembelian = () => {
                 }
                 setData(tmpData);
             }
-            else if (data[y].pilihanDiskon == 'persen') {
+            else{
 
                 let hasil = value.replaceAll('.', '');
                 console.log(hasil)
@@ -353,7 +353,7 @@ const BuatFakturPembelian = () => {
                                 discount_percentage: hasil,
                                 fixed_discount: data[i].fixed_discount,
                                 subtotal: data[i].subtotal,
-                                pilihanDiskon: data[i].pilihanDiskon,
+                                pilihanDiskon: 'persen',
                                 currency_name: data[i].currency_name,
                                 unit: data[i].unit,
                                 total: data[i].total
@@ -456,7 +456,7 @@ const BuatFakturPembelian = () => {
             total += (Number(data[x].quantity.replace(',', '.')) * Number(data[x].price));
             totalPerProduk = (Number(data[x].quantity.replace(',', '.')) * Number(data[x].price));
 
-            console.log(totalPerProduk)
+            console.log(total)
             if (data[x].pilihanDiskon == 'persen') {
                 hasilDiskon += (Number(totalPerProduk) * Number(data[x].discount_percentage.replace(',', '.')) / 100);
             }
@@ -978,7 +978,7 @@ const BuatFakturPembelian = () => {
             setIdTandaTerima(idTerima);
             var updatedList;
 
-            console.log(idTerima)
+            console.log(updatedList)
             var strParams;
             for (let i = 0; i < idTerima.length; i++) {
                 if (i == 0) {
@@ -989,8 +989,7 @@ const BuatFakturPembelian = () => {
                 }
 
             }
-            // console.log(strParams)
-            // for (let i = 0; i < idTerima.length; i++) {
+
             axios.get(`${Url}/purchase_invoices_grouped_goods_receipt_details?${strParams}`, {
                 headers: {
                     Accept: "application/json",
@@ -998,15 +997,70 @@ const BuatFakturPembelian = () => {
                 },
             })
                 .then((res) => {
-                    // console.log(res.data.details)
                     updatedList = res.data.details;
-                    // console.log(updatedList)
                 })
                 .then(() => {
-                    if (data.length == 0) {
+                    for (let i = 0; i < updatedList.length; i++) {
+                        updatedList[i].currency_name ? setMataUang(updatedList[i].currency_name) : setMataUang('Rp')
+                        tmpData.push(
+                            {
+                                id: updatedList[i].product_id,
+                                product_name: updatedList[i].product_name,
+                                quantity: updatedList[i].quantity,
+                                price: updatedList[i].price,
+                                discount_percentage: updatedList[i].discount_percentage,
+                                fixed_discount: updatedList[i].fixed_discount,
+                                subtotal: updatedList[i].subtotal,
+                                pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+                                currency_name: updatedList[i].currency_name ? updatedList[i].currency_name : 'Rp',
+                                unit: updatedList[i].unit,
+                                total: updatedList[i].total
+
+                            }
+                        )
+
+                    }
+                    console.log(tmpData)
+                    setData(tmpData)
+                    calculate(tmpData)
+                    console.log(tmpData)
+
+
+                })
+        }
+        else {
+            for (let i = 0; i < idTandaTerima.length; i++) {
+                if (event.target.value.id == idTandaTerima[i]) {
+                    idTandaTerima.splice(i, 1);
+                }
+            }
+
+            if (idTandaTerima.length != 0) {
+                var strParams;
+                for (let i = 0; i < idTandaTerima.length; i++) {
+                    if (i == 0) {
+                        strParams = "id_tanda_terima_barang[]=" + idTandaTerima[i]
+                    }
+                    else {
+                        strParams = strParams + "&id_tanda_terima_barang[]=" + idTandaTerima[i]
+                    }
+
+                }
+
+                // for (let i = 0; i < idTandaTerima.length; i++) {
+                axios.get(`${Url}/purchase_invoices_grouped_goods_receipt_details?${strParams}`, {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${auth.token}`,
+                    },
+                })
+                    .then((res) => {
+
+                        updatedList = res.data.details;
+                    })
+                    .then(() => {
+
                         for (let i = 0; i < updatedList.length; i++) {
-                            console.log(updatedList)
-                            updatedList[i].currency_name ? setMataUang(updatedList[i].currency_name) : setMataUang('Rp')
                             tmpData.push(
                                 {
                                     id: updatedList[i].product_id,
@@ -1025,108 +1079,11 @@ const BuatFakturPembelian = () => {
                             )
 
                         }
-                    }
-                    else {
-                        for (let i = 0; i < updatedList.length; i++) {
-                            if (i == updatedList.length - 1) {
-                                tmpData.push(
-                                    {
-                                        id: updatedList[i].product_id,
-                                        product_name: updatedList[i].product_name,
-                                        quantity: updatedList[i].quantity,
-                                        price: updatedList[i].price,
-                                        discount_percentage: updatedList[i].discount_percentage,
-                                        fixed_discount: updatedList[i].fixed_discount,
-                                        subtotal: updatedList[i].subtotal,
-                                        pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
-                                        currency_name: updatedList[i].currency_name ? updatedList[i].currency_name : 'Rp',
-                                        unit: updatedList[i].unit,
-                                        total: updatedList[i].total
 
-                                    }
-                                )
-                            }
-                            else {
-
-                                tmpData.push(data[i])
-                            }
-
-                        }
-
-                    }
-                    console.log(tmpData)
-                    setData(tmpData)
-                    calculate(tmpData)
-                    // }
-
-
-                })
-        }
-        else {
-            // let tmpData = [];
-
-            console.log(idTandaTerima)
-            for (let i = 0; i < idTandaTerima.length; i++) {
-                if (event.target.value.id == idTandaTerima[i]) {
-                    idTandaTerima.splice(i, 1);
-                }
-            }
-            console.log(idTandaTerima)
-
-            if (idTandaTerima.length != 0) {
-                var strParams;
-                for (let i = 0; i < idTandaTerima.length; i++) {
-                    if (i == 0) {
-                        strParams = "id_tanda_terima_barang[]=" + idTandaTerima[i]
-                    }
-                    else {
-                        strParams = strParams + "&id_tanda_terima_barang[]=" + idTandaTerima[i]
-                    }
-
-                }
-
-                for (let i = 0; i < idTandaTerima.length; i++) {
-                    axios.get(`${Url}/purchase_invoices_grouped_goods_receipt_details?${strParams}`, {
-                        headers: {
-                            Accept: "application/json",
-                            Authorization: `Bearer ${auth.token}`,
-                        },
+                        setData(tmpData)
+                        calculate(tmpData)
                     })
-                        .then((res) => {
 
-                            updatedList = res.data.details;
-                        })
-                }
-
-
-                for (let i = 0; i < updatedList.length; i++) {
-                    if (i == updatedList.length - 1) {
-                        tmpData.push(
-                            {
-                                id: updatedList[i].product_id,
-                                product_name: updatedList[i].product_name,
-                                quantity: updatedList[i].quantity,
-                                price: updatedList[i].price,
-                                discount_percentage: updatedList[i].discount_percentage,
-                                fixed_discount: updatedList[i].fixed_discount,
-                                subtotal: updatedList[i].subtotal,
-                                pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
-                                currency_name: updatedList[i].currency_name ? updatedList[i].currency_name : 'Rp',
-                                unit: updatedList[i].unit,
-                                total: updatedList[i].total
-
-                            }
-                        )
-                    }
-                    else {
-
-                        tmpData.push(data[i])
-                    }
-
-                }
-
-                setData(tmpData)
-                calculate(tmpData)
             }
             else {
                 tmpData.push()
@@ -1139,7 +1096,7 @@ const BuatFakturPembelian = () => {
         console.log(tmpData)
         // console.log(updatedList)
 
-        // console.log(updatedList)
+        console.log(tmpData)
     };
 
 
@@ -1358,12 +1315,7 @@ const BuatFakturPembelian = () => {
             })
     }
 
-    // function totalKeseluruhan(){
-    //     let hasil = grandTotal + totalCOA + Number(totalPpn) - Number(uangMuka);
-
-    //     console.log(hasil)
-    //     return hasil
-    // }
+ 
     return (
         <>
             <form className="p-3 mb-3 bg-body rounded">
@@ -1539,7 +1491,7 @@ const BuatFakturPembelian = () => {
                 <div className="text-title text-start mb-4">
                     <div className="row">
                         <div className="col">
-                            <h4 className="title fw-normal">Daftar Pesanan</h4>
+                            <h4 className="title fw-normal">Daftar Penerimaan Pesanan</h4>
                         </div>
                         <div className="col text-end me-2">
                             <Button

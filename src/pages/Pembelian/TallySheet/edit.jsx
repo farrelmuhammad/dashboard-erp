@@ -709,7 +709,7 @@ const EditTallySheet = () => {
             tallySheetData.append("id_pesanan_pembelian[]", p.id_pesanan_pembelian);
         });
 
-
+        console.log(tallySheetData)
         let key = 0;
         for (let idx = 0; idx < kuantitasBox.length; idx++) {
             for (let x = 0; x < kuantitasBox[idx].length; x++) {
@@ -717,6 +717,8 @@ const EditTallySheet = () => {
             }
             key++;
         }
+
+
 
         axios({
             method: "put",
@@ -838,7 +840,7 @@ const EditTallySheet = () => {
         <>
             <form className="  p-3 mb-5 bg-body rounded">
                 <div className="text-title text-start mb-4">
-                    <h3 className="title fw-bold">Detail Pesanan</h3>
+                    <h3 className="title fw-bold">Detail Tally Sheet</h3>
                 </div>
                 <div class="row">
                     <div class="col">

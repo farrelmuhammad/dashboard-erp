@@ -1,14 +1,28 @@
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import SendIcon from "@mui/icons-material/Send";
+import Button from "@mui/material/Button";
+// import InfoIcon from "@mui/icons-material/Info";
+// import EditIcon from "@mui/icons-material/Edit";
+// import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
+import jsCookie from "js-cookie";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
+import { Checkbox } from "@mui/material";
 import { useSelector } from "react-redux";
-import { Button } from "antd";
-import { SendOutlined } from "@ant-design/icons";
 
 const EditPosisi = () => {
+  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   // const [kode, setKode] = useState();
   const [code, setCode] = useState('');
@@ -21,9 +35,12 @@ const EditPosisi = () => {
   const [getPosition, setGetPosition] = useState();
   const [getEmployee, setGetEmployee] = useState();
 
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
   useEffect(() => {
     fetchPosisi()
-  }, [])
+  },[])
 
   const fetchPosisi = async (e) => {
     axios
@@ -117,6 +134,15 @@ const EditPosisi = () => {
   //   setEmployee(updatedList);
   // };
 
+  // const handleChangePage = (event, newPage) => {
+  //   setPage(newPage);
+  // };
+
+  // const handleChangeRowsPerPage = (event) => {
+  //   setRowsPerPage(event.target.value);
+  //   setPage(0);
+  // };
+
   if (getEmployee?.length > 0) {
     return (
       <>
@@ -135,7 +161,7 @@ const EditPosisi = () => {
                 id="inputKode3"
                 defaultValue={code}
                 disabled
-              // onChange={(e) => setKode(e.target.value)}
+                // onChange={(e) => setKode(e.target.value)}
               />
             </div>
           </div>
@@ -144,13 +170,13 @@ const EditPosisi = () => {
               Nama Posisi
             </label>
             <div className="col-sm-10">
-              <input
-                type="Nama"
-                className="form-control"
-                id="inputNama3"
-                defaultValue={name}
-                onChange={(e) => setName(e.target.value)}
-              />
+                <input
+                  type="Nama"
+                  className="form-control"
+                  id="inputNama3"
+                  defaultValue={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
             </div>
           </div>
           <div className="row mb-3">
@@ -158,23 +184,82 @@ const EditPosisi = () => {
               Keterangan
             </label>
             <div className="col-sm-10">
-              <textarea
-                className="form-control"
-                id="form4Example3"
-                rows="4"
-                defaultValue={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
+                <textarea
+                  className="form-control"
+                  id="form4Example3"
+                  rows="4"
+                  defaultValue={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
             </div>
           </div>
+          {/* <div className="p-2 mb-2 bg-body rounded">
+            <div className="text-title text-start mb-2">
+              <h4 className="title fw-bold">Data Karyawan</h4>
+            </div>
+            <Paper sx={{ width: "100%", overflow: "hidden" }}>
+              <TableContainer sx={{ maxHeight: 440 }}>
+                <Table stickyHeader aria-label="sticky table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Kode</TableCell>
+                      <TableCell>Nama Karyawan</TableCell>
+                      <TableCell>Departmen</TableCell>
+                      <TableCell>Posisi</TableCell>
+                      <TableCell>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {getEmployee
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
+                      )
+                      .map((d) => {
+                        return (
+                          <TableRow
+                            hover
+                            role="checkbox"
+                            tabIndex={-1}
+                            key={d.id}
+                          >
+                            <TableCell>{d.id}</TableCell>
+                            <TableCell>{d.name}</TableCell>
+                            <TableCell>{d.department_id}</TableCell>
+                            <TableCell>{d.position_id}</TableCell>
+                            <TableCell>
+                              <Checkbox
+                                key={d.id}
+                                value={d.id}
+                                id={d.id}
+                                onChange={handleCheck}
+                              />
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[10, 25, 100]}
+                component="div"
+                count={getEmployee.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </Paper>
+          </div> */}
           <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+            {/* <button onClick={handleUpdate} className="btn btn-success" type="button">Simpan</button> */}
             <Button
-              type="primary"
-              icon={<SendOutlined />}
-              size="large"
               onClick={handleUpdate}
+              variant="contained"
+              endIcon={<SendIcon />}
             >
-              Submit
+              Simpan
             </Button>
           </div>
         </form>

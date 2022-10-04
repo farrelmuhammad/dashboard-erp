@@ -1,17 +1,17 @@
 import axios from "axios";
 // import MaterialTable from "material-table";
 import React, { useEffect } from "react";
-
+import jsCookie from "js-cookie";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
-
+import SendIcon from "@mui/icons-material/Send";
 import { useSelector } from "react-redux";
 
 const DetailPelanggan = () => {
-  // const auth = useSelector(state => state.auth);
+  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const { id } = useParams();
 

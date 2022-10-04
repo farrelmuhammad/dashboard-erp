@@ -3,7 +3,7 @@ import 'antd/dist/antd.css';
 import { CheckOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, MoreOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Dropdown, Input, Menu, Modal, Skeleton, Space, Table, Tag } from 'antd';
 import axios from 'axios';
-import Url from "../../../Config";;
+import Url from '../../../Config';
 import jsCookie from 'js-cookie'
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
@@ -18,25 +18,26 @@ const SuratJalanTable = () => {
     const searchInput = useRef(null);
     const [getDataSO, setGetDataSO] = useState([]);
     const [status, setStatus] = useState([]);
+    // const [getCustomer, setGetCustomer] = useState('');
+    const [getCustomerName, setGetCustomerName] = useState(null);
+    // const [getAddress, setGetAddress] = useState('');
+    const [getAddressName, setGetAddressName] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [checked, setChecked] = useState('');
-    const [cuy, setCuy] = useState("");
+    const [checked, setChecked] = useState(null);
 
     const [visible, setVisible] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     // const [modalText, setModalText] = useState('Content of the modal');
-    const [getCustomerName, setGetCustomerName] = useState(null);
-    const [selectedValue, setSelectedCustomer] = useState(null);
     const [customer, setCustomer] = useState("");
     const [address, setAddress] = useState("");
+    const [selectedValue, setSelectedCustomer] = useState(null);
+    const [selectedValue2, setSelectedAddress] = useState(null);
 
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
         setCustomer(value.id);
         setAddress(value.customer_addresses)
     };
-
-    // console.log(checked)
 
     // load options using API call
     const loadOptionsCustomer = (inputValue) => {
@@ -100,25 +101,11 @@ const SuratJalanTable = () => {
         }
     };
 
-    // const onChange = (e) => {
-    //     // console.log(e.target.checked,checked);
-    //     if (e.target.checked) {
-    //         let aa = e.target.checked;
-    //         setCuy(!true);
-    //         console.log(cuy, "aa");
-    //     } else {
-    //         let aa = e.target.checked;
-    //         setCuy(true);
-    //         console.log(cuy, "bb");
-    //     }
-    // };
-
     const onChange = (e) => {
-        // console.log('checked = ', e.target.checked);
-        setChecked(e.target.checked);
+        // checked ? setChecked(false) : setChecked(true)
+        // console.log(checked);
+        console.log(e.target.checked);
     };
-
-    // console.log('checked = ', checked);
 
     const deleteDeliveryNotes = async (id) => {
         await axios.delete(`${Url}/delivery_notes/${id}`, {
@@ -363,17 +350,30 @@ const SuratJalanTable = () => {
                                                 <div className="row">
                                                     <label htmlFor="inputNama3" className="col-sm-4 ms-5 mb-2 col-form-label">Penerima</label>
                                                     <div className="col-sm-6">
-                                                        <AsyncSelect
-                                                            placeholder="Pilih Pelanggan..."
-                                                            cacheOptions
-                                                            defaultInputValue={getCustomerName}
-                                                            defaultOptions
-                                                            value={selectedValue}
-                                                            getOptionLabel={(e) => e.name}
-                                                            getOptionValue={(e) => e.id}
-                                                            loadOptions={loadOptionsCustomer}
-                                                            onChange={handleChangeCustomer}
-                                                        />
+                                                        {checked === false ?
+                                                            <AsyncSelect
+                                                                placeholder="Pilih Penerima..."
+                                                                cacheOptions
+                                                                defaultOptions
+                                                                // defaultInputValue={getCustomerName}
+                                                                value={selectedValue}
+                                                                getOptionLabel={(e) => e.name}
+                                                                getOptionValue={(e) => e.id}
+                                                                loadOptions={loadOptionsCustomer}
+                                                                onChange={handleChangeCustomer}
+                                                            />
+                                                            : <AsyncSelect
+                                                                placeholder="Pilih Penerima..."
+                                                                cacheOptions
+                                                                defaultOptions
+                                                                defaultInputValue={getCustomerName}
+                                                                value={selectedValue}
+                                                                getOptionLabel={(e) => e.name}
+                                                                getOptionValue={(e) => e.id}
+                                                                loadOptions={loadOptionsCustomer}
+                                                                onChange={handleChangeCustomer}
+                                                            />
+                                                        }
                                                     </div>
                                                     <label htmlFor="inputNama3" className="col-sm-4 ms-5 mb-2 col-form-label">Alamat Penerima</label>
                                                     <div className="col-sm-6">

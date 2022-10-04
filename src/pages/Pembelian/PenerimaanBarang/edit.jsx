@@ -238,9 +238,10 @@ const EditPenerimaanBarang = () => {
         formData.append("alamat", addressId);
         formData.append("gudang", dataPenerimaan.warehouse_id);
 
-        for (let x = 0; x < dataTS.length; x++) {
-            formData.append("id_tally_sheet[]", dataTS[x].id);
-        }
+        console.log(dataTS)
+        // for (let x = 0; x < dataTS.length; x++) {
+        //     formData.append("id_tally_sheet[]", dataTS[x].id);
+        // }
 
         formData.append("status", "Submitted");
 

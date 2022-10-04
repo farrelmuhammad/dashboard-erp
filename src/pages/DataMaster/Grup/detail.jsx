@@ -1,5 +1,5 @@
 import React from 'react'
-;
+import jsCookie from 'js-cookie';
 import { useSelector } from 'react-redux';
 
 export const DetailGrup = () => {

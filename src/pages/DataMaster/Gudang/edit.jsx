@@ -1,14 +1,16 @@
 import axios from "axios";
+import jsCookie from "js-cookie";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
+import SendIcon from "@mui/icons-material/Send";
+import Button from "@mui/material/Button";
 import { useSelector } from "react-redux";
-import { Button } from "antd";
-import { SendOutlined } from "@ant-design/icons";
 
 const EditGudang = () => {
+  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
@@ -269,13 +271,13 @@ const EditGudang = () => {
             </div>
           </form>
           <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+            {/* <button onClick={handleUpdate} className="btn btn-success" type="button">Simpan</button> */}
             <Button
-              type="primary"
-              icon={<SendOutlined />}
-              size="large"
               onClick={handleUpdate}
+              variant="contained"
+              endIcon={<SendIcon />}
             >
-              Submit
+              Simpan
             </Button>
           </div>
         </>

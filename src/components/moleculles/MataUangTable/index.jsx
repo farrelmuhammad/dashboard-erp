@@ -1,32 +1,170 @@
 import * as React from "react";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
 import axios from "axios";
 import { useState } from "react";
-import jsCookie from "js-cookie";
 import Url from "../../../Config";
 import Swal from "sweetalert2";
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
-import InfoIcon from "@mui/icons-material/Info";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { IconButton } from "@mui/material";
+import { Link, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Button, Input, Space, Table, Tag } from "antd";
+import { useRef } from "react";
+import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
 
 const MataUangTable = () => {
-  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [mataUang, setMataUang] = useState();
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [loading, setLoading] = useState(true);
+
+  const searchInput = useRef(null);
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { id } = useParams();
+
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText('');
+  };
+
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Reset
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({
+                closeDropdown: false,
+              });
+              setSearchText(selectedKeys[0]);
+              setSearchedColumn(dataIndex);
+            }}
+          >
+            Filter
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1890ff' : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownVisibleChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+
+  });
+
+  const columns = [
+    {
+      title: 'Kode.',
+      dataIndex: 'code',
+      key: 'code',
+      width: '10%',
+      ...getColumnSearchProps('code'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+      
+    },
+    {
+      title: 'Nama Mata Uang',
+      dataIndex: 'name',
+      key: 'name',
+      width: '30%',
+      ...getColumnSearchProps('name'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Keterangan',
+      dataIndex: 'description',
+      key: 'description',
+      width: '30%',
+      ...getColumnSearchProps('description'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Actions',
+      width: '20%',
+      align: 'center',
+      render: (_, record) => (
+        <>
+          <Space size="middle">
+            <Link to={`/matauang/detail/${record.id}`}>
+              <Button
+                size='small'
+                type="primary"
+                icon={<InfoCircleOutlined />}
+              />
+            </Link>
+            <Link to={`/matauang/edit/${record.id}`}>
+              <Button
+                size='small'
+                type="success"
+                icon={<EditOutlined />}
+              />
+            </Link>
+            <Button
+              size='small'
+              type="danger"
+              icon={<DeleteOutlined />}
+              onClick={() => deleteMataUang(record.id)}
+            />
+          </Space>
+        </>
+      ),
+    },
+  ];
 
   useEffect(() => {
     getMataUang();
@@ -40,107 +178,39 @@ const MataUangTable = () => {
           Authorization: `Bearer ${auth.token}`,
         },
       })
-      .then((res) => {
-        setMataUang(res.data.data);
-        setLoading(false);
-      });
+      .then(res => {
+        const getData = res.data.data
+        setMataUang(getData)
+        // setStatus(getData.map(d => d.status))
+        setIsLoading(false);
+        console.log(getData)
+      })
   };
 
-  const deleteMataUang = async (id, code) => {
-    try{
-      await axios.delete(`${Url}/currencies/${id}`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      });
-      getMataUang();
-      Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
-    }
-    catch(err){
-      Swal.fire("Gagal Dihapus!", "Data Tidak Bisa Dihapus", "error");
-    }
+  const deleteMataUang = async (id) => {
+    await axios.delete(`${Url}/currencies/${id}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    });
+    getMataUang();
+    Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
   };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(event.target.value);
-    setPage(0);
-  };
-
-  if (!loading) {
-    return (
-      <>
-        <Paper sx={{ width: "100%", overflow: "hidden" }}>
-          <TableContainer sx={{ maxHeight: 440 }}>
-            <Table size="small" stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  <TableCell align="center">Kode</TableCell>
-                  <TableCell align="center">Nama Mata Uang</TableCell>
-                  <TableCell align="center">Keterangan</TableCell>
-                  <TableCell align="center">Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {
-                  mataUang?.length > 0 ? (
-                    mataUang
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((d) => {
-                      return (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={d.id}>
-                          <TableCell align="center">{d.code}</TableCell>
-                          <TableCell align="center">{d.name}</TableCell>
-                          <TableCell align="center">{d.description}</TableCell>
-                          <TableCell align="center">
-                            <Link to={`/matauang/detail/${d.id}`}>
-                              <IconButton aria-label="detail">
-                                <InfoIcon sx={{ color: "black" }} />
-                              </IconButton>
-                            </Link>
-                            <Link to={`/matauang/edit/${d.id}`}>
-                              <IconButton aria-label="edit">
-                                <EditIcon sx={{ color: "black" }} />
-                              </IconButton>
-                            </Link>
-                            <IconButton
-                              aria-label="delete"
-                              onClick={() => deleteMataUang(d.id, d.code)}
-                            >
-                              <DeleteIcon sx={{ color: "black" }} />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
-                  ) : 
-                  <TableRow hover role="checkbox" tabIndex={-1}>
-                    <TableCell align="center" colSpan={4} className="text-no-data">No Rows Data</TableCell>
-                  </TableRow>
-                }
-                
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
-            component="div"
-            count={mataUang.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Paper>
-      </>
-    );
-  }
-
-  return <p>Loading</p>;
-};
+  return (
+    <>
+      <Table
+        loading={isLoading}
+        columns={columns}
+        pagination={{ pageSize: 5 }}
+        dataSource={mataUang}
+        scroll={{
+          y: 240,
+        }}
+      />
+    </>
+  );
+}
 
 export default MataUangTable;

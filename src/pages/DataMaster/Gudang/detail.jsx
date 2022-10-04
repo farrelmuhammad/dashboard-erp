@@ -1,16 +1,16 @@
 import axios from "axios";
-
+import jsCookie from "js-cookie";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
-
-
+import SendIcon from "@mui/icons-material/Send";
+import Button from "@mui/material/Button";
 import { useSelector } from "react-redux";
 
 const DetailGudang = () => {
-  // const auth = useSelector(state => state.auth);
+  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const { id } = useParams();
   const [data, setData] = useState([]);

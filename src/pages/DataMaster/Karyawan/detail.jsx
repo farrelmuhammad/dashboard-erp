@@ -7,7 +7,7 @@
 // import TablePagination from "@mui/material/TablePagination";
 // import TableRow from "@mui/material/TableRow";
 import axios from "axios";
-
+import jsCookie from "js-cookie";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -15,7 +15,7 @@ import Url from "../../../Config";
 import "./form.css";
 
 export const DetailKaryawan = () => {
-  // 
+  // const auth.token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [data, setData] = useState([]);
   const [dataWarehouse, setDataWarehouse] = useState([]);

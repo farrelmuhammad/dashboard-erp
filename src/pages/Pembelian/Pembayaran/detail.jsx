@@ -1,7 +1,7 @@
 import './form.css'
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
@@ -11,96 +11,21 @@ import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
+import CurrencyFormat from 'react-currency-format';
 import { useSelector } from 'react-redux';
 
 const { Text } = Typography;
 
-const EditableContext = createContext(null);
 
-const EditableRow = ({ index, ...props }) => {
-    const [form] = Form.useForm();
-    return (
-        <Form form={form} component={false}>
-            <EditableContext.Provider value={form}>
-                <tr {...props} />
-            </EditableContext.Provider>
-        </Form>
-    );
-};
-
-const EditableCell = ({
-    title,
-    editable,
-    children,
-    dataIndex,
-    record,
-    handleSave,
-    ...restProps
-}) => {
-    const [editing, setEditing] = useState(false);
-    const inputRef = useRef(null);
-    const form = useContext(EditableContext);
-    useEffect(() => {
-        if (editing) {
-            inputRef.current.focus();
-        }
-    }, [editing]);
-
-    const toggleEdit = () => {
-        setEditing(!editing);
-        form.setFieldsValue({
-            [dataIndex]: record[dataIndex],
-        });
-    };
-
-    const save = async () => {
-        try {
-            const values = await form.validateFields();
-            toggleEdit();
-            handleSave({ ...record, ...values });
-        } catch (errInfo) {
-            console.log('Save failed:', errInfo);
-        }
-    };
-
-    let childNode = children;
-
-    if (editable) {
-        childNode = editing ? (
-            <Form.Item
-                style={{
-                    margin: 0,
-                }}
-                name={dataIndex}
-                rules={[
-                    {
-                        required: true,
-                        message: `${title} is required.`,
-                    },
-                ]}
-            >
-                {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
-            </Form.Item>
-        ) : (
-            <div
-                className="editable-cell-value-wrap"
-                onClick={toggleEdit}
-            >
-                {children}
-            </div>
-        );
-    }
-
-    return <td {...restProps}>{childNode}</td>;
-};
 
 const DetailPembayaranPembelian = () => {
     // const auth.token = jsCookie.get("auth");
+    const { id } = useParams();
     const [date, setDate] = useState(null);
     const [referensi, setReferensi] = useState('');
     const [description, setDescription] = useState('');
     const [status, setStatus] = useState("");
+    const [loading, setLoading] = useState(true)
     const [customer, setCustomer] = useState("");
     const [COA, setCOA] = useState("");
     const [product, setProduct] = useState([]);
@@ -121,86 +46,31 @@ const DetailPembayaranPembelian = () => {
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [selectedValue2, setSelectedCOA] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
+    const [dataHeader, setDataHeader] = useState()
+    const [dataDetail, setDataDetail] = useState([])
 
-    const handleChangeCustomer = (value) => {
-        setSelectedCustomer(value);
-        setCustomer(value.id);
-    };
-    // load options using API call
-    const loadOptionsCustomer = (inputValue) => {
-        return fetch(`${Url}/select_customers?limit=10&nama=${inputValue}`, {
+    useEffect(() => {
+        getDataPembayaran();
+    }, [])
+    const getDataPembayaran = async () => {
+        await axios.get(`${Url}/purchase_invoice_payments?id=${id}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
-    };
-
-    const handleChangeCOA = (value) => {
-        setSelectedCOA(value);
-        setCOA(value.id);
-    };
-    // load options using API call
-    const loadOptionsCOA = (inputValue) => {
-        return fetch(`${Url}/select_chart_of_accounts?limit=10&nama=${inputValue}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        }).then((res) => res.json());
-    };
-
-    useEffect(() => {
-        getNewCodeSales()
-    })
-
-    useEffect(() => {
-        const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_sales_invoices?nama_alias=${query}`, {
-                headers: {
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${auth.token}`
-                }
+        })
+            .then((res) => {
+                let getData = res.data.data[0];
+                setDataHeader(getData)
+                setDataDetail(getData.purchase_invoice_payment_details)
+                setLoading(false);
             })
-            setGetDataProduct(res.data);
-        };
+            .catch((err) => {
+                // Jika Gagal
+                console.log(err);
+            });
+    }
 
-        if (query.length === 0 || query.length > 2) getProduct();
-    }, [query])
-
-    // Column for modal input product
-    const columnsModal = [
-        {
-            title: 'No. Faktur',
-            align: 'center',
-            dataIndex: 'code',
-        },
-        {
-            title: 'Supplier',
-            dataIndex: 'customer_id',
-            align: 'center',
-        },
-        {
-            title: 'Total',
-            dataIndex: 'total',
-            width: '20%',
-            align: 'center',
-        },
-        {
-            title: 'Actions',
-            dataIndex: 'address',
-            width: '15%',
-            align: 'center',
-            render: (_, record) => (
-                <>
-                    <Checkbox
-                        value={record}
-                        onChange={handleCheck}
-                    />
-                </>
-            )
-        },
-    ];
 
     const defaultColumns = [
         {
@@ -244,263 +114,21 @@ const DetailPembayaranPembelian = () => {
         },
     ];
 
-    // const handleChange = () => {
-    //     setChecked(!checked);
-    //     let check_checked = !checked;
-    //     calculate(product, check_checked);
-    // };
+    const dataFaktur =
+        [...dataDetail.map((item, i) => ({
+            code: item.code,
+            total: <CurrencyFormat prefix='Rp ' type="danger" disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.total} key="total" />,
+            sisa: <CurrencyFormat prefix='Rp ' type="danger" disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.total} key="sisa" />,
+            pays: <CurrencyFormat prefix='Rp ' type="danger" disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.paid} key="pay" />,
+        }))
 
-    const handleSave = (row) => {
-        const newData = [...product];
-        const index = newData.findIndex((item) => row.id === item.id);
-        const item = newData[index];
-        newData.splice(index, 1, { ...item, ...row });
-        setProduct(newData);
-        let check_checked = checked;
-        calculate(product, check_checked);
-    };
+        ]
 
-    const calculateInvoice = (product) => {
-        let total = 0;
-        let pay = 0;
-        let sisa = 0;
-        product.map((values) => {
-            total = values.pays - values.total;
-
-        })
+    if (loading) {
+        return (
+            <div></div>
+        )
     }
-
-    const calculate = (product, check_checked) => {
-        let subTotal = 0;
-        let totalDiscount = 0;
-        let totalNominalDiscount = 0;
-        let grandTotalDiscount = 0;
-        let getPpnDiscount = 0;
-        let allTotalDiscount = 0;
-        let totalPpn = 0;
-        let grandTotal = 0;
-        let getPpn = 0;
-        let total = 0;
-        product.map((values) => {
-            if (check_checked) {
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
-
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                subTotal += ((total - getPpnDiscount) * 100) / (100 + values.ppn);
-                allTotalDiscount += total - getPpnDiscount;
-                totalPpn = allTotalDiscount - subTotal;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
-                setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
-                setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
-            } else {
-                subTotal += (values.quantity * values.price);
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
-
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                allTotalDiscount = total - getPpnDiscount;
-                getPpn = (allTotalDiscount * values.ppn) / 100;
-                totalPpn += getPpn;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
-                setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
-                setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
-            }
-        })
-    }
-
-    const components = {
-        body: {
-            row: EditableRow,
-            cell: EditableCell,
-        },
-    };
-    const columns = defaultColumns.map((col) => {
-        if (!col.editable) {
-            return col;
-        }
-
-        return {
-            ...col,
-            onCell: (record) => ({
-                record,
-                editable: col.editable,
-                dataIndex: col.dataIndex,
-                title: col.title,
-                handleSave,
-            }),
-        };
-    });
-
-    const handleCheck = (event) => {
-        var updatedList = [...product];
-        if (event.target.checked) {
-            updatedList = [...product, event.target.value];
-        } else {
-            updatedList.splice(product.indexOf(event.target.value), 1);
-        }
-        setProduct(updatedList);
-    };
-
-
-    const getNewCodeSales = async () => {
-        await axios.get(`${Url}/get_new_sales_invoice_payment_code?tanggal=${date}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then((res) => {
-                setGetCode(res.data.data);
-            })
-            .catch((err) => {
-                // Jika Gagal
-                console.log(err);
-            });
-    }
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const userData = new FormData();
-        userData.append("tanggal", date);
-        userData.append("referensi", referensi);
-        userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("status", "Submitted");
-        product.map((p) => {
-            console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("harga[]", p.price);
-            userData.append("persentase_diskon[]", p.discount);
-            userData.append("diskon_tetap[]", p.nominal_disc);
-            userData.append("ppn[]", p.ppn);
-        });
-        userData.append("termasuk_pajak", checked);
-
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
-
-        axios({
-            method: "post",
-            url: `${Url}/sales_invoice_payments`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/pesanan");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
-            });
-    };
-
-    const handleDraft = async (e) => {
-        e.preventDefault();
-        const userData = new FormData();
-        userData.append("tanggal", date);
-        userData.append("referensi", referensi);
-        userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("status", "Draft");
-        product.map((p) => {
-            console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("harga[]", p.price);
-            userData.append("persentase_diskon[]", p.discount);
-            userData.append("diskon_tetap[]", p.nominal_disc);
-            userData.append("ppn[]", p.ppn);
-        });
-        userData.append("termasuk_pajak", checked);
-
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
-
-        axios({
-            method: "post",
-            url: `${Url}/sales_invoice_payments`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/pesanan");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
-            });
-    };
-
-    const dataFaktur = [
-        {
-            id: 1,
-            code: 'BMA-001',
-            total: 10000,
-            pays: 0
-        },
-        {
-            id: 2,
-            code: 'BMA-002',
-            total: 10000,
-            pays: 0
-        }
-    ]
 
     return (
         <>
@@ -514,12 +142,11 @@ const DetailPembayaranPembelian = () => {
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
                             <div className="col-sm-7">
                                 <input
-                                    value="2022-09-10"
+                                    value={dataHeader.date}
                                     id="startDate"
                                     className="form-control"
                                     type="date"
                                     disabled
-                                // onChange={(e) => setDate(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -527,7 +154,7 @@ const DetailPembayaranPembelian = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Pembayaran</label>
                             <div className="col-sm-7">
                                 <input
-                                    value={getCode}
+                                    value={dataHeader.code}
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
@@ -539,7 +166,7 @@ const DetailPembayaranPembelian = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                             <div className="col-sm-7">
                                 <input
-                                    value="supplier"
+                                    value={dataHeader.supplier.name}
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
@@ -551,7 +178,7 @@ const DetailPembayaranPembelian = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Kas/Bank</label>
                             <div className="col-sm-7">
                                 <input
-                                    value="kas bank"
+                                    value={dataHeader.chart_of_account.name}
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
@@ -559,46 +186,40 @@ const DetailPembayaranPembelian = () => {
                                 />
                             </div>
                         </div>
-                        <div className="row mb-3">
+                        {/* <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
                             <div className="col-sm-7">
                                 <input
-                                    value="mata uang"
+                                    value={dataHeader.}
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
                                     disabled
                                 />
                             </div>
-                        </div>
+                        </div> */}
 
                     </div>
                     <div className="col">
-                        <div className="row mb-3">
+                        {/* <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Rate Kurs</label>
                             <div className="col-sm-7">
                                 <input
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
-                                    value="rate kurs"
+                                    value={dataHeader.}
                                     disabled
                                 />
                             </div>
-                        </div>
+                        </div> */}
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Total</label>
                             <div className="col-sm-7">
-                                <input
-                                    type="Nama"
-                                    className="form-control"
-                                    id="inputNama3"
-                                    value="total"
-                                    disabled
-                                />
+                            <CurrencyFormat prefix='Rp ' type="danger" disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={dataHeader.total} key="pay" />
                             </div>
                         </div>
-                        <div className="row mb-3">
+                        {/* <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Sisa</label>
                             <div className="col-sm-7">
                                 <input
@@ -609,7 +230,7 @@ const DetailPembayaranPembelian = () => {
                                     disabled
                                 />
                             </div>
-                        </div>
+                        </div> */}
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Referensi</label>
                             <div className="col-sm-7">
@@ -617,7 +238,7 @@ const DetailPembayaranPembelian = () => {
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
-                                    value="referensi"
+                                    value={dataHeader.reference}
                                     disabled
                                 />
                             </div>
@@ -631,84 +252,25 @@ const DetailPembayaranPembelian = () => {
                         <div className="col">
                             <h4 className="title fw-normal">Daftar Faktur</h4>
                         </div>
-                        {/* <div className="col text-end me-2">
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
-                            />
-                            <Modal
-                                title="Tambah Pembauyaran Pembelian"
-                                centered
-                                visible={modal2Visible}
-                                onCancel={() => setModal2Visible(false)}
-                                // footer={[
-                                //     <Button
-                                //         key="submit"
-                                //         type="primary"
-
-                                //     >
-                                //         Tambah
-                                //     </Button>,
-                                // ]}
-                                footer={null}
-                            >
-                                <div className="text-title text-start">
-                                    <div className="row">
-                                        <div className="col mb-3">
-                                            <Search
-                                                placeholder="Cari No Transaksi..."
-                                                style={{
-                                                    width: 400,
-                                                }}
-                                                onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                            />
-                                        </div>
-                                        <Table
-                                            columns={columnsModal}
-                                            dataSource={getDataProduct}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
-                                    </div>
-                                </div>
-                            </Modal>
-                        </div> */}
                     </div>
                     <Table
-                        components={components}
                         rowClassName={() => 'editable-row'}
                         bordered
                         pagination={false}
                         dataSource={dataFaktur}
-                        columns={columns}
-                        onChange={(e) => setProduct(e.target.value)}
-                        summary={(pageData) => {
-                            let totalTotal = 0;
-                            pageData.forEach(({ total }) => {
-                                totalTotal = total;
-                            });
+                        columns={defaultColumns}
+                        summary={() => {
                             return (
                                 <>
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={3} className="text-end">Total yang dibayarkan</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <Text type="danger">{totalTotal}</Text>
+                                            <CurrencyFormat prefix='Rp ' type="danger" disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={dataHeader.total} key="pay" />
+
+
                                         </Table.Summary.Cell>
-                                        {/* <Table.Summary.Cell index={2}>
-                                            <Text>{totalRepayment}</Text>
-                                        </Table.Summary.Cell> */}
                                     </Table.Summary.Row>
-                                    {/* <Table.Summary.Row>
-                                        <Table.Summary.Cell index={0}>Balance</Table.Summary.Cell>
-                                        <Table.Summary.Cell index={1} colSpan={2}>
-                                            <Text type="danger">{totalBorrow - totalRepayment}</Text>
-                                        </Table.Summary.Cell>
-                                    </Table.Summary.Row> */}
+
                                 </>
                             );
                         }}
@@ -722,7 +284,7 @@ const DetailPembayaranPembelian = () => {
                                 className="form-control"
                                 id="form4Example3"
                                 rows="2"
-                                onChange={(e) => setDescription(e.target.value)}
+                                value={dataHeader.notes}
                                 disabled
                             />
                         </div>
@@ -730,29 +292,7 @@ const DetailPembayaranPembelian = () => {
                 </form>
 
 
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
-                    <button
-                        type="button"
-                        className="btn btn-success rounded m-1"
-                        value="Draft"
-                        onClick={handleDraft}
-                    >
-                        Simpan
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-primary rounded m-1"
-                        value="Submitted"
-                        onClick={handleSubmit}
-                    >
-                        Submit
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-warning rounded m-1">
-                        Cetak
-                    </button>
-                </div>
+
             </form>
         </>
     )

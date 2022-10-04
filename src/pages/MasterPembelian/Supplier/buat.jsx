@@ -1,6 +1,6 @@
 import axios from "axios";
 // import MaterialTable from "material-table";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect, useRef} from "react";
 import jsCookie from "js-cookie";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,13 +8,100 @@ import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
 import SendIcon from "@mui/icons-material/Send";
-import Button from "@mui/material/Button";
+import { Button, Form, Input, Popconfirm, Switch, Table } from 'antd';
 import { useSelector } from "react-redux";
+
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { Grid } from "@material-ui/core";
+
+const EditableContext = React.createContext(null);
+
+const EditableRow = ({ index, ...props }) => {
+  const [form] = Form.useForm();
+  return (
+    <Form form={form} component={false}>
+      <EditableContext.Provider value={form}>
+        <tr {...props} />
+      </EditableContext.Provider>
+    </Form>
+  );
+};
+
+const EditableCell = ({
+  title,
+  editable,
+  children,
+  dataIndex,
+  record,
+  handleSave,
+  ...restProps
+}) => {
+  const [editing, setEditing] = useState(false);
+  const inputRef = useRef(null);
+  const form = useContext(EditableContext);
+  useEffect(() => {
+    if (editing) {
+      inputRef.current.focus();
+    }
+  }, [editing]);
+
+  const toggleEdit = () => {
+    setEditing(!editing);
+    form.setFieldsValue({
+      [dataIndex]: record[dataIndex],
+    });
+  };
+
+  const save = async () => {
+    try {
+      const values = await form.validateFields();
+      toggleEdit();
+      handleSave({ ...record, ...values });
+    } catch (errInfo) {
+      console.log('Save failed:', errInfo);
+    }
+  };
+
+  let childNode = children;
+
+  if (editable) {
+    childNode = editing ? (
+      <Form.Item
+        style={{
+          margin: 0,
+        }}
+        name={dataIndex}
+        rules={[
+          {
+            required: true,
+            message: `${title} is required.`,
+          },
+        ]}
+      >
+        <Input ref={inputRef} onPressEnter={save} onBlur={save} />
+      </Form.Item>
+    ) : (
+      <div
+        className="editable-cell-value-wrap"
+        style={{
+          paddingRight: 24,
+        }}
+        onClick={toggleEdit}
+      >
+        {children}
+      </div>
+    );
+  }
+
+  return <td {...restProps}>{childNode}</td>;
+};
+
 
 const BuatSupplier = () => {
   // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [name, setName] = useState('');
+  const [checked, setChecked] = useState(false);
   const [bussiness_ent, setBussiness_ent] = useState('');
   
   const [grup, setGrup] = useState('');
@@ -25,6 +112,46 @@ const BuatSupplier = () => {
   // const [discount, setDiscount] = useState('');
   const [status, setStatus] = useState('');
   const navigate = useNavigate();
+  const [dataSource, setDataSource] = useState([]);
+  const [count, setCount] = useState(2);
+  
+  const handleAdd = () => {
+    const newData = {
+      key: count,
+      name: ``,
+      age: '',
+      address: ``,
+    };
+    setDataSource([...dataSource, newData]);
+    setCount(count + 1);
+  };
+
+  const handleSave = (row) => {
+    const newData = [...dataSource];
+    const index = newData.findIndex((item) => row.key === item.key);
+    const item = newData[index];
+    newData.splice(index, 1, { ...item, ...row });
+    setDataSource(newData);
+  };
+
+  const components = {
+    body: {
+      row: EditableRow,
+      cell: EditableCell,
+    },
+  };
+
+  const onChange = () => {
+    checked ? setChecked(false) : setChecked(true)
+
+    if (checked === false) {
+      setStatus("Active");
+      // console.log('Active');
+    } else {
+      setStatus("Inactive");
+      // console.log('Inactive');
+    }
+  };
 
   const [data, setData] = useState([]);
   const columns = [
@@ -237,42 +364,52 @@ const BuatSupplier = () => {
             </select>
           </div>
         </div>
-        <fieldset className="row mb-3">
-          <legend className="col-form-label col-sm-2 pt-0">Status</legend>
-          <div className="col-sm-10">
-            <div className="form-check">
-              <input
-                onChange={(e) => setStatus(e.target.value)}
-                value="Active"
-                checked={status === "Active"}
-                className="form-check-input"
-                type="radio"
-                name="flexRadioDefault"
-                id="flexRadioDefault1"
-              />
-              <label className="form-check-label" htmlFor="gridRadios1">
-                Aktif
-              </label>
-            </div>
-            <div className="form-check">
-              <input
-                onChange={(e) => setStatus(e.target.value)}
-                value="Inactive"
-                checked={status === "Inactive"}
-                className="form-check-input"
-                type="radio"
-                name="flexRadioDefault"
-                id="flexRadioDefault2"
-              />
-              <label className="form-check-label" htmlFor="gridRadios2">
-                Non-Aktif
-              </label>
-            </div>
+
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
+          <div className="col-sm-7">
+            <Switch defaultChecked={checked} onChange={onChange} />
+            <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
+              {
+                checked ? "Aktif"
+                  : "Nonaktif"
+              }
+            </label>
           </div>
-        </fieldset>
+        </div>
+
       </form>
       <form className="  p-3 mb-3 bg-body rounded">
-        {/* <MaterialTable
+      <div className="row">
+         <div className="col">
+             <h4 className="title fw-normal">Tambah Alamat Supplier</h4>
+          </div>
+          <div className="col text-end me-2">
+            <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={handleAdd}
+                style={{
+                        marginBottom: 16,
+                       }}
+           />
+        </div> 
+      </div>
+
+      {/* <h5 className="title fw-bold"></h5> */}
+      {/* <Grid container justify="flex-end">
+      
+        </Grid> */}
+        <Table
+          components={components}
+          rowClassName={() => 'editable-row'}
+          bordered
+          dataSource={dataSource}
+          columns={columns}
+        />
+
+{/* 
+        <MaterialTable
           title="Alamat Supplier"
           data={data}
           columns={columns}
