@@ -136,6 +136,7 @@ const BuatTally = () => {
     const [indexPO, setIndexPO] = useState(0);
     const [kuantitasBox, setKuantitasBox] = useState([]);
     const [idxPesanan, setIdxPesanan] = useState(0);
+    const [statusSO, setStatusSO] = useState([]);
 
     useEffect(() => {
         let arrTotal = [];
@@ -664,20 +665,20 @@ const BuatTally = () => {
             {
                 title: 'Nama Alias Produk',
                 dataIndex: 'product_alias_name',
-                width: '25%',
+                width: '18%',
                 key: 'product_alias_name',
             },
             {
                 title: 'Nama Produk',
                 dataIndex: 'product_name',
-                width: '25%',
+                width: '20%',
                 key: 'product_name',
                 // editable: true,
             },
             {
                 title: 'Qty',
                 dataIndex: 'quantity',
-                width: '10%',
+                width: '5%',
                 align: 'center',
                 // editable: true,
             },
@@ -685,12 +686,20 @@ const BuatTally = () => {
                 title: 'Stn',
                 dataIndex: 'unit',
                 align: 'center',
-                width: '10%',
+                width: '5%',
                 key: 'name',
             },
             {
                 title: 'Box',
                 dataIndex: 'box',
+                align: 'center',
+                width: '5%',
+                key: 'box',
+
+            },
+            {
+                title: 'Status',
+                dataIndex: '',
                 align: 'center',
                 width: '10%',
                 key: 'box',
@@ -1001,6 +1010,7 @@ const BuatTally = () => {
         let arrBox = [];
         let arrqty = []
         let arrKuantitas = [];
+        let arrStatus = [];
 
         if (event.target.checked) {
             updatedList = [...product, event.target.value];
@@ -1008,6 +1018,7 @@ const BuatTally = () => {
             // tambah data pas di checked 
             let idValues = [];
             let valuesId = [];
+            let status_tmp = [];
             if (data.length == 0) {
 
                 for (let i = 0; i < updatedList.length; i++) {
@@ -1015,6 +1026,7 @@ const BuatTally = () => {
                     let tempKuantitas = [];
                     let qty = [];
                     let tempBox = [];
+                    let stts = [];
 
                     let values = [];
                     let id = [];
@@ -1165,17 +1177,26 @@ const BuatTally = () => {
                                 { value: '' },
                             ]
                         ]);
+                        if (updatedList[i].sales_order_details[x].tally_sheets_qty >= updatedList[i].sales_order_details[x].quantity) {
+                            stts.push('Done')
+                        }
+                        else if (updatedList[i].sales_order_details[x].tally_sheets_qty < updatedList[i].sales_order_details[x].quantity) {
+                            stts.push('Next Delivery')
+                        }
                         tempKuantitas.push(0);
                         qty.push(0);
                         tempBox.push(0);
                         values.push('')
                         id.push("")
                     }
+                    arrStatus.push(stts);
+                    // console.log(arrStatus);
                     arrData.push(tempData);
                     arrKuantitas[i] = tempKuantitas;
                     arrqty[i] = qty;
                     arrBox[i] = tempBox;
                     idValues.push(values)
+                    // console.log(idValues);
                     valuesId.push(id)
                 }
             }
@@ -1184,37 +1205,45 @@ const BuatTally = () => {
                     let tempKuantitas = [];
                     let tempValues = [];
                     let tempId = [];
+                    let tempStatus = [];
                     if (i == updatedList.length - 1) {
                         for (let x = 0; x < updatedList[i].sales_order_details.length; x++) {
                             tempKuantitas.push(0);
                             tempValues.push("");
                             tempId.push("");
+                            tempStatus.push("");
                         }
                         arrKuantitas[i] = tempKuantitas;
                         idValues.push(tempValues)
                         valuesId.push(tempId)
+                        arrStatus.push(tempStatus)
                     }
                     else {
                         arrKuantitas[i] = kuantitasBox[i]
                         idValues.push(selectedValue3[i])
                         valuesId.push(productSelect[i])
+                        arrStatus.push(statusSO[i])
                     }
                 }
 
                 for (let i = 0; i < updatedList.length; i++) {
                     let qty = [];
                     let tempBox = [];
+                    let tempStts = [];
                     if (i == updatedList.length - 1) {
                         for (let x = 0; x < updatedList[i].sales_order_details.length; x++) {
                             qty.push(0);
                             tempBox.push(0);
+                            tempStts.push("");
                         }
                         arrqty[i] = qty;
                         arrBox[i] = tempBox;
+                        arrStatus[i] = tempStts;
                     }
                     else {
                         arrBox[i] = totalBox[i];
                         arrqty[i] = quantity[i]
+                        arrStatus[i] = statusSO[i];
                     }
                 }
 
@@ -1382,10 +1411,11 @@ const BuatTally = () => {
             setData(arrData);
             setTotalBox(arrBox);
             setQuantity(arrqty);
+            setStatusSO(arrStatus)
             setGetDataDetailSO(updatedList.map(d => d.sales_order_details))
             setSelectedProduct(idValues)
             setProductSelect(valuesId)
-            console.log(idValues);
+            console.log(arrStatus);
         }
         else {
 

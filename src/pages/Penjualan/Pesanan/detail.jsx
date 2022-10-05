@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import jsCookie from "js-cookie";
 import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
 import axios from 'axios';
 import Url from "../../../Config";;
-import { Table, Tag } from 'antd';
+import { Button, PageHeader, Skeleton, Table, Tag } from 'antd';
 import { useSelector } from 'react-redux';
 import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
 import logo from "../../Logo.jpeg"
+import { EditOutlined } from '@ant-design/icons';
 
 export const DetailPesanan = () => {
     // const token = jsCookie.get("auth");
@@ -18,6 +19,7 @@ export const DetailPesanan = () => {
     const [status, setStatus] = useState([]);
     const [details, setDetails] = useState([]);
     const [taxInclude, setTaxInclude] = useState("");
+    const [loading, setLoading] = useState(true);
     const auth = useSelector(state => state.auth);
 
     const columns = [
@@ -101,6 +103,7 @@ export const DetailPesanan = () => {
                 setDetails(res.data.data[0].sales_order_details);
                 setCustomer(res.data.data[0].customer.name);
                 setTaxInclude(res.data.data[0].tax_included)
+                setLoading(false)
                 console.log(res.data.data[0].tax_included)
                 // console.log(res.data.data.map(d => d.sales_order_details));
                 // console.log(getData.map(d => d.sales_order_details));
@@ -143,7 +146,7 @@ export const DetailPesanan = () => {
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
         copyStyles: true,
-        pageStyle: {pageStyle}
+        pageStyle: { pageStyle }
     })
     // if (loading) {
     //     return (
@@ -190,6 +193,20 @@ export const DetailPesanan = () => {
         }))
 
         ]
+
+    if (loading) {
+        return (
+            <>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+            </>
+        )
+    }
+
     return (
         <>
             <div style={{ display: "none", position: "absolute" }}>
@@ -268,20 +285,23 @@ export const DetailPesanan = () => {
                     </div>
                 </div>
             </div>
-            
-            <form className="p-3 mb-3 bg-body rounded">
-                <div className="row">
-                    <div className="col text-title text-start">
-                        <div className="text-title text-start mb-4">
-                            <h3 className="title fw-bold">Detail Pesanan</h3>
-                        </div>
-                    </div>
-                    <div className="col button-add text-end me-3">
+
+            <PageHeader
+                className="bg-body rounded mb-2"
+                onBack={() => window.history.back()}
+                title="Detail Pesanan Penjualan"
+                extra={[
+                    <Link to={`/pesanan/edit/${id}`}>
+                        <Button
+                            type="primary"
+                            icon={<EditOutlined />}
+                        />
+                    </Link>,
                     <button type="button" onClick={handlePrint} class="btn btn-warning rounded m-1">
-                            Cetak
-                        </button>
-                    </div>
-                </div>
+                        Cetak
+                    </button>,
+                ]}
+            >
                 <div class="row">
                     <div class="col">
                         <div className="row mb-3">
@@ -360,32 +380,22 @@ export const DetailPesanan = () => {
                         </div>
                     </div>
                 </div>
-            </form>
-            <form className="p-3 mb-5 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <div class="row">
-                        <div class="col">
-                            <h4 className="title fw-normal">Cari Produk</h4>
-                        </div>
-                        {/* <div class="col-sm-3 me-5">
-                            <div class="input-group">
-                                <input disabled="true" type="text" class="form-control" id="inlineFormInputGroupUsername" placeholder="Type..." />
-                                <div class="input-group-text">Search</div>
-                            </div>
-                        </div> */}
-                    </div>
-                    {/* <ProdukPesananTable /> */}
-                    <Table
-                        columns={columns}
-                        dataSource={details}
-                        pagination={false}
-                        scroll={{
-                            y: 200,
-                        }}
-                        size="middle"
-                    />
-                </div>
-                <div class="row p-0">
+            </PageHeader>
+
+            <PageHeader
+                ghost={false}
+                title="Daftar Produk"
+            >
+                <Table
+                    columns={columns}
+                    dataSource={details}
+                    pagination={false}
+                    scroll={{
+                        y: 200,
+                    }}
+                    size="middle"
+                />
+                <div class="row p-0 mt-3">
                     <div class="col ms-5">
                         <div class="form-check">
                             {taxInclude === "1" ? <input
@@ -474,7 +484,7 @@ export const DetailPesanan = () => {
                         </div>
                     </div>
                 </div>
-            </form>
+            </PageHeader>
         </>
     )
 }

@@ -571,8 +571,7 @@ const BuatTallySheet = () => {
                 product_name: item.product_name,
                 quantity: quantity[record.key][i].toFixed(2).replace('.', ','),
                 unit: item.unit,
-                status: statusPO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusPO[record.key][i] === 'Next Delivery' ? <Tag color="orange">{statusPO[record.key][i]}</Tag> : statusPO[record.key][i] === 'Done' ? <Tag color="green">{statusPO[record.key][i]}</Tag> : null
-                ,
+                status: statusPO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusPO[record.key][i] === 'Next Delivery' ? <Tag color="orange">{statusPO[record.key][i]}</Tag> : statusPO[record.key][i] === 'Done' ? <Tag color="green">{statusPO[record.key][i]}</Tag> : null,
                 box:
                     <>
                         <a onClick={() => klikTampilSheet(record.key, i, item.product_name, item.quantity)}>

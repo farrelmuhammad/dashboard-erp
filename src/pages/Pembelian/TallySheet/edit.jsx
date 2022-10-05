@@ -61,6 +61,7 @@ const EditTallySheet = () => {
                 setGetTallySheet(getData)
                 setDetailTallySheet(getData.tally_sheet_details);
                 setStatus(getData.status);
+                console.log(getData);
                 let arrData = [];
                 let tmpQty = []
                 let tmpBox = []
