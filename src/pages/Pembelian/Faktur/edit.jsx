@@ -14,6 +14,7 @@ import ReactSelect from 'react-select';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import CurrencyFormat from 'react-currency-format';
 import { useSelector } from 'react-redux';
+import {PageHeader} from 'antd';
 
 
 const EditFakturPembelian = () => {
@@ -32,6 +33,7 @@ const EditFakturPembelian = () => {
     const [grup, setGrup] = useState("Lokal")
     const [impor, setImpor] = useState(false);
     const [loading, setLoading] = useState(true)
+    const [optionsCredit, setOptionCredit] = useState([]);
     const [optionsType, setOptionsType] = useState([]);
     const [idTandaTerima, setIdTandaTerima] = useState([])
     const [modal2Visible, setModal2Visible] = useState(false);
@@ -51,6 +53,7 @@ const EditFakturPembelian = () => {
     const [dataSupplier, setDataSupplier] = useState()
     const [dataBarang, setDataBarang] = useState([])
     const [biaya, setBiaya] = useState([])
+    const [credit, setCredit] = useState([])
     const [tampilCOA, setTampilCOA] = useState([]);
     const [mataUang, setMataUang] = useState('Rp ')
     const [term, setTerm] = useState();
@@ -76,6 +79,7 @@ const EditFakturPembelian = () => {
     useEffect(() => {
         getDataFaktur();
         getAkun()
+        getCredit()
     }, [])
     const getDataFaktur = async () => {
         await axios.get(`${Url}/select_purchase_invoices/dua?id=${id}`, {
@@ -122,9 +126,28 @@ const EditFakturPembelian = () => {
 
                 }
                 setTotalCOA(totalCOA)
-
-
                 setTampilCOA(tmpAkun)
+
+                // setting data credit 
+                let tmpCredit = []
+                let listCredit = getData.purchase_invoice_credit_notes
+                console.log(listCredit)
+                let totalCredit = 0
+                console.log(listAkun)
+                for (let i = 0; i < listCredit.length; i++) {
+                    tmpCredit.push({
+                        id: listCredit[i].credit_note_id,
+                        code: listCredit[i].credit_note_code,
+                        deskripsi: listCredit[i].description,
+                        jumlah: listCredit[i].total,
+                    })
+                    totalCredit = totalCredit + Number(listCredit[i].total);
+
+                }
+                setTotalCredit(totalCredit)
+                setTampilCredit(tmpCredit)
+
+
 
 
                 // setting data produk
@@ -153,7 +176,7 @@ const EditFakturPembelian = () => {
                 console.log(tmpData)
 
                 // setting id penerimaan barang 
-                for(let i = 0; i<listPenerimaanBarang.length; i++){
+                for (let i = 0; i < listPenerimaanBarang.length; i++) {
                     tmpTandaTerima.push(listPenerimaanBarang[i].id)
                 }
                 setIdTandaTerima(tmpTandaTerima)
@@ -218,25 +241,108 @@ const EditFakturPembelian = () => {
             })
     }
 
-    function klikPilihAkun(value) {
-        let newData = [...tampilCOA];
-
-        newData.push({
-            id: value.info.id,
-            code: value.info.code,
-            name: value.info.name,
-            jumlah: 0,
+    function getCredit() {
+        let tmp = [];
+        axios.get(`${Url}/credit_notes`, {
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${auth.token}`
+            }
         })
-        setIdCOA(value.value);
-        setTampilCOA(newData);
+            .then((res) => {
+                for (let i = 0; i < res.data.data.length; i++) {
+
+                    tmp.push({
+                        value: res.data.data[i].id,
+                        label: res.data.data[i].code,
+                        info: res.data.data[i]
+                    });
+                }
+                setOptionCredit(tmp);
+            })
+    }
+
+    function klikPilihAkun(value) {
+
+        let dataDouble = [];
+
+        for (let i = 0; i < tampilCOA.length; i++) {
+            if (tampilCOA[i].id == value.info.id) {
+                dataDouble.push(i)
+            }
+        }
+
+        if (dataDouble.length != 0) {
+            Swal.fire(
+                "Gagal",
+                `Data Sudah Ada pada List`,
+                "success"
+            )
+        }
+        else {
+
+            let newData = [...tampilCOA];
+
+            newData.push({
+                id: value.info.id,
+                code: value.info.code,
+                name: value.info.name,
+                jumlah: 0,
+            })
+            setIdCOA(value.value);
+            setTampilCOA(newData);
+
+        }
+
+
+
+
+    }
+
+
+    function klikCreditNote(value) {
+
+        console.log(value.info.id)
+        let dataDouble = [];
+
+        for (let i = 0; i < tampilCredit.length; i++) {
+            console.log(tampilCredit[i].id)
+
+
+            if (tampilCredit[i].id == value.info.id) {
+                dataDouble.push(i)
+            }
+        }
+
+        if (dataDouble.length != 0) {
+            Swal.fire(
+                "Gagal",
+                `Data Sudah Ada pada List`,
+                "success"
+            )
+        }
+        else {
+            let newData = [...tampilCredit];
+            console.log(value.info)
+
+            newData.push({
+                id: value.info.id,
+                code: value.info.code,
+                deskripsi: value.info.description,
+                jumlah: 0,
+            })
+            setIdCredit(value.value);
+            setTampilCredit(newData);
+        }
+
+
 
     }
 
     function hapusCOA(i) {
+
         setTampilTabel(false)
         let totcoa = []
-        // let totalAkhir = totalKeseluruhan - tampilCOA[i].jumlah
-        // setTotalKeseluruhan(totalAkhir)
 
         if (tampilCOA.length == 1) {
             setTampilCOA([])
@@ -253,6 +359,39 @@ const EditFakturPembelian = () => {
         let totalAkhir = grandTotal - Number(uangMuka) + Number(totcoa) + Number(totalPpn) - Number(totalCredit)
         setTotalKeseluruhan(totalAkhir)
         setTotalCOA(totcoa)
+
+        Swal.fire(
+            "Berhasil",
+            `Data Berhasil Di hapus`,
+            "success"
+        ).then(() =>
+            setTampilTabel(true)
+        );
+
+    }
+
+    function hapusCredit(i) {
+        setTampilTabel(false)
+
+        let tmp = []
+        let totcredit = []
+        if (tampilCredit.length == 1) {
+            setTampilCredit([])
+
+            totcredit = 0;
+        }
+        else {
+            tampilCredit.splice(i, 1);
+            for (let i = 0; i < tampilCredit.length; i++) {
+                totcredit = totcredit + Number(tampilCredit[i].jumlah);
+
+            }
+
+        }
+
+        let totalAkhir = grandTotal - Number(uangMuka) - Number(totcredit) + Number(totalPpn) + Number(totalCOA)
+        setTotalKeseluruhan(totalAkhir)
+        setTotalCredit(totcredit)
 
         Swal.fire(
             "Berhasil",
@@ -292,6 +431,35 @@ const EditFakturPembelian = () => {
         setTotalKeseluruhan(totalAkhir)
         setTotalCOA(totalCOA)
         setTampilCOA(tmp)
+    }
+
+    function ubahCredit(value, id) {
+        let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+
+        let tmp = []
+        let totalAkhir = 0;
+        let totalCredit = 0;
+        for (let i = 0; i < tampilCredit.length; i++) {
+            if (i == id) {
+                tmp.push({
+                    id: tampilCredit[i].id,
+                    code: tampilCredit[i].code,
+                    deskripsi: tampilCredit[i].deskripsi,
+                    jumlah: hasil,
+                })
+                totalCredit = totalCredit + Number(hasil);
+            }
+            else {
+                tmp.push(tampilCredit[i])
+                totalCredit = totalCredit + Number(tampilCredit[i].jumlah);
+            }
+        }
+        console.log(totalCredit)
+
+        totalAkhir = grandTotal - Number(uangMuka) - Number(totalCredit) + Number(totalPpn) + Number(totalCOA)
+        setTotalKeseluruhan(totalAkhir)
+        setTotalCredit(totalCredit)
+        setTampilCredit(tmp)
     }
 
 
@@ -751,6 +919,7 @@ const EditFakturPembelian = () => {
         // console.log(angka)
         let hasil = mataUang + ' ' + Number(angka).toLocaleString('id')
         return <input
+            disabled
             value={hasil}
             readOnly="true"
             className="form-control form-control-sm"
@@ -808,7 +977,7 @@ const EditFakturPembelian = () => {
 
     const columAkun = [
         {
-            title: 'No. Akun',
+            title: 'No.',
             dataIndex: 'noakun',
             width: '5%',
             align: 'center',
@@ -846,7 +1015,7 @@ const EditFakturPembelian = () => {
                         prefix={mataUang + ' '}
                         onKeyDown={(event) => klikEnter(event)}
                         value={item.jumlah}
-                        onChange={(e) => ubahCOA(e.target.value, i)} />
+                        onChange={(e) => ubahCOA(e.target.value, i)} key="coa" />
                 </div>,
             action: <Space size="middle">
                 <Button
@@ -857,6 +1026,35 @@ const EditFakturPembelian = () => {
                 />
             </Space>,
         }))
+        ]
+
+    const dataCredit =
+        [...tampilCredit.map((item, i) => ({
+            noakun: item.code,
+            desc: item.deskripsi,
+            total:
+                <div className='d-flex'>
+                    <CurrencyFormat
+                        className=' text-center editable-input'
+                        style={{ width: "100%", padding: "0px" }}
+                        thousandSeparator={'.'}
+                        decimalSeparator={','}
+                        prefix={mataUang + ' '}
+                        onKeyDown={(event) => klikEnter(event)}
+                        value={item.jumlah}
+                        onChange={(e) => ubahCredit(e.target.value, i)} key="credit" />
+                </div>,
+            action: <Space size="middle">
+                <Button
+                    size='small'
+                    type="danger"
+                    icon={<DeleteOutlined />}
+                    onClick={() => hapusCredit(i)}
+                />
+            </Space>,
+
+        }))
+
         ]
 
     const handleCheck = (event) => {
@@ -1150,7 +1348,12 @@ const EditFakturPembelian = () => {
         <>
             <form className="p-3 mb-3 bg-body rounded">
                 <div className="text-title text-start mb-4">
-                    <h3 className="title fw-bold">Detail Faktur Pembelian</h3>
+                <PageHeader
+                        ghost={false}
+                        onBack={() => window.history.back()}
+                        title="Edit Faktur Pembelian">
+                </PageHeader>
+                    {/* <h3 className="title fw-bold">Detail Faktur Pembelian</h3> */}
                 </div>
                 <div className="row">
                     <div className="col">
@@ -1375,7 +1578,7 @@ const EditFakturPembelian = () => {
                     <div className="row mb-3">
                         <label htmlFor="inputNama3" className="col-sm-2 ps-3 col-form-label">Credit Note</label>
                         <div className="col-sm-5">
-                            {/* <ReactSelect
+                            <ReactSelect
                                 className="basic-single"
                                 placeholder="Pilih Credit Note..."
                                 classNamePrefix="select"
@@ -1383,9 +1586,9 @@ const EditFakturPembelian = () => {
                                 isSearchable
                                 getOptionLabel={(e) => e.label}
                                 getOptionValue={(e) => e.value}
-                                options={optionsType}
-                                onChange={(e) => setFakturType(e.value)}
-                            /> */}
+                                options={optionsCredit}
+                                onChange={(e) => klikCreditNote(e)}
+                            />
                         </div>
                     </div>
                     <Table
@@ -1393,8 +1596,8 @@ const EditFakturPembelian = () => {
                         rowClassName={() => 'editable-row'}
                         bordered
                         pagination={false}
-                        // dataSource={TableData}
-                        // columns={c}
+                        dataSource={dataCredit}
+                        columns={columAkun}
                         onChange={(e) => setProduct(e.target.value)}
                     />
                 </div>
@@ -1444,12 +1647,13 @@ const EditFakturPembelian = () => {
                     </div>
                 </div>
 
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right', position:'relative'}}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
                         value="Draft"
                         onClick={handleDraft}
+                        width="100px"
                     >
                         Simpan
                     </button>
@@ -1458,16 +1662,18 @@ const EditFakturPembelian = () => {
                         className="btn btn-primary rounded m-1"
                         value="Submitted"
                         onClick={handleSubmit}
+                        width="100px"
                     >
                         Submit
                     </button>
                     <button
                         type="button"
+                        width="100px"
                         className="btn btn-warning rounded m-1">
                         Cetak
                     </button>
                 </div>
-
+                <div style={{clear:'both'}}></div>
             </form>
         </>
     )

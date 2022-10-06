@@ -699,7 +699,7 @@ const BuatTally = () => {
             },
             {
                 title: 'Status',
-                dataIndex: '',
+                dataIndex: 'status',
                 align: 'center',
                 width: '10%',
                 key: 'box',
@@ -831,6 +831,7 @@ const BuatTally = () => {
                             </div>
                         </Modal>
                     </>,
+                    status: statusSO[record.key][i],
                 action:
                     <Space size="middle">
                         <Button
@@ -1429,10 +1430,11 @@ const BuatTally = () => {
                     data.splice(i, 1);
                     totalBox.splice(i, 1);
                     quantity.splice(i, 1);
+                    statusSO.splice(i, 1);
                 }
             }
 
-            console.log(data);
+            console.log(statusSO);
             console.log(data.length)
             setIdxPesanan(0)
             console.log(updatedList)

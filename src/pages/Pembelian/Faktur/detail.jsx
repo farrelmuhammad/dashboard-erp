@@ -1,20 +1,12 @@
 import './form.css'
-import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
-import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
-import Column from 'antd/lib/table/Column';
-import { Option } from 'antd/lib/mentions';
-import Swal from 'sweetalert2';
-import Search from 'antd/lib/transfer/search';
-import ReactSelect from 'react-select';
+import { Table, Tag } from 'antd'
 import CurrencyFormat from 'react-currency-format';
 import { useSelector } from 'react-redux';
-
+import { PageHeader } from 'antd';
 
 const DetailFakturPembelian = () => {
     // const auth.token = jsCookie.get("auth");
@@ -45,6 +37,7 @@ const DetailFakturPembelian = () => {
     const [dataSupplier, setDataSupplier] = useState()
     const [dataBarang, setDataBarang] = useState([])
     const [biaya, setBiaya] = useState([])
+    const [credit, setCredit] = useState([])
     const [getStatus, setGetStatus] = useState()
     const [mataUang, setMataUang] = useState('Rp ')
 
@@ -61,6 +54,7 @@ const DetailFakturPembelian = () => {
             .then((res) => {
                 let getData = res.data[0]
                 setBiaya(getData.purchase_invoice_costs)
+                setCredit(getData.purchase_invoice_credit_notes)
                 setGetStatus(getData.status)
                 setDataHeader(getData);
                 setGrup(getData.supplier._group)
@@ -217,6 +211,16 @@ const DetailFakturPembelian = () => {
 
     ]
 
+    const dataCredit = 
+    [...credit.map((item , i) => ({
+        code: item.credit_note_code,
+        desc: item.description,
+        total: mataUang + ' ' + Number(item.total).toLocaleString('id')
+
+    }))
+
+    ]
+
 
 
     if (loading) {
@@ -230,7 +234,12 @@ const DetailFakturPembelian = () => {
         <>
             <form className="p-3 mb-3 bg-body rounded">
                 <div className="text-title text-start mb-4">
-                    <h3 className="title fw-bold">Detail Faktur Pembelian</h3>
+                <PageHeader
+                        ghost={false}
+                        onBack={() => window.history.back()}
+                        title="Detail Faktur Pembelian">
+                </PageHeader>
+                    {/* <h3 className="title fw-bold">Detail Faktur Pembelian</h3> */}
                 </div>
                 <div className="row">
                     <div className="col">
@@ -282,18 +291,6 @@ const DetailFakturPembelian = () => {
                                 />
                             </div>
                         </div>
-                        {/* <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Alamat</label>
-                            <div className="col-sm-7">
-                                <input
-                                    id="startDate"
-                                    className="form-control"
-                                    type="text"
-                                    value={dataSupplier.address}
-                                    disabled
-                                />
-                            </div>
-                        </div> */}
                         <div className="row mb-3" style={{ display: impor ? "flex" : "none" }}>
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label" >No. Kontainer</label>
                             <div className="col-sm-7">
@@ -301,7 +298,7 @@ const DetailFakturPembelian = () => {
                                     id="startDate"
                                     className="form-control"
                                     type="text"
-                                    value="sds"
+                                    value={dataHeader.container_number}
                                     disabled
                                 />
                             </div>
@@ -313,7 +310,7 @@ const DetailFakturPembelian = () => {
                                     id="startDate"
                                     className="form-control"
                                     type="text"
-                                    value="sds"
+                                    value={dataHeader.term}
                                     disabled
                                 />
                             </div>
@@ -327,7 +324,7 @@ const DetailFakturPembelian = () => {
                                     id="startDate"
                                     className="form-control"
                                     type="text"
-                                    value="sds"
+                                    value={dataHeader.payload}
                                     disabled
                                 />
                             </div>
@@ -339,7 +336,7 @@ const DetailFakturPembelian = () => {
                                     id="startDate"
                                     className="form-control"
                                     type="text"
-                                    value="sds"
+                                    value={dataHeader.carton}
                                     disabled
                                 />
                             </div>
@@ -352,7 +349,7 @@ const DetailFakturPembelian = () => {
                                     className="form-control"
                                     id="form4Example3"
                                     rows="4"
-                                    value="dff"
+                                    value={dataHeader.notes}
                                     disabled
                                 />
                             </div>
@@ -373,54 +370,7 @@ const DetailFakturPembelian = () => {
                         <div className="col">
                             <h4 className="title fw-normal">Daftar Penerimaan Pesanan</h4>
                         </div>
-                        {/* <div className="col text-end me-2">
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
-                            />
-                            <Modal
-                                title="Tambah Penerima Pembelian"
-                                centered
-                                visible={modal2Visible}
-                                onCancel={() => setModal2Visible(false)}
-                                width={800}
-                                // footer={[
-                                //     <Button
-                                //         key="submit"
-                                //         type="primary"
-
-                                //     >
-                                //         Tambah
-                                //     </Button>,
-                                // ]}
-                                footer={null}
-                            >
-                                <div className="text-title text-start">
-                                    <div className="row">
-                                        <div className="col mb-3">
-                                            <Search
-                                                placeholder="Cari No Pesanan..."
-                                                style={{
-                                                    width: 400,
-                                                }}
-                                                onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                            />
-                                        </div>
-                                        <Table
-                                            columns={columnsModal}
-                                            dataSource={getDataProduct}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
-                                    </div>
-                                </div>
-                            </Modal>
-                        </div> */}
+                    
                     </div>
                     <Table
                         // components={components}
@@ -449,25 +399,14 @@ const DetailFakturPembelian = () => {
                     <div className="row mb-3">
                         <label htmlFor="inputNama3" className="col-sm-2 ps-3 col-form-label">Credit Note</label>
                         <div className="col-sm-5">
-                            {/* <ReactSelect
-                                className="basic-single"
-                                placeholder="Pilih Credit Note..."
-                                classNamePrefix="select"
-                                isLoading={isLoading}
-                                isSearchable
-                                getOptionLabel={(e) => e.label}
-                                getOptionValue={(e) => e.value}
-                                options={optionsType}
-                                onChange={(e) => setFakturType(e.value)}
-                            /> */}
+                          
                         </div>
                     </div>
                     <Table
-                        // components={components}
                         rowClassName={() => 'editable-row'}
                         bordered
+                        dataSource={dataCredit}
                         pagination={false}
-                        // dataSource={TableData}
                         columns={columAkun}
                         onChange={(e) => setProduct(e.target.value)}
                     />

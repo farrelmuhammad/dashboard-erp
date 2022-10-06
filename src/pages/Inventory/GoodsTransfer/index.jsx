@@ -32,7 +32,7 @@ const GoodsTransfer = () => {
       <div className="container   p-3 mb-5 bg-body rounded d-flex flex-column">
         <div className="row">
           <div className="col text-title text-start">
-            <h5 className="title fw-bold">Daftar Permintaan barang</h5>
+            <h5 className="title fw-bold">Daftar Transfer Barang</h5>
           </div>
           {userAccess?.map(d => {
             if (d.ability_name === "create-adjustment") {
@@ -61,7 +61,7 @@ const GoodsTransfer = () => {
   } else {
     <div>
       <div className="text-title text-start">
-        <h3 className="title fw-bold">Daftar Permintaan barang</h3>
+        <h3 className="title fw-bold">Daftar Transfer Barang</h3>
       </div>
       <GoodsTransferTable />
     </div>

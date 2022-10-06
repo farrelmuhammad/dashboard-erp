@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Url from '../../../Config';
 import { useSelector } from 'react-redux';
+import { PageHeader } from 'antd';
 
 export const DetailPengguna = () => {
     // const token = jsCookie.get("auth");
@@ -65,10 +66,14 @@ export const DetailPengguna = () => {
 
     return (
         <>
+          <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Detail Pengguna">
+          </PageHeader>
+
             <form className="  p-3 mb-5 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <h3 className="title fw-bold">Edit Pengguna</h3>
-                </div>
+               
                 <div className="row mb-3">
                     <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
                         Karyawan

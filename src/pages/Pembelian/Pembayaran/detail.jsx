@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import CurrencyFormat from 'react-currency-format';
 import { useSelector } from 'react-redux';
+import { PageHeader } from 'antd';
 
 const { Text } = Typography;
 
@@ -134,7 +135,12 @@ const DetailPembayaranPembelian = () => {
         <>
             <form className="p-3 mb-3 bg-body rounded">
                 <div className="text-title text-start mb-4">
-                    <h4 className="title fw-bold">Detail Pembayaran Pembelian</h4>
+                <PageHeader
+                        ghost={false}
+                        onBack={() => window.history.back()}
+                        title="Detail Pembayaran Pembelian">
+                     </PageHeader>
+                    {/* <h4 className="title fw-bold">Detail Pembayaran Pembelian</h4> */}
                 </div>
                 <div className="row">
                     <div className="col">

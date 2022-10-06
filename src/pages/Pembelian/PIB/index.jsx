@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import jsCookie from 'js-cookie'
 import Url from '../../../Config'
 import axios from 'axios'
+import TallyTable from '../../../components/moleculles/TallyTable'
 import { PlusOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
+import TallyPembelianTable from '../../../components/moleculles/TallyPembelianTable'
+import PenerimaanBarangTable from '../../../components/moleculles/PenerimaanBarangTable'
 import { useSelector } from 'react-redux'
 import CreditNoteTable from '../../../components/moleculles/CreditNoteTable'
+import PIBTable from '../../../components/moleculles/PIBTable'
 
-const CreditNote = () => {
+const PIB = () => {
   // const token = jsCookie.get('auth')
   const [userAccess, setUserAccess] = useState([])
   const auth = useSelector(state => state.auth);
@@ -30,13 +35,13 @@ const CreditNote = () => {
       <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
         <div className="row">
           <div className="col text-title text-start">
-            <h3 className="title fw-bold">Credit Note</h3>
+            <h3 className="title fw-bold">Pemberitahuan Impor Barang</h3>
           </div>
           {userAccess?.map(d => {
             if (d.ability_name === "create-tax") {
               return (
                 <div className="col button-add text-end me-3">
-                  <Link to="/creditnote/buat">
+                  <Link to="/pib/buat">
                     <Button
                       type="primary"
                       icon={<PlusOutlined />}
@@ -47,7 +52,7 @@ const CreditNote = () => {
             }
           })}
         </div>
-        <CreditNoteTable />
+        <PIBTable />
       </div>
     )
   } else {
@@ -55,9 +60,9 @@ const CreditNote = () => {
       <div className="text-title text-start">
         <h3 className="title fw-bold">Daftar Pajak</h3>
       </div>
-      <CreditNoteTable />
+      <PIBTable />
     </div>
   }
 }
 
-export default CreditNote;
+export default PIB;

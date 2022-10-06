@@ -21,6 +21,7 @@ import Url from "../../../Config";
 import "./form.css";
 import { Checkbox } from "@mui/material";
 import { useSelector } from "react-redux";
+import { PageHeader } from "antd";
 
 const EditDepartemen = () => {
   // const token = jsCookie.get("auth");
@@ -144,10 +145,13 @@ const EditDepartemen = () => {
   if(data){
     return (
       <>
+      <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Edit Departemen">
+          </PageHeader>
         <form className="  p-3 mb-3 bg-body rounded">
-          <div className="text-title text-start mb-4">
-            <h3 className="title fw-bold">Edit Departemen</h3>
-          </div>
+          
           <div className="row mb-3">
             <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
               Kode

@@ -14,6 +14,7 @@ import Search from 'antd/lib/transfer/search';
 import ReactSelect from 'react-select';
 import { useSelector } from 'react-redux';
 import CurrencyFormat from 'react-currency-format';
+import { PageHeader } from 'antd';
 
 const DetailReturPembelian = () => {
     // const auth.token = jsCookie.get("auth");
@@ -228,9 +229,14 @@ if (loading) {
 return (
     <>
         <form className="p-3 mb-3 bg-body rounded">
-            <div className="text-title text-start mb-4">
-                <h3 className="title fw-bold">Detail Retur Pembelian</h3>
-            </div>
+            {/* <div className="text-title text-start mb-4"> */}
+                    <PageHeader
+                        ghost={false}
+                        onBack={() => window.history.back()}
+                        title="Detail Retur Pembelian ">
+                     </PageHeader>
+                {/* <h3 className="title fw-bold">Detail Retur Pembelian</h3> */}
+            {/* </div> */}
             <div className="row">
                 <div className="col">
                     <div className="row mb-3">

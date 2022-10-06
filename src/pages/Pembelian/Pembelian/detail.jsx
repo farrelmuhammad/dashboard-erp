@@ -10,7 +10,8 @@ import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
 import ReactToPrint from "react-to-print";
 import logo from "../../Logo.jpeg"
-import "./form.css"
+import "./form.css";
+import { PageHeader } from 'antd';
 
 export const DetailPesananPembelian = () => {
     // const auth.token = jsCookie.get("auth");
@@ -278,7 +279,7 @@ export const DetailPesananPembelian = () => {
 
         content: () => componentRef.current,
     })
-
+//
     if (loading) {
         return (
             <div></div>
@@ -325,7 +326,7 @@ export const DetailPesananPembelian = () => {
 
 
     return (
-
+//
         <>
 
             <div style={{ display: "none", position: "absolute" }}>
@@ -333,7 +334,7 @@ export const DetailPesananPembelian = () => {
                     <div className='d-flex'>
                         <div><img src={logo} width="60px"></img></div>
                         <div className='ms-2'>
-                            <div className='header-cetak'>PT. BUMI MAESTROAYU</div>
+                            <div className='header-cetak'><b>PT. BUMI MAESTROAYU</b></div>
                             <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
                             <div className='header-cetak'>JAKARTA SELATAN 12760</div>
                             <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
@@ -341,7 +342,7 @@ export const DetailPesananPembelian = () => {
                     </div>
 
                     <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold" }}>
-                        <div style={{ fontSize: "14px", textDecoration: "underline" }}>PURCHASE ORDER</div>
+                        <div style={{ fontSize: "16px", textDecoration: "underline" }}>PURCHASE ORDER</div>
                         <div style={{ fontSize: "10px", marginTop: "-5px" }}>NO. {code}</div>
                     </div>
 
@@ -378,27 +379,40 @@ export const DetailPesananPembelian = () => {
 
                     <div className='mt-4 ps-4 pe-4 ' >
                         {/* <Table pagination={false} columns={cetakColumn} dataSource={cetakData} /> */}
-                        <table border="1px" style={{ fontSize: "10px", width: "100%" }}>
-                            <th >
-                                <td width="400px">DESCRIPTION OF GOODS</td>
-                                <td width="100px">Qty</td>
-                                <td width="150px">PRICE</td>
-                                <td width="100px">DISC</td>
-                                <td width="150px">TOTAL</td>
-                            </th>
-                            {
-                                details.map((item, i) => (
-                                    <tr>
-                                        <td width="400px">{item.product_name}</td>
-                                        <td width="100px">{item.quantity}</td>
-                                        <td width="150px">PRICE</td>
-                                        <td width="100px">DISC</td>
-                                        <td width="150px">TOTAL</td>
+                        <table style={{ fontSize: "10px", width: "100%" }}>
+                            <tr className='text-center border' style={{ height: "50px" }}>
+                                <th width="50px" className='border'>NO</th>
+                                <th width="350px" className='border'>DESCRIPTION OF GOODS</th>
+                                <th width="100px" className='border'>Qty</th>
+                                <th width="150px" className='border'>PRICE</th>
+                                <th width="100px" className='border'>DISC</th>
+                                <th width="150px" className='border'>TOTAL</th>
+                            </tr>
+                            <tbody className="border">
+                                {
+                                    details.map((item, i) => (
+                                        <tr >
+                                            <td className='border-isi text-center'>{i + 1}</td>
+                                            <td className='border-isi text-start'>{item.product_name}</td>
+                                            <td className='border-isi text-center'>{item.quantity}</td>
+                                            <td className='border-isi text-end'>{
+                                                namaMataUang + ' ' + Number(item.price).toLocaleString('id')
+                                            }</td>
+                                            {item.fixed_discount != null && item.discount_percentage == null ? <td className='text-end border-isi'>{namaMataUang + ' ' + item.fixed_discount}</td> :
+                                                item.fixed_discount == null && item.discount_percentage != null ? <td className='text-end border-isi'>{item.discount_percentage + '%'}</td> : <td className='text-center border-isi'>-</td>
+                                            }
 
-                                    </tr>
+                                            <td className='border-isi text-end'>
+                                                {
+                                                    namaMataUang + ' ' + Number(item.total).toLocaleString('id')}</td>
 
-                                ))
-                            }
+                                        </tr>
+
+                                    ))
+                                }
+                            </tbody>
+
+
                         </table>
                     </div>
 
@@ -430,22 +444,22 @@ export const DetailPesananPembelian = () => {
                             <div className='d-flex mt-5'>
                                 <label className='col-6'>Sub Total</label>
                                 <div>:</div>
-                                <div className='ms-3'>  {namaMataUang + ' ' + Number(subTotal).toLocaleString('id')} </div>
+                                <div className='ms-3 text-end' width="100%">  {namaMataUang + ' ' + Number(subTotal).toLocaleString('id')} </div>
                             </div>
                             <div className='d-flex'>
                                 <label className='col-6'>Discount</label>
                                 <div>:</div>
-                                <div className='ms-3'>  {namaMataUang + ' ' + Number(diskon).toLocaleString('id')}</div>
+                                <div className='ms-3 text-end' width="100%">  {namaMataUang + ' ' + Number(diskon).toLocaleString('id')}</div>
                             </div>
                             <div className='d-flex'>
-                                <label className='col-6'>Tax</label>
+                                <label className='col-6'>VAT</label>
                                 <div>:</div>
-                                <div className='ms-3'>  {namaMataUang + ' ' + Number(PPN).toLocaleString('id')}</div>
+                                <div className='ms-3 text-end' width="100%">  {namaMataUang + ' ' + Number(PPN).toLocaleString('id')}</div>
                             </div>
                             <div className='d-flex'>
                                 <label className='col-6'><b>Total</b></label>
                                 <div>:</div>
-                                <div className='ms-3'>  {namaMataUang + ' ' + Number(total).toLocaleString('id')}</div>
+                                <div className='ms-3 text-end' width="100%">  {namaMataUang + ' ' + Number(total).toLocaleString('id')}</div>
                             </div>
 
                         </div>
@@ -461,7 +475,12 @@ export const DetailPesananPembelian = () => {
                 <div className="row">
                     <div className="col text-title text-start">
                         <div className="text-title text-start mb-4">
-                            <h3 className="title fw-bold">Detail Pesanan</h3>
+                        <PageHeader
+                        ghost={false}
+                        onBack={() => window.history.back()}
+                        title="Detail Pesanan">
+                         </PageHeader>
+                            {/* <h3 className="title fw-bold">Detail Pesanan</h3> */}
                         </div>
                     </div>
                     <div className="col button-add text-end me-3">

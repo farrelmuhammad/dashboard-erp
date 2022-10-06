@@ -103,9 +103,10 @@ const CreateGoodsRequest = () => {
 
     const [notes, setNotes] = useState('');
     const [date, setDate] = useState(null);
-    const [type, setType] = useState('');
+    const [type, setType] = useState('send');
     const [warehouse_id, setWarehouseId] = useState([]);
     const [tally_sheet_id, setTallySheetId] = useState([]);
+    const [goods_transfer_id, setGoodsTransfer] = useState([]);
     const [reference_no, setReferenceNo] = useState([]);
     const [warehouse_source, setWarehouseSource] = useState([]);
     const [warehouse_destination, setWarehouseDestination] = useState([]);
@@ -117,7 +118,7 @@ const CreateGoodsRequest = () => {
 
     const navigate = useNavigate();
 
-    const [getDataTallySheet, setDataTallySheet] = useState();
+    const [getDataDetail, setDataDetailWindow] = useState();
     const [isLoading, setIsLoading] = useState(false);
 
     const [subTotal, setSubTotal] = useState("");
@@ -134,16 +135,20 @@ const CreateGoodsRequest = () => {
     }
 
     const handleChangeTallySheet = (value) => {
-        console.log(value);
         setSelectedTallySheet(value);
         setReferenceNo(value.code);
         setWarehouseId(value.warehouse_id);
         setTallySheetId(value.id);
+        var updatedList = [];
+        setProduct(updatedList);
     };
 
     const handleChangeGoodsTransfer = (value) => {
         setSelectedGoodsTransfer(value);
         setReferenceNo(value.code);
+        setGoodsTransfer(value.id);
+        var updatedList = [];
+        setProduct(updatedList);
     };
 
     const handleChangeWarehouseSource = (value) => {
@@ -187,18 +192,31 @@ const CreateGoodsRequest = () => {
     };
 
     useEffect(() => {
-        const getTallySheet = async () => {
-            const res = await axios.get(`${Url}/select_stock_referece_tally_sheets?product_name=${query}&warehouse_id=${warehouse_id}&tally_sheet_id=${tally_sheet_id}`, {
-                headers: {
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${auth.token}`
-                }
-            })
-            setDataTallySheet(res.data);
-        };
-
-        if (query.length === 0 || query.length > 2) getTallySheet();
-    }, [query,selectedTallySheet]);
+        if(type === 'send'){
+            const getTallySheet = async () => {
+                const res = await axios.get(`${Url}/select_stock_referece_tally_sheets?product_name=${query}&warehouse_id=${warehouse_id}&tally_sheet_id=${tally_sheet_id}`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${auth.token}`
+                    }
+                })
+                setDataDetailWindow(res.data);
+            };
+            if (query.length === 0 || query.length > 2) getTallySheet();
+        }
+        if (type === 'receive'){
+            const getGoodsTransfer = async () => {
+                const res = await axios.get(`${Url}/select_goods_transfer_details?product_name=${query}&goods_transfer_id=${goods_transfer_id}`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${auth.token}`
+                    }
+                })
+                setDataDetailWindow(res.data);
+            };
+            if (query.length === 0 || query.length > 2) getGoodsTransfer();
+        }
+    }, [query,selectedTallySheet,selectedGoodsTransfer]);
 
     useEffect(() => {
         if (type == "send") {
@@ -206,12 +224,23 @@ const CreateGoodsRequest = () => {
             document.getElementById('reference_tally_sheet').style.display = "flex";
 
             document.getElementById('reference_transfer_gudang').style.display = "none";
+            setSelectedGoodsTransfer("");
+            setReferenceNo();
+            setGoodsTransfer();
+            var updatedList = [];
+            setProduct(updatedList);
         }
         if(type == "receive"){
             setType("receive");
             document.getElementById('reference_tally_sheet').style.display = "none";
 
             document.getElementById('reference_transfer_gudang').style.display = "flex";
+            var updatedList = [];
+            setProduct(updatedList);
+            setSelectedTallySheet("");
+            setReferenceNo();
+            setWarehouseId();
+            setTallySheetId();
         }
     }, [type]);
 
@@ -384,15 +413,17 @@ const CreateGoodsRequest = () => {
         e.preventDefault();
         const userData = new FormData();
         userData.append("date", date);
+        userData.append("reference_no", reference_no);
         userData.append("warehouse_source", warehouse_source);
         userData.append("warehouse_destination", warehouse_destination);
-        userData.append("type", type);
+        userData.append("type_process", type);
         userData.append("notes", notes);
         userData.append("status", "publish");
         product.map((p) => {
             console.log(p);
             userData.append("product_id[]", p.product_id);
-            userData.append("qty[]", p.qty);
+            userData.append("current_qty[]", p.current_qty);
+            userData.append("transfer_qty[]", p.transfer_qty);
         });
 
         // for (var pair of userData.entries()) {
@@ -415,7 +446,7 @@ const CreateGoodsRequest = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/goodstransfers");
+                navigate("/goodstransfer");
             })
             .catch((err) => {
                 if (err.response) {
@@ -473,7 +504,7 @@ const CreateGoodsRequest = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/goodstransfers");
+                navigate("/goodstransfer");
             })
             .catch((err) => {
                 if (err.response) {
@@ -655,7 +686,7 @@ const CreateGoodsRequest = () => {
                                                 </div>
                                                 <Table
                                                     columns={columnsModal}
-                                                    dataSource={getDataTallySheet}
+                                                    dataSource={getDataDetail}
                                                     scroll={{
                                                         y: 250,
                                                     }}

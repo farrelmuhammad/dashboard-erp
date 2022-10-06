@@ -36,6 +36,8 @@ import { useSelector } from "react-redux";
 // import DeleteIcon from "@mui/icons-material/Delete";
 // import { TextField } from "@mui/material";
 // import CheckIcon from "@mui/icons-material/Check";
+import { PageHeader, Switch } from "antd";
+
 
 const EditPelanggan = () => {
   // const token = jsCookie.get("auth");
@@ -66,6 +68,8 @@ const EditPelanggan = () => {
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const [checked, setChecked] = useState(false);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -174,6 +178,18 @@ const EditPelanggan = () => {
       });
   }
 
+  const onChange = () => {
+    checked ? setChecked(false) : setChecked(true)
+
+    if (checked === false) {
+      setStatus("Active");
+      // console.log('Active');
+    } else {
+      setStatus("Inactive");
+      // console.log('Inactive');
+    }
+  };
+
   useEffect(() => {
     getCustomerById()
   }, []);
@@ -210,12 +226,17 @@ const EditPelanggan = () => {
 
 
 
+
+
   return (
     <>
+    <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Edit Pelanggan">
+     </PageHeader>
+
       <form className="  p-3 mb-4 bg-body rounded">
-        <div className="text-title text-start mb-4">
-          <h3 className="title fw-bold">Edit Pelanggan</h3>
-        </div>
         <div className="row mb-3">
           <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
             Kode
@@ -337,7 +358,21 @@ const EditPelanggan = () => {
             />
           </div>
         </div>
-        <fieldset className="row mb-3">
+
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
+          <div className="col-sm-7">
+            <Switch defaultChecked={checked} onChange={onChange} />
+            <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
+              {
+                checked ? "Aktif"
+                  : "Nonaktif"
+              }
+            </label>
+          </div>
+        </div>
+
+        {/* <fieldset className="row mb-3">
           <legend className="col-form-label col-sm-2 pt-0">Status</legend>
           <div className="col-sm-10">
             <div className="form-check">
@@ -369,7 +404,7 @@ const EditPelanggan = () => {
               </label>
             </div>
           </div>
-        </fieldset>
+        </fieldset> */}
         <div className="d-grid mt-3 gap-2 d-md-flex justify-content-md-end">
           <button onClick={handleUpdate} className="btn btn-primary" type="button">
             Simpan <SendIcon className="ms-1" />

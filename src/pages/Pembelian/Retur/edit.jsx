@@ -14,6 +14,7 @@ import Search from 'antd/lib/transfer/search';
 import ReactSelect from 'react-select';
 import { useSelector } from 'react-redux';
 import CurrencyFormat from 'react-currency-format';
+import { PageHeader } from 'antd';
 
 const EditReturPembelian = () => {
     // const auth.token = jsCookie.get("auth");
@@ -175,13 +176,10 @@ const EditReturPembelian = () => {
     const [totalKeseluruhan, setTotalKeseluruhan] = useState()
     const handleChangePilih = (value) => {
         let dataDouble = [];
-        console.log(tampilProduk.length)
-        console.log(value)
+    
         for (let i = 0; i < tampilProduk.length; i++) {
-            console.log("tes")
             if (tampilProduk[i].label == value.label) {
                 dataDouble.push(i)
-                console.log("muncul gha")
             }
         }
 
@@ -193,7 +191,6 @@ const EditReturPembelian = () => {
             )
         }
         else {
-            console.log(value)
             let newData = [...tampilProduk];
             newData.push(value)
             let totalPerProduk = 0;
@@ -205,7 +202,7 @@ const EditReturPembelian = () => {
                 total += (Number(newData[x].quantity.replace(',', '.')) * Number(newData[x].price));
                 totalPerProduk = (Number(newData[x].quantity.replace(',', '.')) * Number(newData[x].price));
 
-                console.log(totalPerProduk)
+                // console.log(totalPerProduk)
                 if (newData[x].discount_percentage != 0) {
                     hasilDiskon += (Number(totalPerProduk) * Number(newData[x].discount_percentage.replace(',', '.')) / 100);
                 }
@@ -763,9 +760,14 @@ const EditReturPembelian = () => {
     return (
         <>
             <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
+            <PageHeader
+                        ghost={false}
+                        onBack={() => window.history.back()}
+                        title="Edit Retur Pembelian">
+                     </PageHeader>
+                {/* <div className="text-title text-start mb-4">
                     <h3 className="title fw-bold">Edit Retur Pembelian</h3>
-                </div>
+                </div> */}
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -969,12 +971,13 @@ const EditReturPembelian = () => {
                     </div>
                 </div>
 
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right', position:'relative'}}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
                         value="Draft"
                         onClick={handleDraft}
+                        width="100px"
                     >
                         Simpan
                     </button>
@@ -983,16 +986,18 @@ const EditReturPembelian = () => {
                         className="btn btn-primary rounded m-1"
                         value="Submitted"
                         onClick={handleSubmit}
+                        width="100px"
                     >
                         Submit
                     </button>
                     <button
                         type="button"
+                        width="100px"
                         className="btn btn-warning rounded m-1">
                         Cetak
                     </button>
                 </div>
-
+            <div style={{clear:'both'}}></div>
             </form>
         </>
     )

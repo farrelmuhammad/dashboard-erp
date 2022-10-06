@@ -9,6 +9,7 @@ import { Button, Modal, Checkbox, Space, Table, Tag } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import Search from 'antd/lib/transfer/search';
 import Swal from 'sweetalert2';
+import { PageHeader } from 'antd';
 
 const EditPenerimaanBarang = () => {
 
@@ -337,7 +338,12 @@ const EditPenerimaanBarang = () => {
         <>
             <form className="shadow-lg p-3 mb-5 bg-body rounded">
                 <div className="text-title text-start mb-4">
-                    <h3 className="title fw-bold">Buat Penerimaan Barang</h3>
+                    <PageHeader
+                        ghost={false}
+                        onBack={() => window.history.back()}
+                        title="Edit Penerimaan Barang">
+                     </PageHeader>
+                    {/* <h3 className="title fw-bold">Buat Penerimaan Barang</h3> */}
                 </div>
                 <div class="row">
                     <div class="col">
@@ -436,11 +442,12 @@ const EditPenerimaanBarang = () => {
                         isLoading={true}
                         columns={defaultColumns}
                     />
-                </div> <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                    <button type="button" class="btn btn-success rounded m-1" onClick={() => handleDraft()}>Simpan</button>
-                    <button type="button" class="btn btn-primary rounded m-1" onClick={() => handleSubmit()}>Submit</button>
-                    <button type="button" class="btn btn-warning rounded m-1" onClick={() => handleDraft()}>Cetak</button>
+                </div> <div class="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right', position:'relative'}}>
+                    <button type="button" width="100px" class="btn btn-success rounded m-1" onClick={() => handleDraft()}>Simpan</button>
+                    <button type="button" width="100px" class="btn btn-primary rounded m-1" onClick={() => handleSubmit()}>Submit</button>
+                    <button type="button" width="100px" class="btn btn-warning rounded m-1" onClick={() => handleDraft()}>Cetak</button>
                 </div>
+                <div style={{clear:'both'}}></div>
             </form>
 
         </>

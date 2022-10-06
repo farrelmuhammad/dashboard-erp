@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import Spreadsheet from 'react-spreadsheet';
 import { useSelector } from 'react-redux';
+import { PageHeader} from 'antd';
 
 const EditableContext = createContext(null);
 
@@ -527,10 +528,14 @@ const BuatPenerimaanBarang = () => {
 
     return (
         <>
+          <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Buat Penerimaan Barang">
+          </PageHeader>
+
             <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <h4 className="title fw-bold">Buat Penerimaan Barang</h4>
-                </div>
+              
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -658,13 +663,14 @@ const BuatPenerimaanBarang = () => {
                     />
                 </div>
 
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right', position:'relative'}}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
                         value="Draft"
                         onChange={(e) => setStatus(e.target.value)}
                         onClick={handleDraft}
+                        style = {{width: '100px'}}
                     >
                         Simpan
                     </button>
@@ -674,15 +680,18 @@ const BuatPenerimaanBarang = () => {
                         value="Submitted"
                         onChange={(e) => setStatus(e.target.value)}
                         onClick={handleSubmit}
+                        style = {{width: '100px'}}
                     >
                         Submit
                     </button>
                     <button
                         type="button"
+                        style = {{width: '100px'}}
                         className="btn btn-warning rounded m-1">
                         Cetak
                     </button>
                 </div>
+                <div style={{clear:'both'}}></div>
             </form>
         </>
     )

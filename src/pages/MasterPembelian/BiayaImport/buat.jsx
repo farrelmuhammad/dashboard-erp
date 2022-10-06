@@ -11,6 +11,7 @@ import SendIcon from "@mui/icons-material/Send";
 import Button from "@mui/material/Button";
 import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
+import { PageHeader, Switch} from 'antd';
 
 const BuatBiayaImport = () => {
   // const token = jsCookie.get("auth");
@@ -27,6 +28,8 @@ const BuatBiayaImport = () => {
   
   const [account_id, setAccount_id] = useState('');
   const [selectedAccount, setSelectedAccount] = useState(null);
+
+  const [checked, setChecked] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -109,6 +112,18 @@ const BuatBiayaImport = () => {
       }).then((res) => res.json());
     };
 
+    const onChange = () => {
+      checked ? setChecked(false) : setChecked(true)
+  
+      if (checked === false) {
+        setStatus("Active");
+        // console.log('Active');
+      } else {
+        setStatus("Inactive");
+        // console.log('Inactive');
+      }
+    };
+
   useEffect(() => {
     axios
       .get(`${Url}/get_new_cost_code`, {
@@ -130,10 +145,12 @@ const BuatBiayaImport = () => {
 
   return (
     <>
+      <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Buat Biaya Import">
+       </PageHeader>
       <form className="  p-3 mb-3 bg-body rounded">
-        <div className="text-title text-start mb-4">
-          <h3 className="title fw-bold">Buat Biaya Import</h3>
-        </div>
         <div className="row mb-3">
           <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
             Kode
@@ -208,7 +225,21 @@ const BuatBiayaImport = () => {
             />
           </div>
         </div>
-        <fieldset className="row mb-3">
+
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
+          <div className="col-sm-7">
+            <Switch defaultChecked={checked} onChange={onChange} />
+            <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
+              {
+                checked ? "Aktif"
+                  : "Nonaktif"
+              }
+            </label>
+          </div>
+        </div>
+
+        {/* <fieldset className="row mb-3">
           <legend className="col-form-label col-sm-2 pt-0">Status</legend>
           <div className="col-sm-10">
             <div className="form-check">
@@ -240,7 +271,7 @@ const BuatBiayaImport = () => {
               </label>
             </div>
           </div>
-        </fieldset>
+        </fieldset> */}
         <div className="d-grid mt-3 gap-2 d-md-flex justify-content-md-end">
           <button onClick={handleSubmit} className="btn btn-primary" type="button">
             Simpan <SendIcon className="ms-1" />

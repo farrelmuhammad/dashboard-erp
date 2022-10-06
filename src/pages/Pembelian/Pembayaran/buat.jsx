@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
 import CurrencyFormat from 'react-currency-format';
+import {PageHeader} from 'antd';
 
 const { Text } = Typography;
 
@@ -243,7 +244,7 @@ const BuatPembayaranPembelian = () => {
                 tmp.push({
                     code: data.code,
                     total: data.total,
-                    sisa: 0,
+                    sisa: data.remains,
                     bayar: 0,
                     idFaktur: data.id
                 })
@@ -407,10 +408,13 @@ const BuatPembayaranPembelian = () => {
 
     return (
         <>
+          <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Buat Pembayaran Pembelian">
+          </PageHeader>
+
             <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <h4 className="title fw-bold">Buat Pembayaran Pembelian</h4>
-                </div>
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -612,12 +616,13 @@ const BuatPembayaranPembelian = () => {
                 </form>
 
 
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right', position:'relative'}}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
                         value="Draft"
                         onClick={handleDraft}
+                        style = {{width: '100px'}}
                     >
                         Simpan
                     </button>
@@ -626,15 +631,18 @@ const BuatPembayaranPembelian = () => {
                         className="btn btn-primary rounded m-1"
                         value="Submitted"
                         onClick={handleSubmit}
+                        style = {{width: '100px'}}
                     >
                         Submit
                     </button>
                     <button
                         type="button"
+                        style = {{width: '100px'}}
                         className="btn btn-warning rounded m-1">
                         Cetak
                     </button>
                 </div>
+                <div style={{clear:'both'}}></div>
             </form>
         </>
     )

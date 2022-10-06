@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import CurrencyFormat from 'react-currency-format';
 import { useSelector } from 'react-redux';
+import { PageHeader } from 'antd';
 
 const { Text } = Typography;
 
@@ -472,7 +473,12 @@ const EditPembayaranPembelian = () => {
         <>
             <form className="p-3 mb-3 bg-body rounded">
                 <div className="text-title text-start mb-4">
-                    <h4 className="title fw-bold">Edit Pembayaran Pembelian</h4>
+                    <PageHeader
+                        ghost={false}
+                        onBack={() => window.history.back()}
+                        title="Edit Pembayaran Pembelian">
+                     </PageHeader>
+                    {/* <h4 className="title fw-bold">Edit Pembayaran Pembelian</h4> */}
                 </div>
                 <div className="row">
                     <div className="col">
@@ -697,12 +703,13 @@ const EditPembayaranPembelian = () => {
                 </form>
 
 
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right', position:'relative'}}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
                         value="Draft"
                         onClick={handleDraft}
+                        width="100px"
                     >
                         Simpan
                     </button>
@@ -711,15 +718,18 @@ const EditPembayaranPembelian = () => {
                         className="btn btn-primary rounded m-1"
                         value="Submitted"
                         onClick={handleSubmit}
+                        width="100px"
                     >
                         Submit
                     </button>
                     <button
                         type="button"
+                        width="100px"
                         className="btn btn-warning rounded m-1">
                         Cetak
                     </button>
                 </div>
+                <div style={{clear:'both'}}></div>
             </form>
         </>
     )

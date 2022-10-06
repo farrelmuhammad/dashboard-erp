@@ -1,15 +1,19 @@
 import './form.css'
+import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Url from '../../../Config';
+import { Button, Modal, Checkbox, Space, Table, Tag } from 'antd';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import Search from 'antd/lib/transfer/search';
 import Swal from 'sweetalert2';
 import CurrencyFormat from 'react-currency-format';
 import AsyncSelect from "react-select/async";
 import { PageHeader } from 'antd';
 
-const EditCreditNote = () => {
+const EditPIB = () => {
     const auth = useSelector(state => state.auth);
     const [date, setDate] = useState(null);
     const [loading, setLoading] = useState(true)
@@ -142,6 +146,7 @@ const EditCreditNote = () => {
                 setMataUang(getData.currency.name)
                 setNominal(getData.nominal);
                 setSelectedBiaya(getData.cost.name)
+                // setBiaya(getData.cost.name)
                 setDeskripsi(getData.description)
                 setLoading(false);
             })
@@ -266,7 +271,7 @@ const EditCreditNote = () => {
                 <PageHeader
                         ghost={false}
                         onBack={() => window.history.back()}
-                        title="Edit Credit Note">
+                        title="Edit PIB">
                      </PageHeader>
                     {/* <h4 className="title fw-bold">Buat Credit Note</h4> */}
                 </div>
@@ -396,7 +401,7 @@ const EditCreditNote = () => {
                     </div>
                 </div>
 
-                <div className="mt-5 mb-4 btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right', position:'relative'}}>
+                <div className="mt-5 mb-4 btn-group" role="group" aria-label="Basic mixed styles example" style={{float:"right", position:"relative"}}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -428,4 +433,4 @@ const EditCreditNote = () => {
     )
 }
 
-export default EditCreditNote
+export default EditPIB

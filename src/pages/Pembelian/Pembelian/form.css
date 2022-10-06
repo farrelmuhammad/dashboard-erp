@@ -54,10 +54,14 @@
 
   } */
 
- .tabel-cetak{
-  color: red;
-    /* padding: 5px 10px!important; */
-  }
+ .border{
+  border: 1px solid #dddddd;
+  } 
+  .border-isi{
+    border-right: 1px solid #dddddd;
+    border-left: 1px solid #dddddd;
+    padding: 5px;
+    }
   .header-cetak{
     font-size: 10px!important;
   }

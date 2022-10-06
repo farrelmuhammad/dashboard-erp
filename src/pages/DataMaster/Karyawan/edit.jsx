@@ -18,6 +18,7 @@ import "./form.css";
 import { Checkbox } from "@mui/material";
 import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
+import { PageHeader, Switch } from "antd";
 
 const EditKaryawan = () => {
   // const token = jsCookie.get("auth");
@@ -52,6 +53,8 @@ const EditKaryawan = () => {
   const [selectedValue, setSelectedDepartment] = useState([]);
   const [selectedValue2, setSelectedPosition] = useState(null);
 
+  const [checked, setChecked] = useState(false);
+
   const handleChangeDepartment = (value) => {
     setSelectedDepartment(value);
     setDepartment_id(value.id);
@@ -78,6 +81,18 @@ const EditKaryawan = () => {
         Authorization: `Bearer ${auth.token}`,
       },
     }).then((res) => res.json());
+  };
+
+  const onChange = () => {
+    checked ? setChecked(false) : setChecked(true)
+
+    if (checked === false) {
+      setStatus("Active");
+      // console.log('Active');
+    } else {
+      setStatus("Inactive");
+      // console.log('Inactive');
+    }
   };
 
   const handleUpdate = async (e) => {
@@ -203,10 +218,14 @@ const EditKaryawan = () => {
    if ((getWarehouses?.length > 0)) {
      return (
        <>
+       <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Edit Karyawan">
+        </PageHeader>
+
          <form className="  p-3 mb-3 bg-body rounded">
-           <div className="text-title text-start mb-4">
-             <h3 className="title fw-bold">Edit Karyawan</h3>
-           </div>
+
            <div className="row mb-3">
              <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
                Kode
@@ -465,7 +484,21 @@ const EditKaryawan = () => {
                />
              </div>
            </div>
-           <fieldset className="row mb-3">
+           
+           <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
+          <div className="col-sm-7">
+            <Switch defaultChecked={checked} onChange={onChange} />
+            <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
+              {
+                checked ? "Aktif"
+                  : "Nonaktif"
+              }
+            </label>
+            </div>
+          </div>
+
+           {/* <fieldset className="row mb-3">
              <legend className="col-form-label col-sm-2 pt-0">Status</legend>
              <div className="col-sm-10">
                <div className="form-check">
@@ -497,7 +530,7 @@ const EditKaryawan = () => {
                  </label>
                </div>
              </div>
-           </fieldset>
+           </fieldset> */}
          </form>
          {/* <form className="  p-3 mb-3 bg-body rounded">
            <div className="text-title text-start mb-2">

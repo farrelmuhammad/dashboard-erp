@@ -36,7 +36,6 @@ const Produk = () => {
             return (
               <PageHeader
                 ghost={false}
-                onBack={() => window.history.back()}
                 title="Daftar Produk"
                 extra={[
                   <Link to="/produk/buat">

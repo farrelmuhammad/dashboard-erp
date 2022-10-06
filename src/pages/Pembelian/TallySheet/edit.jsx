@@ -9,7 +9,8 @@ import Url from '../../../Config';
 import { useNavigate, useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import ReactDataSheet from 'react-datasheet'
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+import { PageHeader } from 'antd';
 
 
 const EditTallySheet = () => {
@@ -61,7 +62,6 @@ const EditTallySheet = () => {
                 setGetTallySheet(getData)
                 setDetailTallySheet(getData.tally_sheet_details);
                 setStatus(getData.status);
-                console.log(getData);
                 let arrData = [];
                 let tmpQty = []
                 let tmpBox = []
@@ -354,7 +354,7 @@ const EditTallySheet = () => {
         [...product.map((item, i) => ({
                 code: item.code,
                 product_name: item.product_name,
-                quantity: item.boxes_quantity.replace('.', ','),
+                quantity: item.boxes_quantity.toString().replace('.', ','),
                 unit: item.boxes_unit,
                 box:
                     <>
@@ -386,7 +386,8 @@ const EditTallySheet = () => {
                                             <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
                                             <div className="col-sm-3">
                                                 <input
-                                                    value={quantityPO}
+                                                
+                                                    value={quantityPO? quantityPO.toString().replace('.', ',') : null}
                                                     type="Nama"
                                                     className="form-control"
                                                     id="inputNama3"
@@ -410,7 +411,7 @@ const EditTallySheet = () => {
                                             <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
                                             <div className="col-sm-3">
                                                 <input
-                                                    value={product[indexPO].boxes_quantity.replace('.', ',')}
+                                                    value={product[indexPO].boxes_quantity.toString().replace('.', ',')}
                                                     type="Nama"
                                                     className="form-control"
                                                     id="inputNama3"
@@ -685,6 +686,7 @@ const EditTallySheet = () => {
                         console.log("kehpaus")
                         updatedList.splice(i, 1);
                         data.splice(i, 1);
+                        setIndexPO(0)
                     }
                 }
             }
@@ -707,6 +709,7 @@ const EditTallySheet = () => {
             tallySheetData.append("jumlah_box[]", p.number_of_boxes);
             tallySheetData.append("satuan_box[]", p.boxes_unit);
             tallySheetData.append("kuantitas_box[]", p.boxes_quantity);
+            tallySheetData.append("aksi[]", p.action);
             tallySheetData.append("id_pesanan_pembelian[]", p.id_pesanan_pembelian);
         });
 
@@ -768,6 +771,7 @@ const EditTallySheet = () => {
         product.map((p, pi) => {
             tallySheetData.append("id_produk[]", p.id_produk);
             tallySheetData.append("jumlah_box[]", p.number_of_boxes);
+            tallySheetData.append("aksi[]", p.action);
             tallySheetData.append("satuan_box[]", p.boxes_unit);
             tallySheetData.append("kuantitas_box[]", p.boxes_quantity);
             tallySheetData.append("id_pesanan_pembelian[]", p.id_pesanan_pembelian);
@@ -841,7 +845,12 @@ const EditTallySheet = () => {
         <>
             <form className="  p-3 mb-5 bg-body rounded">
                 <div className="text-title text-start mb-4">
-                    <h3 className="title fw-bold">Detail Tally Sheet</h3>
+                    <PageHeader
+                        ghost={false}
+                        onBack={() => window.history.back()}
+                        title="Edit Tally Sheet">
+                     </PageHeader>
+                    {/* <h3 className="title fw-bold">Detail Tally Sheet</h3> */}
                 </div>
                 <div class="row">
                     <div class="col">
@@ -944,7 +953,7 @@ const EditTallySheet = () => {
                     />
                 </div>
 
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right', position:'relative'}}>
 
                     {
                         getStatus != "Submitted" ? <>
@@ -954,6 +963,7 @@ const EditTallySheet = () => {
                                 value="Draft"
                                 onChange={(e) => setStatus(e.target.value)}
                                 onClick={handleDraft}
+                                width="100px"
                             >
                                 Simpan
                             </button>
@@ -963,6 +973,7 @@ const EditTallySheet = () => {
                                 value="Submitted"
                                 onChange={(e) => setStatus(e.target.value)}
                                 onClick={handleSubmit}
+                                width="100px"
                             >
                                 Submit
                             </button></>
@@ -973,16 +984,19 @@ const EditTallySheet = () => {
                                     value="Draft"
                                     onChange={(e) => setStatus(e.target.value)}
                                     onClick={handleSubmit}
+                                    width="100px"
                                 >
                                     Simpan
                                 </button></>
                     }
                     <button
                         type="button"
+                        width="100px"
                         className="btn btn-warning rounded m-1">
                         Cetak
                     </button>
                 </div>
+                <div style={{clear:'both'}}></div>
             </form>
             {/* <form className="  p-3 mb-5 bg-body rounded">
                 <div className="text-title text-start mb-4">

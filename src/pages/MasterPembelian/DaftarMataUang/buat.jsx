@@ -10,6 +10,7 @@ import "./form.css";
 import SendIcon from "@mui/icons-material/Send";
 import Button from "@mui/material/Button";
 import { useSelector } from "react-redux";
+import { PageHeader} from 'antd';
 
 const BuatMataUang = () => {
   // const token = jsCookie.get("auth");
@@ -85,10 +86,13 @@ const BuatMataUang = () => {
 
   return (
     <>
+      <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Buat Mata Uang">
+          </PageHeader>
+
       <form className="  p-3 mb-3 bg-body rounded">
-        <div className="text-title text-start mb-4">
-          <h3 className="title fw-bold">Buat Mata Uang</h3>
-        </div>
         <div className="row mb-3">
           <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
             Kode

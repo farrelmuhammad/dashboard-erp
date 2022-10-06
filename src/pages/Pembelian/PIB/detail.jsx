@@ -1,4 +1,8 @@
+import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tag } from 'antd'
+import { DeleteOutlined, LoadingOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import React, { useEffect, useState } from 'react'
+import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
+import Search from 'antd/lib/transfer/search'
 import axios from 'axios'
 import Url from '../../../Config';
 import { useParams } from 'react-router-dom'
@@ -6,7 +10,7 @@ import { useSelector } from 'react-redux'
 import CurrencyFormat from 'react-currency-format';
 import { PageHeader } from 'antd';
 
-export const DetailCreditNote = () => {
+export const DetailPIB = () => {
     const auth = useSelector(state => state.auth);
     const [date, setDate] = useState(null);
     const [loading, setLoading] = useState(true)
@@ -73,8 +77,8 @@ export const DetailCreditNote = () => {
                 <PageHeader
                         ghost={false}
                         onBack={() => window.history.back()}
-                        title="Detail Credit Note">
-                </PageHeader>
+                        title="Detail PIB">
+                     </PageHeader>
                     {/* <h4 className="title fw-bold">Buat Credit Note</h4> */}
                 </div>
                 <div className="row">
@@ -187,4 +191,4 @@ export const DetailCreditNote = () => {
     )
 }
 
-export default DetailCreditNote
+export default DetailPIB

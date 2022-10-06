@@ -18,6 +18,7 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import Url from "../../../Config";
 import "./form.css";
+import { PageHeader } from "antd";
 
 const DetailPosisi = () => {
   // const token = jsCookie.get("auth");
@@ -62,10 +63,14 @@ const DetailPosisi = () => {
   if (getEmployee.length > 0) {
     return (
       <>
+        <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Detail Posisi">
+        </PageHeader>
+
         <form className="  p-3 mb-3 bg-body rounded">
-          <div className="text-title text-start mb-4">
-            <h3 className="title fw-bold">Detail Posisi</h3>
-          </div>
+          
           <div className="row mb-3">
             <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
               Kode

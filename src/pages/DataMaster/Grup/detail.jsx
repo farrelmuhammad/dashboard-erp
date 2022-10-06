@@ -1,6 +1,7 @@
 import React from 'react'
 import jsCookie from 'js-cookie';
 import { useSelector } from 'react-redux';
+import { PageHeader} from 'antd';
 
 export const DetailGrup = () => {
     // const token = jsCookie.get('auth')
@@ -8,10 +9,13 @@ export const DetailGrup = () => {
 
     return (
         <>
+         <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Detail Grup Pengguna">
+          </PageHeader>
+
             <form className="  p-3 mb-5 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <h3 className="title fw-bold">Detail Grup Pengguna</h3>
-                </div>
                 <div className="row mb-3">
                     <label htmlFor="inputKode3" className="col-sm-2 col-form-label">Kode</label>
                     <div className="col-sm-10">

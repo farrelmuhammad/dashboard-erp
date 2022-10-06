@@ -7,6 +7,7 @@ import axios from 'axios'
 import Url from '../../../Config';
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { PageHeader} from 'antd';
 
 export const DetailPenerimaanBarang = () => {
 
@@ -87,7 +88,12 @@ export const DetailPenerimaanBarang = () => {
         <>
             <form className="  p-3 mb-5 bg-body rounded">
                 <div className="text-title text-start mb-4">
-                    <h3 className="title fw-bold">Buat Penerimaan Barang</h3>
+                <PageHeader
+                        ghost={false}
+                        onBack={() => window.history.back()}
+                        title="Detail Penerimaan Barang">
+                </PageHeader>
+                    {/* <h3 className="title fw-bold">Buat Penerimaan Barang</h3> */}
                 </div>
                 <div class="row">
                     <div class="col">
