@@ -1,7 +1,7 @@
 import './form.css'
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
@@ -93,32 +93,30 @@ const EditableCell = ({
     return <td {...restProps}>{childNode}</td>;
 };
 
-const CreateGoodsRequest = () => {
+const EditProduction = () => {
     // const token = jsCookie.get("auth");
     const auth = useSelector(state => state.auth);
 
     const [product, setProduct] = useState([]);
     const [query, setQuery] = useState("");
-    const [getCode, setGetCode] = useState('');
-
+    const [code, setCode] = useState('');
     const [notes, setNotes] = useState('');
     const [date, setDate] = useState(null);
-    const [type, setType] = useState('send');
-    const [warehouse_id, setWarehouseId] = useState([]);
-    const [tally_sheet_id, setTallySheetId] = useState([]);
-    const [goods_transfer_id, setGoodsTransfer] = useState([]);
-    const [reference_no, setReferenceNo] = useState([]);
-    const [warehouse_source, setWarehouseSource] = useState([]);
-    const [warehouse_destination, setWarehouseDestination] = useState([]);
-
+    const [type, setType] = useState('');
+    const [warehouseSourceName, setWarehouseSourceName] = useState(null);
+    const [warehouse_source, setWarehouseSource] = useState('');
     const [selectedWarehouseSource, setSelectedWarehouseSource] = useState(null);
+
+    const [warehouseDestinationName, setWarehouseDestinationName] = useState(null);
+    const [warehouse_destination, setWarehouseDestination] = useState([]);
     const [selectedWarehouseDestination, setSelectedWarehouseDestination] = useState(null);
-    const [selectedTallySheet, setSelectedTallySheet] = useState(null);
-    const [selectedGoodsTransfer, setSelectedGoodsTransfer] = useState(null);
+    const [loading, setLoading] = useState(true);
+    // const [getDataProductionDetail, setGetDataProductionDetail] = useState([]);
 
     const navigate = useNavigate();
+    const { id } = useParams();
 
-    const [getDataDetail, setDataDetailWindow] = useState();
+    const [getDataProduct, setGetDataProduct] = useState();
     const [isLoading, setIsLoading] = useState(false);
 
     const [subTotal, setSubTotal] = useState("");
@@ -134,22 +132,58 @@ const CreateGoodsRequest = () => {
         borderTop: '3px solid #007bff',
     }
 
-    const handleChangeTallySheet = (value) => {
-        setSelectedTallySheet(value);
-        setReferenceNo(value.code);
-        setWarehouseId(value.warehouse_id);
-        setTallySheetId(value.id);
-        var updatedList = [];
-        setProduct(updatedList);
-    };
+    useEffect(() => {
+        fetchProduction()
+    }, [])
 
-    const handleChangeGoodsTransfer = (value) => {
-        setSelectedGoodsTransfer(value);
-        setReferenceNo(value.code);
-        setGoodsTransfer(value.id);
-        var updatedList = [];
-        setProduct(updatedList);
-    };
+    const fetchProduction = async (e) => {
+        await axios.get(`${Url}/goodsrequests?id=${id}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        })
+            .then((res) => {
+                // setGetPosition(res.data.data[0]);
+                // console.log(res.data.data[0])
+                const getData = res.data.data[0]
+                setCode(getData.code);
+                setType(getData.type);
+                setDate(getData.date);
+                setWarehouseSource(getData.whsource.id);
+                setWarehouseSourceName(getData.whsource.name);
+                setWarehouseDestination(getData.whdestination.id);
+                setWarehouseDestinationName(getData.whdestination.name);
+                setNotes(getData.notes);
+                setLoading(false);
+            })
+            .catch((err) => {
+                // Jika Gagal
+                //   console.log(err);
+            });
+    }
+
+    useEffect(() => {
+        getProductionDetail()
+    }, [])
+
+    const getProductionDetail = async (params = {}) => {
+        setIsLoading(true);
+        await axios.get(`${Url}/goodsrequest_details/${id}`, {
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${auth.token}`
+            }
+        })
+            .then(res => {
+                const getData = res.data.data
+                // setGetDataProductionDetail(getData)
+                setProduct(getData)
+                // setStatus(getData.map(d => d.status))
+                setIsLoading(false);
+                //   console.log(getData)
+            })
+    }
 
     const handleChangeWarehouseSource = (value) => {
         setSelectedWarehouseSource(value);
@@ -161,7 +195,7 @@ const CreateGoodsRequest = () => {
         setWarehouseDestination(value.id);
     };
 
-    // load options warehouse using API call
+    // load options using API call
     const loadOptionsWarehouse = (inputValue) => {
         return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}`, {
             headers: {
@@ -171,78 +205,19 @@ const CreateGoodsRequest = () => {
         }).then((res) => res.json());
     };
 
-    // load options tally sheet using API call
-    const loadOptionsTallySheet = (inputValue) => {
-        return fetch(`${Url}/select_tally_sheets?limit=10&code=${inputValue}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        }).then((res) => res.json());
-    };
-
-    // load options Goods Transfer using API call
-    const loadOptionsGoodsTransfer = (inputValue) => {
-        return fetch(`${Url}/select_goodstransfers?limit=10&code=${inputValue}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        }).then((res) => res.json());
-    };
-
     useEffect(() => {
-        if(type === 'send'){
-            const getTallySheet = async () => {
-                const res = await axios.get(`${Url}/select_stock_referece_tally_sheets?product_name=${query}&warehouse_id=${warehouse_id}&tally_sheet_id=${tally_sheet_id}`, {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${auth.token}`
-                    }
-                })
-                setDataDetailWindow(res.data);
-            };
-            if (query.length === 0 || query.length > 2) getTallySheet();
-        }
-        if (type === 'receive'){
-            const getGoodsTransfer = async () => {
-                const res = await axios.get(`${Url}/select_goods_transfer_details?product_name=${query}&goods_transfer_id=${goods_transfer_id}`, {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${auth.token}`
-                    }
-                })
-                setDataDetailWindow(res.data);
-            };
-            if (query.length === 0 || query.length > 2) getGoodsTransfer();
-        }
-    }, [query,selectedTallySheet,selectedGoodsTransfer]);
+        const getProduct = async () => {
+            const res = await axios.get(`${Url}/select_stock_warehouses?product_name=${query}&warehouse_source=${warehouse_source}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${auth.token}`
+                }
+            })
+            setGetDataProduct(res.data);
+        };
 
-    useEffect(() => {
-        if (type == "send") {
-            setType("send");
-            document.getElementById('reference_tally_sheet').style.display = "flex";
-
-            document.getElementById('reference_transfer_gudang').style.display = "none";
-            setSelectedGoodsTransfer("");
-            setReferenceNo();
-            setGoodsTransfer();
-            var updatedList = [];
-            setProduct(updatedList);
-        }
-        if(type == "receive"){
-            setType("receive");
-            document.getElementById('reference_tally_sheet').style.display = "none";
-
-            document.getElementById('reference_transfer_gudang').style.display = "flex";
-            var updatedList = [];
-            setProduct(updatedList);
-            setSelectedTallySheet("");
-            setReferenceNo();
-            setWarehouseId();
-            setTallySheetId();
-        }
-    }, [type]);
+        if (query.length === 0 || query.length > 2) getProduct();
+    }, [query])
 
     // Column for modal input product
     const columnsModal = [
@@ -251,8 +226,8 @@ const CreateGoodsRequest = () => {
             dataIndex: 'product_name',
         },
         {
-            title: 'Qty',
-            dataIndex: 'transfer_qty',
+            title: 'Stok',
+            dataIndex: 'qty',
             width: '15%',
             align: 'center',
         },
@@ -290,16 +265,11 @@ const CreateGoodsRequest = () => {
             dataIndex: 'product_name',
         },
         {
-            title: 'Stok Saat Ini',
-            dataIndex: 'current_qty',
-            width: '15%',
+            title: 'Qty',
+            dataIndex: 'qty',
+            width: '30%',
             align: 'center',
-        },
-        {
-            title: 'Qty Transfer',
-            dataIndex: 'transfer_qty',
-            width: '15%',
-            align: 'center',
+            editable: true,
         },
         {
             title: 'Satuan',
@@ -307,74 +277,53 @@ const CreateGoodsRequest = () => {
             width: '30%',
             align: 'center',
         },
+        // {
+        //     title: 'actions',
+        //     dataIndex: 'actions',
+        //     width: '15%',
+        //     align: 'center',
+        //     render: (item, record) => (
+        //         <>
+        //             <a href="javascript:void(0)" onClick={() => {sayHello(record)}}>Delete</a>
+        //         </>
+        //     )
+        // },
     ];
-    const checkWarehouse = () => {
-        // if (warehouse_source == "") {
-        //     Swal.fire({
-        //         icon: "error",
-        //         title: "Oops...",
-        //         text: "Pilih Gudang Asal Terlebih Dahulu !",
-        //     });
-        // } else {
-        //     setModal2Visible(true)
-        // }
-        setModal2Visible(true)
-    };
-    const handleSave = (row) => {
+
+    const sayHello = (row) => {
+        // alert(`Hello, ${name}!`);
         const newData = [...product];
-        const index = newData.findIndex((item) => row.id === item.id);
+        // updatedList.splice(product.indexOf(event.target.value), 1);
+        const index = newData.findIndex((item) => row.product_id === item.product_id);
         const item = newData[index];
         newData.splice(index, 1, { ...item, ...row });
         setProduct(newData);
-        let check_checked = checked;
-        calculate(product, check_checked);
+        // console.log(index,item,newData)
+        console.log(newData)
+      };
+
+    const checkWarehouse = () => {
+        // var updatedList = [...product];
+        // updatedList = []
+        // updatedList.splice(product.indexOf(0), 1);
+        // setProduct(updatedList);
+        if (warehouse_source == "") {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Pilih Gudang Asal Terlebih Dahulu !",
+            });
+        } else {
+            setModal2Visible(true)
+        }
     };
-    const calculate = (product, check_checked) => {
-        let subTotal = 0;
-        let totalDiscount = 0;
-        let totalNominalDiscount = 0;
-        let grandTotalDiscount = 0;
-        let getPpnDiscount = 0;
-        let allTotalDiscount = 0;
-        let totalPpn = 0;
-        let grandTotal = 0;
-        let getPpn = 0;
-        let total = 0;
-        product.map((values) => {
-            if (check_checked) {
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
-
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                subTotal += ((total - getPpnDiscount) * 100) / (100 + values.ppn);
-                allTotalDiscount += total - getPpnDiscount;
-                totalPpn = allTotalDiscount - subTotal;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
-                setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
-                setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
-            } else {
-                subTotal += (values.quantity * values.price);
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
-
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                allTotalDiscount = total - getPpnDiscount;
-                getPpn = (allTotalDiscount * values.ppn) / 100;
-                totalPpn += getPpn;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
-                setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
-                setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
-            }
-        })
-    }
+    const handleSave = (row) => {
+        const newData = [...product];
+        const index = newData.findIndex((item) => row.product_id === item.product_id);
+        const item = newData[index];
+        newData.splice(index, 1, { ...item, ...row });
+        setProduct(newData);
+    };
     const components = {
         body: {
             row: EditableRow,
@@ -400,31 +349,37 @@ const CreateGoodsRequest = () => {
 
     const handleCheck = (event) => {
         var updatedList = [...product];
-        console.log(event.target.checked,updatedList);
         if (event.target.checked) {
-            updatedList = [...product, event.target.value];
+            updatedList.map((item) => {
+                // if(item.product_id === event.target.value.product_id){
+                //     alert("product sudah ada")
+                //     updatedList = [...product,];
+                // }else{
+                //     // alert("product tidak ada")
+                //     updatedList = [...product, event.target.value];
+                // }
+            })
         } else {
             updatedList.splice(product.indexOf(event.target.value), 1);
         }
-        console.log(product.indexOf(event.target.value))
         setProduct(updatedList);
+            // updatedList.map((p) => (console.log(p.product_id )));
+            // console.log(event.target.value.product_id)
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const userData = new FormData();
+        const userData = new URLSearchParams();
         userData.append("date", date);
-        userData.append("reference_no", reference_no);
         userData.append("warehouse_source", warehouse_source);
         userData.append("warehouse_destination", warehouse_destination);
-        userData.append("type_process", type);
+        userData.append("type", type);
         userData.append("notes", notes);
         userData.append("status", "publish");
         product.map((p) => {
             console.log(p);
             userData.append("product_id[]", p.product_id);
-            userData.append("current_qty[]", p.current_qty);
-            userData.append("transfer_qty[]", p.transfer_qty);
+            userData.append("qty[]", p.qty);
         });
 
         // for (var pair of userData.entries()) {
@@ -432,8 +387,8 @@ const CreateGoodsRequest = () => {
         // }
 
         axios({
-            method: "post",
-            url: `${Url}/goodstransfers`,
+            method: "put",
+            url: `${Url}/goodsrequests/${id}`,
             data: userData,
             headers: {
                 Accept: "application/json",
@@ -447,7 +402,7 @@ const CreateGoodsRequest = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/goodstransfer");
+                navigate("/goodsrequest");
             })
             .catch((err) => {
                 if (err.response) {
@@ -468,21 +423,18 @@ const CreateGoodsRequest = () => {
     };
 
     const handleDraft = async (e) => {
-        console.log(type)
         e.preventDefault();
-        const userData = new FormData();
+        const userData = new URLSearchParams();
         userData.append("date", date);
-        userData.append("reference_no", reference_no);
         userData.append("warehouse_source", warehouse_source);
         userData.append("warehouse_destination", warehouse_destination);
-        userData.append("type_process", type);
+        userData.append("type", type);
         userData.append("notes", notes);
         userData.append("status", "draft");
         product.map((p) => {
             console.log(p);
             userData.append("product_id[]", p.product_id);
-            userData.append("current_qty[]", p.current_qty);
-            userData.append("transfer_qty[]", p.transfer_qty);
+            userData.append("qty[]", p.qty);
         });
 
         // for (var pair of userData.entries()) {
@@ -490,8 +442,8 @@ const CreateGoodsRequest = () => {
         // }
 
         axios({
-            method: "post",
-            url: `${Url}/goodstransfers`,
+            method: "put",
+            url: `${Url}/goodsrequests/${id}`,
             data: userData,
             headers: {
                 Accept: "application/json",
@@ -505,16 +457,12 @@ const CreateGoodsRequest = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/goodstransfer");
+                navigate("/goodsrequest");
             })
             .catch((err) => {
                 if (err.response) {
                     console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: err.response.data.error.nama,
-                    });
+                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 } else if (err.request) {
                     console.log("err.request ", err.request);
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
@@ -524,79 +472,51 @@ const CreateGoodsRequest = () => {
                 }
             });
     };
-
+    if (loading) {
+        return (
+            <div></div>
+        )
+    }
     return (
         <>
             <form className="p-3 mb-3 bg-body rounded">
                 <div className="p-3 mb-3">
                     <div className="card" style={cardOutline}>
                         <div className="card-header bg-white">
-                            <h6 className="title fw-bold">Buat Transfer Barang</h6>
+                            <h6 className="title fw-bold">Buat Permintaan Barang</h6>
                         </div>
                         <div className="card-body">
                             <div className="row">
                                 <div className="col-md-6">
                                     <div className="form-group row mb-1">
-                                        <label for="code" className="col-sm-4 col-form-label">No</label>
-                                        <div className="col-sm-8">
-                                            <input type="text" className="form-control" id="code" name="code" placeholder="Otomatis" readOnly />
+                                        <label for="code" className="col-sm-2 col-form-label">No</label>
+                                        <div className="col-sm-10">
+                                            <input type="text" className="form-control" id="code" defaultValue={code} name="code" placeholder="Otomatis" readOnly />
                                         </div>
                                     </div>
                                     <div className="form-group row mb-1">
-                                        <label for="date" className="col-sm-4 col-form-label">Tanggal</label>
-                                        <div className="col-sm-8">
-                                            <input type="date" className="form-control" id="date" name="date" onChange={(e) => setDate(e.target.value)} />
+                                        <label for="date" className="col-sm-2 col-form-label">Tanggal</label>
+                                        <div className="col-sm-10">
+                                            <input type="date" className="form-control" id="date" name="date" defaultValue={date} onChange={(e) => setDate(e.target.value)} />
                                         </div>
                                     </div>
                                     <div className="form-group row mb-1">
-                                        <label for="type" className="col-sm-4 col-form-label">Tipe</label>
-                                        <div className="col-sm-8">
+                                        <label for="type" className="col-sm-2 col-form-label">Tipe</label>
+                                        <div className="col-sm-10">
                                             <select onChange={e => setType(e.target.value)} id="type" name="type" className="form-select">
-                                                {/* <option>Pilih Tipe</option> */}
-                                                <option value="send">Kirim</option>
-                                                <option value="receive">Terima</option>
+                                                <option>Pilih Tipe</option>
+                                                <option value="send" selected={type === "send"}>Kirim</option>
                                             </select>
                                         </div>
                                     </div>
-                                    <div className="form-group row mb-1" id="reference_tally_sheet">
-                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No Referensi</label>
-                                        <div className="col-sm-8">
-                                            <AsyncSelect
-                                                placeholder="Pilih Tally Sheet..."
-                                                cacheOptions
-                                                defaultOptions
-                                                value={selectedTallySheet}
-                                                getOptionLabel={(e) => e.code}
-                                                getOptionValue={(e) => e.code}
-                                                loadOptions={loadOptionsTallySheet}
-                                                onChange={handleChangeTallySheet}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1" style={{ display: "none" }} id="reference_transfer_gudang">
-                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No Referensi</label>
-                                        <div className="col-sm-8">
-                                            <AsyncSelect
-                                                placeholder="Pilih Transfer Barang..."
-                                                cacheOptions
-                                                defaultOptions
-                                                value={selectedGoodsTransfer}
-                                                getOptionLabel={(e) => e.code}
-                                                getOptionValue={(e) => e.code}
-                                                loadOptions={loadOptionsGoodsTransfer}
-                                                onChange={handleChangeGoodsTransfer}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-6">
                                     <div className="form-group row mb-1">
-                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Asal</label>
-                                        <div className="col-sm-8">
+                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Gudang Asal</label>
+                                        <div className="col-sm-10">
                                             <AsyncSelect
                                                 placeholder="Pilih Gudang Asal..."
                                                 cacheOptions
                                                 defaultOptions
+                                                defaultInputValue={warehouseSourceName}
                                                 value={selectedWarehouseSource}
                                                 getOptionLabel={(e) => e.name}
                                                 getOptionValue={(e) => e.id}
@@ -605,38 +525,42 @@ const CreateGoodsRequest = () => {
                                             />
                                         </div>
                                     </div>
+                                </div>
+                                <div className="col-md-6">
                                     <div className="form-group row mb-1">
-                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Tujuan</label>
-                                        <div className="col-sm-8">
+                                        <label for="notes" className="col-sm-2 col-form-label">Catatan</label>
+                                        <div className="col-sm-10">
+                                            <textarea
+                                                className="form-control"
+                                                name="notes" id="notes"
+                                                rows="3"
+                                                defaultValue={notes}
+                                                onChange={(e) => setNotes(e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="form-group row mb-1">
+                                        <label for="adjustment_status" className="col-sm-2 col-form-label">Status</label>
+                                        <div className="col-sm-10">
+                                            <h3 className="badge bg-danger text-center m-1">
+                                                Draft
+                                            </h3>
+                                        </div>
+                                    </div>
+                                    <div className="form-group row mb-1">
+                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Gudang Tujuan</label>
+                                        <div className="col-sm-10">
                                             <AsyncSelect
                                                 placeholder="Pilih Gudang Tujuan..."
                                                 cacheOptions
                                                 defaultOptions
+                                                defaultInputValue={warehouseDestinationName}
                                                 value={selectedWarehouseDestination}
                                                 getOptionLabel={(e) => e.name}
                                                 getOptionValue={(e) => e.id}
                                                 loadOptions={loadOptionsWarehouse}
                                                 onChange={handleChangeWarehouseDestination}
                                             />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label for="notes" className="col-sm-4 col-form-label">Catatan</label>
-                                        <div className="col-sm-8">
-                                            <textarea
-                                                className="form-control"
-                                                name="notes" id="notes"
-                                                rows="3"
-                                                onChange={(e) => setNotes(e.target.value)}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
-                                        <div className="col-sm-8">
-                                            <h3 className="badge bg-danger text-center m-1">
-                                                Draft
-                                            </h3>
                                         </div>
                                     </div>
                                 </div>
@@ -687,7 +611,7 @@ const CreateGoodsRequest = () => {
                                                 </div>
                                                 <Table
                                                     columns={columnsModal}
-                                                    dataSource={getDataDetail}
+                                                    dataSource={getDataProduct}
                                                     scroll={{
                                                         y: 250,
                                                     }}
@@ -701,14 +625,24 @@ const CreateGoodsRequest = () => {
                                 </div>
                             </div>
                             <Table
+                                loading={isLoading}
                                 components={components}
                                 rowClassName={() => 'editable-row'}
                                 bordered
                                 pagination={false}
-                                dataSource={product}
                                 columns={columns}
+                                dataSource={product}
                                 onChange={(e) => setProduct(e.target.value)}
                             />
+                            {/* <Table
+                          components={components}
+                          rowClassName={() => 'editable-row'}
+                          bordered
+                          pagination={false}
+                          dataSource={product}
+                          columns={columns}
+                          onChange={(e) => setProduct(e.target.value)}
+                      /> */}
                         </div>
                     </div>
                 </div>
@@ -735,4 +669,4 @@ const CreateGoodsRequest = () => {
     )
 }
 
-export default CreateGoodsRequest
+export default EditProduction

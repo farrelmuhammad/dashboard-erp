@@ -11,11 +11,11 @@ import { useSelector } from 'react-redux';
 import { toTitleCase } from '../../../utils/helper';
 import qs from "https://cdn.skypack.dev/qs@6.11.0";
 
-const GoodsTransferTable = () => {
+const ProductionTable = () => {
   const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);
-    const [getDataGoodsTransfer, setGetDataGoodsTransfer] = useState([]);
+    const [getDataProduction, setGetDataProduction] = useState([]);
     const [status, setStatus] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     // const token = jsCookie.get('auth')
@@ -28,14 +28,14 @@ const GoodsTransferTable = () => {
         },
       });
 
-    const deleteGoodsTransfer= async (id) => {
-        await axios.delete(`${Url}/goodstransfers/${id}`, {
+    const deleteProduction= async (id) => {
+        await axios.delete(`${Url}/productions/${id}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
         });
-        getGoodsTransfer()
+        getProduction()
         Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
     };
 
@@ -148,9 +148,9 @@ const GoodsTransferTable = () => {
         ...params,
     });
 
-    const getGoodsTransfer= async (params = {}) => {
+    const getProduction= async (params = {}) => {
         setIsLoading(true);
-        await axios.get(`${Url}/goodstransfers?${qs.stringify(getParams(tableParams))}`, {
+        await axios.get(`${Url}/productions?${qs.stringify(getParams(tableParams))}`, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${auth.token}`
@@ -158,7 +158,7 @@ const GoodsTransferTable = () => {
         })
             .then(res => {
                 const getData = res.data.data
-                setGetDataGoodsTransfer(getData)
+                setGetDataProduction(getData)
                 setStatus(getData.map(d => d.status))
                 setIsLoading(false);
                 setTableParams({
@@ -172,7 +172,7 @@ const GoodsTransferTable = () => {
     }
 
     useEffect(() => {
-        getGoodsTransfer();
+        getProduction();
       }, [JSON.stringify(tableParams)]);
 
     const columns = [
@@ -180,68 +180,44 @@ const GoodsTransferTable = () => {
             title: 'Tanggal',
             dataIndex: 'date',
             key: 'date',
-            width: '20%',
+            width: '15%',
             ...getColumnSearchProps('date'),
             sorter: true,
             sortDirections: ['descend', 'ascend'],
         },
         {
-            title: 'No. Transfer Barang',
+            title: 'No. Produksi',
             dataIndex: 'code',
             key: 'code',
-            width: '25%',
+            width: '20%',
             ...getColumnSearchProps('code'),
             sorter: true,
             sortDirections: ['descend', 'ascend'],
         },
         {
-            title: 'No. Referensi',
-            dataIndex: 'reference_no',
-            key: 'reference_no',
-            width: '25%',
-            ...getColumnSearchProps('reference_no'),
-            sorter: true,
-            sortDirections: ['descend', 'ascend'],
-        },
-        {
-            title: 'Gudang Awal',
+            title: 'Gudang Input',
             dataIndex: 'warehouse_source_name',
             key: 'warehouse_source_name',
-            width: '25%',
+            width: '20%',
             ...getColumnSearchProps('warehouse_source_name'),
             sorter: true,
             sortDirections: ['descend', 'ascend'],
         },
         {
-            title: 'Gudang Tujuan',
+            title: 'Gudang Output',
             dataIndex: 'warehouse_destination_name',
             key: 'warehouse_destination_name',
-            width: '25%',
+            width: '20%',
             ...getColumnSearchProps('warehouse_destination_name'),
             sorter: true,
             sortDirections: ['descend', 'ascend'],
-        },
-        {
-            title: 'Tipe',
-            dataIndex: 'type_process',
-            key: 'type_process',
-            width: '20%',
-            ...getColumnSearchProps('type_process'),
-            sorter: true,
-            sortDirections: ['descend', 'ascend'],
-            render: (_, { type_process }) => (
-                <>
-                    {type_process === 'publish' ? <div>{toTitleCase(type_process)}</div> :  <div>{toTitleCase(type_process)}</div>}
-
-                </>
-            ),
         },
         {
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
             align: 'center',
-            width: '23%',
+            width: '20%',
             render: (_, { status }) => (
                 <>
                     {status === 'publish' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
@@ -254,13 +230,13 @@ const GoodsTransferTable = () => {
         },
         {
             title: 'Actions',
-            width: '23%',
+            width: '20%',
             align: 'center',
             render: (_, record) => (
                 <>
                     {record.status === 'publish' ? (
                         <Space size="middle">
-                        <Link to={`/goodstransfer/detail/${record.id}`}>
+                        <Link to={`/goodsrequest/detail/${record.id}`}>
                             <Button
                                 size='small'
                                 type="primary"
@@ -270,14 +246,14 @@ const GoodsTransferTable = () => {
                     </Space>
                     ) : (
                         <Space size="middle">
-                        <Link to={`/goodstransfer/detail/${record.id}`}>
+                        <Link to={`/goodsrequest/detail/${record.id}`}>
                             <Button
                                 size='small'
                                 type="primary"
                                 icon={<InfoCircleOutlined />}
                             />
                         </Link>
-                        <Link to={`/goodstransfer/edit/${record.id}`}>
+                        <Link to={`/goodsrequest/edit/${record.id}`}>
                             <Button
                                 size='small'
                                 type="success"
@@ -288,7 +264,7 @@ const GoodsTransferTable = () => {
                             size='small'
                             type="danger"
                             icon={<DeleteOutlined />}
-                            onClick={() => deleteGoodsTransfer(record.id)}
+                            onClick={() => deleteProduction(record.id)}
                         />
                     </Space>
                     )}
@@ -302,7 +278,7 @@ const GoodsTransferTable = () => {
         rowKey={(record) => record.id}
         sortDirections={["descend", "ascend"]}
         pagination={{ pageSize: 5 }}
-        dataSource={getDataGoodsTransfer}
+        dataSource={getDataProduction}
         onChange={handleTableChange}
         scroll={{
             y: 240,
@@ -310,4 +286,4 @@ const GoodsTransferTable = () => {
     />;
 };
 
-export default GoodsTransferTable;
+export default ProductionTable;
