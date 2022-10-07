@@ -76,6 +76,11 @@ const BuatPIB = () => {
     const [estimasiAkhir, setEstimasiAkhir] = useState()
     const [tanggalTiba, setTanggalTiba] = useState()
     const [noBL, setNoBL] = useState()
+    const [faktur, setFaktur] = useState([])
+    const [bea, setBea] = useState([])
+    const [jumlah, setJumlah] = useState([])
+    const [totalRupiah, setTotalRupiah] = useState([])
+    const [optionsFaktur, setOptionsFaktur] = useState([])
 
 
 
@@ -91,37 +96,25 @@ const BuatPIB = () => {
     })
 
     useEffect(() => {
-        axios.get(`${Url}/select_purchase_invoices/all?id_pemasok=${supplierId}`, {
+        axios.get(`${Url}/goods_import_declarations_available_purchase_invoices?id_pemasok=${supplierId}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
         }).then((res) => {
             let tmp = []
-            let data = res.data[0]
-            for (let x = 0; x < data.purchase_invoice_details.length; x++) {
+            let data = res.data.data
+            for (let x = 0; x < data.length; x++) {
                 tmp.push({
-                    value: data.purchase_invoice_details[x].id,
-                    label: data.purchase_invoice_details[x].product_name,
-                    quantity: data.purchase_invoice_details[x].quantity,
-                    price: data.purchase_invoice_details[x].price,
-                    fixed_discount: data.purchase_invoice_details[x].fixed_discount,
-                    discount_percentage: data.purchase_invoice_details[x].discount_percentage[x],
-                    unit: data.purchase_invoice_details[x].unit,
-                    total: data.purchase_invoice_details[x].total,
-                    pilihanDiskon: data.purchase_invoice_details[x].fixed_discount == 0 ? 'persen' : 'nominal'
+                    value: data[x].id,
+                    label: data[x].code,
+                    info: data[x].purchase_invoice_details
                 })
             }
-            if (data.purchase_invoice_details[0].currency_name) {
-                setMataUang(data.purchase_invoice_details[0].currency_name)
-            }
-            setTotalPpn(data.ppn);
-            setProdukFaktur(tmp)
-            setUpdateProduk(tmp)
-            console.log(tmp)
+            setOptionsFaktur(tmp)
         }
         );
-    }, [])
+    }, [supplierId])
 
     const getNewCode = async () => {
         await axios.get(`${Url}/get_new_goods_import_declaration_code?tanggal=${date}`, {
@@ -147,8 +140,6 @@ const BuatPIB = () => {
             }
         }
 
-
-
         if (dataDouble.length != 0) {
             Swal.fire(
                 "Gagal",
@@ -159,35 +150,23 @@ const BuatPIB = () => {
         else {
             console.log(value)
             let newData = [...tampilProduk];
-            newData.push(value)
-            let totalPerProduk = 0;
-            let grandTotal = 0;
-            let total = 0;
-            let hasilDiskon = 0;
-            console.log(newData)
-            for (let x = 0; x < newData.length; x++) {
-                total += (Number(newData[x].quantity.replace(',', '.')) * Number(newData[x].price));
-                totalPerProduk = (Number(newData[x].quantity.replace(',', '.')) * Number(newData[x].price));
+            // let newData = [...tampilProduk];
+            let tmpBea = []
+            let tmpJumlah = []
+            let tempTotal = []
+            for (let i = 0; i < value.info.length; i++) {
+                newData.push(value.info[i])
+                tmpBea.push(0)
+                tmpJumlah.push(value.info[i].total)
 
-                console.log(totalPerProduk)
-                if (newData[x].discount_percentage != 0) {
-                    hasilDiskon += (Number(totalPerProduk) * Number(newData[x].discount_percentage.replace(',', '.')) / 100);
-                }
-                else if (newData[x].fixed_discount != 0) {
+                let hasil = kurs * value.info[i].total
+                tempTotal.push(hasil)
 
-                    hasilDiskon += Number(newData[x].fixed_discount);
-                }
-
-
-                grandTotal = total - hasilDiskon;
             }
-            let totalAkhir = Number(grandTotal) + Number(totalPpn) - Number(totalCredit)
-            setTotalKeseluruhan(totalAkhir)
-            setSubTotal(total)
-            setGrandTotalDiscount(hasilDiskon);
-            setGrandTotal(grandTotal);
 
-            setUpdateProduk(newData)
+            setTotalRupiah(tempTotal)
+            setBea(tmpBea)
+            setJumlah(tmpJumlah)
             setTampilProduk(newData);
         }
 
@@ -200,12 +179,12 @@ const BuatPIB = () => {
         setSelectedSupplier(value);
     };
     const loadOptionsSupplier = (inputValue) => {
-        return fetch(`${Url}/select_suppliers?nama=${inputValue}&grup=impor`, {
+        return axios.get(`${Url}/goods_import_declarations_available_suppliers?nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => res.data.data);
     };
 
     // handle change faktur 
@@ -255,71 +234,38 @@ const BuatPIB = () => {
         {
             title: 'Nama Produk',
             width: '20%',
-            dataIndex: 'name_product',
-            render(text) {
-                return {
-                    props: {
-                        style: { background: "#f5f5f5" }
-                    },
-                    children: text,
-                }
-            }
+            dataIndex: 'nama',
         },
         {
             title: 'Qty',
             dataIndex: 'qty',
             width: '10%',
             align: 'center',
-            editable: true,
         },
         {
             title: 'Harga',
-            dataIndex: 'prc',
+            dataIndex: 'hrg',
             width: '10%',
             align: 'center',
-            editable: true,
         },
         {
             title: 'Jumlah',
-            dataIndex: 'total',
+            dataIndex: 'uangasing',
             width: '15%',
             align: 'center',
-            render(text) {
-                return {
-                    props: {
-                        style: { background: "#f5f5f5" }
-                    },
-                    children: text,
-                }
-            }
+
         },
         {
             title: 'Jumlah (Rp)',
-            dataIndex: 'Jumlah',
+            dataIndex: 'rupiah',
             width: '15%',
             align: 'center',
-            render(text) {
-                return {
-                    props: {
-                        style: { background: "#f5f5f5" }
-                    },
-                    children: text,
-                }
-            }
         },
         {
             title: 'Bea Masuk',
             dataIndex: 'bea',
             width: '15%',
             align: 'center',
-            render(text) {
-                return {
-                    props: {
-                        style: { background: "#f5f5f5" }
-                    },
-                    children: text,
-                }
-            }
         },
         {
             title: 'Total',
@@ -330,6 +276,50 @@ const BuatPIB = () => {
         },
 
     ];
+
+    function klikTambahBea(value, i) {
+        let tmpBea = []
+        let tmpJumlah = []
+        for (let x = 0; x < tampilProduk.length; x++) {
+            if (x == i) {
+                tmpBea.push(value)
+                tmpJumlah.push(Number(tampilProduk[i].total) + Number(value))
+
+            }
+            else {
+                tmpBea.push(bea[x])
+                tmpJumlah.push(jumlah[x])
+            }
+        }
+        setBea(tmpBea)
+        setJumlah(tmpJumlah)
+
+    }
+
+    function setUbahKurs(value) {
+        let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+
+        let tempTotal = []
+        for (let i = 0; tampilProduk.length; i++) {
+            let hitung = Number(hasil) * Number(tampilProduk[i].total)
+            tempTotal.push(hitung)
+        }
+        setTotalRupiah(tempTotal)
+        setKurs(hasil)
+    }
+
+    const dataProduk =
+        [...tampilProduk.map((item, i) => ({
+            nama: item.product_name,
+            qty: item.quantity,
+            hrg: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.price} key="total" />,
+            uangasing: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.total.replace('.', ',')} key="total" />,
+            rupiah: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={totalRupiah[i]} key="total" />,
+            bea: <CurrencyFormat prefix='Rp ' className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={bea[i]} onChange={(e) => klikTambahBea(e.target.value, i)} key="pay" />,
+            total: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={jumlah[i]} key="total" />,
+        }))
+
+        ]
 
 
 
@@ -435,11 +425,11 @@ const BuatPIB = () => {
 
     return (
         <>
-            	    <PageHeader
-                        ghost={false}
-                        onBack={() => window.history.back()}
-                        title="Buat PIB">
-                     </PageHeader>
+            <PageHeader
+                ghost={false}
+                onBack={() => window.history.back()}
+                title="Buat PIB">
+            </PageHeader>
             <form className="p-3 mb-3 bg-body rounded">
                 {/* <div className="text-title text-start mb-4">
                     
@@ -463,7 +453,7 @@ const BuatPIB = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. PIB</label>
                             <div className="col-sm-7">
                                 <input
-                                    value={getCode}
+                                    value="Otomatis"
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
@@ -475,7 +465,7 @@ const BuatPIB = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                             <div className="col-sm-7">
                                 <AsyncSelect
-                                    placeholder="Pilih Pelanggan..."
+                                    placeholder="Pilih Supplier..."
                                     cacheOptions
                                     defaultOptions
                                     value={selectedSupplier}
@@ -515,12 +505,10 @@ const BuatPIB = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Rate Kurs</label>
                             <div className="col-sm-7">
-                                <input
-                                    type="Nama"
-                                    className="form-control"
-                                    onChange={(e) => setKurs(e.target.value)}
-                                    id="inputNama3"
-                                />
+
+                                <CurrencyFormat prefix='Rp ' className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={kurs} onKeyDown={(event) => klikEnter(event)}  onChange={(e) => setUbahKurs(e.target.value)} key="total" />
+
+                               
                             </div>
                         </div>
 
@@ -620,20 +608,20 @@ const BuatPIB = () => {
                         </div>
                     </div>
                     <div className="row mt-4  mb-3" >
-                        <label htmlFor="inputNama3" className="col-sm-2 ps-3 col-form-label">Cari Produk</label>
+                        <label htmlFor="inputNama3" className="col-sm-2 ps-3 col-form-label">Cari Faktur</label>
                         <div className="col-sm-5">
 
                             <ReactSelect
 
                                 style={{ display: tampilTabel ? "block" : "none" }}
                                 className="basic-single"
-                                placeholder="Pilih Produk..."
+                                placeholder="Pilih Faktur..."
                                 classNamePrefix="select"
                                 isLoading={isLoading}
                                 isSearchable
                                 getOptionLabel={(e) => e.label}
                                 getOptionValue={(e) => e.value}
-                                options={produkFaktur}
+                                options={optionsFaktur}
                                 onChange={(e) => handleChangePilih(e)}
                             />
                         </div>
@@ -643,15 +631,15 @@ const BuatPIB = () => {
                         // rowClassName={() => 'editable-row'}
                         bordered
                         pagination={false}
-                        // dataSource={dataProduk}
+                        dataSource={dataProduk}
                         columns={columnProduk}
                         onChange={(e) => setProduct(e.target.value)}
                         summary={(pageData) => {
                             let totalAkhir = 0;
                             let sisaAkhir = 0;
                             pageData.forEach(({ sisa, pays }) => {
-                                totalAkhir += Number(pays.props.value);
-                                sisaAkhir += Number(sisa.props.value);
+                                totalAkhir += Number(pays);
+                                sisaAkhir += Number(sisa);
                                 setTotalAkhir(totalAkhir)
                                 setSisaAkhir(sisaAkhir)
                             });
@@ -729,7 +717,7 @@ const BuatPIB = () => {
                         </div>
                     </div>
                 </div> */}
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right', position:'relative'}}>
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -755,7 +743,7 @@ const BuatPIB = () => {
                         Cetak
                     </button>
                 </div>
-                <div style={{clear:'both'}}></div>
+                <div style={{ clear: 'both' }}></div>
             </form>
 
         </>

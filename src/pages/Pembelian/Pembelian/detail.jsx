@@ -265,18 +265,6 @@ export const DetailPesananPembelian = () => {
     }`;
 
     const handlePrint = useReactToPrint({
-        // content: () => {
-        //     const tableStat = componentRef.current;
-        //     const PrintElem = document.createElement('div');
-        //     const header =  
-        //       `<div class="page-footer">
-        //         <div class="page-number"></div>
-        //       </div>`;
-        //     PrintElem.innerHTML = header;
-        //     PrintElem.appendChild(tableStat);
-        //     return PrintElem;
-        //   },
-
         content: () => componentRef.current,
     })
 //
@@ -398,8 +386,8 @@ export const DetailPesananPembelian = () => {
                                             <td className='border-isi text-end'>{
                                                 namaMataUang + ' ' + Number(item.price).toLocaleString('id')
                                             }</td>
-                                            {item.fixed_discount != null && item.discount_percentage == null ? <td className='text-end border-isi'>{namaMataUang + ' ' + item.fixed_discount}</td> :
-                                                item.fixed_discount == null && item.discount_percentage != null ? <td className='text-end border-isi'>{item.discount_percentage + '%'}</td> : <td className='text-center border-isi'>-</td>
+                                            {item.fixed_discount != 0 && item.discount_percentage == 0 ? <td className='text-end border-isi'>{namaMataUang + ' ' + item.fixed_discount}</td> :
+                                                item.fixed_discount == 0 && item.discount_percentage != 0 ? <td className='text-end border-isi'>{item.discount_percentage + '%'}</td> : <td className='text-center border-isi'>-</td>
                                             }
 
                                             <td className='border-isi text-end'>

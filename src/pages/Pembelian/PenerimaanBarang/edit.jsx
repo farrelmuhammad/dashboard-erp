@@ -172,7 +172,7 @@ const EditPenerimaanBarang = () => {
             ...dataTS.map((item, i) => ({
                 code: item.code,
                 product_name: item.product_name,
-                quantity: item.quantity,
+                quantity: item.quantity.replace('.', ','),
                 unit: item.unit,
                 // action:
                 //     <Space size="middle">
@@ -229,20 +229,29 @@ const EditPenerimaanBarang = () => {
     };
 
     const handleSubmit = async (e) => {
-        console.log(productTampil)
+        console.log(dataTS)
         const formData = new URLSearchParams();
         formData.append("tanggal", dataPenerimaan.date);
         formData.append("grup", grup);
         formData.append("pemasok", supplierId);
         formData.append("catatan", dataPenerimaan.notes);
-        
-        formData.append("alamat", addressId);
+        formData.append("referensi", dataPenerimaan.reference);
+        // formData.append("alamat", addressId);
         formData.append("gudang", dataPenerimaan.warehouse_id);
 
-        console.log(dataTS)
         // for (let x = 0; x < dataTS.length; x++) {
-        //     formData.append("id_tally_sheet[]", dataTS[x].id);
+            formData.append("id_tally_sheet[]", dataTS[0].id);
         // }
+        // console.log(dataTS)
+
+        // for (let x = 0; x < productTampil.length; x++) {
+        //     formData.append("id_tally_sheet[]", productTampil[x].id);
+        //     for (let y = 0; y < productTampil[x].tally_sheet_details.length; y++) {
+        //         formData.append("id_pesanan_penjualan[]", productTampil[x].tally_sheet_details[y].purchase_order.id)
+        //         formData.append("kuantitas_produk_box[]", productTampil[x].tally_sheet_details[y].boxes_quantity);
+        //     }
+        // }
+
 
         formData.append("status", "Submitted");
 
@@ -286,15 +295,15 @@ const EditPenerimaanBarang = () => {
         const formData = new URLSearchParams();
         formData.append("tanggal", dataPenerimaan.date);
         formData.append("grup", grup);
-        formData.append("pemasok", "1");
+        formData.append("pemasok", supplierId);
         formData.append("catatan", dataPenerimaan.notes);
         
-        formData.append("alamat", "30");
+        // formData.append("alamat", "30");
         formData.append("gudang", dataPenerimaan.warehouse_id);
 
-        for (let x = 0; x < dataTS.length; x++) {
-            formData.append("id_tally_sheet[]", dataTS[x].id);
-        }
+        // for (let x = 0; x < dataTS.length; x++) {
+            formData.append("id_tally_sheet[]", dataTS[0].id);
+        // }
         formData.append("status", "Draft");
 
 

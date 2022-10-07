@@ -120,7 +120,7 @@ const EditPembayaranPembelian = () => {
     const [totalPpn, setTotalPpn] = useState("");
     const [grandTotal, setGrandTotal] = useState("");
     const [checked, setChecked] = useState("");
-    const [kurs, setKurs] = useState()
+    const [kurs, setKurs] = useState('')
 
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [selectedValue2, setSelectedCOA] = useState(null);
@@ -130,7 +130,7 @@ const EditPembayaranPembelian = () => {
     const [dataDetail, setDataDetail] = useState([]);
     const [loading, setLoading] = useState(true)
     const [selectedSupplier, setSelectedSupplier] = useState()
-    const [selectedMataUang, setSelectedMataUang] = useState()
+    const [selectedMataUang, setSelectedMataUang] = useState('Rp ')
     const [supplierId, setSupplierId] = useState('')
     const [mataUangId, setMataUangId] = useState()
     const [selectedBank, setSelectedBank] = useState()
@@ -198,26 +198,32 @@ const EditPembayaranPembelian = () => {
             .then((res) => {
                 let getData = res.data.data[0];
                 setDataHeader(getData)
-                
+
                 let tmp = []
                 let data = getData.purchase_invoice_payment_details
-                for (let i =0; i< data.length; i++){
+                for (let i = 0; i < data.length; i++) {
                     tmp.push({
-                        code: data[i].code,
-                        total: data[i].total,
-                        sisa: data[i].sisa,
-                        bayar: data[i].bayar,
-                        idFaktur: data[i].id
+                        code: data[i].purchase_invoice_code,
+                        total: data[i].purchase_invoice_total_payment,
+                        sisa: data[i].remains,
+                        bayar: data[i].paid,
+                        idFaktur: data[i].purchase_invoice_id
                     })
                 }
                 setDataDetail(tmp)
 
                 // pengisian data Header 
                 setDate(getData.date);
+                setStatus(getData.status)
                 setReferensi(getData.reference)
                 setCatatan(getData.notes)
+                setSisaAkhir(getData.remains)
                 setSelectedBank(getData.chart_of_account.name)
                 setSelectedSupplier(getData.supplier.name)
+                if (getData.currency_name) {
+
+                    setSelectedMataUang(getData.currency_name + ' ')
+                }
                 setSupplierId(getData.supplier_id)
                 setMataUangId(getData.supplier_id);
                 setBankId(getData.chart_of_account.id)
@@ -233,17 +239,20 @@ const EditPembayaranPembelian = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_sales_invoices?nama_alias=${query}`, {
+            const res = await axios.get(`${Url}/purchase_invoice_payments_available_purchase_invoices?id_pemasok=${supplierId}&kode=${query}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
+            // console.log(res.data)
+            setGetDataProduct(res.data.data);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
-    }, [query])
+    }, [query, supplierId])
+
+
 
     // Column for modal input product
     const columnsModal = [
@@ -254,8 +263,11 @@ const EditPembayaranPembelian = () => {
         },
         {
             title: 'Supplier',
-            dataIndex: 'customer_id',
+            dataIndex: 'supplier_name',
             align: 'center',
+            render: (text, record, index) => (
+                <>{getDataProduct[index].supplier.name}</>
+            )
         },
         {
             title: 'Total',
@@ -325,45 +337,99 @@ const EditPembayaranPembelian = () => {
 
 
     const handleCheck = (event) => {
-        var updatedList = [...product];
+        var updatedList = [...dataDetail];
+        let data = event.target.value
+
+
         if (event.target.checked) {
-            updatedList = [...product, event.target.value];
-        } else {
-            updatedList.splice(product.indexOf(event.target.value), 1);
+            // updatedList = [...product, event.target.value];
+            let tmp = []
+            if (updatedList.length == 0) {
+                tmp.push({
+                    code: data.code,
+                    total: data.total,
+                    sisa: data.remains,
+                    bayar: 0,
+                    idFaktur: data.id
+                })
+            }
+            else {
+                let doubleData = 0;
+                for (let i = 0; i < updatedList.length; i++) {
+                    // console.log(product[i].code)
+
+                    if (updatedList[i].code == data.code) {
+                        doubleData = Number(doubleData) + Number(1);
+                    }
+                }
+
+                if (doubleData > 0) {
+                    Swal.fire(
+                        "Gagal",
+                        `Data Sudah Ada pada List`,
+                        "success"
+                    )
+                    tmp = updatedList
+                }
+                else {
+                    for (let i = 0; i <= updatedList.length; i++) {
+                        if (updatedList.length == i) {
+                            tmp.push({
+                                code: data.code,
+                                total: data.total,
+                                sisa: 0,
+                                bayar: 0,
+                                idFaktur: data.id
+                            })
+                        }
+                        else {
+
+                            tmp.push(dataDetail[i])
+                        }
+
+                    }
+                }
+
+
+            }
+            setDataDetail(tmp)
         }
-        setProduct(updatedList);
+        else {
+            for (let i = 0; i < updatedList.length; i++) {
+                // console.log(product[i].idFaktur);
+                if (updatedList[i].idFaktur == data.id) {
+                    updatedList.splice(i, 1);
+
+                }
+            }
+            setDataDetail(updatedList)
+
+        }
     };
 
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const userData = new FormData();
-        userData.append("tanggal", date);
-        userData.append("referensi", referensi);
-        userData.append("catatan", catatan);
-        userData.append("pelanggan", customer);
-        userData.append("status", "Submitted");
-        product.map((p) => {
-            console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("harga[]", p.price);
-            userData.append("persentase_diskon[]", p.discount);
-            userData.append("diskon_tetap[]", p.nominal_disc);
-            userData.append("ppn[]", p.ppn);
-        });
-        userData.append("termasuk_pajak", checked);
+        const dataKirim = new URLSearchParams();
+        dataKirim.append("tanggal", date);
+        dataKirim.append("referensi", referensi);
+        dataKirim.append("kurs", kurs);
+        dataKirim.append("pemasok", supplierId);
+        dataKirim.append("status", "Submitted");
+        dataKirim.append("mata_uang", mataUangId);
+        dataKirim.append("bagan_akun", bankId);
+        dataKirim.append("catatan", catatan)
 
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
+        dataDetail.map((p) => {
+            dataKirim.append("id_faktur_pembelian[]", p.idFaktur);
+            dataKirim.append("terbayar[]", p.bayar);
+        });
 
         axios({
-            method: "post",
-            url: `${Url}/sales_invoice_payments`,
-            data: userData,
+            method: "put",
+            url: `${Url}/purchase_invoice_payments/${id}`,
+            data: dataKirim,
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -376,7 +442,7 @@ const EditPembayaranPembelian = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/pesanan");
+                navigate("/pembayaranpembelian");
             })
             .catch((err) => {
                 if (err.response) {
@@ -398,30 +464,25 @@ const EditPembayaranPembelian = () => {
 
     const handleDraft = async (e) => {
         e.preventDefault();
-        const userData = new FormData();
-        const dataKirim = new FormData();
+        const dataKirim = new URLSearchParams();
         dataKirim.append("tanggal", date);
         dataKirim.append("referensi", referensi);
         dataKirim.append("kurs", kurs);
         dataKirim.append("pemasok", supplierId);
-        dataKirim.append("status", "Draft");
+        dataKirim.append("status", "Submitted");
         dataKirim.append("mata_uang", mataUangId);
         dataKirim.append("bagan_akun", bankId);
         dataKirim.append("catatan", catatan)
 
-        product.map((p) => {
+        dataDetail.map((p) => {
             dataKirim.append("id_faktur_pembelian[]", p.idFaktur);
             dataKirim.append("terbayar[]", p.bayar);
         });
 
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
-
         axios({
-            method: "post",
-            url: `${Url}/sales_invoice_payments`,
-            data: userData,
+            method: "put",
+            url: `${Url}/purchase_invoice_payments/${id}`,
+            data: dataKirim,
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -434,7 +495,7 @@ const EditPembayaranPembelian = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/pesanan");
+                navigate("/pembayaranpembelian");
             })
             .catch((err) => {
                 if (err.response) {
@@ -454,14 +515,45 @@ const EditPembayaranPembelian = () => {
             });
     };
 
-    const dataFaktur = 
-    [...dataDetail.map((item,i )=> ({
-        code: item.code,
-        total: item.total,
-        sisa: item.sisa,
-        pays: item.bayar
-    }))
-    ]
+
+    function klikEnter(event) {
+        if (event.code == "Enter") {
+            event.target.blur()
+        }
+    }
+
+
+    function klikUbahTotal(index, value) {
+        let tmp = []
+        let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+        // setting data baru 
+        for (let i = 0; i < dataDetail.length; i++) {
+            if (i == index) {
+                tmp.push({
+                    code: dataDetail[i].code,
+                    total: dataDetail[i].total,
+                    sisa: dataDetail[i].total - hasil,
+                    bayar: hasil,
+                    idFaktur: dataDetail[i].idFaktur
+                })
+
+            }
+            else {
+                tmp.push(product[i])
+            }
+        }
+        setDataDetail(tmp)
+
+    }
+
+    const dataFaktur =
+        [...dataDetail.map((item, i) => ({
+            code: item.code,
+            total: <CurrencyFormat prefix={selectedMataUang} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.total} key="total" />,
+            sisa: <CurrencyFormat prefix={selectedMataUang} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.sisa} key="sisa" />,
+            pays: <CurrencyFormat prefix={selectedMataUang} className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.bayar} onChange={(e) => klikUbahTotal(i, e.target.value)} key="pay" />,
+        }))
+        ]
 
     if (loading) {
         return (
@@ -477,7 +569,7 @@ const EditPembayaranPembelian = () => {
                         ghost={false}
                         onBack={() => window.history.back()}
                         title="Edit Pembayaran Pembelian">
-                     </PageHeader>
+                    </PageHeader>
                     {/* <h4 className="title fw-bold">Edit Pembayaran Pembelian</h4> */}
                 </div>
                 <div className="row">
@@ -557,7 +649,7 @@ const EditPembayaranPembelian = () => {
 
                     </div>
                     <div className="col">
-                        {/* <div className="row mb-3">
+                        <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Rate Kurs</label>
                             <div className="col-sm-7">
                                 <input
@@ -566,23 +658,21 @@ const EditPembayaranPembelian = () => {
                                     id="inputNama3"
                                 />
                             </div>
-                        </div> */}
+                        </div>
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Total</label>
                             <div className="col-sm-7">
-                                <CurrencyFormat prefix='Rp ' type="danger" disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={totalAkhir}  key="pay" />
+                                <CurrencyFormat prefix={selectedMataUang} type="danger" disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={totalAkhir} key="pay" />
                             </div>
                         </div>
-                        {/* <div className="row mb-3">
+                        <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Sisa</label>
                             <div className="col-sm-7">
-                                <input
-                                    type="Nama"
-                                    className="form-control"
-                                    id="inputNama3"
-                                />
+                                <CurrencyFormat prefix={selectedMataUang} type="danger" disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={sisaAkhir} key="pay" />
+
+
                             </div>
-                        </div> */}
+                        </div>
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Referensi</label>
                             <div className="col-sm-7">
@@ -593,6 +683,12 @@ const EditPembayaranPembelian = () => {
                                     defaultValue={referensi}
                                     onChange={(e) => setReferensi(e.target.value)}
                                 />
+                            </div>
+                        </div>
+                        <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
+                            <div className="col-sm-4 p-2">
+                                {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
                             </div>
                         </div>
                     </div>
@@ -615,15 +711,6 @@ const EditPembayaranPembelian = () => {
                                 centered
                                 visible={modal2Visible}
                                 onCancel={() => setModal2Visible(false)}
-                                // footer={[
-                                //     <Button
-                                //         key="submit"
-                                //         type="primary"
-
-                                //     >
-                                //         Tambah
-                                //     </Button>,
-                                // ]}
                                 footer={null}
                             >
                                 <div className="text-title text-start">
@@ -661,27 +748,22 @@ const EditPembayaranPembelian = () => {
                         columns={defaultColumns}
                         onChange={(e) => setProduct(e.target.value)}
                         summary={(pageData) => {
-                            let totalTotal = 0;
-                            pageData.forEach(({ total }) => {
-                                totalTotal = total;
+                            let totalAkhir = 0;
+                            let sisaAkhir = 0;
+                            pageData.forEach(({ sisa, pays }) => {
+                                totalAkhir += Number(pays.props.value);
+                                sisaAkhir += Number(sisa.props.value);
+                                setTotalAkhir(totalAkhir)
+                                setSisaAkhir(sisaAkhir)
                             });
                             return (
                                 <>
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={3} className="text-end">Total yang dibayarkan</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <Text type="danger">{totalTotal}</Text>
+                                            <CurrencyFormat prefix={selectedMataUang} disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={totalAkhir} key="pay" />
                                         </Table.Summary.Cell>
-                                        {/* <Table.Summary.Cell index={2}>
-                                            <Text>{totalRepayment}</Text>
-                                        </Table.Summary.Cell> */}
                                     </Table.Summary.Row>
-                                    {/* <Table.Summary.Row>
-                                        <Table.Summary.Cell index={0}>Balance</Table.Summary.Cell>
-                                        <Table.Summary.Cell index={1} colSpan={2}>
-                                            <Text type="danger">{totalBorrow - totalRepayment}</Text>
-                                        </Table.Summary.Cell>
-                                    </Table.Summary.Row> */}
                                 </>
                             );
                         }}
@@ -703,33 +785,49 @@ const EditPembayaranPembelian = () => {
                 </form>
 
 
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right', position:'relative'}}>
-                    <button
-                        type="button"
-                        className="btn btn-success rounded m-1"
-                        value="Draft"
-                        onClick={handleDraft}
-                        width="100px"
-                    >
-                        Simpan
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-primary rounded m-1"
-                        value="Submitted"
-                        onClick={handleSubmit}
-                        width="100px"
-                    >
-                        Submit
-                    </button>
-                    <button
-                        type="button"
-                        width="100px"
-                        className="btn btn-warning rounded m-1">
-                        Cetak
-                    </button>
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
+                    {
+                        status == 'Submitted' ? <>
+                            <button
+                                type="button"
+                                className="btn btn-success rounded m-1"
+                                value="Draft"
+                                onClick={handleSubmit}
+                                width="100px"
+                            >
+                                Update
+                            </button>
+                        </> :
+
+                            <>
+                                <button
+                                    type="button"
+                                    className="btn btn-success rounded m-1"
+                                    value="Draft"
+                                    onClick={handleDraft}
+                                    width="100px"
+                                >
+                                    Update
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary rounded m-1"
+                                    value="Submitted"
+                                    onClick={handleSubmit}
+                                    width="100px"
+                                >
+                                    Submit
+                                </button>
+                                <button
+                                    type="button"
+                                    width="100px"
+                                    className="btn btn-warning rounded m-1">
+                                    Cetak
+                                </button> </>
+                    }
+
                 </div>
-                <div style={{clear:'both'}}></div>
+                <div style={{ clear: 'both' }}></div>
             </form>
         </>
     )

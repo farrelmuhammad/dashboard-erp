@@ -31,7 +31,7 @@ const FakturPembelianTable = () => {
       confirmButtonText: 'Ya'
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`${Url}/purchase_orders/${id}`, {
+        axios.delete(`${Url}/purchase_invoices?id_faktur_pembelian=${id}`, {
           headers: {
             Accept: "application/json",
             Authorization: `Bearer ${auth.token}`,
@@ -200,6 +200,9 @@ const FakturPembelianTable = () => {
       dataIndex: 'type',
       key: 'total',
       width: '10%',
+      render:(_, record)=> (
+         record.supplier._group
+      ),
       ...getColumnSearchProps('total'),
     },
     {
@@ -253,9 +256,9 @@ const FakturPembelianTable = () => {
     columns={columns}
     pagination={{ pageSize: 5 }}
     dataSource={getDataFaktur}
-    scroll={{
-      y: 240,
-    }}
+    // scroll={{
+    //   y: 240,
+    // }}
   />;
 };
 

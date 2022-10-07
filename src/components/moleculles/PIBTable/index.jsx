@@ -1,28 +1,33 @@
-import React, { useEffect, useRef, useState } from 'react';
-import 'antd/dist/antd.css';
-import { CloseOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, Input, Space, Table, Tag } from 'antd';
-import axios from 'axios';
-import Url from '../../../Config';
-import jsCookie from 'js-cookie'
-import Swal from 'sweetalert2';
-import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import * as React from "react";
+import { useState } from "react";
+import jsCookie from "js-cookie";
+import Url from "../../../Config";
+import Swal from "sweetalert2";
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Button, Input, Space, Table, Tag } from "antd";
+import { CloseOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import CurrencyFormat from 'react-currency-format';
 
-const ReturPembelianTable = () => {
+const PIBTable = () => {
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
-  const searchInput = useRef(null);
-  const [getDataFaktur, setGetDataFaktur] = useState([]);
+  const searchInput = React.useRef(null);
+  const [getPenerimaanBarang, setGetPenerimaanBarang] = useState([]);
   const [status, setStatus] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [code, setCode] = useState('');
   // const token = jsCookie.get('auth')
+  const [pib, setPIB] = useState([])
   const auth = useSelector(state => state.auth);
 
-  const deletePurchaseRetur = async (id, code) => {
+
+  const deletePIB = async (id, code) => {
     Swal.fire({
       title: 'Apakah Anda Yakin?',
-      text: "Data akan dihapus",
+      text: "Data ini akan dihapus",
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -30,20 +35,21 @@ const ReturPembelianTable = () => {
       confirmButtonText: 'Ya'
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`${Url}/purchase_returns/${id}`, {
+        axios.delete(`${Url}/goods_import_declarations/${id}`, {
           headers: {
             Accept: "application/json",
             Authorization: `Bearer ${auth.token}`,
           },
         });
-        getRetur()
+        getPIB()
         Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
 
       }
     })
-  }
 
-  const cancelPurchaseRetur = async (id, code) => {
+  };
+
+  const cancelPIB = async (id, code) => {
     Swal.fire({
       title: 'Apakah Anda Yakin?',
       text: "Status data akan diubah ",
@@ -57,14 +63,14 @@ const ReturPembelianTable = () => {
         try {
           axios({
             method: "patch",
-            url: `${Url}/purchase_returns/cancel/${id}`,
+            url: `${Url}/goods_import_declarations/cancel/${id}`,
             headers: {
               Accept: "application/json",
               Authorization: `Bearer ${auth.token}`,
             },
           })
 
-          getRetur();
+          getPIB();
           Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
         }
         catch (err) {
@@ -173,23 +179,22 @@ const ReturPembelianTable = () => {
   });
 
   useEffect(() => {
-    getRetur()
+    getPIB()
   }, [])
 
-  const getRetur = async (params = {}) => {
+  const getPIB = async (params = {}) => {
     setIsLoading(true);
-    await axios.get(`${Url}/purchase_returns`, {
+    await axios.get(`${Url}/goods_import_declarations`, {
       headers: {
         'Accept': 'application/json',
         'Authorization': `Bearer ${auth.token}`
       }
     })
       .then(res => {
-        const getData = res.data.data
-        setGetDataFaktur(getData)
-        setStatus(getData.map(d => d.status))
-        setIsLoading(false);
+        const getData = res.data.data;
+        setPIB(getData)
         console.log(getData)
+        setIsLoading(false);
       })
   }
 
@@ -198,41 +203,38 @@ const ReturPembelianTable = () => {
       title: 'Tanggal',
       dataIndex: 'date',
       key: 'date',
-      width: '10%',
+      width: '15%',
       ...getColumnSearchProps('date'),
     },
     {
-      title: 'No. Retur',
+      title: 'No. PIB',
       dataIndex: 'code',
       key: 'code',
-      width: '15%',
+      width: '20%',
       ...getColumnSearchProps('code'),
       sorter: true,
       sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Supplier',
-      dataIndex: 'supplier',
-      width: '15%',
-      key: 'supplier',
-      ...getColumnSearchProps('supplier_id'),
-      render: (recipient) => recipient.name,
-      // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
-      // sortDirections: ['descend', 'ascend'],
+      dataIndex: 'supplier_name',
+      key: 'supplier_name',
+      width: '20%',
+      ...getColumnSearchProps('supplier_name'),
     },
     {
-      title: 'Total',
-      dataIndex: 'total',
-      key: 'total',
-      width: '10%',
-      ...getColumnSearchProps('total'),
+      title: 'Nama Kapal',
+      dataIndex: 'nama_kapal',
+      key: 'nama_kapal',
+      width: '20%',
+      ...getColumnSearchProps('ship_name'),
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
       align: 'center',
-      width: '10%',
+      width: '15%',
       render: (_, { status }) => (
         <>
           {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
@@ -243,59 +245,96 @@ const ReturPembelianTable = () => {
     },
     {
       title: 'Actions',
-      width: '10%',
+      width: '15%',
       align: 'center',
       render: (_, record) => (
         <>
-          <Space size="middle">
-            {record.can['read-purchase_return'] ? (
-              <Link to={`/returpembelian/detail/${record.id}`}>
+          {record.status === 'Submitted' ? (
+            <Space size="middle">
+              <Button
+                size='small'
+                type="danger"
+                icon={<CloseOutlined />}
+                onClick={() => cancelPIB(record.id, record.code)}
+              />
+              <Link to={`/pib/detail/${record.id}`}>
                 <Button
                   size='small'
                   type="primary"
                   icon={<InfoCircleOutlined />}
                 />
               </Link>
-            ) : null}
-            {
-              record.can['cancel-purchase_return'] ? (
-
+              <Link to={`/pib/edit/${record.id}`}>
                 <Button
                   size='small'
-                  type="danger"
-                  icon={<CloseOutlined />}
-                  onClick={() => cancelPurchaseRetur(record.id, record.code)}
+                  type="success"
+                  icon={<EditOutlined />}
                 />
-
-              ) : null
-            }
-            {
-              record.can['delete-purchase_return'] ? (
-                // <Space size="middle">
+              </Link>
+            </Space>
+          ) : record.status === 'Draft' ? (
+            <Space size="middle">
+              <Link to={`/pib/detail/${record.id}`}>
                 <Button
                   size='small'
-                  type="danger"
-                  icon={<DeleteOutlined />}
-                  onClick={() => deletePurchaseRetur(record.id, record.code)}
+                  type="primary"
+                  icon={<InfoCircleOutlined />}
                 />
-                // </Space>
-              ) : null
-            }
-            {
-              record.can['update-purchase_return'] ? (
-                <Link to={`/returpembelian/edit/${record.id}`}>
-                  <Button
-                    size='small'
-                    type="success"
-                    icon={<EditOutlined />}
-                  />
-                </Link>
-              ) : null
-            }
-          </Space>
+              </Link>
+              <Link to={`/pib/edit/${record.id}`}>
+                <Button
+                  size='small'
+                  type="success"
+                  icon={<EditOutlined />}
+                />
+              </Link>
+              <Button
+                size='small'
+                type="danger"
+                icon={<DeleteOutlined />}
+                onClick={() => deletePIB(record.id, record.code)}
+              />
+            </Space>
+          ) : record.status === 'Done' || record.status === 'Done' ? (
+            <Space size="middle">
+              <Link to={`/pib/detail/${record.id}`}>
+                <Button
+                  size='small'
+                  type="primary"
+                  icon={<InfoCircleOutlined />}
+                />
+              </Link>
+            </Space>
+          ) : (
+            <>
+            </>
+          )}
         </>
 
-
+        // <>
+        //   <Space size="middle">
+        //     <Link to={`/penerimaanbarang/detail/${record.id}`}>
+        //       <Button
+        //         size='small'
+        //         type="primary"
+        //         icon={<InfoCircleOutlined />}
+        //       />
+        //     </Link>
+        //     <Link to={`/penerimaanbarang/edit/${record.id}`}>
+        //       <Button
+        //         size='small'
+        //         type="success"
+        //         icon={<EditOutlined />}
+        //       />
+        //     </Link>
+        //     <Button
+        //       size='small'
+        //       type="danger"
+        //       icon={<DeleteOutlined />}
+        //       onClick={() => deleteTallySheet(record.id, record.code)}
+        //     />
+        //   </Space>
+        // </>
       ),
     },
   ];
@@ -303,11 +342,8 @@ const ReturPembelianTable = () => {
     loading={isLoading}
     columns={columns}
     pagination={{ pageSize: 5 }}
-    dataSource={getDataFaktur}
-    scroll={{
-      y: 240,
-    }}
+    dataSource={pib}
   />;
 };
 
-export default ReturPembelianTable;
+export default PIBTable;

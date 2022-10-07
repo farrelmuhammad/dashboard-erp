@@ -14,7 +14,7 @@ import ReactSelect from 'react-select';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import CurrencyFormat from 'react-currency-format';
 import { useSelector } from 'react-redux';
-import {PageHeader} from 'antd';
+import { PageHeader } from 'antd';
 
 
 const EditFakturPembelian = () => {
@@ -43,7 +43,7 @@ const EditFakturPembelian = () => {
 
     //state return data from database
     const [jatuhTempo, setJatuhTempo] = useState(null);
-    const [supplier, setSupplier] = useState();
+    const [supplierId, setSupplierId] = useState();
 
     const [subTotal, setSubTotal] = useState("");
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
@@ -71,10 +71,13 @@ const EditFakturPembelian = () => {
     const [uangMuka, setUangMuka] = useState(0);
     const [tampilTabel, setTampilTabel] = useState(true)
     const [data, setData] = useState([])
+    const [getDataProductImpor, setGetDataProductImpor] = useState();
     const [getDataProduct, setGetDataProduct] = useState();
     const [totalKeseluruhan, setTotalKeseluruhan] = useState(0);
     // const [dataSupplier, setDataSupplier] = useState([]);
     const [getStatus, setGetStatus] = useState()
+    const [modalListLokal, setModalListLokal] = useState(false);
+    const [modalListImpor, setModalListImpor] = useState(false);
 
     useEffect(() => {
         getDataFaktur();
@@ -104,7 +107,9 @@ const EditFakturPembelian = () => {
                 setGrandTotalDiscount(getData.discount)
                 setGrup(getData.supplier._group)
                 setDataSupplier(getData.supplier)
+                setSupplierId(getData.supplier_id)
                 setDataBarang(getData.purchase_invoice_details)
+                setTerm(getData.term)
                 console.log(getData.purchase_invoice_details)
 
 
@@ -173,7 +178,9 @@ const EditFakturPembelian = () => {
                         })
                 }
                 setData(tmpData);
-                console.log(tmpData)
+
+
+                console.log(getData.goods_receipts)
 
                 // setting id penerimaan barang 
                 for (let i = 0; i < listPenerimaanBarang.length; i++) {
@@ -193,6 +200,34 @@ const EditFakturPembelian = () => {
                 console.log(err);
             });
     }
+
+    useEffect(() => {
+        const getProduct = async () => {
+            const res = await axios.get(`${Url}/purchase_invoices_available_goods_receipts?kode=${query}&id_pemasok=${supplierId}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${auth.token}`
+                }
+            })
+            setGetDataProduct(res.data);
+        };
+
+        if (query.length === 0 || query.length > 2) getProduct();
+    }, [query, supplierId])
+
+    useEffect(() => {
+        const getProductImpor = async () => {
+            const res = await axios.get(`${Url}/purchase_invoices_available_purchase_orders?kode=${query}&id_pemasok=${supplierId}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${auth.token}`
+                }
+            })
+            setGetDataProductImpor(res.data.data);
+        };
+
+        if (query.length === 0 || query.length > 2) getProductImpor();
+    }, [query, supplierId])
 
 
     useEffect(() => {
@@ -216,6 +251,8 @@ const EditFakturPembelian = () => {
         let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
         setTotalPpn(hasil)
         let totalAkhir = subTotal - grandTotalDiscount - Number(uangMuka) + Number(totalCOA) + Number(hasil) - Number(totalCredit)
+        console.log(totalAkhir)
+
         setTotalKeseluruhan(totalAkhir)
     }
 
@@ -416,7 +453,7 @@ const EditFakturPembelian = () => {
                     id: tampilCOA[i].id,
                     code: tampilCOA[i].code,
                     name: tampilCOA[i].name,
-                    jumlah: hasil,
+                    jumlah: value,
                 })
                 totalCOA = totalCOA + Number(hasil);
             }
@@ -425,9 +462,11 @@ const EditFakturPembelian = () => {
                 totalCOA = totalCOA + Number(tampilCOA[i].jumlah);
             }
         }
-        console.log(totalCOA)
 
-        totalAkhir = grandTotal - Number(uangMuka) + Number(totalCOA) + Number(totalPpn) - Number(totalCredit)
+        totalAkhir = subTotal - grandTotalDiscount - Number(uangMuka) + Number(totalCOA) + Number(totalPpn) - Number(totalCredit)
+
+        console.log(totalAkhir)
+
         setTotalKeseluruhan(totalAkhir)
         setTotalCOA(totalCOA)
         setTampilCOA(tmp)
@@ -445,7 +484,7 @@ const EditFakturPembelian = () => {
                     id: tampilCredit[i].id,
                     code: tampilCredit[i].code,
                     deskripsi: tampilCredit[i].deskripsi,
-                    jumlah: hasil,
+                    jumlah: value,
                 })
                 totalCredit = totalCredit + Number(hasil);
             }
@@ -454,9 +493,16 @@ const EditFakturPembelian = () => {
                 totalCredit = totalCredit + Number(tampilCredit[i].jumlah);
             }
         }
-        console.log(totalCredit)
+        console.log(grandTotal)
+        console.log(grandTotalDiscount)
+        console.log(uangMuka)
+        console.log(totalCOA)
+        console.log(totalPpn)
+        totalAkhir = subTotal - grandTotalDiscount - Number(uangMuka) + Number(totalCOA) + Number(totalPpn) - Number(totalCredit)
 
-        totalAkhir = grandTotal - Number(uangMuka) - Number(totalCredit) + Number(totalPpn) + Number(totalCOA)
+        // totalAkhir = Number(grandTotal) - Number(grandTotalDiscount) + Number(uangMuka) + Number(totalCOA) + Number(totalPpn) - Number(totalCredit)
+
+        // totalAkhir = grandTotal - Number(uangMuka) - Number(totalCredit) + Number(totalPpn) + Number(totalCOA)
         setTotalKeseluruhan(totalAkhir)
         setTotalCredit(totalCredit)
         setTampilCredit(tmp)
@@ -716,44 +762,6 @@ const EditFakturPembelian = () => {
         setGrandTotal(grandTotal);
     }
 
-    // const defaultColumns = [
-    //     {
-    //         title: 'Nama Produk',
-    //         dataIndex: 'nama',
-    //     },
-    //     {
-    //         title: 'Qty',
-    //         dataIndex: 'qty',
-    //         width: '10%',
-    //         align: 'center',
-    //     },
-    //     {
-    //         title: 'Stn',
-    //         dataIndex: 'stn',
-    //         width: '5%',
-    //         align: 'center',
-    //     },
-    //     {
-    //         title: 'Harga',
-    //         dataIndex: 'price',
-    //         width: '10%',
-    //         align: 'center',
-    //     },
-    //     {
-    //         title: 'Discount',
-    //         dataIndex: 'diskon',
-    //         width: '10%',
-    //         align: 'center',
-    //     },
-    //     {
-    //         title: 'Jumlah',
-    //         dataIndex: 'total',
-    //         width: '14%',
-    //         align: 'center',
-
-    //     },
-    // ];
-
     const defaultColumns = [
         {
             title: 'Nama Produk',
@@ -929,15 +937,6 @@ const EditFakturPembelian = () => {
 
 
 
-
-    const handleSave = (row) => {
-        const newData = [...product];
-        const index = newData.findIndex((item) => row.id === item.id);
-        const item = newData[index];
-        newData.splice(index, 1, { ...item, ...row });
-        setProduct(newData);
-    };
-
     const columnsModal = [
         {
             title: 'No. Penerimaan Barang',
@@ -974,6 +973,40 @@ const EditFakturPembelian = () => {
         },
     ];
 
+    const columnsModalImpor = [
+        {
+            title: 'No. Pesanan',
+            width: '20%',
+            dataIndex: 'code',
+        },
+        {
+            title: 'Supplier',
+            dataIndex: 'supplier_name',
+            width: '15%',
+            align: 'center',
+        },
+        {
+            title: 'Catatan',
+            dataIndex: 'notes',
+            width: '30%',
+            align: 'center',
+        },
+        {
+            title: 'actions',
+            dataIndex: 'address',
+            width: '8%',
+            align: 'center',
+            render: (_, record) => (
+                <>
+                    <Checkbox
+                        // style={{ display: tampilCek ? "block" : "none"}}
+                        value={record}
+                        onChange={handleCheck}
+                    />
+                </>
+            )
+        },
+    ];
 
     const columAkun = [
         {
@@ -1057,8 +1090,139 @@ const EditFakturPembelian = () => {
 
         ]
 
-    const handleCheck = (event) => {
+    // const handleCheck = (event) => {
 
+    //     let tmpData = [];
+    //     if (event.target.checked) {
+    //         var idTerima = [...idTandaTerima];
+    //         idTerima = [...idTandaTerima, event.target.value.id];
+    //         setIdTandaTerima(idTerima);
+    //         var updatedList;
+
+    //         console.log(updatedList)
+    //         var strParams;
+    //         for (let i = 0; i < idTerima.length; i++) {
+    //             if (i == 0) {
+    //                 strParams = "id_tanda_terima_barang[]=" + idTerima[i]
+    //             }
+    //             else {
+    //                 strParams = strParams + "&id_tanda_terima_barang[]=" + idTerima[i]
+    //             }
+
+    //         }
+
+    //         axios.get(`${Url}/purchase_invoices_grouped_goods_receipt_details?${strParams}`, {
+    //             headers: {
+    //                 Accept: "application/json",
+    //                 Authorization: `Bearer ${auth.token}`,
+    //             },
+    //         })
+    //             .then((res) => {
+    //                 updatedList = res.data.details;
+    //             })
+    //             .then(() => {
+    //                 for (let i = 0; i < updatedList.length; i++) {
+    //                     updatedList[i].currency_name ? setMataUang(updatedList[i].currency_name) : setMataUang('Rp')
+    //                     tmpData.push(
+    //                         {
+    //                             id: updatedList[i].product_id,
+    //                             product_name: updatedList[i].product_name,
+    //                             quantity: updatedList[i].quantity,
+    //                             price: updatedList[i].price,
+    //                             discount_percentage: updatedList[i].discount_percentage,
+    //                             fixed_discount: updatedList[i].fixed_discount,
+    //                             subtotal: updatedList[i].subtotal,
+    //                             pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+    //                             currency_name: updatedList[i].currency_name ? updatedList[i].currency_name : 'Rp',
+    //                             unit: updatedList[i].unit,
+    //                             total: updatedList[i].total
+
+    //                         }
+    //                     )
+
+    //                 }
+    //                 console.log(tmpData)
+    //                 setData(tmpData)
+    //                 calculate(tmpData)
+    //                 console.log(tmpData)
+
+
+    //             })
+    //     }
+    //     else {
+    //         for (let i = 0; i < idTandaTerima.length; i++) {
+    //             if (event.target.value.id == idTandaTerima[i]) {
+    //                 idTandaTerima.splice(i, 1);
+    //             }
+    //         }
+
+    //         if (idTandaTerima.length != 0) {
+    //             var strParams;
+    //             for (let i = 0; i < idTandaTerima.length; i++) {
+    //                 if (i == 0) {
+    //                     strParams = "id_tanda_terima_barang[]=" + idTandaTerima[i]
+    //                 }
+    //                 else {
+    //                     strParams = strParams + "&id_tanda_terima_barang[]=" + idTandaTerima[i]
+    //                 }
+
+    //             }
+
+    //             // for (let i = 0; i < idTandaTerima.length; i++) {
+    //             axios.get(`${Url}/purchase_invoices_grouped_goods_receipt_details?${strParams}`, {
+    //                 headers: {
+    //                     Accept: "application/json",
+    //                     Authorization: `Bearer ${auth.token}`,
+    //                 },
+    //             })
+    //                 .then((res) => {
+
+    //                     updatedList = res.data.details;
+    //                 })
+    //                 .then(() => {
+
+    //                     for (let i = 0; i < updatedList.length; i++) {
+    //                         tmpData.push(
+    //                             {
+    //                                 id: updatedList[i].product_id,
+    //                                 product_name: updatedList[i].product_name,
+    //                                 quantity: updatedList[i].quantity,
+    //                                 price: updatedList[i].price,
+    //                                 discount_percentage: updatedList[i].discount_percentage,
+    //                                 fixed_discount: updatedList[i].fixed_discount,
+    //                                 subtotal: updatedList[i].subtotal,
+    //                                 pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+    //                                 currency_name: updatedList[i].currency_name ? updatedList[i].currency_name : 'Rp',
+    //                                 unit: updatedList[i].unit,
+    //                                 total: updatedList[i].total
+
+    //                             }
+    //                         )
+
+    //                     }
+
+    //                     setData(tmpData)
+    //                     calculate(tmpData)
+    //                 })
+
+    //         }
+    //         else {
+    //             tmpData.push()
+    //             setData(tmpData);
+    //         }
+
+    //     }
+
+    //     setProduct(tmpData);
+    //     console.log(tmpData)
+    //     // console.log(updatedList)
+
+    //     console.log(tmpData)
+    // };
+
+
+    const handleCheck = (event) => {
+        setLoadingTable(true)
         let tmpData = [];
         if (event.target.checked) {
             var idTerima = [...idTandaTerima];
@@ -1066,76 +1230,18 @@ const EditFakturPembelian = () => {
             setIdTandaTerima(idTerima);
             var updatedList;
 
-            console.log(updatedList)
+            // console.log(updatedList)
             var strParams;
-            for (let i = 0; i < idTerima.length; i++) {
-                if (i == 0) {
-                    strParams = "id_tanda_terima_barang[]=" + idTerima[i]
-                }
-                else {
-                    strParams = strParams + "&id_tanda_terima_barang[]=" + idTerima[i]
-                }
-
-            }
-
-            axios.get(`${Url}/purchase_invoices_grouped_goods_receipt_details?${strParams}`, {
-                headers: {
-                    Accept: "application/json",
-                    Authorization: `Bearer ${auth.token}`,
-                },
-            })
-                .then((res) => {
-                    updatedList = res.data.details;
-                })
-                .then(() => {
-                    for (let i = 0; i < updatedList.length; i++) {
-                        updatedList[i].currency_name ? setMataUang(updatedList[i].currency_name) : setMataUang('Rp')
-                        tmpData.push(
-                            {
-                                id: updatedList[i].product_id,
-                                product_name: updatedList[i].product_name,
-                                quantity: updatedList[i].quantity,
-                                price: updatedList[i].price,
-                                discount_percentage: updatedList[i].discount_percentage,
-                                fixed_discount: updatedList[i].fixed_discount,
-                                subtotal: updatedList[i].subtotal,
-                                pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
-                                currency_name: updatedList[i].currency_name ? updatedList[i].currency_name : 'Rp',
-                                unit: updatedList[i].unit,
-                                total: updatedList[i].total
-
-                            }
-                        )
-
-                    }
-                    console.log(tmpData)
-                    setData(tmpData)
-                    calculate(tmpData)
-                    console.log(tmpData)
-
-
-                })
-        }
-        else {
-            for (let i = 0; i < idTandaTerima.length; i++) {
-                if (event.target.value.id == idTandaTerima[i]) {
-                    idTandaTerima.splice(i, 1);
-                }
-            }
-
-            if (idTandaTerima.length != 0) {
-                var strParams;
-                for (let i = 0; i < idTandaTerima.length; i++) {
+            if (grup == "Lokal") {
+                for (let i = 0; i < idTerima.length; i++) {
                     if (i == 0) {
-                        strParams = "id_tanda_terima_barang[]=" + idTandaTerima[i]
+                        strParams = "id_tanda_terima_barang[]=" + idTerima[i]
                     }
                     else {
-                        strParams = strParams + "&id_tanda_terima_barang[]=" + idTandaTerima[i]
+                        strParams = strParams + "&id_tanda_terima_barang[]=" + idTerima[i]
                     }
 
                 }
-
-                // for (let i = 0; i < idTandaTerima.length; i++) {
                 axios.get(`${Url}/purchase_invoices_grouped_goods_receipt_details?${strParams}`, {
                     headers: {
                         Accept: "application/json",
@@ -1143,12 +1249,11 @@ const EditFakturPembelian = () => {
                     },
                 })
                     .then((res) => {
-
                         updatedList = res.data.details;
                     })
                     .then(() => {
-
                         for (let i = 0; i < updatedList.length; i++) {
+                            updatedList[i].currency_name ? setMataUang(updatedList[i].currency_name) : setMataUang('Rp')
                             tmpData.push(
                                 {
                                     id: updatedList[i].product_id,
@@ -1173,18 +1278,181 @@ const EditFakturPembelian = () => {
                     })
 
             }
-            else {
-                tmpData.push()
-                setData(tmpData);
+
+            else if (grup == "Impor") {
+                for (let i = 0; i < idTerima.length; i++) {
+                    if (i == 0) {
+                        strParams = "id_pesanan_pembelian[]=" + idTerima[i]
+                    }
+                    else {
+                        strParams = strParams + "&id_pesanan_pembelian[]=" + idTerima[i]
+                    }
+
+                }
+                axios.get(`${Url}/purchase_invoices_grouped_purchase_order_details?${strParams}`, {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${auth.token}`,
+                    },
+                })
+                    .then((res) => {
+                        updatedList = res.data.details;
+                    })
+                    .then(() => {
+                        for (let i = 0; i < updatedList.length; i++) {
+                            updatedList[i].currency_name ? setMataUang(updatedList[i].currency_name) : setMataUang('Rp')
+                            tmpData.push(
+                                {
+                                    id: updatedList[i].product_id,
+                                    product_name: updatedList[i].product_name,
+                                    quantity: updatedList[i].quantity,
+                                    price: updatedList[i].price,
+                                    discount_percentage: updatedList[i].discount_percentage,
+                                    fixed_discount: updatedList[i].fixed_discount,
+                                    subtotal: updatedList[i].subtotal,
+                                    pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+                                    currency_name: updatedList[i].currency_name ? updatedList[i].currency_name : 'Rp',
+                                    unit: updatedList[i].unit,
+                                    total: updatedList[i].total
+
+                                }
+                            )
+
+                        }
+
+                        setData(tmpData)
+                        calculate(tmpData)
+                    })
             }
+
+            setProduct(tmpData);
+            console.log(tmpData)
+
+        }
+        else {
+            for (let i = 0; i < idTandaTerima.length; i++) {
+                if (event.target.value.id == idTandaTerima[i]) {
+                    idTandaTerima.splice(i, 1);
+                }
+            }
+
+            if (grup == "Lokal") {
+                if (idTandaTerima.length != 0) {
+                    var strParams;
+                    for (let i = 0; i < idTandaTerima.length; i++) {
+                        if (i == 0) {
+                            strParams = "id_tanda_terima_barang[]=" + idTandaTerima[i]
+                        }
+                        else {
+                            strParams = strParams + "&id_tanda_terima_barang[]=" + idTandaTerima[i]
+                        }
+
+                    }
+
+                    axios.get(`${Url}/purchase_invoices_grouped_goods_receipt_details?${strParams}`, {
+                        headers: {
+                            Accept: "application/json",
+                            Authorization: `Bearer ${auth.token}`,
+                        },
+                    })
+                        .then((res) => {
+
+                            updatedList = res.data.details;
+                        })
+                        .then(() => {
+
+                            for (let i = 0; i < updatedList.length; i++) {
+                                tmpData.push(
+                                    {
+                                        id: updatedList[i].product_id,
+                                        product_name: updatedList[i].product_name,
+                                        quantity: updatedList[i].quantity,
+                                        price: updatedList[i].price,
+                                        discount_percentage: updatedList[i].discount_percentage,
+                                        fixed_discount: updatedList[i].fixed_discount,
+                                        subtotal: updatedList[i].subtotal,
+                                        pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+                                        currency_name: updatedList[i].currency_name ? updatedList[i].currency_name : 'Rp',
+                                        unit: updatedList[i].unit,
+                                        total: updatedList[i].total
+
+                                    }
+                                )
+
+                            }
+
+                            setData(tmpData)
+                            calculate(tmpData)
+                        })
+
+                }
+                else {
+                    tmpData.push()
+                    setData(tmpData);
+                }
+            }
+            else if (grup == "Impor") {
+                if (idTandaTerima.length != 0) {
+                    var strParams;
+                    for (let i = 0; i < idTandaTerima.length; i++) {
+                        if (i == 0) {
+                            strParams = "id_pesanan_pembelian[]=" + idTandaTerima[i]
+                        }
+                        else {
+                            strParams = strParams + "&id_pesanan_pembelian[]=" + idTandaTerima[i]
+                        }
+
+                    }
+
+                    axios.get(`${Url}/purchase_invoices_grouped_purchase_order_details?${strParams}`, {
+                        headers: {
+                            Accept: "application/json",
+                            Authorization: `Bearer ${auth.token}`,
+                        },
+                    })
+                        .then((res) => {
+
+                            updatedList = res.data.details;
+                        })
+                        .then(() => {
+
+                            for (let i = 0; i < updatedList.length; i++) {
+                                tmpData.push(
+                                    {
+                                        id: updatedList[i].product_id,
+                                        product_name: updatedList[i].product_name,
+                                        quantity: updatedList[i].quantity,
+                                        price: updatedList[i].price,
+                                        discount_percentage: updatedList[i].discount_percentage,
+                                        fixed_discount: updatedList[i].fixed_discount,
+                                        subtotal: updatedList[i].subtotal,
+                                        pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+                                        currency_name: updatedList[i].currency_name ? updatedList[i].currency_name : 'Rp',
+                                        unit: updatedList[i].unit,
+                                        total: updatedList[i].total
+
+                                    }
+                                )
+
+                            }
+
+                            setData(tmpData)
+                            calculate(tmpData)
+                        })
+
+                }
+                else {
+                    tmpData.push()
+                    setData(tmpData);
+                }
+            }
+            setProduct(tmpData);
+
+
 
         }
 
-        setProduct(tmpData);
-        console.log(tmpData)
-        // console.log(updatedList)
-
-        console.log(tmpData)
+        setLoadingTable(false)
     };
 
     const handleSubmit = async (e) => {
@@ -1275,11 +1543,26 @@ const EditFakturPembelian = () => {
         formData.append("term", term);
         formData.append("id_faktur_pembelian", id);
 
+        console.log(idTandaTerima)
+
+        // for (let y = 0; y < idTandaTerima.length; y++) {
+
+        //     formData.append("id_tanda_terima_barang[]", idTandaTerima[y]);
+        // }
 
         for (let y = 0; y < idTandaTerima.length; y++) {
 
-            formData.append("id_tanda_terima_barang[]", idTandaTerima[y]);
+            if (grup == "Lokal") {
+                formData.append("id_tanda_terima_barang[]", idTandaTerima[y]);
+
+            }
+            else if (grup == "Impor") {
+
+                formData.append("id_pesanan_pembelian[]", idTandaTerima[y]);
+            }
         }
+
+
         for (let x = 0; x < data.length; x++) {
 
             // formData.append("nama_alias_produk[]", data[x][y].nama);
@@ -1348,12 +1631,13 @@ const EditFakturPembelian = () => {
         <>
             <form className="p-3 mb-3 bg-body rounded">
                 <div className="text-title text-start mb-4">
-                <PageHeader
+                    <PageHeader
                         ghost={false}
                         onBack={() => window.history.back()}
                         title="Edit Faktur Pembelian">
-                </PageHeader>
+                    </PageHeader>
                     {/* <h3 className="title fw-bold">Detail Faktur Pembelian</h3> */}
+                    <h3 className="title fw-bold">Edit Faktur Pembelian</h3>
                 </div>
                 <div className="row">
                     <div className="col">
@@ -1503,13 +1787,21 @@ const EditFakturPembelian = () => {
                             <Button
                                 type="primary"
                                 icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
+                                onClick={() => {
+                                    if (grup == "Lokal") {
+
+                                        setModalListLokal(true)
+                                    }
+                                    else if (grup == "Impor") {
+                                        setModalListImpor(true)
+                                    }
+                                }}
                             />
                             <Modal
                                 title="Tambah Penerima Pembelian"
                                 centered
-                                visible={modal2Visible}
-                                onCancel={() => setModal2Visible(false)}
+                                visible={modalListLokal}
+                                onCancel={() => setModalListLokal(false)}
                                 width={800}
                                 footer={null}
                             >
@@ -1527,6 +1819,38 @@ const EditFakturPembelian = () => {
                                         <Table
                                             columns={columnsModal}
                                             dataSource={getDataProduct}
+                                            scroll={{
+                                                y: 250,
+                                            }}
+                                            pagination={false}
+                                            loading={isLoading}
+                                            size="middle"
+                                        />
+                                    </div>
+                                </div>
+                            </Modal>
+                            <Modal
+                                title="Tambah Penerima Pembelian"
+                                centered
+                                visible={modalListImpor}
+                                onCancel={() => setModalListImpor(false)}
+                                width={800}
+                                footer={null}
+                            >
+                                <div className="text-title text-start">
+                                    <div className="row">
+                                        <div className="col mb-3">
+                                            <Search
+                                                placeholder="Cari No Pesanan..."
+                                                style={{
+                                                    width: 400,
+                                                }}
+                                                onChange={(e) => setQuery(e.target.value.toLowerCase())}
+                                            />
+                                        </div>
+                                        <Table
+                                            columns={columnsModalImpor}
+                                            dataSource={getDataProductImpor}
                                             scroll={{
                                                 y: 250,
                                             }}
@@ -1647,7 +1971,7 @@ const EditFakturPembelian = () => {
                     </div>
                 </div>
 
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right', position:'relative'}}>
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -1673,7 +1997,7 @@ const EditFakturPembelian = () => {
                         Cetak
                     </button>
                 </div>
-                <div style={{clear:'both'}}></div>
+                <div style={{ clear: 'both' }}></div>
             </form>
         </>
     )

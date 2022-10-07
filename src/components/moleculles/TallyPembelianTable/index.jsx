@@ -67,7 +67,7 @@ const TallyPembelianTable = () => {
               Authorization: `Bearer ${auth.token}`,
             },
           })
-    
+
           getTallySheet();
           Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
         }
@@ -76,7 +76,7 @@ const TallyPembelianTable = () => {
         }
       }
     })
-  
+
   };
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -250,14 +250,8 @@ const TallyPembelianTable = () => {
       align: 'center',
       render: (_, record) => (
         <>
-          {record.status === 'Submitted' ? (
-            <Space size="middle">
-              <Button
-                size='small'
-                type="danger"
-                icon={<CloseOutlined />}
-                onClick={() => cancelTallyPembelian(record.id, record.code)}
-              />
+          <Space size="middle">
+            {record.can['read-tally_sheet'] ? (
               <Link to={`/tallypembelian/detail/${record.id}`}>
                 <Button
                   size='small'
@@ -265,54 +259,46 @@ const TallyPembelianTable = () => {
                   icon={<InfoCircleOutlined />}
                 />
               </Link>
-              <Link to={`/tallypembelian/edit/${record.id}`}>
+            ) : null}
+            {
+              record.can['cancel-tally_sheet'] ? (
+
                 <Button
                   size='small'
-                  type="success"
-                  icon={<EditOutlined />}
+                  type="danger"
+                  icon={<CloseOutlined />}
+                  onClick={() => cancelTallyPembelian(record.id, record.code)}
                 />
-              </Link>
-            </Space>
-          ) : record.status === 'Draft' ? (
-            <Space size="middle">
-              <Link to={`/tallypembelian/detail/${record.id}`}>
-                <Button
-                  size='small'
-                  type="primary"
-                  icon={<InfoCircleOutlined />}
-                />
-              </Link>
-              <Link to={`/tallypembelian/edit/${record.id}`}>
-                <Button
-                  size='small'
-                  type="success"
-                  icon={<EditOutlined />}
-                />
-              </Link>
-              <Button
-                size='small'
-                type="danger"
-                icon={<DeleteOutlined />}
-                onClick={() => deleteTallyPembelian(record.id, record.code)}
-              />
-            </Space>
-          ) : record.status === 'Done' || record.status === 'Done' ? (
-            <Space size="middle">
-              <Link to={`/tallypembelian/detail/${record.id}`}>
-                <Button
-                  size='small'
-                  type="primary"
-                  icon={<InfoCircleOutlined />}
-                />
-              </Link>
-            </Space>
-          ) : (
-            <>
-            </>
-          )}
+
+              ) : null
+            }
+            {
+              record.can['delete-tally_sheet'] ? (
+                <Space size="middle">
+                  <Button
+                    size='small'
+                    type="danger"
+                    icon={<DeleteOutlined />}
+                    onClick={() => deleteTallyPembelian(record.id, record.code)}
+                  />
+                </Space>
+              ) : null
+            }
+            {
+              record.can['update-tally_sheet'] ? (
+                <Link to={`/tallypembelian/edit/${record.id}`}>
+                  <Button
+                    size='small'
+                    type="success"
+                    icon={<EditOutlined />}
+                  />
+                </Link>
+              ) : null
+            }
+          </Space>
         </>
-      ),
-    },
+      )
+    }
   ];
   return <Table
     loading={isLoading}

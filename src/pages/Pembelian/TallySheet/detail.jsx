@@ -513,45 +513,8 @@ export const DetailTallySheet = () => {
                         <div className="col">
                             <h4 className="title fw-normal">Daftar Pesanan</h4>
                         </div>
-                        {/* <div className="col text-end me-2">
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
-                            />
-                            <Modal
-                                title="Tambah Produk"
-                                centered
-                                visible={modal2Visible}
-                                onCancel={() => setModal2Visible(false)}
-                                width={1000}
-                                footer={null}
-                            >
-                                <div className="text-title text-start">
-                                    <div className="row">
-                                        <div className="col mb-3">
-                                            <Search
-                                                placeholder="Cari Nomor Pesanan.."
-                                                style={{
-                                                    width: 400,
-                                                }}
-                                                onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                            />
-                                        </div>
-                                        <Table
-                                            columns={columnsModal}
-                                            dataSource={getDataProduct}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
-                                    </div>
-                                </div>
-                            </Modal>
-                        </div> */}
+                    
+                    
                     </div>
                     <Table
                         bordered
@@ -564,63 +527,8 @@ export const DetailTallySheet = () => {
                     />
                 </div>
             </form>
-            {/* <form className="  p-3 mb-5 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <div class="row">
-                        <div class="col">
-                            <h4 className="title fw-normal">Cari Produk</h4>
-                        </div>
-                        <div class="col-sm-3 me-5">
-                        <div class="input-group">
-                            <input disabled="true" type="text" class="form-control" id="inlineFormInputGroupUsername" placeholder="Type..."/>
-                            <div class="input-group-text">Search</div>
-                        </div>
-                        </div>
-                    </div>
-                <ProdukPesananTable />
-                </div>
-            <div class="row p-0">
-                <div class="col ms-5">
-                    <div class="form-check">
-                        <input disabled="true" class="form-check-input" type="checkbox" value="" id="flexCheckDefault"/>
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Harga Termasuk Pajak
-                        </label>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="row mb-3">
-                        <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>
-                        <div class="col-sm-6">
-                            <input disabled="true" type="email" class="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">Diskon</label>
-                        <div class="col-sm-6">
-                            <input disabled="true" type="email" class="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">PPN</label>
-                        <div class="col-sm-6">
-                            <input disabled="true" type="email" class="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">Total</label>
-                        <div class="col-sm-6">
-                            <input disabled="true" type="email" class="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                <button type="button" class="btn btn-success rounded m-1">Simpan</button>
-                <button type="button" class="btn btn-primary rounded m-1">Submit</button>
-                <button type="button" class="btn btn-warning rounded m-1">Cetak</button>
-            </div>
-            </form> */}
+        
+        
         </>
     )
 }

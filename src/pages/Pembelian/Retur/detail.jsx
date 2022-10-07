@@ -182,7 +182,7 @@ const DetailReturPembelian = () => {
     const dataProduk =
         [...produkRetur.map((item, i) => ({
             name_product: item.product_name,
-            qty: <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.quantity} key="qty" />,
+            qty: <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.quantity.replace('.' , ',')} key="qty" />,
             stn: item.unit,
             prc:
                 <div className='d-flex'>
@@ -386,7 +386,7 @@ return (
                         <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">Subtotal</label>
                         <div className="col-sm-6">
 
-                            < CurrencyFormat disabled className='form-control form-control-sm  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={dataHeader.subTotal} key="diskon" />
+                            < CurrencyFormat disabled className='form-control form-control-sm  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={dataHeader.subtotal} key="diskon" />
                         </div>
 
                     </div>

@@ -43,6 +43,7 @@ const DetailPembayaranPembelian = () => {
     const [totalPpn, setTotalPpn] = useState("");
     const [grandTotal, setGrandTotal] = useState("");
     const [checked, setChecked] = useState("");
+    const [mataUang, setMataUang] = useState('Rp ')
 
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [selectedValue2, setSelectedCOA] = useState(null);
@@ -64,6 +65,11 @@ const DetailPembayaranPembelian = () => {
                 let getData = res.data.data[0];
                 setDataHeader(getData)
                 setDataDetail(getData.purchase_invoice_payment_details)
+                if(getData.currency_name){
+                    setMataUang(getData.currency_name + ' ')
+
+                }
+                setStatus(getData.status)
                 setLoading(false);
             })
             .catch((err) => {
@@ -117,10 +123,10 @@ const DetailPembayaranPembelian = () => {
 
     const dataFaktur =
         [...dataDetail.map((item, i) => ({
-            code: item.code,
-            total: <CurrencyFormat prefix='Rp ' type="danger" disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.total} key="total" />,
-            sisa: <CurrencyFormat prefix='Rp ' type="danger" disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.total} key="sisa" />,
-            pays: <CurrencyFormat prefix='Rp ' type="danger" disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.paid} key="pay" />,
+            code: item.purchase_invoice_code,
+            total: <CurrencyFormat prefix={mataUang} type="danger" disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.purchase_invoice_total_payment} key="total" />,
+            sisa: <CurrencyFormat prefix={mataUang} type="danger" disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.remains} key="sisa" />,
+            pays: <CurrencyFormat prefix={mataUang} type="danger" disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.paid} key="pay" />,
         }))
 
         ]
@@ -135,11 +141,11 @@ const DetailPembayaranPembelian = () => {
         <>
             <form className="p-3 mb-3 bg-body rounded">
                 <div className="text-title text-start mb-4">
-                <PageHeader
+                    <PageHeader
                         ghost={false}
                         onBack={() => window.history.back()}
                         title="Detail Pembayaran Pembelian">
-                     </PageHeader>
+                    </PageHeader>
                     {/* <h4 className="title fw-bold">Detail Pembayaran Pembelian</h4> */}
                 </div>
                 <div className="row">
@@ -192,51 +198,45 @@ const DetailPembayaranPembelian = () => {
                                 />
                             </div>
                         </div>
-                        {/* <div className="row mb-3">
+                        <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
                             <div className="col-sm-7">
                                 <input
-                                    value={dataHeader.}
+                                    value={dataHeader.currency_name}
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
                                     disabled
                                 />
                             </div>
-                        </div> */}
+                        </div>
 
                     </div>
                     <div className="col">
-                        {/* <div className="row mb-3">
+                        <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Rate Kurs</label>
                             <div className="col-sm-7">
                                 <input
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
-                                    value={dataHeader.}
+                                    value=""
                                     disabled
                                 />
                             </div>
-                        </div> */}
+                        </div>
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Total</label>
                             <div className="col-sm-7">
-                            <CurrencyFormat prefix='Rp ' type="danger" disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={dataHeader.total} key="pay" />
+                                <CurrencyFormat prefix={mataUang} type="danger" disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={dataHeader.total} key="pay" />
                             </div>
                         </div>
-                        {/* <div className="row mb-3">
+                        <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Sisa</label>
                             <div className="col-sm-7">
-                                <input
-                                    type="Nama"
-                                    className="form-control"
-                                    id="inputNama3"
-                                    value="sisa"
-                                    disabled
-                                />
+                                <CurrencyFormat prefix={mataUang} type="danger" disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={dataHeader.remains} key="pay" />
                             </div>
-                        </div> */}
+                        </div>
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Referensi</label>
                             <div className="col-sm-7">
@@ -247,6 +247,12 @@ const DetailPembayaranPembelian = () => {
                                     value={dataHeader.reference}
                                     disabled
                                 />
+                            </div>
+                        </div>
+                        <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
+                            <div className="col-sm-4 p-2">
+                                {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
                             </div>
                         </div>
                     </div>
@@ -271,7 +277,7 @@ const DetailPembayaranPembelian = () => {
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={3} className="text-end">Total yang dibayarkan</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp ' type="danger" disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={dataHeader.total} key="pay" />
+                                            <CurrencyFormat prefix={mataUang} type="danger" disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={dataHeader.paid} key="pay" />
 
 
                                         </Table.Summary.Cell>

@@ -72,12 +72,12 @@ const BuatPembayaranPembelian = () => {
         setSupplierId(value.id);
     };
     const loadOptionsSupplier = (inputValue) => {
-        return fetch(`${Url}/select_suppliers?nama=${inputValue}`, {
+        return axios.get(`${Url}/purchase_invoice_payments_available_suppliers?nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => res.data.data);
     };
 
     // select mata uang 
@@ -116,25 +116,22 @@ const BuatPembayaranPembelian = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_purchase_invoices/all?status=Submitted&id_pemasok=${supplierId}&kode=${query}`, {
+            const res = await axios.get(`${Url}/purchase_invoice_payments_available_purchase_invoices?id_pemasok=${supplierId}&kode=${query}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            console.log(res.data)
-            setGetDataFaktur(res.data);
+            // console.log(res.data)
+            setGetDataFaktur(res.data.data);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
-    }, [query])
+    }, [query, supplierId])
 
     function klikUbahTotal(index, value) {
         let tmp = []
         let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
-        // let sisa = 0
-        // let total = 0;
-
         // setting data baru 
         for (let i = 0; i < product.length; i++) {
             if (i == index) {
@@ -243,7 +240,7 @@ const BuatPembayaranPembelian = () => {
             if (updatedList.length == 0) {
                 tmp.push({
                     code: data.code,
-                    total: data.total,
+                    total: data.total_payment,
                     sisa: data.remains,
                     bayar: 0,
                     idFaktur: data.id
@@ -270,13 +267,14 @@ const BuatPembayaranPembelian = () => {
             setProduct(tmp)
         }
         else {
-            for (let i = 0; i < product.length; i++) {
-                console.log(product[i].idFaktur);
-                if (product[i].idFaktur == data.id) {
-                    product.splice(i, 1);
+            for (let i = 0; i < updatedList.length; i++) {
+                // console.log(product[i].idFaktur);
+                if (updatedList[i].idFaktur == data.id) {
+                    updatedList.splice(i, 1);
 
                 }
             }
+            setProduct(updatedList)
 
         }
     };
@@ -432,7 +430,7 @@ const BuatPembayaranPembelian = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Pembayaran</label>
                             <div className="col-sm-7">
                                 <input
-                                    value={getCode}
+                                    value="Otomatis"
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
@@ -444,7 +442,7 @@ const BuatPembayaranPembelian = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                             <div className="col-sm-7">
                                 <AsyncSelect
-                                    placeholder="Pilih Pelanggan..."
+                                    placeholder="Pilih Supplier..."
                                     cacheOptions
                                     defaultOptions
                                     value={selectedSupplier}

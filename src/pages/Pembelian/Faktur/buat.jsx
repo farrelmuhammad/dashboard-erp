@@ -145,17 +145,6 @@ const BuatFakturPembelian = () => {
     const [totalKeseluruhan, setTotalKeseluruhan] = useState(0);
     const [dataSupplier, setDataSupplier] = useState([]);
 
-
-    // load options using API call
-    const loadOptionsSupplier = (inputValue) => {
-        return fetch(`${Url}/select_suppliers?limit=10&nama=${inputValue}&grup=${grup}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        }).then((res) => res.json());
-    };
-
     useEffect(() => {
         getCodeFaktur()
         getAkun()
@@ -171,7 +160,7 @@ const BuatFakturPembelian = () => {
             setImpor(false);
         }
 
-        axios.get(`${Url}/suppliers?grup=${grup}`, {
+        axios.get(`${Url}/purchase_invoices_available_suppliers/${grup}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -205,13 +194,13 @@ const BuatFakturPembelian = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_goods_receipts?code=${query}&status=Submitted&pemasok=${supplier}`, {
+            const res = await axios.get(`${Url}/purchase_invoices_available_goods_receipts?kode=${query}&id_pemasok=${supplier}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
+            setGetDataProduct(res.data.data);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();

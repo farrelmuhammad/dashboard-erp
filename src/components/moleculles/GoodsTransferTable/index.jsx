@@ -29,7 +29,7 @@ const GoodsTransferTable = () => {
       });
 
     const deleteGoodsTransfer= async (id) => {
-        await axios.delete(`${Url}/goodsrequests/${id}`, {
+        await axios.delete(`${Url}/goodstransfers/${id}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -150,7 +150,7 @@ const GoodsTransferTable = () => {
 
     const getGoodsTransfer= async (params = {}) => {
         setIsLoading(true);
-        await axios.get(`${Url}/goodsrequests?${qs.stringify(getParams(tableParams))}`, {
+        await axios.get(`${Url}/goodstransfers?${qs.stringify(getParams(tableParams))}`, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${auth.token}`
@@ -186,7 +186,7 @@ const GoodsTransferTable = () => {
             sortDirections: ['descend', 'ascend'],
         },
         {
-            title: 'No. Permintaan Barang',
+            title: 'No. Transfer Barang',
             dataIndex: 'code',
             key: 'code',
             width: '20%',
@@ -198,6 +198,7 @@ const GoodsTransferTable = () => {
             title: 'Gudang Awal',
             dataIndex: 'warehouse_source_name',
             key: 'warehouse_source_name',
+            width: '20%',
             ...getColumnSearchProps('warehouse_source_name'),
             sorter: true,
             sortDirections: ['descend', 'ascend'],
@@ -206,6 +207,7 @@ const GoodsTransferTable = () => {
             title: 'Gudang Tujuan',
             dataIndex: 'warehouse_destination_name',
             key: 'warehouse_destination_name',
+            width: '20%',
             ...getColumnSearchProps('warehouse_destination_name'),
             sorter: true,
             sortDirections: ['descend', 'ascend'],
@@ -234,7 +236,7 @@ const GoodsTransferTable = () => {
                 <>
                     {record.status === 'publish' ? (
                         <Space size="middle">
-                        <Link to={`/goodsrequest/detail/${record.id}`}>
+                        <Link to={`/goodstransfer/detail/${record.id}`}>
                             <Button
                                 size='small'
                                 type="primary"
@@ -244,14 +246,14 @@ const GoodsTransferTable = () => {
                     </Space>
                     ) : (
                         <Space size="middle">
-                        <Link to={`/goodsrequest/detail/${record.id}`}>
+                        <Link to={`/goodstransfer/detail/${record.id}`}>
                             <Button
                                 size='small'
                                 type="primary"
                                 icon={<InfoCircleOutlined />}
                             />
                         </Link>
-                        <Link to={`/goodsrequest/edit/${record.id}`}>
+                        <Link to={`/goodstransfer/edit/${record.id}`}>
                             <Button
                                 size='small'
                                 type="success"

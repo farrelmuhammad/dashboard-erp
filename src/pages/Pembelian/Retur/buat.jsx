@@ -124,7 +124,7 @@ const BuatReturPembelian = () => {
             let data = res.data[0]
             for (let x = 0; x < data.purchase_invoice_details.length; x++) {
                 tmp.push({
-                    value: data.purchase_invoice_details[x].id,
+                    value: data.purchase_invoice_details[x].product_id,
                     label: data.purchase_invoice_details[x].product_name,
                     quantity: data.purchase_invoice_details[x].quantity,
                     price: data.purchase_invoice_details[x].price,
@@ -358,7 +358,7 @@ const BuatReturPembelian = () => {
         if (key == 'qty') {
             let hasil = value.replaceAll('.', '');
             console.log(hasil)
-            for (let i = 0; i < updateProduk.length; i++) {
+            for (let i = 0; i < tampilProduk.length; i++) {
                 if (i == y) {
                     tmpData.push(
                         {
@@ -548,7 +548,7 @@ const BuatReturPembelian = () => {
     const dataProduk =
         [...tampilProduk.map((item, i) => ({
             name_product: item.label,
-            qty: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={updateProduk[i].quantity} onChange={(e) => klikUbahData(i, e.target.value, "qty")} key="qty" />,
+            qty: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={updateProduk[i].quantity.replace('.', ',')} onChange={(e) => klikUbahData(i, e.target.value, "qty")} key="qty" />,
             stn: updateProduk[i].unit,
             prc:
                 <div className='d-flex'>
@@ -725,64 +725,8 @@ const BuatReturPembelian = () => {
         dataRetur.append('status', 'Submitted')
 
         for (let i = 0; i < tampilProduk.length; i++) {
-            dataRetur.append('id_produk[]', tampilProduk[i].id);
-            dataRetur.append('kuantitas[]', tampilProduk[i].quantity);
-            dataRetur.append('satuan[]', tampilProduk[i].unit);
-            dataRetur.append('persentase_diskon[]', tampilProduk[i].discount_percentage);
-            dataRetur.append('diskon_tetap[]', tampilProduk[i].fixed_discount);
-            dataRetur.append('harga[]', tampilProduk[i].price);
-
-        }
-
-        axios({
-            method: "post",
-            url: `${Url}/purchase_returns`,
-            data: dataRetur,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/'returpembelian'");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
-            });
-    };
-
-    const handleDraft = async (e) => {
-        e.preventDefault();
-        const dataRetur = new URLSearchParams();
-        dataRetur.append("tanggal", date);
-        dataRetur.append("catatan", description);
-        dataRetur.append("pemasok", supplierId);
-        dataRetur.append("id_faktur_pembelian", fakturId);
-        dataRetur.append('ppn', totalPpn);
-        dataRetur.append('status', 'Draft')
-
-        for (let i = 0; i < tampilProduk.length; i++) {
-            dataRetur.append('id_produk[]', tampilProduk[i].product_id);
-            dataRetur.append('kuantitas[]', tampilProduk[i].quantity);
+            dataRetur.append('id_produk[]', tampilProduk[i].value);
+            dataRetur.append('kuantitas[]', tampilProduk[i].quantity.replace(',', '.'));
             dataRetur.append('satuan[]', tampilProduk[i].unit);
             dataRetur.append('persentase_diskon[]', tampilProduk[i].discount_percentage);
             dataRetur.append('diskon_tetap[]', tampilProduk[i].fixed_discount);
@@ -826,6 +770,68 @@ const BuatReturPembelian = () => {
             });
     };
 
+    const handleDraft = async (e) => {
+        e.preventDefault();
+        const dataRetur = new URLSearchParams();
+        dataRetur.append("tanggal", date);
+        dataRetur.append("catatan", description);
+        dataRetur.append("pemasok", supplierId);
+        dataRetur.append("id_faktur_pembelian", fakturId);
+        dataRetur.append('ppn', totalPpn);
+        dataRetur.append('status', 'Draft')
+
+        for (let i = 0; i < tampilProduk.length; i++) {
+            dataRetur.append('id_produk[]', tampilProduk[i].value);
+            dataRetur.append('kuantitas[]', tampilProduk[i].quantity.replace(',', '.'));
+            dataRetur.append('satuan[]', tampilProduk[i].unit);
+            dataRetur.append('persentase_diskon[]', tampilProduk[i].discount_percentage);
+            dataRetur.append('diskon_tetap[]', tampilProduk[i].fixed_discount);
+            dataRetur.append('harga[]', tampilProduk[i].price);
+
+        }
+
+        axios({
+            method: "post",
+            url: `${Url}/purchase_returns`,
+            data: dataRetur,
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        })
+            .then(function (response) {
+                //handle success
+                Swal.fire(
+                    "Berhasil Ditambahkan",
+                    ` Masuk dalam list`,
+                    "success"
+                );
+                navigate("/returpembelian");
+            })
+            .catch((err) => {
+                if (err.response) {
+                    console.log("err.response ", err.response);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: err.response.data.error.nama,
+                    });
+                } else if (err.request) {
+                    console.log("err.request ", err.request);
+                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                } else if (err.message) {
+                    // do something other than the other two
+                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                }
+            });
+    };
+
+    function klikTambahPpn(value){
+        let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+        setTotalPpn(hasil)
+        let totalAkhir = Number(subTotal) - Number(grandTotalDiscount) + Number(hasil)
+        setTotalKeseluruhan(totalAkhir)
+    }
 
 
 
@@ -1016,7 +1022,7 @@ const BuatReturPembelian = () => {
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">PPN</label>
 
                             <div className="col-sm-6">
-                                < CurrencyFormat disabled className='form-control form-control-sm edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang} thousandSeparator={'.'} decimalSeparator={','} value={totalPpn} key="diskon" />
+                                < CurrencyFormat className='form-control form-control-sm edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang} thousandSeparator={'.'} decimalSeparator={','} value={totalPpn} onChange={(e)=> klikTambahPpn(e.target.value)} key="diskon" />
 
 
                             </div>

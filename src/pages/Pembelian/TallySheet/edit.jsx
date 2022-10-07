@@ -76,6 +76,10 @@ const EditTallySheet = () => {
                     for (let i = 0; i < getData.tally_sheet_details.length; i++) {
                         let tempData = []
                         kuantitas = []
+                        let qtyPesanan = getData.tally_sheet_details[i].purchase_order_qty
+                        let qtyTally = getData.tally_sheet_details[i].tally_sheets_qty
+                        let qtySisa = Number(getData.tally_sheet_details[i].purchase_order_qty) - Number(getData.tally_sheet_details[i].tally_sheets_qty);
+                        console.log(qtySisa)
                         tmp.push({
                             id_produk: getData.tally_sheet_details[i].product_id,
                             id_pesanan_pembelian: getData.tally_sheet_details[i].purchase_order.id,
@@ -84,9 +88,9 @@ const EditTallySheet = () => {
                             number_of_boxes: getData.tally_sheet_details[i].number_of_boxes,
                             boxes_unit: getData.tally_sheet_details[i].boxes_unit,
                             product_name: getData.tally_sheet_details[i].product_name,
-                            action: getData.tally_sheet_details[i].action,
-                            purchase_order_qty: getData.tally_sheet_details[i].purchase_order_qty,
-                            tally_sheets_qty: getData.tally_sheet_details[i].tally_sheets_qty,
+                            action: qtyTally >= qtyPesanan ? 'Done' : 'Next delivery',
+                            purchase_order_qty: qtySisa,
+                            tally_sheets_qty: qtyTally,
                             key: "lama"
                         })
 
@@ -156,7 +160,7 @@ const EditTallySheet = () => {
     useEffect(() => {
         console.log(getTallySheet.supplier_id)
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/tally_sheet_ins_available_purchase_orders?kode=${query}&id_pemasok=${getTallySheet.supplier_id}`, {
+            const res = await axios.get(`${Url}/tally_sheet_ins_available_purchase_orders?include_tally_sheet_purchase_orders=${id}&kode=${query}&id_pemasok=${getTallySheet.supplier_id}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -314,7 +318,7 @@ const EditTallySheet = () => {
                     number_of_boxes: total[i],
                     boxes_unit: product[i].boxes_unit,
                     product_name: product[i].product_name,
-                    action: totTly[i] + product[i].tally_sheets_qty >= product[i].purchase_order_qty ? 'Done' : 'Next delivery',
+                    action: totTly[i] >= product[i].purchase_order_qty ? 'Done' : 'Next delivery',
                     purchase_order_qty: product[i].purchase_order_qty,
                     tally_sheets_qty: product[i].tally_sheets_qty,
                     key: product[i].key
@@ -344,106 +348,196 @@ const EditTallySheet = () => {
             text: 'Data berhasil dihapus',
         }).then(() => setLoadingTable(false));
         // }
-        
+
         // console.log(dataTS)
 
     }
 
 
+    function forceDoneProduct(index) {
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Status akan diubah menjadi Done",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let newProduct = []
+                for (let i = 0; i < product.length; i++) {
+
+                    if (i == index) {
+                        newProduct.push({
+                            id_produk: product[i].id_produk,
+                            id_pesanan_pembelian: product[i].id_pesanan_pembelian,
+                            code: product[i].code,
+                            boxes_quantity: product[i].boxes_quantity,
+                            number_of_boxes: product[i].number_of_boxes,
+                            boxes_unit: product[i].boxes_unit,
+                            product_name: product[i].product_name,
+                            action: 'Done',
+                            purchase_order_qty: product[i].purchase_order_qty,
+                            tally_sheets_qty: product[i].tally_sheets_qty,
+                            key: product[i].key
+                        })
+
+                    }
+                    else {
+                        newProduct.push(product[i])
+
+                    }
+
+                }
+                setProduct(newProduct)
+            }
+        })
+    }
+
+    function forceNexDeliveryProduct(index) {
+        if (product[index].boxes_quantity >= product[index].purchase_order_qty) {
+            Swal.fire(
+                "Tidak bisa mengubah status",
+                `Jumlah ini sudah melebihi jumlah pesanan`,
+                "error"
+            )
+        }
+        else {
+            Swal.fire({
+                title: 'Apakah Anda Yakin?',
+                text: "Status akan diubah menjadi Next Delivery",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let newProduct = []
+                    for (let i = 0; i < product.length; i++) {
+                        if (i == index) {
+                            newProduct.push({
+                                id_produk: product[i].id_produk,
+                                id_pesanan_pembelian: product[i].id_pesanan_pembelian,
+                                code: product[i].code,
+                                boxes_quantity: product[i].boxes_quantity,
+                                number_of_boxes: product[i].number_of_boxes,
+                                boxes_unit: product[i].boxes_unit,
+                                product_name: product[i].product_name,
+                                action: 'Next delivery',
+                                purchase_order_qty: product[i].purchase_order_qty,
+                                tally_sheets_qty: product[i].tally_sheets_qty,
+                                key: product[i].key
+                            })
+                        }
+                        else {
+                            newProduct.push(product[i])
+
+                        }
+
+                    }
+                    setProduct(newProduct)
+                }
+            })
+        }
+
+    }
+
     const dataPurchase =
         [...product.map((item, i) => ({
-                code: item.code,
-                product_name: item.product_name,
-                quantity: item.boxes_quantity.toString().replace('.', ','),
-                unit: item.boxes_unit,
-                box:
-                    <>
+            code: item.code,
+            product_name: item.product_name,
+            quantity: item.boxes_quantity.toString().replace('.', ','),
+            unit: item.boxes_unit,
+            box:
+                <>
 
-                        <a onClick={() => klikTampilSheet(i)} style={{ color: "#1890ff" }}>
-                            {item.number_of_boxes}
-                        </a>
-                        <Modal
-                            centered
-                            visible={modal2Visible2}
-                            onCancel={() => setModal2Visible2(false)}
-                            onOk={() =>   setModal2Visible2(false)}
-                            width={1000}
-                        >
-                            <div className="text-title text-start">
-                                <div className="row">
-                                    <div className="col">
-                                        <div className="row">
-                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
-                                            <div className="col-sm-3">
-                                                <input
-                                                    value={product[indexPO].code}
-                                                    type="Nama"
-                                                    className="form-control"
-                                                    id="inputNama3"
-                                                    disabled
-                                                />
-                                            </div>
-                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
-                                            <div className="col-sm-3">
-                                                <input
-                                                
-                                                    value={quantityPO? quantityPO.toString().replace('.', ',') : null}
-                                                    type="Nama"
-                                                    className="form-control"
-                                                    id="inputNama3"
-                                                    disabled
-                                                />
-
-                                            </div>
+                    <a onClick={() => klikTampilSheet(i)} style={{ color: "#1890ff" }}>
+                        {item.number_of_boxes}
+                    </a>
+                    <Modal
+                        centered
+                        visible={modal2Visible2}
+                        onCancel={() => setModal2Visible2(false)}
+                        onOk={() => setModal2Visible2(false)}
+                        width={1000}
+                    >
+                        <div className="text-title text-start">
+                            <div className="row">
+                                <div className="col">
+                                    <div className="row">
+                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
+                                        <div className="col-sm-3">
+                                            <input
+                                                value={product[indexPO].code}
+                                                type="Nama"
+                                                className="form-control"
+                                                id="inputNama3"
+                                                disabled
+                                            />
                                         </div>
-                                        <div className="row mb-1 mt-2">
-                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
-                                            <div className="col-sm-3">
-                                                <input
-                                                    value={product[indexPO].product_name}
-                                                    type="Nama"
-                                                    className="form-control"
-                                                    id="inputNama3"
-                                                    disabled
-                                                />
+                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
+                                        <div className="col-sm-3">
+                                            <input
 
-                                            </div>
-                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
-                                            <div className="col-sm-3">
-                                                <input
-                                                    value={product[indexPO].boxes_quantity.toString().replace('.', ',')}
-                                                    type="Nama"
-                                                    className="form-control"
-                                                    id="inputNama3"
-                                                    disabled
-                                                />
-                                            </div>
+                                                value={quantityPO ? quantityPO.replace('.', ',') : null}
+                                                type="Nama"
+                                                className="form-control"
+                                                id="inputNama3"
+                                                disabled
+                                            />
+
                                         </div>
                                     </div>
-                                    <div className="w-10" style={{ overflowY: "scroll", height: "300px", display: loadingSpreedSheet ? "none" : 'block' }}>
-                                        <ReactDataSheet
-                                            data={data[indexPO]}
-                                            valueRenderer={valueRenderer}
-                                            onContextMenu={onContextMenu}
-                                            onCellsChanged={onCellsChanged}
-                                        />
+                                    <div className="row mb-1 mt-2">
+                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
+                                        <div className="col-sm-3">
+                                            <input
+                                                value={product[indexPO].product_name}
+                                                type="Nama"
+                                                className="form-control"
+                                                id="inputNama3"
+                                                disabled
+                                            />
+
+                                        </div>
+                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
+                                        <div className="col-sm-3">
+                                            <input
+                                                value={product[indexPO].boxes_quantity.toString().replace('.', ',')}
+                                                type="Nama"
+                                                className="form-control"
+                                                id="inputNama3"
+                                                disabled
+                                            />
+                                        </div>
                                     </div>
                                 </div>
+                                <div className="w-10" style={{ overflowY: "scroll", height: "300px", display: loadingSpreedSheet ? "none" : 'block' }}>
+                                    <ReactDataSheet
+                                        data={data[indexPO]}
+                                        valueRenderer={valueRenderer}
+                                        onContextMenu={onContextMenu}
+                                        onCellsChanged={onCellsChanged}
+                                    />
+                                </div>
                             </div>
-                        </Modal>
-                    </>,
+                        </div>
+                    </Modal>
+                </>,
 
-                status: item.action === 'Done' ? <Tag color="green">{item.action}</Tag> : item.action === 'Next delivery' ? <Tag color="orange">{item.action}</Tag> : <Tag color="red">{item.action}</Tag>,
-                action: <Space size="middle">
-                    <Button
-                        size='small'
-                        type="danger"
-                        icon={<DeleteOutlined />}
-                        onClick={() => { hapusIndexProduct(i) }}
-                    />
-                </Space>
+            status: item.action === 'Done' ? <Tag color="green" type="button" onClick={() => forceNexDeliveryProduct(i)}>{item.action}</Tag> : item.action === 'Next delivery' ? <Tag color="orange" type="button" onClick={() => forceDoneProduct(i)}>{item.action}</Tag> : <Tag color="red">{item.action}</Tag>,
+            action: <Space size="middle">
+                <Button
+                    size='small'
+                    type="danger"
+                    icon={<DeleteOutlined />}
+                    onClick={() => { hapusIndexProduct(i) }}
+                />
+            </Space>
 
-            }))
+        }))
 
         ];
 
@@ -489,26 +583,30 @@ const EditTallySheet = () => {
         if (event.target.checked) {
             const value = event.target.value;
             const panjang = value.purchase_order_details.length;
-            // console.log(value)
+
             let tmp = [];
+            // setting baris 
             for (let i = 0; i <= product.length; i++) {
                 if (i == product.length) {
                     for (let x = 0; x < value.purchase_order_details.length; x++) {
                         let qtyAwal = value.purchase_order_details[x].quantity;
                         let qtyAkhir = value.purchase_order_details[x].tally_sheets_qty;
-                        tmp.push({
-                            id_produk: value.purchase_order_details[x].product_id,
-                            id_pesanan_pembelian: value.id,
-                            code: value.code,
-                            boxes_quantity: 0,
-                            number_of_boxes: 0,
-                            boxes_unit: value.purchase_order_details[x].unit,
-                            product_name: value.purchase_order_details[x].product_name,
-                            action: qtyAkhir >= qtyAwal ? 'Done' : 'Next delivery',
-                            purchase_order_qty: qtyAwal,
-                            tally_sheets_qty: qtyAkhir,
-                            key: "baru"
-                        })
+                        if (qtyAkhir < qtyAwal) {
+                            tmp.push({
+                                id_produk: value.purchase_order_details[x].product_id,
+                                id_pesanan_pembelian: value.id,
+                                code: value.code,
+                                boxes_quantity: 0,
+                                number_of_boxes: 0,
+                                boxes_unit: value.purchase_order_details[x].unit,
+                                product_name: value.purchase_order_details[x].product_name,
+                                action: qtyAkhir >= qtyAwal ? 'Done' : 'Next delivery',
+                                purchase_order_qty: Number(qtyAwal) - Number(qtyAkhir),
+                                tally_sheets_qty: qtyAkhir,
+                                key: "baru"
+                            })
+                        }
+
 
                     }
                 }
@@ -518,12 +616,12 @@ const EditTallySheet = () => {
             }
             updatedList = tmp
 
+            // setting data 
             for (let i = 0; i < updatedList.length; i++) {
                 if (i < updatedList.length - panjang) {
                     arrData[i] = data[i];
                 }
                 else {
-                    console.log("ini yang baru")
                     arrData[i] = [
                         [
                             { readOnly: true, value: "" },
@@ -672,10 +770,8 @@ const EditTallySheet = () => {
                 }
 
             }
-            // console.log(updatedList);
             setProduct(updatedList);
             setData(arrData);
-            // console.log(arrData);
 
         }
         else {
@@ -683,7 +779,7 @@ const EditTallySheet = () => {
             for (let i = 0; i < updatedList.length; i++) {
                 for (let x = 0; x < value.purchase_order_details.length; x++) {
                     if (updatedList[i].id_pesanan_pembelian == value.id && updatedList[i].id_produk == value.purchase_order_details[x].product_id && updatedList[i].key == "baru") {
-                        console.log("kehpaus")
+                        // console.log("kehpaus")
                         updatedList.splice(i, 1);
                         data.splice(i, 1);
                         setIndexPO(0)
@@ -691,8 +787,8 @@ const EditTallySheet = () => {
                 }
             }
         }
-        console.log(updatedList)
-        console.log(data);
+        // console.log(updatedList)
+        // console.log(data);
         setProduct(updatedList);
     };
 
@@ -827,7 +923,8 @@ const EditTallySheet = () => {
         console.log(data)
         // console.log(product[indexPO].purchase_order_qty)
         // setQuantityTally(product[indexPO].boxes_quantity)
-        setQuantityPO(product[indexPO].purchase_order_qty)
+        // console.log(product)
+        setQuantityPO(product[indexPO].purchase_order_qty.toFixed(2).toString())
         setIndexPO(indexPO);
         setModal2Visible2(true);
 
@@ -849,7 +946,7 @@ const EditTallySheet = () => {
                         ghost={false}
                         onBack={() => window.history.back()}
                         title="Edit Tally Sheet">
-                     </PageHeader>
+                    </PageHeader>
                     {/* <h3 className="title fw-bold">Detail Tally Sheet</h3> */}
                 </div>
                 <div class="row">
@@ -953,7 +1050,7 @@ const EditTallySheet = () => {
                     />
                 </div>
 
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right', position:'relative'}}>
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
 
                     {
                         getStatus != "Submitted" ? <>
@@ -996,7 +1093,7 @@ const EditTallySheet = () => {
                         Cetak
                     </button>
                 </div>
-                <div style={{clear:'both'}}></div>
+                <div style={{ clear: 'both' }}></div>
             </form>
             {/* <form className="  p-3 mb-5 bg-body rounded">
                 <div className="text-title text-start mb-4">

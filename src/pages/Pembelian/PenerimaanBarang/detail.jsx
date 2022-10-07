@@ -63,6 +63,9 @@ export const DetailPenerimaanBarang = () => {
         {
             title: 'Qty',
             dataIndex: 'quantity',
+            render: (text) => {
+                return text.replace('.', ',')
+            }
         },
         {
             title: 'Stn',

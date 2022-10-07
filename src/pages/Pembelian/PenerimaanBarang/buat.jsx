@@ -16,85 +16,85 @@ import Spreadsheet from 'react-spreadsheet';
 import { useSelector } from 'react-redux';
 import { PageHeader} from 'antd';
 
-const EditableContext = createContext(null);
+// const EditableContext = createContext(null);
 
-const EditableRow = ({ index, ...props }) => {
-    const [form] = Form.useForm();
-    return (
-        <Form form={form} component={false}>
-            <EditableContext.Provider value={form}>
-                <tr {...props} />
-            </EditableContext.Provider>
-        </Form>
-    );
-};
+// const EditableRow = ({ index, ...props }) => {
+//     const [form] = Form.useForm();
+//     return (
+//         <Form form={form} component={false}>
+//             <EditableContext.Provider value={form}>
+//                 <tr {...props} />
+//             </EditableContext.Provider>
+//         </Form>
+//     );
+// };
 
-const EditableCell = ({
-    title,
-    editable,
-    children,
-    dataIndex,
-    record,
-    handleSave,
-    ...restProps
-}) => {
-    const [editing, setEditing] = useState(false);
-    const inputRef = useRef(null);
-    const form = useContext(EditableContext);
-    useEffect(() => {
-        if (editing) {
-            inputRef.current.focus();
-        }
-    }, [editing]);
+// const EditableCell = ({
+//     title,
+//     editable,
+//     children,
+//     dataIndex,
+//     record,
+//     handleSave,
+//     ...restProps
+// }) => {
+//     const [editing, setEditing] = useState(false);
+//     const inputRef = useRef(null);
+//     const form = useContext(EditableContext);
+//     useEffect(() => {
+//         if (editing) {
+//             inputRef.current.focus();
+//         }
+//     }, [editing]);
 
-    const toggleEdit = () => {
-        setEditing(!editing);
-        form.setFieldsValue({
-            [dataIndex]: record[dataIndex],
-        });
-    };
+//     const toggleEdit = () => {
+//         setEditing(!editing);
+//         form.setFieldsValue({
+//             [dataIndex]: record[dataIndex],
+//         });
+//     };
 
-    const save = async () => {
-        try {
-            const values = await form.validateFields();
-            toggleEdit();
-            handleSave({ ...record, ...values });
-        } catch (errInfo) {
-            console.log('Save failed:', errInfo);
-        }
-    };
+//     const save = async () => {
+//         try {
+//             const values = await form.validateFields();
+//             toggleEdit();
+//             handleSave({ ...record, ...values });
+//         } catch (errInfo) {
+//             console.log('Save failed:', errInfo);
+//         }
+//     };
 
-    let childNode = children;
+//     let childNode = children;
 
-    if (editable) {
-        childNode = editing ? (
-            <Form.Item
-                style={{
-                    margin: 0,
-                }}
-                name={dataIndex}
-                rules={[
-                    {
-                        required: true,
-                        message: `${title} is required.`,
-                    },
-                ]}
-            >
-                {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
-            </Form.Item>
-        ) : (
-            <div
-                className="editable-cell-value-wrap"
-                onClick={toggleEdit}
-            >
-                {children}
-            </div>
-        );
-    }
+//     if (editable) {
+//         childNode = editing ? (
+//             <Form.Item
+//                 style={{
+//                     margin: 0,
+//                 }}
+//                 name={dataIndex}
+//                 rules={[
+//                     {
+//                         required: true,
+//                         message: `${title} is required.`,
+//                     },
+//                 ]}
+//             >
+//                 {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
+//                 <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
+//             </Form.Item>
+//         ) : (
+//             <div
+//                 className="editable-cell-value-wrap"
+//                 onClick={toggleEdit}
+//             >
+//                 {children}
+//             </div>
+//         );
+//     }
 
-    return <td {...restProps}>{childNode}</td>;
-};
+//     return <td {...restProps}>{childNode}</td>;
+// };
 
 const BuatPenerimaanBarang = () => {
     const auth = useSelector(state => state.auth);
@@ -417,19 +417,13 @@ const BuatPenerimaanBarang = () => {
 
         for (let x = 0; x < productTampil.length; x++) {
             formData.append("id_tally_sheet[]", productTampil[x].id);
-            console.log(productTampil[x].id)
-            for (let y = 0; y < productTampil[x].tally_sheet_details.length; y++) {
-                formData.append("id_pesanan_penjualan[]", product[x].tally_sheet_details[y].purchase_order.id)
-                // formData.append("id_tally_sheet[]", product[x].tally_sheet_details[y].id);
-                formData.append("kuantitas_produk_box[]", product[x].tally_sheet_details[y].boxes_quantity);
-            }
+            // console.log(productTampil[x].id)
+            // for (let y = 0; y < productTampil[x].tally_sheet_details.length; y++) {
+            //     formData.append("id_pesanan_penjualan[]", product[x].tally_sheet_details[y].purchase_order.id)
+            //     formData.append("kuantitas_produk_box[]", product[x].tally_sheet_details[y].boxes_quantity);
+            // }
         }
         formData.append("status", "Submitted");
-
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
-
         axios({
             method: "post",
             url: `${Url}/goods_receipts`,
@@ -472,18 +466,16 @@ const BuatPenerimaanBarang = () => {
         const formData = new FormData();
         formData.append("tanggal", date);
         formData.append("grup", productTampil[0].supplier._group);
-        formData.append("alamat", address);
+        // formData.append("alamat", address);
         formData.append("pemasok", supplierId);
         formData.append("referensi", description);
 
-        // formData.append("gudang", gudang);
-
         for (let x = 0; x < productTampil.length; x++) {
             formData.append("id_tally_sheet[]", productTampil[x].id);
-            for (let y = 0; y < productTampil[x].tally_sheet_details.length; y++) {
-                formData.append("id_pesanan_penjualan[]", productTampil[x].tally_sheet_details[y].purchase_order.id)
-                formData.append("kuantitas_produk_box[]", productTampil[x].tally_sheet_details[y].boxes_quantity);
-            }
+            // for (let y = 0; y < productTampil[x].tally_sheet_details.length; y++) {
+            //     formData.append("id_pesanan_penjualan[]", productTampil[x].tally_sheet_details[y].purchase_order.id)
+            //     formData.append("kuantitas_produk_box[]", productTampil[x].tally_sheet_details[y].boxes_quantity);
+            // }
         }
 
         // userData.append("catatan", description);
@@ -553,7 +545,7 @@ const BuatPenerimaanBarang = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Penerimaan</label>
                             <div className="col-sm-7">
                                 <input
-                                    value={getCode}
+                                    value="Otomatis"
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
