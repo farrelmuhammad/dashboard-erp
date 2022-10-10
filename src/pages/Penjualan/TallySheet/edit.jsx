@@ -585,6 +585,7 @@ const EditTally = () => {
                             boxes_quantity: 0,
                             number_of_boxes: 0,
                             boxes_unit: value.sales_order_details[x].unit,
+                            product_alias_name: value.sales_order_details[x].product_alias_name,
                             product_name: value.sales_order_details[x].product_name,
                             action: qtyAkhir >= qtyAwal ? 'Done' : 'Next delivery',
                             purchase_order_qty: qtyAwal,
@@ -756,6 +757,7 @@ const EditTally = () => {
             }
             // console.log(updatedList);
             setProduct(updatedList);
+            console.log(product);
             setData(arrData);
             // console.log(arrData);
 

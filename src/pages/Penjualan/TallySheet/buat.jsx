@@ -1563,6 +1563,7 @@ const BuatTally = () => {
             p.sales_order_details.map((po, i) => {
                 userData.append("id_pesanan_penjualan[]", p.id);
                 userData.append("id_produk[]", productSelect[pi][i]);
+                userData.append("aksi[]", statusSO[pi][i]);
                 userData.append("jumlah_box[]", totalBox[pi][i]);
                 userData.append("satuan_box[]", po.unit);
                 userData.append("kuantitas_product_box[]", totalTallySheet[pi][i]);
