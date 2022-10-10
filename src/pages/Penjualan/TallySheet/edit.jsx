@@ -1,5 +1,5 @@
 import './form.css'
-import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tag } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Skeleton, Space, Table, Tag } from 'antd'
 import { DeleteOutlined, LoadingOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import React, { useEffect, useState } from 'react'
 import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
@@ -12,6 +12,7 @@ import ReactDataSheet from 'react-datasheet'
 import Swal from 'sweetalert2';
 import AsyncSelect from "react-select/async";
 import { PageHeader } from 'antd';
+import { ProductionQuantityLimits } from '@mui/icons-material'
 
 
 const EditTally = () => {
@@ -21,7 +22,9 @@ const EditTally = () => {
     const [modal2Visible, setModal2Visible] = useState(false)
     const [query, setQuery] = useState("")
     const [customer, setCustomer] = useState("");
+    const [customerName, setCustomerName] = useState("");
     const [warehouse, setWarehouse] = useState("");
+    const [warehouseName, setWarehouseName] = useState("");
     const [product, setProduct] = useState([]);
     const [loading, setLoading] = useState(true);
     const [getTallySheet, setGetTallySheet] = useState([])
@@ -49,6 +52,9 @@ const EditTally = () => {
     const [box, setBox] = useState([])
     const [totalTallySheet, setTotalTallySheet] = useState([])
     const [quantityPO, setQuantityPO] = useState()
+    const [qtyPesanan, setQtyPesanan] = useState([])
+    const [statusSO, setStatusSO] = useState([]);
+
     // const [quantityTally, setQuantityPO] = useState()
     const valueRenderer = (cell) => cell.value;
     const onContextMenu = (e, cell, i, j) =>
@@ -64,6 +70,10 @@ const EditTally = () => {
             .then((res) => {
                 const getData = res.data.data[0];
                 setGetTallySheet(getData)
+                setCustomer(getData.customer.id)
+                setCustomerName(getData.customer.name)
+                setWarehouse(getData.warehouse.id)
+                setWarehouseName(getData.warehouse.name)
                 console.log(getData);
                 setDetailTallySheet(getData.tally_sheet_details);
                 setStatus(getData.status);
@@ -231,8 +241,8 @@ const EditTally = () => {
     useEffect(() => {
         console.log(getTallySheet.supplier_id)
         const getProduct = async () => {
-            // const res = await axios.get(`${Url}/tally_sheets_available_sales_orders?include_tally_sheet_sales_orders=${id}&kode=${query}&id_pelanggan=${getTallySheet.customer_id}`, {
-                const res = await axios.get(`${Url}/tally_sheets_available_sales_orders`, {
+            const res = await axios.get(`${Url}/tally_sheets_available_sales_orders?include_tally_sheet_sales_orders=${id}&kode=${query}&id_pelanggan=${customer}`, {
+                // const res = await axios.get(`${Url}/tally_sheets_available_sales_orders`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -431,6 +441,299 @@ const EditTally = () => {
 
     }
 
+    console.log(product);
+
+    function tambahIndexProduct(i, idx) {
+        setLoadingTable(true);
+        console.log(i);
+        // const oldArray = product[idx].tally_sheet_details;
+        // const newArray = product[idx].tally_sheet_details[i];
+        const oldArray = product;
+        const newArray = product[i];
+
+        let arr = [];
+
+        for (let r = 0; r <= oldArray.length; r++) {
+            if (r == i + 1) {
+                arr.push(newArray)
+            } else if (r == oldArray.length) {
+                arr.push(oldArray[r - 1])
+            }
+            else {
+                arr.push(oldArray[r])
+            }
+        }
+
+        console.log(arr);
+
+        let tmp = [];
+        let qty = [];
+        let box = [];
+        let qtyBox = [];
+        let temp = [];
+        let id = [];
+        let value = [];
+        let qtyPes = [];
+        let status = [];
+        let qtyBox_tmp = [];
+        let qtyStore = [];
+        let boxStore = [];
+        let tempData = [];
+        let idStore = [];
+        let valueStore = [];
+        let statusStore = [];
+        let temp_qtyBox = [];
+        let qtyPesStore = [];
+
+        for (let x = 0; x < arr.length; x++) {
+            if (x) {
+                for (let y = 0; y <= arr[x].length; y++) {
+                    if (y == i + 1) {
+                        console.log(qtyPesanan[x][i]);
+                        console.log(quantity[x][i]);
+                        qtyStore.push(0)
+                        boxStore.push(0)
+                        idStore.push("")
+                        valueStore.push("")
+                        temp_qtyBox.push(0)
+                        if (quantity[x][i] + arr[x].tally_sheets_qty >= arr[x].boxes_quantity) {
+                            statusStore.push('Done')
+                        }
+                        else if (quantity[x][i] + arr[x].tally_sheets_qty < arr[x].boxes_quantity) {
+                            statusStore.push('Next Delivery')
+                        }
+                        // statusStore.push()
+                        qtyPesStore.push(qtyPesanan[x][i] - quantity[x][i])
+                        tempData.push([
+                            [
+                                { readOnly: true, value: "" },
+                                { value: "A", readOnly: true },
+                                { value: "B", readOnly: true },
+                                { value: "C", readOnly: true },
+                                { value: "D", readOnly: true },
+                                { value: "E", readOnly: true },
+                                { value: "F", readOnly: true },
+                                { value: "G", readOnly: true },
+                                { value: "H", readOnly: true },
+                                { value: "I", readOnly: true },
+                                { value: "J", readOnly: true },
+                            ],
+                            [
+                                { readOnly: true, value: 1 },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                            ],
+                            [
+                                { readOnly: true, value: 2 },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                            ],
+                            [
+                                { readOnly: true, value: 3 },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                            ],
+                            [
+                                { readOnly: true, value: 4 },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                            ],
+                            [
+                                { readOnly: true, value: 5 },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                            ],
+                            [
+                                { readOnly: true, value: 6 },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                            ],
+                            [
+                                { readOnly: true, value: 7 },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                            ],
+                            [
+                                { readOnly: true, value: 8 },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                            ],
+                            [
+                                { readOnly: true, value: 9 },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                            ],
+                            [
+                                { readOnly: true, value: 10 },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                                { value: '' },
+                            ]
+                        ]);
+                    } else if (y == oldArray.length) {
+                        qtyStore.push(quantity[x][y - 1])
+                        boxStore.push(totalBox[x][y - 1])
+                        tempData.push(data[x][y - 1])
+                        valueStore.push(selectedValue3[x][y - 1])
+                        idStore.push(productSelect[x][y - 1])
+                        statusStore.push(statusSO[x][y - 1])
+                        qtyPesStore.push(qtyPesanan[x][y - 1])
+                        temp_qtyBox.push(kuantitasBox[x][y - 1])
+                    }
+                    else {
+                        qtyStore.push(quantity[x][y])
+                        boxStore.push(totalBox[x][y])
+                        qtyPesStore.push(qtyPesanan[x][y])
+                        tempData.push(data[x][y])
+                        valueStore.push(selectedValue3[x][y])
+                        idStore.push(productSelect[x][y])
+                        statusStore.push(statusSO[x][y])
+                        temp_qtyBox.push(kuantitasBox[x][y])
+                    }
+                }
+                qty.push(qtyStore)
+                box.push(boxStore)
+                temp.push(tempData)
+                qtyPes.push(qtyPesStore)
+                id.push(idStore)
+                value.push(valueStore)
+                status.push(statusStore)
+                qtyBox_tmp.push(temp_qtyBox)
+                tmp.push(arr)
+                // tmp.push({
+                //     code: product[x].code,
+                //     created_at: product[x].created_at,
+                //     customer: product[x].customer,
+                //     customer_id: product[x].customer_id,
+                //     date: product[x].date,
+                //     discount: product[x].discount,
+                //     done_at: product[x].done_at,
+                //     done_by: product[x].done_by,
+                //     drafted_by: product[x].drafted_by,
+                //     id: product[x].id,
+                //     last_edited_at: product[x].last_edited_at,
+                //     last_edited_by: product[x].last_edited_by,
+                //     notes: product[x].notes,
+                //     ppn: product[x].ppn,
+                //     reference: product[x].reference,
+                //     tally_sheet_details: arr,
+                //     status: product[x].status,
+                //     submitted_at: product[x].submitted_at,
+                //     submitted_by: product[x].submitted_by,
+                //     subtotal: product[x].subtotal,
+                //     tax_included: product[x].tax_included,
+                //     total: product[x].total,
+                //     updated_at: product[x].updated_at,
+                // })
+            } else {
+                tmp.push(product[x])
+                qty.push(quantity[x])
+                box.push(totalBox[x])
+                temp.push(data[x])
+                // id.push(productSelect[x])
+                value.push(selectedValue3[x])
+                status.push(statusSO[x])
+                qtyPes.push(qtyPesanan[x])
+                qtyBox_tmp.push(kuantitasBox[x])
+            }
+        }
+        setQuantity(qty)
+        setTotalBox(box)
+        setData(temp)
+        setSelectedProduct(value)
+        // setProductSelect(id)
+        setStatusSO(status)
+        setKuantitasBox(qtyBox_tmp)
+        // console.log(qtyBox_tmp);
+        // console.log(statusSO);
+        setQtyPesanan(qtyPes)
+        setProduct(arr)
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil',
+            text: 'Data berhasil ditambah',
+        }).then(() => setLoadingTable(false));
+    }
+
 
     const dataPurchase =
         [...product.map((item, i) => ({
@@ -523,6 +826,12 @@ const EditTally = () => {
                     icon={<DeleteOutlined />}
                     onClick={() => { hapusIndexProduct(i) }}
                 />
+                <Button
+                    size='small'
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    onClick={() => { tambahIndexProduct(i) }}
+                />
             </Space>
 
         }))
@@ -537,10 +846,11 @@ const EditTally = () => {
             dataIndex: 'code',
         },
         {
-            title: 'Supplier',
-            dataIndex: 'supplier_name',
+            title: 'Pelanggan',
+            dataIndex: 'customer',
             width: '15%',
             align: 'center',
+            render: (customer) => customer.name
         },
         {
             title: 'Catatan',
@@ -806,8 +1116,6 @@ const EditTally = () => {
             key++;
         }
 
-
-
         axios({
             method: "put",
             url: `${Url}/tally_sheet_ins/${id}`,
@@ -920,7 +1228,14 @@ const EditTally = () => {
 
     if (loading) {
         return (
-            <div></div>
+            <>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+            </>
         )
     }
     return (
@@ -964,6 +1279,7 @@ const EditTally = () => {
                                     placeholder="Pilih Pelanggan..."
                                     cacheOptions
                                     defaultOptions
+                                    defaultInputValue={customerName}
                                     value={selectedValue}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
@@ -979,6 +1295,7 @@ const EditTally = () => {
                                     placeholder="Pilih Gudang..."
                                     cacheOptions
                                     defaultOptions
+                                    defaultInputValue={warehouseName}
                                     value={selectedValue2}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
@@ -996,6 +1313,7 @@ const EditTally = () => {
                                     className="form-control"
                                     id="form4Example3"
                                     rows="4"
+                                    value={getTallySheet.notes}
                                     onChange={(e) => setDescription(e.target.value)}
                                 />
                             </div>
@@ -1083,7 +1401,8 @@ const EditTally = () => {
                                 width="100px"
                             >
                                 Submit
-                            </button></>
+                            </button>
+                        </>
                             : <>
                                 <button
                                     type="button"
@@ -1094,7 +1413,8 @@ const EditTally = () => {
                                     width="100px"
                                 >
                                     Simpan
-                                </button></>
+                                </button>
+                            </>
                     }
                     <button
                         type="button"
