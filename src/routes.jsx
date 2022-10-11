@@ -93,6 +93,11 @@ import CreateGoodsTransfer from './pages/Inventory/GoodsTransfer/create'
 import EditGoodsTransfer from './pages/Inventory/GoodsTransfer/edit'
 import DetailGoodsTransfer from './pages/Inventory/GoodsTransfer/detail'
 
+import Production from './pages/Inventory/Production'
+import CreateProduction from './pages/Inventory/Production/create'
+import EditProduction from './pages/Inventory/Production/edit'
+import DetailProduction from './pages/Inventory/Production/detail'
+
 import Pesanan from './pages/Penjualan/Pesanan'
 import BuatPesanan from './pages/Penjualan/Pesanan/buat'
 import EditPesanan from './pages/Penjualan/Pesanan/edit'
@@ -183,6 +188,14 @@ import DetailPembayaranPembelian from './pages/Pembelian/Pembayaran/detail'
 import { useSelector } from 'react-redux'
 import axios from 'axios'
 import Url from './Config'
+import CreditNote from './pages/Pembelian/CreditNote'
+import BuatCreditNote from './pages/Pembelian/CreditNote/buat'
+import EditCreditNote from './pages/Pembelian/CreditNote/edit'
+import DetailCreditNote from './pages/Pembelian/CreditNote/detail'
+import PIB from './pages/Pembelian/PIB'
+import BuatPIB from './pages/Pembelian/PIB/buat'
+import EditPIB from './pages/Pembelian/PIB/edit'
+import DetailPIB from './pages/Pembelian/PIB/detail'
 
 // modules pelanggan datamaster 
 
@@ -298,6 +311,11 @@ const RouteApp = () => {
         <Route path="/goodstransfer/edit/:id" exact element={<EditGoodsTransfer />} />
         <Route path="/goodstransfer/detail" exact element={<DetailGoodsTransfer />} />
 
+        <Route path="/production" exact element={<Production />} />
+        <Route path="/production/create" exact element={<CreateProduction />} />
+        <Route path="/production/edit/:id" exact element={<EditProduction />} />
+        <Route path="/production/detail" exact element={<DetailProduction />} />
+
         {/* Supllier Modul */}
         <Route path="/supplier" exact element={<Supplier />} />
         <Route path="/supplier/buat" exact element={<BuatSupplier />} />
@@ -362,6 +380,11 @@ const RouteApp = () => {
         <Route path="/penerimaanbarang/edit/:id" exact element={<EditPenerimaanBarang />} />
         <Route path="/penerimaanbarang/detail/:id" exact element={<DetailPenerimaanBarang />} />
 
+        <Route path="/creditnote" exact element={<CreditNote />} />
+        <Route path="/creditnote/buat" exact element={<BuatCreditNote />} />
+        <Route path="/creditnote/edit/:id" exact element={<EditCreditNote />} />
+        <Route path="/creditnote/detail/:id" exact element={<DetailCreditNote />} />
+        
         <Route path="/fakturpembelian" exact element={<FakturPembelian />} />
         <Route path="/fakturpembelian/buat" exact element={<BuatFakturPembelian />} />
         <Route path="/fakturpembelian/edit/:id" exact element={<EditFakturPembelian />} />
@@ -376,6 +399,11 @@ const RouteApp = () => {
         <Route path="/pembayaranpembelian/buat" exact element={<BuatPembayaranPembelian />} />
         <Route path="/pembayaranpembelian/edit/:id" exact element={<EditPembayaranPembelian />} />
         <Route path="/pembayaranpembelian/detail/:id" exact element={<DetailPembayaranPembelian />} />
+
+        <Route path="/pib" exact element={<PIB />} />
+        <Route path="/pib/buat" exact element={<BuatPIB />} />
+        <Route path="/pib/edit/:id" exact element={<EditPIB />} />
+        <Route path="/pib/detail/:id" exact element={<DetailPIB />} />
 
         {/* Accountancy Modul */}
         <Route path="/coa" exact element={<ChartOfAccounts />} />
@@ -483,6 +511,11 @@ const RouteApp = () => {
         <Route path="/goodstransfer/create" exact element={<CreateGoodsTransfer />} />
         <Route path="/goodstransfer/edit/:id" exact element={<EditGoodsTransfer />} />
         <Route path="/goodstransfer/detail" exact element={<DetailGoodsTransfer />} />
+
+        <Route path="/production" exact element={<Production />} />
+        <Route path="/production/create" exact element={<CreateProduction />} />
+        <Route path="/production/edit/:id" exact element={<EditProduction />} />
+        <Route path="/production/detail" exact element={<DetailProduction />} />
 
         {/* Supllier Modul */}
         <Route path="/supplier" exact element={<Supplier />} />
