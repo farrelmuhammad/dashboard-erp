@@ -997,7 +997,7 @@ const EditTallySheet = () => {
                 <div className="text-title text-start mb-4">
                     <div className="row">
                         <div className="col">
-                            <h4 className="title fw-normal">Daftar Pesanan</h4>
+                            <h4 className="title fw-normal">Daftar Produk</h4>
                         </div>
                         <div className="col text-end me-2">
                             <Button

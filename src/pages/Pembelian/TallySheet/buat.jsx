@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tag } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tabs, Tag } from 'antd'
 import { ConsoleSqlOutlined, DeleteOutlined, LoadingOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
@@ -123,6 +123,7 @@ const BuatTallySheet = () => {
     const [quantityPO, setQuantityPO] = useState()
 
     const [getDataProduct, setGetDataProduct] = useState('');
+    const [getDataFaktur, setGetDataFaktur] = useState('');
     const [getDataDetailPO, setGetDataDetailPO] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -151,6 +152,10 @@ const BuatTallySheet = () => {
     const [indexPO, setIndexPO] = useState(0);
     const [kuantitasBox, setKuantitasBox] = useState([]);
     const [idxPesanan, setIdxPesanan] = useState(0);
+
+    const [modalListImpor, setModalListImpor] = useState(false);
+    const [modalListLokal, setModalListLokal] = useState(false)
+    const [grup, setGrup] = useState()
     // const [checked, setChecked] = useState(false)¿
 
 
@@ -823,10 +828,10 @@ const BuatTallySheet = () => {
 
     // const [cek, setCek] = useState(false);
     const handleChangeSupplier = (value) => {
+        setGrup(value._group)
         setProduct([])
         setSelectedSupplier(value);
         setSupplier(value.id);
-        // document.getElementById("checkbox").checked = false
     };
     // load options using API call
     const loadOptionsSupplier = (inputValue) => {
@@ -885,8 +890,58 @@ const BuatTallySheet = () => {
         if (query.length === 0 || query.length > 2) getProduct();
     }, [query, supplier])
 
+
+    useEffect(() => {
+        const getProduct = async () => {
+            const res = await axios.get(`${Url}/tally_sheet_ins_available_purchase_invoices?kode=${query}&id_pemasok=${supplier}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${auth.token}`
+                }
+            })
+            setGetDataFaktur(res.data.data);
+            // setGetDataDetailPO(res.data.data.map(d => d.purchase_order_details))
+        };
+
+        if (query.length === 0 || query.length > 2) getProduct();
+    }, [query, supplier])
     // Column for modal input product
     const columnsModal = [
+        {
+            title: 'No. Pesanan',
+            width: '20%',
+            dataIndex: 'code',
+        },
+        {
+            title: 'Supplier',
+            dataIndex: 'supplier_name',
+            width: '15%',
+            align: 'center',
+        },
+        {
+            title: 'Catatan',
+            dataIndex: 'notes',
+            width: '30%',
+            align: 'center',
+        },
+        {
+            title: 'actions',
+            dataIndex: 'address',
+            width: '8%',
+            align: 'center',
+            render: (_, record) => (
+                <>
+                    <Checkbox
+                        // style={{ display: tampilCek ? "block" : "none"}}
+                        value={record}
+                        onChange={handleCheck}
+                    />
+                </>
+            )
+        },
+    ];
+
+    const columnsModalFaktur = [
         {
             title: 'No. Pesanan',
             width: '20%',
@@ -1584,19 +1639,27 @@ const BuatTallySheet = () => {
                 <div className="text-title text-start mb-4">
                     <div className="row">
                         <div className="col">
-                            <h4 className="title fw-normal">Daftar Pesanan</h4>
+                            <h4 className="title fw-normal">Daftar Produk</h4>
                         </div>
                         <div className="col text-end me-2">
                             <Button
                                 type="primary"
                                 icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
+                                onClick={() => {
+                                    if (grup == "Lokal") {
+
+                                        setModalListLokal(true)
+                                    }
+                                    else if (grup == "Impor") {
+                                        setModalListImpor(true)
+                                    }
+                                }}
                             />
                             <Modal
                                 title="Tambah Pesanan"
                                 centered
-                                visible={modal2Visible}
-                                onCancel={() => setModal2Visible(false)}
+                                visible={modalListLokal}
+                                onCancel={() => setModalListLokal(false)}
                                 width={1000}
                                 footer={null}
                             >
@@ -1611,9 +1674,62 @@ const BuatTallySheet = () => {
                                                 onChange={(e) => setQuery(e.target.value.toLowerCase())}
                                             />
                                         </div>
+                                        <Tabs
+                                            // onChange={onChange}
+                                            type="card"
+                                        >
+                                            <Tabs.TabPane tab="Pesanan Pembelian" key="1">
+                                                <Table
+                                                    columns={columnsModal}
+                                                    dataSource={getDataProduct}
+                                                    scroll={{
+                                                        y: 250,
+                                                    }}
+                                                    pagination={false}
+                                                    loading={isLoading}
+                                                    size="middle"
+                                                />
+                                            </Tabs.TabPane>
+                                            <Tabs.TabPane tab="Retur Penjualan" key="2">
+                                                <Table
+                                                    columns={columnsModal}
+                                                    dataSource={getDataProduct}
+                                                    scroll={{
+                                                        y: 250,
+                                                    }}
+                                                    pagination={false}
+                                                    loading={isLoading}
+                                                    size="middle"
+                                                />
+                                            </Tabs.TabPane>
+                                        </Tabs>
+
+
+                                    </div>
+                                </div>
+                            </Modal>
+                            <Modal
+                                title="Tambah Pesanan"
+                                centered
+                                visible={modalListImpor}
+                                onCancel={() => setModalListImpor(false)}
+                                width={1000}
+                                footer={null}
+                            >
+                                <div className="text-title text-start">
+                                    <div className="row">
+                                        <div className="col mb-3">
+                                            <Search
+                                                placeholder="Cari Nomor Faktur.."
+                                                style={{
+                                                    width: 400,
+                                                }}
+                                                onChange={(e) => setQuery(e.target.value.toLowerCase())}
+                                            />
+                                        </div>
                                         <Table
-                                            columns={columnsModal}
-                                            dataSource={getDataProduct}
+                                            columns={columnsModalFaktur}
+                                            dataSource={getDataFaktur}
                                             scroll={{
                                                 y: 250,
                                             }}

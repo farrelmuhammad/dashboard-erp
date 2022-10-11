@@ -223,18 +223,10 @@ const EditPIB = () => {
             console.log(value)
             let newData = [...dataPIB];
             let newIdFaktur = [...dataFaktur]
-            // let tmpBea = []
-            // console.log(kurs)
-            // let tmpJumlah = []
-            // let tempTotal = []
             let subTotal = 0;
             newIdFaktur.push(value.value);
 
             for (let x = 0; x < value.info.length; x++) {
-                // let rupiah = Number(kurs) * Number(value.info[x].subtotal);
-                // console.log(rupiah)
-                // console.log(kurs)
-                // console.log(value.info[x].subTotal)
                 newData.push({
                     id_pib: value.info[x].goods_import_declaration_id,
                     id_faktur: value.info[x].purchase_invoice_id,

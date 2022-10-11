@@ -880,10 +880,10 @@ const BuatPesananPembelian = () => {
                                     id="grupSelect"
                                     className="form-select"
                                 >
-                                    <option value="Lokal" checked={grup === "Lokal"}>
+                                    <option value="Dhany Saputra">
                                         Dhany Saputra
                                     </option>
-                                    <option value="Impor" checked={grup === "Impor"}>
+                                    <option value="Catherine">
                                         Catherine
                                     </option>
 

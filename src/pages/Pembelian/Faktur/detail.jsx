@@ -229,11 +229,11 @@ const DetailFakturPembelian = () => {
     ]
 
    
-    const dataCredit = []
+    let dataCredit = []
 
        if (credit.length != 0)
        {
-       dataCredit = 
+        dataCredit = 
         [...credit?.map((item , i) => ({
             code: item.credit_note_code,
             desc: item.description,

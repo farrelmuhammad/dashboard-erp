@@ -4,13 +4,21 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
-import AsyncSelect from "react-select";
+import AsyncSelect from "react-select/async";
 import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Spin, Table, Tag } from 'antd'
 import { DislikeOutlined, LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
-import { PageHeader} from 'antd';
+import { PageHeader } from 'antd';
+import CurrencyFormat from 'react-currency-format';
+
+function klikEnter(event) {
+    if (event.code == "Enter") {
+        event.target.blur()
+    }
+}
+
 
 const EditableContext = createContext(null);
 
@@ -103,7 +111,7 @@ const EditPesananPembelian = () => {
     const [referensi, setReferensi] = useState('');
     const [description, setDescription] = useState('');
     const [status, setStatus] = useState("");
-    const [supplier, setSupplier] = useState("");
+    const [supplierId, setSupplierId] = useState("");
     const [product, setProduct] = useState([]);
     const [query, setQuery] = useState("");
     const navigate = useNavigate();
@@ -118,6 +126,8 @@ const EditPesananPembelian = () => {
     const [getStatus, setGetStatus] = useState('');
     const [getSupplier, setGetSupplier] = useState('');
     const [getSupplierName, setGetSupplierName] = useState('');
+    const [selectedMataUang, setSelectedMataUang] = useState('Rp ')
+    const [mataUangId, setMataUangId] = useState([])
     const [getProduct, setGetProduct] = useState([]);
     const [getDataProduct, setGetDataProduct] = useState();
     const [isLoading, setIsLoading] = useState(false);
@@ -141,13 +151,14 @@ const EditPesananPembelian = () => {
     const [tanggalAkhir, setTanggalAkhir] = useState();
     const [namaPenerima, setNamaPenerima] = useState()
 
-    const handleChangeSupplier = (value) => {
-        setSelectedSupplier(value);
-        setSupplier(value.id);
+
+    // handle change mata uang 
+    const handleChangeMataUang = (value) => {
+        setMataUangId(value.id);
+        setSelectedMataUang(value);
     };
-    // load options using API call
-    const loadOptionsSupplier = (inputValue) => {
-        return fetch(`${Url}/select_suppliers?limit=10&nama=${inputValue}`, {
+    const loadOptionsMataUang = (inputValue) => {
+        return fetch(`${Url}/select_currencies?nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -155,16 +166,25 @@ const EditPesananPembelian = () => {
         }).then((res) => res.json());
     };
 
-    // const convertToRupiahTabel = (angka) => {
-    //     let rupiah = '';		
-    //     let angkarev = Number(angka).toString().split('').reverse().join('');
-    //     for(let i = 0; i < angkarev.length; i++) if(i%3 == 0) rupiah += angkarev.substr(i,3)+'.';
-    //     let hasil = 'Rp. '+rupiah.split('',rupiah.length-1).reverse().join('');
-    //     return hasil;
-    // }
+
+    // handle change supplier
+    const handleChangeSupplier = (value) => {
+        setSelectedSupplier(value);
+        setSupplierId(value.id);
+    };
+
+    const loadOptionsSupplier = (inputValue) => {
+        return axios.get(`${Url}/suppliers?nama=${inputValue}&status=Active&grup=${grup}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => {
+            res.data.data
+        });
+    };
 
     useEffect(() => {
-        // setGrandTotalPPN(grantTotalPPN-grandTotalDiscount + totalPpn);
         setGrandTotal(Number(subTotal) - Number(grandTotalDiscount) + Number(totalPpn));
     }, [totalPpn]);
 
@@ -176,8 +196,7 @@ const EditPesananPembelian = () => {
     useEffect(() => {
         const task = async () => {
             await getPurchaseOrderById();
-            // await getPurchaseOrderDetails();
-            await getSupplierAll();
+            // await getSupplierAll();
             setLoad(false);
         }
         task();
@@ -193,7 +212,6 @@ const EditPesananPembelian = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            // console.log(res.data)
             setGetDataProduct(res.data);
         };
 
@@ -202,47 +220,11 @@ const EditPesananPembelian = () => {
 
     const [tampilPPN, setTampilPPN] = useState(true);
     const [tampilMataUang, setTampilMataUang] = useState(false);
-    // const [PPN, setPPN] = useState();
-    useEffect(() => {
-        if (grup == "Impor") {
-            setTampilPPN(false);
-            setTampilMataUang(true);
-        }
-        else {
-            setTampilPPN(true);
-            setTampilMataUang(false);
-        }
-    }, [grup])
-
-    // useEffect(()=> {
-    //     console.log(getProduct);
-    //     console.log(getData);
-    //     let subTotal = 0 ;
-    //     let totalPerProduk = 0;
-    //     let totalDiskonPersen = 0;
-    //     let totalDiscount = 0;
-    //     getProduct.map((item) => {
-    //         subTotal +=  Number(item.subtotal);
-    //     })
-    //     setSubTotal(subTotal);
-
-    //     getProduct.map((item ,i ) => {
-    //         totalPerProduk = (item.quantity * item.price);
-    //         totalDiskonPersen =  (totalPerProduk * item.discount_percentage/100);
-    //         totalDiscount += Number(item.fixed_discount) + totalDiskonPersen;
-    //     })
-    //     setGrandTotalDiscount(totalDiscount);
-
-
-    // }, [getData]);
+ 
 
     const convertToRupiah = (angka) => {
-        // let rupiah = '';		
-        // let angkarev = angka.toString().split('').reverse().join('');
-        // for(let i = 0; i < angkarev.length; i++) if(i%3 == 0) rupiah += angkarev.substr(i,3)+'.';
-        // let hasil = namaMataUang +rupiah.split('',rupiah.length-1).reverse().join('');
         return <input
-            value={namaMataUang + ' ' + angka.toLocaleString('id')}
+            value={selectedMataUang + ' ' + angka.toLocaleString('id')}
             readOnly="true"
             className="form-control form-control-sm"
             id="colFormLabelSm"
@@ -377,25 +359,7 @@ const EditPesananPembelian = () => {
         },
     ];
 
-    // const dataModal = 
-    // [...getDataProduct.map((item , i )=> ({
-    //     name: item.name,
-    //     stock: item.stock,
-    //     action: <>
-    //     <Checkbox
-    //         // value={checked}
-    //         onChange={handleCheck}
-    //     />
-    //     </>
-    // }))
-
-    // ]
-
     function converHarga(angka) {
-        // let rupiah = '';
-        // let angkarev = angka.toString().split('').reverse().join('');
-        // for (let i = 0; i < angkarev.length; i++) if (i % 3 == 0) rupiah += angkarev.substr(i, 3) + '.';
-        // let hasil = namaMataUang + rupiah.split('', rupiah.length - 1).reverse().join('');
         return namaMataUang + angka.toLocaleString('id');
     }
     const defaultColumns = [
@@ -432,7 +396,6 @@ const EditPesananPembelian = () => {
             align: 'center',
             editable: true,
             render(text, record) {
-                console.log(text);
                 return {
                     children: <div>{Number(text).toLocaleString('id')}</div>
                 };
@@ -460,7 +423,7 @@ const EditPesananPembelian = () => {
             editable: true,
             render(text, record) {
                 return {
-                    children: <div>{namaMataUang + ' ' + Number(text).toLocaleString('id')}</div>
+                    children: <div>{selectedMataUang + ' ' + Number(text).toLocaleString('id')}</div>
                 };
             }
         },
@@ -571,7 +534,7 @@ const EditPesananPembelian = () => {
                         grandTotal = record.quantity * Number(record.price);
                     }
 
-                    var hasil = namaMataUang + ' ' + grandTotal.toLocaleString('id');
+                    var hasil = selectedMataUang + ' ' + grandTotal.toLocaleString('id');
 
                     return {
                         props: {
@@ -676,21 +639,21 @@ const EditPesananPembelian = () => {
         // console.log()
     };
 
-    const getSupplierAll = async () => {
-        await axios.get(`${Url}/suppliers`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        }).then((res) => {
-            const getData = res.data.data;
-            setSemuaSupplier(getData);
-        })
-            .catch((err) => {
-                // Jika Gagal
-                console.log(err);
-            })
-    }
+    // const getSupplierAll = async () => {
+    //     await axios.get(`${Url}/suppliers`, {
+    //         headers: {
+    //             Accept: "application/json",
+    //             Authorization: `Bearer ${auth.token}`,
+    //         },
+    //     }).then((res) => {
+    //         const getData = res.data.data;
+    //         setSemuaSupplier(getData);
+    //     })
+    //         .catch((err) => {
+    //             // Jika Gagal
+    //             console.log(err);
+    //         })
+    // }
 
     const getPurchaseOrderById = async () => {
         await axios.get(`${Url}/purchase_orders?id=${id}`, {
@@ -705,31 +668,26 @@ const EditPesananPembelian = () => {
                 setTotalPpn(getData.ppn);
                 setGrandTotal(getData.total);
                 setGetCode(getData.code);
-                setGetDate(getData.date);
-                setSelectedSupplier(getData.supplier.name);
-                setSupplier(getData.supplier_id);
-                setGetReferensi(getData.reference);
-                setGetDesciption(getData.notes);
+                setDate(getData.date);
+                setReferensi(getData.reference);
+                setDescription(getData.notes);
                 setGetStatus(getData.status);
-                setGetSupplier(getData.supplier_id);
-                setGetSupplierName(getData.supplier.name);
-                setMataUang(getData.currency_id);
+                setSupplierId(getData.supplier_id);
+                setSelectedSupplier(getData.supplier.name);
+                setMataUangId(getData.currency_id);
                 setNamaPIC(getData.according_to);
                 setTanggalAkhir(getData.shipment_period_end_date);
                 setTanggalAwal(getData.shipment_period_start_date);
                 setNamaPenerima(getData.purchased_by)
                 setGrup(getData.supplier._group);
                 if (getData.currency == null) {
-                    setNamaMataUang("Rp")
+                    setSelectedMataUang("Rp")
                 }
                 else {
-                    setNamaMataUang(getData.currency.name);
+                    setSelectedMataUang(getData.currency.name);
                 }
-                // console.log(getData);
-
-                // setSupplier(getData.customer_id);
                 setGetProduct(getData.purchase_order_details);
-                // console.log(getData.purchase_order_details.length);
+                console.log(getData.purchase_order_details)
 
                 let temp = [];
                 let tmpPilihanDiskon = [];
@@ -763,18 +721,8 @@ const EditPesananPembelian = () => {
                 setSubTotal(total);
                 setGrandTotalDiscount(hasilDiskon);
                 setGrandTotal(grandTotal);
-                // console.log(temp)
                 setPilihanDiskon(tmpPilihanDiskon)
                 setJumlahDiskon(temp);
-
-                // let tmp = [];
-                // let tmpJumlah = [];
-                // for(let i = 0; i< updatedList.length; i++){
-                //     tmp[i] = '%';
-                //     tmpJumlah[i] = 0;
-                // }
-                // setPilihanDiskon(tmp);
-                // setJumlahDiskon(tmpJumlah)
 
             })
             .catch((err) => {
@@ -782,25 +730,8 @@ const EditPesananPembelian = () => {
                 console.log(err);
             });
     }
-    // const getPurchaseOrderDetails = async () => {
-    //     await axios.get(`${Url}/purchase_order_details/${id}`, {
-    //         headers: {
-    //             Accept: "application/json",
-    //             Authorization: `Bearer ${token}`,
-    //         },
-    //     })
-    //         .then((res) => {
-    //             const getData = res.data.data; 
-    //             setGetProduct(getData);
-    //         })
-    //         .catch((err) => {
-    //             // Jika Gagal
-    //             console.log(err);
-    //         });
-    // }
 
     var indexSupplier;
-    // let dataSupplier = [];
     const matchingData = async () => {
         let newSupplier = []
         dataSementara.map((item) => {
@@ -808,9 +739,7 @@ const EditPesananPembelian = () => {
         })
 
         setDataSupplier(newSupplier);
-        // dataSementara.map((item) =>{
-        //     setDataSupplier([...dataSupplier, {value: item.id, label: item.name }]);
-        // })
+
         dataSupplier.map((item, i) => {
 
             if (item.label == selectedSupplier) {
@@ -826,17 +755,17 @@ const EditPesananPembelian = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const produkData = new URLSearchParams();
-        produkData.append("tanggal", getDate);
-        produkData.append("referensi", getReferensi);
-        produkData.append("catatan", getDesciption);
-        produkData.append("pemasok", getSupplier);
+        produkData.append("tanggal", date);
+        produkData.append("referensi", referensi);
+        produkData.append("catatan", description);
+        produkData.append("pemasok", supplierId);
         produkData.append("status", "Submitted");
         produkData.append("berdasarkan", namaPIC);
         produkData.append("dibeli_oleh", namaPenerima);
         produkData.append("tanggal_awal_periode_pengiriman", tanggalAwal);
         produkData.append("tanggal_akhir_periode_pengiriman", tanggalAkhir);
         produkData.append("ppn", totalPpn);
-        produkData.append("mata_uang", matauang);
+        produkData.append("mata_uang", selectedMataUang);
         getProduct.map((p, i) => {
 
             produkData.append("nama_alias_produk[]", p.product_alias_name);
@@ -903,10 +832,10 @@ const EditPesananPembelian = () => {
     const handleUpdate = async (e) => {
         e.preventDefault();
         const produkData = new URLSearchParams();
-        produkData.append("tanggal", getDate);
-        produkData.append("referensi", getReferensi);
-        produkData.append("catatan", getDesciption);
-        produkData.append("pemasok", getSupplier);
+        produkData.append("tanggal", date);
+        produkData.append("referensi", referensi);
+        produkData.append("catatan", description);
+        produkData.append("pemasok", supplierId);
         produkData.append("status", getStatus);
         produkData.append("ppn", totalPpn);
         produkData.append("mata_uang", matauang);
@@ -1000,11 +929,11 @@ const EditPesananPembelian = () => {
         <>
             <form className="p-3 mb-3 bg-body rounded">
                 <div className="text-title text-start mb-4">
-                <PageHeader
+                    <PageHeader
                         ghost={false}
                         onBack={() => window.history.back()}
                         title="Edit Pesanan Pembelian">
-                </PageHeader>
+                    </PageHeader>
                     {/* <h3 className="title fw-bold">Edit Pesanan Pembelian</h3> */}
                 </div>
                 <div className="row">
@@ -1016,9 +945,9 @@ const EditPesananPembelian = () => {
                                     id="startDate"
                                     className="form-control"
                                     type="date"
-                                    disabled
-                                    defaultValue={getDate}
+                                    defaultValue={date}
                                     onChange={(e) => setDate(e.target.value)}
+                                    disabled={status == 'Submitted' ? true : false}
                                 />
                             </div>
                         </div>
@@ -1037,33 +966,70 @@ const EditPesananPembelian = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Grup</label>
                             <div className="col-sm-7">
-                                <input
-                                    disabled="true"
+                                <select
+                                    disabled={status == 'Submitted' ? true : false}
+
+                                    onChange={(e) => setGrup(e.target.value)}
+                                    id="grupSelect"
+                                    className="form-select"
+                                >
+                                    <option>Pilih Grup</option>
+                                    <option value="Lokal" selected={grup === "Lokal" ? true : false}>
+                                        Lokal
+                                    </option>
+                                    <option value="Impor" selected={grup === "Impor" ? true : false}>
+                                        Import
+                                    </option>
+
+                                </select>
+                                {/* <input
                                     id="startDate"
                                     className="form-control"
                                     type="text"
-                                    value={grup}
+                                    defaultValue={grup}
+                                /> */}
+                            </div>
+                        </div>
+                        <div className="row mb-3" id="matauang" style={{ display: grup == 'Impor' ? "flex" : "none" }}>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
+                            <div className="col-sm-7">
+                                <AsyncSelect
+                                    placeholder="Pilih Mata Uang..."
+                                    cacheOptions
+                                    defaultOptions
+                                    defaultInputValue={selectedMataUang}
+                                    value={selectedMataUang}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsMataUang}
+                                    onChange={handleChangeMataUang}
                                 />
+
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                             <div className="col-sm-7">
-                                <input
-                                    value={getSupplierName}
-                                    type="Nama"
-                                    className="form-control"
-                                    id="inputNama3"
-                                    disabled
+                                <AsyncSelect
+                                    placeholder="Pilih Supplier..."
+                                    cacheOptions
+                                    defaultOptions
+                                    defaultInputValue={selectedSupplier}
+                                    value={selectedSupplier}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsSupplier}
+                                    onChange={handleChangeSupplier}
                                 />
+
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">According To</label>
                             <div className="col-sm-7">
                                 <input
-                                    disabled
-                                    value={namaPIC}
+                                    defaultValue={namaPIC}
+                                    onChange={(e) => setNamaPIC(e.target.value)}
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
@@ -1074,37 +1040,42 @@ const EditPesananPembelian = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Purchased By</label>
                             <div className="col-sm-7">
-                                <input
-                                    disabled
-                                    value={namaPenerima}
-                                    type="Nama"
-                                    className="form-control"
-                                    id="inputNama3"
-                                />
-
+                                <select
+                                    onChange={(e) => setNamaPenerima(e.target.value)}
+                                    id="grupSelect"
+                                    className="form-select"
+                                >
+                                    <option value="Dhany Saputra" selected={namaPenerima == '' ? true : false}>
+                                        Pilih Penerima
+                                    </option>
+                                    <option value="Dhany Saputra" selected={namaPenerima == 'Dhany Saputra' ? true : false}>
+                                        Dhany Saputra
+                                    </option>
+                                    <option value="Catherine" selected={namaPenerima == 'Catherine' ? true : false}>
+                                        Catherine
+                                    </option>
+                                </select>
                             </div>
                         </div>
-                        <div className="row mb-3" style={{ display: tampilMataUang ? "flex" : "none" }}>
+                        {/* <div className="row mb-3" style={{ display: tampilMataUang ? "flex" : "none" }}>
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
                             <div className="col-sm-7">
                                 <input
-                                    disabled="true"
                                     id="startDate"
                                     className="form-control"
                                     type="text"
-                                    value={namaMataUang}
+                                    defaultValue={namaMataUang}
                                 />
                             </div>
-                        </div>
+                        </div> */}
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Referensi</label>
                             <div className="col-sm-7">
                                 <input
-                                    disabled
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
-                                    value={getReferensi}
+                                    defaultValue={referensi}
                                     onChange={(e) => setReferensi(e.target.value)}
                                 />
                             </div>
@@ -1118,16 +1089,17 @@ const EditPesananPembelian = () => {
                                     id="startDate"
                                     className=" form-control"
                                     type="date"
-                                    value={tanggalAwal}
-                                    disabled
+                                    defaultValue={tanggalAwal}
+                                    onChange={(e) => setTanggalAwal(e.target.value)}
                                 />
                                 <div className='ms-2 me-2' style={{ paddingTop: "13px!important" }}>s.d</div>
                                 <input
                                     id="startDate"
                                     className=" form-control"
                                     type="date"
-                                    value={tanggalAkhir}
-                                    disabled
+                                    defaultValue={tanggalAkhir}
+                                    onChange={(e) => setTanggalAkhir(e.target.value)}
+
                                 />
                             </div>
                         </div>
@@ -1138,7 +1110,7 @@ const EditPesananPembelian = () => {
                                     className="form-control"
                                     id="form4Example3"
                                     rows="4"
-                                    value={getDesciption}
+                                    defaultValue={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                 />
                             </div>
@@ -1229,14 +1201,17 @@ const EditPesananPembelian = () => {
                         <div className="row mb-3" id="ppn" style={{ display: tampilPPN ? "flex" : "none" }}>
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">PPN</label>
                             <div className="col-sm-6">
-                                <input
+                                <CurrencyFormat prefix='Rp ' className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={totalPpn} onKeyDown={(event) => klikEnter(event)} onChange={(e) => setTotalPpn(e.target.value.replace('.', '').replace(/[^0-9\.]+/g, ""))} key="total" />
+
+
+                                {/* <input
                                     defaultValue={totalPpn}
                                     onChange={(e) => setTotalPpn(e.target.value)}
                                     type="number"
                                     className="form-control form-control-sm"
                                     id="colFormLabelSm"
                                 // placeholder='ppn per item di total semua row'
-                                />
+                                /> */}
                             </div>
                         </div>
                         <div className="row mb-3">
@@ -1247,7 +1222,7 @@ const EditPesananPembelian = () => {
                         </div>
                     </div>
                 </div>
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right',position:'relative'}}>
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -1280,7 +1255,7 @@ const EditPesananPembelian = () => {
                         Cetak
                     </button>
                 </div>
-                <div style={{clear:'both'}}></div>
+                <div style={{ clear: 'both' }}></div>
             </form>
         </>
     )
