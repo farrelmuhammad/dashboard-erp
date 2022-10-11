@@ -1,12 +1,12 @@
 
-import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tag } from 'antd'
-import { BarsOutlined, DeleteOutlined, LoadingOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons'
+import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Skeleton, Space, Table, Tag } from 'antd'
+import { BarsOutlined, DeleteOutlined, EditOutlined, LoadingOutlined, MinusOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons'
 import React, { useEffect, useState } from 'react'
 import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
 import Search from 'antd/lib/transfer/search'
 import axios from 'axios'
 import Url from '../../../Config';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import ReactDataSheet from 'react-datasheet';
 import { useReactToPrint } from 'react-to-print';
@@ -54,6 +54,7 @@ export const DetailTally = () => {
         })
             .then((res) => {
                 const getData = res.data.data[0];
+                setLoading(false)
                 setGetTallySheet(getData)
                 setDetailTallySheet(getData.tally_sheet_details);
 
@@ -152,6 +153,12 @@ export const DetailTally = () => {
             key: 'name',
         },
         {
+            title: 'Nama Alias Product',
+            dataIndex: 'product_alias_name',
+            width: '25%',
+            key: 'name',
+        },
+        {
             title: 'Nama Product',
             dataIndex: 'product_name',
             width: '25%',
@@ -223,6 +230,7 @@ export const DetailTally = () => {
     const dataPurchase =
         [...detailTallySheet.map((item, i) => ({
             code: item.sales_order.code,
+            product_alias_name: item.product_alias_name,
             product_name: item.product_name,
             quantity: item.boxes_quantity.replace('.', ','),
             unit: item.boxes_unit,
@@ -316,7 +324,14 @@ export const DetailTally = () => {
 
     if (loading) {
         return (
-            <div></div>
+            <>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+            </>
         )
     }
 
@@ -353,8 +368,6 @@ export const DetailTally = () => {
         }))
 
     ]
-
-
 
     return (
         <>
@@ -441,28 +454,26 @@ export const DetailTally = () => {
                 </div>
             </div>
 
-            <form className="  p-3 mb-5 bg-body rounded">
-
-                <div className="row">
-                    <div className="col text-title text-start">
-                        <PageHeader
-                            ghost={false}
-                            onBack={() => window.history.back()}
-                            title="Detail Pesanan">
-                        </PageHeader>
-                        {/* <div className="text-title text-start mb-4">
-                            <h3 className="title fw-bold">Detail Pesanan</h3>
-                        </div> */}
-                    </div>
-                    <div className="col button-add text-end me-3">
-                        <button type="button" onClick={handlePrint} class="btn btn-warning rounded m-1">
-                            Cetak
-                        </button>
-                    </div>
-                </div>
-                {/* <div className="text-title text-start mb-4">
-                    <h3 className="title fw-bold">Detail Pesanan</h3>
-                </div> */}
+            <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                title="Detail Tally Sheet"
+                onBack={() => window.history.back()}
+                extra={[
+                    <Link to={`/tally/edit/${id}`}>
+                        <Button
+                            type="primary"
+                            icon={<EditOutlined />}
+                        />
+                    </Link>,
+                    <Button
+                        type="primary"
+                        icon={<PrinterOutlined />}
+                        style={{ background: "orange", borderColor: "orange" }}
+                        onClick={handlePrint}
+                    />,
+                ]}
+            >
                 <div class="row">
                     <div class="col">
                         <div className="row mb-3">
@@ -478,16 +489,16 @@ export const DetailTally = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pelanggan</label>
                             <div className="col-sm-7">
-                                <input disabled="true" value={getTallySheet.supplier_name} id="startDate" className="form-control" type="text" />
+                                <input disabled="true" value={getTallySheet.customer.name} id="startDate" className="form-control" type="text" />
 
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang</label>
                             <div className="col-sm-7">
-                                <input disabled="true" type="text" value={getTallySheet.warehouse_name} className="form-control" id="inputNama3" />
+                                <input disabled="true" type="text" value={getTallySheet.warehouse.name} className="form-control" id="inputNama3" />
                             </div>
                         </div>
                     </div>
@@ -506,29 +517,22 @@ export const DetailTally = () => {
                         </div>
                     </div>
                 </div>
-            </form>
-            <form className="p-3 mb-5 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <div className="row">
-                        <div className="col">
-                            <h4 className="title fw-normal">Daftar Pesanan</h4>
-                        </div>
-                    
-                    
-                    </div>
-                    <Table
-                        bordered
-                        pagination={false}
-                        dataSource={dataPurchase}
-                        // expandable={{ expandedRowRender }}
-                        // defaultExpandAllRows
-                        columns={columns}
-                        onChange={(e) => setProduct(e.target.value)}
-                    />
-                </div>
-            </form>
-        
-        
+            </PageHeader>
+
+            <PageHeader
+                ghost={false}
+                title="Daftar Pesanan"
+            >
+                <Table
+                    bordered
+                    pagination={false}
+                    dataSource={dataPurchase}
+                    // expandable={{ expandedRowRender }}
+                    // defaultExpandAllRows
+                    columns={columns}
+                    onChange={(e) => setProduct(e.target.value)}
+                />
+            </PageHeader>
         </>
     )
 }
