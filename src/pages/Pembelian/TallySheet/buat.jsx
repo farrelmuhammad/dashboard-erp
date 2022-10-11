@@ -18,6 +18,8 @@ import "react-datasheet/lib/react-datasheet.css";
 import { CreateOutlined } from '@material-ui/icons';
 import { update } from 'lodash';
 import { array } from 'yup';
+import { PageHeader } from 'antd';
+
 
 const EditableContext = createContext(null);
 
@@ -182,17 +184,19 @@ const BuatTallySheet = () => {
                 // status 
                 let qtyPO = product[x].purchase_order_details[i].quantity;
                 let qtySebelumnya = product[x].purchase_order_details[i].tally_sheets_qty;
-                if (arrTotal[x][i] + qtySebelumnya >= qtyPO) {
+                console.log(qtySebelumnya)
+                if (Number(arrTotal[x][i]) + Number(qtySebelumnya) >= qtyPO) {
                     stts.push('Done')
                 }
-                else if (arrTotal[x][i] + qtySebelumnya < qtyPO) {
+                else if (Number(arrTotal[x][i]) + Number(qtySebelumnya) < qtyPO) {
                     stts.push('Next Delivery')
                 }
 
             }
-            arrStatus[x] = stts;
+            // console.log(stts)
+            arrStatus.push(stts);
         }
-        console.log(arrStatus)
+        // console.log(arrStatus)
         setStatusPO(arrStatus)
     }, [data]);
 
@@ -319,14 +323,11 @@ const BuatTallySheet = () => {
                         kuantitas.push([0]);
                     }
                     else {
-
-                        // tempKuantitas.push(kuantitasBox[x][i].replace(',', '.'));
                         tempKuantitas.push(kuantitasBox[x][i]);
                     }
                     total.push(totalBox[x][i]);
 
                 }
-                // tempKuantitas.push(kuantitas);
             }
 
             arrKuantitas.push(tempKuantitas);
@@ -429,10 +430,10 @@ const BuatTallySheet = () => {
                         tmp[i] = 0;
                         tmp[i] = totalTallySheet[x][i];
 
-                        if (totalTallySheet[x][i] + qtySebelumnya >= qtyPO) {
+                        if (Number(totalTallySheet[x][i]) + Number(qtySebelumnya) >= qtyPO) {
                             stts[i] = 'Done'
                         }
-                        else if (totalTallySheet[x][i] + qtySebelumnya < qtyPO) {
+                        else if (Number(totalTallySheet[x][i]) + Number(qtySebelumnya) < qtyPO) {
                             stts[i] = 'Next Delivery'
                         }
                     }
@@ -510,8 +511,9 @@ const BuatTallySheet = () => {
 
     }
 
-    function klikTampilSheet(indexProduct, indexPO, productName, quantity) {
-        setQuantityPO(quantity.replace('.', ','))
+    function klikTampilSheet(indexProduct, indexPO, productName, quantity, tally_sheets_qty) {
+        // let hasilAkhirQtyPO = Number(quantity) - Number(tally_sheets_qty);
+        setQuantityPO((Number(quantity) - Number(tally_sheets_qty)).toString().replace('.', ','))
         setProductName(productName)
         setIndexPO(indexPO);
         setIdxPesanan(indexProduct);
@@ -522,7 +524,7 @@ const BuatTallySheet = () => {
     const expandedRowRender = (record) => {
         const columns = [
             {
-                title: 'Nama Product',
+                title: 'Nama Produk',
                 dataIndex: 'product_name',
                 width: '25%',
                 key: 'name',
@@ -566,16 +568,105 @@ const BuatTallySheet = () => {
             },
         ];
 
+        function forceDoneProduct(baris, kolom) {
+            Swal.fire({
+                title: 'Apakah Anda Yakin?',
+                text: "Status akan diubah menjadi Done",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let arrStatus = []
+                    for (let x = 0; x < product.length; x++) {
+                        let status = []
+
+                        if (x == baris) {
+                            for (let y = 0; y < product[x].purchase_order_details.length; y++) {
+                                if (y == kolom) {
+                                    status.push('Done')
+                                }
+                                else {
+                                    status.push(statusPO[x][y])
+                                }
+                            }
+                            arrStatus.push(status)
+
+                        }
+                        else {
+                            arrStatus.push(statusPO[x])
+
+                        }
+
+                    }
+                    setStatusPO(arrStatus)
+                }
+            })
+        }
+
+        function forceNexDeliveryProduct(baris, kolom) {
+            // console.log(quantity[baris][kolom])
+            // console.log(product[baris].purchase_order_details[kolom].tally_sheets_qty)
+            let jumlahNow = Number(quantity[baris][kolom]) + Number(product[baris].purchase_order_details[kolom].tally_sheets_qty);
+            if (jumlahNow >= product[baris].purchase_order_details[kolom].quantity) {
+                Swal.fire(
+                    "Tidak bisa mengubah status",
+                    `Jumlah ini sudah melebihi jumlah pesanan`,
+                    "error"
+                )
+            }
+            else {
+                Swal.fire({
+                    title: 'Apakah Anda Yakin?',
+                    text: "Status akan diubah menjadi Next Delivery",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        let arrStatus = []
+                        for (let x = 0; x < product.length; x++) {
+                            let status = []
+
+                            if (x == baris) {
+                                for (let y = 0; y < product[x].purchase_order_details.length; y++) {
+                                    if (y == kolom) {
+                                        status.push('Next Delivery')
+                                    }
+                                    else {
+                                        status.push(statusPO[x][y])
+                                    }
+                                }
+                                arrStatus.push(status)
+
+                            }
+                            else {
+                                arrStatus.push(statusPO[x])
+
+                            }
+
+                        }
+                        setStatusPO(arrStatus)
+                    }
+                })
+            }
+
+        }
+
         const dataPurchase =
             [...product[record.key].purchase_order_details.map((item, i) => ({
                 product_name: item.product_name,
                 quantity: quantity[record.key][i].toFixed(2).replace('.', ','),
                 unit: item.unit,
-                status: statusPO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusPO[record.key][i] === 'Next Delivery' ? <Tag color="orange">{statusPO[record.key][i]}</Tag> : statusPO[record.key][i] === 'Done' ? <Tag color="green">{statusPO[record.key][i]}</Tag> : null
+                status: statusPO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusPO[record.key][i] === 'Next Delivery' ? <Tag color="orange" type="button" onClick={() => forceDoneProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : statusPO[record.key][i] === 'Done' ? <Tag color="green" type="button" onClick={() => forceNexDeliveryProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : null
                 ,
                 box:
                     <>
-                        <a onClick={() => klikTampilSheet(record.key, i, item.product_name, item.quantity)}>
+                        <a onClick={() => klikTampilSheet(record.key, i, item.product_name, item.quantity, item.tally_sheets_qty)}>
                             {totalBox[record.key][i]}
                         </a>
                         <Modal
@@ -598,7 +689,7 @@ const BuatTallySheet = () => {
                                 <div className="row">
                                     <div className="col">
                                         <div className="row">
-                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
+                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Tally Sheet</label>
                                             <div className="col-sm-3">
                                                 <input
                                                     value={product[idxPesanan].code}
@@ -739,12 +830,12 @@ const BuatTallySheet = () => {
     };
     // load options using API call
     const loadOptionsSupplier = (inputValue) => {
-        return fetch(`${Url}/select_suppliers?nama=${inputValue}`, {
+        return axios.get(`${Url}/tally_sheet_ins_available_suppliers/purchase_orders?nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => res.data.data);
     };
 
     const handleChangeWarehouse = (value) => {
@@ -839,13 +930,6 @@ const BuatTallySheet = () => {
         let arrStatus = []
         if (event.target.checked) {
             updatedList = [...product, event.target.value];
-
-
-            //masukkan status lagi 
-            // let arrStatus = []
-            // let arrTotal = [];
-
-            // setStatusPO(arrStatus)
 
             // tambah data pas di checked 
             if (data.length == 0) {
@@ -1002,12 +1086,16 @@ const BuatTallySheet = () => {
                                 { value: '' },
                             ]
                         ]);
-                        stts.push('Next Delivery')
+                        if (updatedList[i].purchase_order_details[x].tally_sheets_qty >= updatedList[i].purchase_order_details[x].quantity) {
+                            stts.push('Done')
+                        }
+                        else if (updatedList[i].purchase_order_details[x].tally_sheets_qty < updatedList[i].purchase_order_details[x].quantity) {
+                            stts.push('Next Delivery')
+
+                        }
                         tempKuantitas.push(0);
                         qty.push(0);
                         tempBox.push(0);
-
-
                     }
                     arrStatus.push(stts)
                     arrData.push(tempData);
@@ -1210,21 +1298,6 @@ const BuatTallySheet = () => {
                         arrBox[i] = tempBox;
                     }
                     else {
-                        // arrStatus[i] = statusPO[i]
-
-                        // for (let x = 0; x < updatedList.length; x++) {
-                        //     let stts = []
-                        //     for (let i = 0; i < updatedList[x].purchase_order_details.length; i++) {
-                        //         // status 
-
-                        //         let qtyPO = updatedList[x].purchase_order_details[i].quantity;
-                        //         let qtySebelumnya = updatedList[x].purchase_order_details[i].tally_sheets_qty;
-
-                        //         stts.push('Next Delivery')
-
-                        //     }
-                        // }
-
                         arrStatus[i] = statusPO[i];
                         arrBox[i] = totalBox[i];
                         arrqty[i] = quantity[i]
@@ -1234,18 +1307,33 @@ const BuatTallySheet = () => {
 
 
             }
+
+
+            // cek status done dari awal 
+            for (let i = 0; i < updatedList.length; i++) {
+                for (let x = 0; x < updatedList[i].purchase_order_details.length; x++) {
+                    if (updatedList[i].purchase_order_details[x].tally_sheets_qty >= updatedList[i].purchase_order_details[x].quantity) {
+                        arrKuantitas[i].splice(x, 1);
+                        arrData[i].splice(x, 1);
+                        arrBox[i].splice(x, 1);
+                        arrStatus[i].splice(x, 1);
+                        arrqty[i].splice(x, 1);
+                        updatedList[i].purchase_order_details.splice(x, 1);
+
+                    }
+                }
+            }
+
+            console.log(arrData)
             setKuantitasBox(arrKuantitas);
             setData(arrData);
             setTotalBox(arrBox);
-            console.log(arrStatus)
             setStatusPO(arrStatus);
             setQuantity(arrqty);
             setGetDataDetailPO(updatedList.map(d => d.purchase_order_details))
 
         }
         else {
-            console.log(updatedList)
-            console.log(event.target.value)
             for (let i = 0; i < updatedList.length; i++) {
                 if (updatedList[i] == event.target.value) {
                     updatedList.splice(i, 1);
@@ -1294,6 +1382,7 @@ const BuatTallySheet = () => {
                 tallySheetData.append("id_pesanan_pembelian[]", p.id);
                 tallySheetData.append("id_produk[]", po.product_id);
                 tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
+                tallySheetData.append("aksi[]", statusPO[pi][i]);
                 tallySheetData.append("satuan_box[]", po.unit);
                 tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
 
@@ -1303,7 +1392,7 @@ const BuatTallySheet = () => {
         for (let idx = 0; idx < kuantitasBox.length; idx++) {
             for (let x = 0; x < kuantitasBox[idx].length; x++) {
                 for (let y = 0; y < kuantitasBox[idx][x].length; y++) {
-                    tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + y + "]", kuantitasBox[idx][x][y])
+                    tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + y + "]", kuantitasBox[idx][x][y].replace(',', '.'))
 
                 }
                 key++;
@@ -1359,6 +1448,7 @@ const BuatTallySheet = () => {
                 tallySheetData.append("id_produk[]", po.product_id);
                 tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
                 tallySheetData.append("satuan_box[]", po.unit);
+                tallySheetData.append("aksi[]", statusPO[pi][i]);
                 tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
             })
         });
@@ -1367,7 +1457,7 @@ const BuatTallySheet = () => {
         for (let idx = 0; idx < kuantitasBox.length; idx++) {
             for (let x = 0; x < kuantitasBox[idx].length; x++) {
                 for (let y = 0; y < kuantitasBox[idx][x].length; y++) {
-                    tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + y + "]", kuantitasBox[idx][x][y])
+                    tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + y + "]", kuantitasBox[idx][x][y].toString().replace(',', '.'))
 
                 }
                 key++;
@@ -1413,10 +1503,12 @@ const BuatTallySheet = () => {
 
     return (
         <>
+            <PageHeader
+                ghost={false}
+                onBack={() => window.history.back()}
+                title="Buat Tally Sheet">
+            </PageHeader>
             <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <h4 className="title fw-bold">Buat Tally Sheet</h4>
-                </div>
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -1544,13 +1636,14 @@ const BuatTallySheet = () => {
                     />
                 </div>
 
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
                         value="Draft"
                         onChange={(e) => setStatus(e.target.value)}
                         onClick={handleDraft}
+                        style={{ width: '100px' }}
                     >
                         Simpan
                     </button>
@@ -1560,15 +1653,18 @@ const BuatTallySheet = () => {
                         value="Submitted"
                         onChange={(e) => setStatus(e.target.value)}
                         onClick={handleSubmit}
+                        style={{ width: '100px' }}
                     >
                         Submit
                     </button>
                     <button
                         type="button"
+                        style={{ width: '100px' }}
                         className="btn btn-warning rounded m-1">
                         Cetak
                     </button>
                 </div>
+                <div style={{ clear: 'both' }}></div>
             </form>
         </>
     )

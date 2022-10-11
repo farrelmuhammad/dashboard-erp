@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tag } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, PageHeader, Select, Space, Table, Tag } from 'antd'
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
@@ -133,9 +133,11 @@ const BuatTally = () => {
     const [loadingSpreedSheet, setLoadingSpreadSheet] = useState(false);
     const [totalBox, setTotalBox] = useState([]);
     const [quantity, setQuantity] = useState([]);
+    const [qtyPesanan, setQtyPesanan] = useState([])
     const [indexPO, setIndexPO] = useState(0);
     const [kuantitasBox, setKuantitasBox] = useState([]);
     const [idxPesanan, setIdxPesanan] = useState(0);
+    const [statusSO, setStatusSO] = useState([]);
 
     useEffect(() => {
         let arrTotal = [];
@@ -156,6 +158,24 @@ const BuatTally = () => {
             arrTotal[x] = total;
         }
         setTotalTallySheet(arrTotal);
+
+        // let arrStatus = [];
+        // for (let x = 0; x < product.length; x++) {
+        //     let stts = [];
+        //     for (let i = 0; i < product[x].sales_order_details[i].length; i++) {
+        //         let qtySO = product[x].sales_order_details[i].quantity;
+        //         let qtySebelumnya = product[x].sales_order_details[i].tally_sheets_qty;
+        //         console.log(qtySebelumnya)
+        //         if (Number(arrTotal[x][i]) + Number(qtySebelumnya) >= qtySO) {
+        //             stts.push('Done')
+        //         }
+        //         else if (Number(arrTotal[x][i]) + Number(qtySebelumnya) < qtySO) {
+        //             stts.push('Next Delivery')
+        //         }
+        //     }
+        //     arrStatus.push(stts);
+        // }
+        // setStatusSO(arrStatus)
     }, [data]);
 
 
@@ -362,6 +382,16 @@ const BuatTally = () => {
     function simpanTallySheet(i) {
         let tmp = [];
         let arrtmp = [];
+        let stts = [];
+        let arrStatus = []
+        let qtySO = product[idxPesanan].sales_order_details[i].quantity;
+        let qtySebelumnya = product[idxPesanan].sales_order_details[i].tally_sheets_qty;
+
+        // for (let x = 0; x < product.length; x++) {
+        //     for (let i = 0; i < product[x].sales_order_details.length; i++) {
+
+        //     }
+        // }
 
         for (let x = 0; x < product.length; x++) {
             tmp = [];
@@ -370,19 +400,30 @@ const BuatTally = () => {
                     if (i === indexPO) {
                         tmp[i] = 0;
                         tmp[i] = totalTallySheet[x][i];
+
+                        if (Number(totalTallySheet[x][i]) + Number(qtySebelumnya) >= qtySO) {
+                            stts[i] = 'Done'
+                        }
+                        else if (Number(totalTallySheet[x][i]) + Number(qtySebelumnya) < qtySO) {
+                            stts[i] = 'Next Delivery'
+                        }
                     }
                     else {
                         tmp[i] = quantity[x][i];
+                        stts[i] = statusSO[x][i];
                     }
                 }
                 arrtmp.push(tmp);
+                arrStatus.push(stts);
             }
             else {
                 arrtmp.push(quantity[x]);
+                arrStatus.push(statusSO[x]);
             }
         }
-        console.log(quantity)
+        console.log(arrStatus)
         setQuantity(arrtmp);
+        setStatusSO(arrStatus);
         setModal2Visible2(false)
     }
 
@@ -421,23 +462,42 @@ const BuatTally = () => {
         let tmp = [];
         let qty = [];
         let box = [];
+        let qtyBox = [];
         let temp = [];
         let id = [];
         let value = [];
+        let qtyPes = [];
+        let status = [];
+        let qtyBox_tmp = [];
         let qtyStore = [];
         let boxStore = [];
         let tempData = [];
         let idStore = [];
         let valueStore = [];
+        let statusStore = [];
+        let temp_qtyBox = [];
+        let qtyPesStore = [];
+
 
         for (let x = 0; x < product.length; x++) {
             if (x == idx) {
                 for (let y = 0; y <= product[x].sales_order_details.length; y++) {
                     if (y == i + 1) {
+                        console.log(qtyPesanan[x][i]);
+                        console.log(quantity[x][i]);
                         qtyStore.push(0)
                         boxStore.push(0)
                         idStore.push("")
                         valueStore.push("")
+                        temp_qtyBox.push(0)
+                        if (quantity[x][i] + product[x].sales_order_details[i].tally_sheets_qty >= product[x].sales_order_details[i].quantity) {
+                            statusStore.push('Done')
+                        }
+                        else if (quantity[x][i] + product[x].sales_order_details[i].tally_sheets_qty < product[x].sales_order_details[i].quantity) {
+                            statusStore.push('Next Delivery')
+                        }
+                        // statusStore.push()
+                        qtyPesStore.push(qtyPesanan[x][i] - quantity[x][i])
                         tempData.push([
                             [
                                 { readOnly: true, value: "" },
@@ -589,20 +649,29 @@ const BuatTally = () => {
                         tempData.push(data[x][y - 1])
                         valueStore.push(selectedValue3[x][y - 1])
                         idStore.push(productSelect[x][y - 1])
+                        statusStore.push(statusSO[x][y - 1])
+                        qtyPesStore.push(qtyPesanan[x][y - 1])
+                        temp_qtyBox.push(kuantitasBox[x][y - 1])
                     }
                     else {
                         qtyStore.push(quantity[x][y])
                         boxStore.push(totalBox[x][y])
+                        qtyPesStore.push(qtyPesanan[x][y])
                         tempData.push(data[x][y])
                         valueStore.push(selectedValue3[x][y])
                         idStore.push(productSelect[x][y])
+                        statusStore.push(statusSO[x][y])
+                        temp_qtyBox.push(kuantitasBox[x][y])
                     }
                 }
                 qty.push(qtyStore)
                 box.push(boxStore)
                 temp.push(tempData)
+                qtyPes.push(qtyPesStore)
                 id.push(idStore)
                 value.push(valueStore)
+                status.push(statusStore)
+                qtyBox_tmp.push(temp_qtyBox)
                 tmp.push({
                     code: product[x].code,
                     created_at: product[x].created_at,
@@ -635,6 +704,9 @@ const BuatTally = () => {
                 temp.push(data[x])
                 id.push(productSelect[x])
                 value.push(selectedValue3[x])
+                status.push(statusSO[x])
+                qtyPes.push(qtyPesanan[x])
+                qtyBox_tmp.push(kuantitasBox[x])
             }
         }
         setQuantity(qty)
@@ -642,7 +714,11 @@ const BuatTally = () => {
         setData(temp)
         setSelectedProduct(value)
         setProductSelect(id)
-        console.log(tempData);
+        setStatusSO(status)
+        setKuantitasBox(qtyBox_tmp)
+        console.log(qtyBox_tmp);
+        console.log(statusSO);
+        setQtyPesanan(qtyPes)
         setProduct(tmp)
         Swal.fire({
             icon: 'success',
@@ -653,6 +729,7 @@ const BuatTally = () => {
 
     function klikTampilSheet(indexProduct, indexPO) {
         console.log(indexProduct)
+        // setQtyPesanan(product[indexProduct].sales_order_details[indexPO].quantity)
         setIndexPO(indexPO);
         setIdxPesanan(indexProduct);
         setProductPO(product[indexProduct].sales_order_details);
@@ -664,20 +741,20 @@ const BuatTally = () => {
             {
                 title: 'Nama Alias Produk',
                 dataIndex: 'product_alias_name',
-                width: '25%',
+                width: '18%',
                 key: 'product_alias_name',
             },
             {
                 title: 'Nama Produk',
                 dataIndex: 'product_name',
-                width: '25%',
+                width: '20%',
                 key: 'product_name',
                 // editable: true,
             },
             {
                 title: 'Qty',
                 dataIndex: 'quantity',
-                width: '10%',
+                width: '5%',
                 align: 'center',
                 // editable: true,
             },
@@ -685,12 +762,20 @@ const BuatTally = () => {
                 title: 'Stn',
                 dataIndex: 'unit',
                 align: 'center',
-                width: '10%',
+                width: '5%',
                 key: 'name',
             },
             {
                 title: 'Box',
                 dataIndex: 'box',
+                align: 'center',
+                width: '5%',
+                key: 'box',
+
+            },
+            {
+                title: 'Status',
+                dataIndex: 'status',
                 align: 'center',
                 width: '10%',
                 key: 'box',
@@ -762,7 +847,7 @@ const BuatTally = () => {
                                             <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
                                             <div className="col-sm-3">
                                                 <input
-                                                    value={item.quantity}
+                                                    value={qtyPesanan[idxPesanan][indexPO]}
                                                     type="Nama"
                                                     className="form-control"
                                                     id="inputNama3"
@@ -774,7 +859,7 @@ const BuatTally = () => {
                                             <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
                                             <div className="col-sm-3">
                                                 <input
-                                                    value={item.product_name}
+                                                    value={selectedValue3[idxPesanan][indexPO] == ""? "" : selectedValue3[idxPesanan][indexPO].name}
                                                     type="Nama"
                                                     className="form-control"
                                                     id="inputNama3"
@@ -822,6 +907,7 @@ const BuatTally = () => {
                             </div>
                         </Modal>
                     </>,
+                status: statusSO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusSO[record.key][i] === 'Next Delivery' ? <Tag color="orange">{statusSO[record.key][i]}</Tag> : statusSO[record.key][i] === 'Done' ? <Tag color="green">{statusSO[record.key][i]}</Tag> : null,
                 action:
                     <Space size="middle">
                         <Button
@@ -906,10 +992,12 @@ const BuatTally = () => {
     };
 
     const handleChangeProduct = (value, record, idx) => {
+        // console.log(selectedValue3)
         let idKey = [];
         let key = [];
         let store = [];
         let store2 = [];
+        console.log(value);
 
         for (let x = 0; x < data.length; x++) {
             if (x == record) {
@@ -931,6 +1019,7 @@ const BuatTally = () => {
         }
         setSelectedProduct(store2);
         setProductSelect(key);
+        console.log(store2)
     };
 
     // load options using API call
@@ -957,7 +1046,7 @@ const BuatTally = () => {
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
-    }, [query])
+    }, [query, customer])
 
     // Column for modal input product
     const columnsModal = [
@@ -1001,6 +1090,8 @@ const BuatTally = () => {
         let arrBox = [];
         let arrqty = []
         let arrKuantitas = [];
+        let arrStatus = [];
+        let arrQtyPesanan = [];
 
         if (event.target.checked) {
             updatedList = [...product, event.target.value];
@@ -1008,6 +1099,7 @@ const BuatTally = () => {
             // tambah data pas di checked 
             let idValues = [];
             let valuesId = [];
+            let status_tmp = [];
             if (data.length == 0) {
 
                 for (let i = 0; i < updatedList.length; i++) {
@@ -1015,6 +1107,8 @@ const BuatTally = () => {
                     let tempKuantitas = [];
                     let qty = [];
                     let tempBox = [];
+                    let stts = [];
+                    let qtyPesanan = [];
 
                     let values = [];
                     let id = [];
@@ -1165,17 +1259,28 @@ const BuatTally = () => {
                                 { value: '' },
                             ]
                         ]);
+                        if (updatedList[i].sales_order_details[x].tally_sheets_qty >= updatedList[i].sales_order_details[x].quantity) {
+                            stts.push('Done')
+                        }
+                        else if (updatedList[i].sales_order_details[x].tally_sheets_qty < updatedList[i].sales_order_details[x].quantity) {
+                            stts.push('Next Delivery')
+                        }
                         tempKuantitas.push(0);
                         qty.push(0);
                         tempBox.push(0);
-                        values.push('')
+                        values.push("")
                         id.push("")
+                        qtyPesanan.push(updatedList[i].sales_order_details[x].quantity)
                     }
+                    arrStatus.push(stts);
+                    // console.log(arrStatus);
                     arrData.push(tempData);
                     arrKuantitas[i] = tempKuantitas;
                     arrqty[i] = qty;
                     arrBox[i] = tempBox;
                     idValues.push(values)
+                    arrQtyPesanan.push(qtyPesanan)
+                    // console.log(idValues);
                     valuesId.push(id)
                 }
             }
@@ -1184,37 +1289,50 @@ const BuatTally = () => {
                     let tempKuantitas = [];
                     let tempValues = [];
                     let tempId = [];
+                    let tempStatus = [];
+                    let tempQtyPesanan = [];
                     if (i == updatedList.length - 1) {
                         for (let x = 0; x < updatedList[i].sales_order_details.length; x++) {
                             tempKuantitas.push(0);
                             tempValues.push("");
                             tempId.push("");
+                            tempStatus.push("");
+                            tempQtyPesanan.push(updatedList[i].sales_order_details[x].quantity)
                         }
                         arrKuantitas[i] = tempKuantitas;
                         idValues.push(tempValues)
                         valuesId.push(tempId)
+                        arrStatus.push(tempStatus)
+                        arrQtyPesanan.push(tempQtyPesanan)
                     }
                     else {
                         arrKuantitas[i] = kuantitasBox[i]
                         idValues.push(selectedValue3[i])
                         valuesId.push(productSelect[i])
+                        arrStatus.push(statusSO[i])
+                        arrQtyPesanan.push(qtyPesanan[i])
                     }
                 }
 
                 for (let i = 0; i < updatedList.length; i++) {
                     let qty = [];
                     let tempBox = [];
+                    let tempStts = [];
+                    let tempQty = [];
                     if (i == updatedList.length - 1) {
                         for (let x = 0; x < updatedList[i].sales_order_details.length; x++) {
                             qty.push(0);
                             tempBox.push(0);
+                            tempStts.push("");
                         }
                         arrqty[i] = qty;
                         arrBox[i] = tempBox;
+                        arrStatus[i] = tempStts;
                     }
                     else {
                         arrBox[i] = totalBox[i];
                         arrqty[i] = quantity[i]
+                        arrStatus[i] = statusSO[i];
                     }
                 }
 
@@ -1382,10 +1500,12 @@ const BuatTally = () => {
             setData(arrData);
             setTotalBox(arrBox);
             setQuantity(arrqty);
+            setQtyPesanan(arrQtyPesanan);
+            setStatusSO(arrStatus)
             setGetDataDetailSO(updatedList.map(d => d.sales_order_details))
             setSelectedProduct(idValues)
             setProductSelect(valuesId)
-            console.log(idValues);
+            console.log(arrQtyPesanan);
         }
         else {
 
@@ -1399,10 +1519,12 @@ const BuatTally = () => {
                     data.splice(i, 1);
                     totalBox.splice(i, 1);
                     quantity.splice(i, 1);
+                    statusSO.splice(i, 1);
+                    qtyPesanan.splice(i, 1);
                 }
             }
 
-            console.log(data);
+            console.log(statusSO);
             console.log(data.length)
             setIdxPesanan(0)
             console.log(updatedList)
@@ -1441,6 +1563,7 @@ const BuatTally = () => {
             p.sales_order_details.map((po, i) => {
                 userData.append("id_pesanan_penjualan[]", p.id);
                 userData.append("id_produk[]", productSelect[pi][i]);
+                userData.append("aksi[]", statusSO[pi][i]);
                 userData.append("jumlah_box[]", totalBox[pi][i]);
                 userData.append("satuan_box[]", po.unit);
                 userData.append("kuantitas_product_box[]", totalTallySheet[pi][i]);
@@ -1565,10 +1688,11 @@ const BuatTally = () => {
 
     return (
         <>
-            <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <h4 className="title fw-bold">Buat Tally Sheet</h4>
-                </div>
+            <PageHeader
+                className="bg-body rounded mb-2"
+                onBack={() => window.history.back()}
+                title="Buat Tally Sheet"
+            >
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -1639,64 +1763,61 @@ const BuatTally = () => {
                         </div>
                     </div>
                 </div>
-            </form>
-            <form className="p-3 mb-5 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <div className="row">
-                        <div className="col">
-                            <h4 className="title fw-normal">Daftar Pesanan</h4>
-                        </div>
-                        <div className="col text-end me-2">
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
-                            />
-                            <Modal
-                                title="Tambah Produk"
-                                centered
-                                visible={modal2Visible}
-                                onCancel={() => setModal2Visible(false)}
-                                width={1000}
-                                footer={null}
-                            >
-                                <div className="text-title text-start">
-                                    <div className="row">
-                                        <div className="col mb-3">
-                                            <Search
-                                                placeholder="Cari Produk..."
-                                                style={{
-                                                    width: 400,
-                                                }}
-                                                onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                            />
-                                        </div>
-                                        <Table
-                                            columns={columnsModal}
-                                            dataSource={getDataProduct}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
-                                    </div>
-                                </div>
-                            </Modal>
-                        </div>
-                    </div>
-                    <Table
-                        bordered
-                        pagination={false}
-                        dataSource={mainDataSource}
-                        expandable={{ expandedRowRender }}
-                        columns={defaultColumns}
-                        onChange={(e) => setProduct(e.target.value)}
-                    />
-                </div>
+            </PageHeader>
 
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+            <PageHeader
+                ghost={false}
+                title="Daftar Pesanan"
+                extra={[
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => setModal2Visible(true)}
+                    />,
+                    <Modal
+                        title="Tambah Produk"
+                        centered
+                        visible={modal2Visible}
+                        onCancel={() => setModal2Visible(false)}
+                        width={1000}
+                        footer={null}
+                    >
+                        <div className="text-title text-start">
+                            <div className="row">
+                                <div className="col mb-3">
+                                    <Search
+                                        placeholder="Cari Produk..."
+                                        style={{
+                                            width: 400,
+                                        }}
+                                        onChange={(e) => setQuery(e.target.value.toLowerCase())}
+                                    />
+                                </div>
+                                <Table
+                                    columns={columnsModal}
+                                    dataSource={getDataProduct}
+                                    scroll={{
+                                        y: 250,
+                                    }}
+                                    pagination={false}
+                                    loading={isLoading}
+                                    size="middle"
+                                />
+                            </div>
+                        </div>
+                    </Modal>,
+                ]}
+            >
+                <Table
+                    bordered
+                    pagination={false}
+                    dataSource={mainDataSource}
+                    expandable={{ expandedRowRender }}
+                    columns={defaultColumns}
+                    onChange={(e) => setProduct(e.target.value)}
+                />
+
+                <div className="btn-group mt-2" role="group" aria-label="Basic mixed styles example">
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -1721,7 +1842,7 @@ const BuatTally = () => {
                         Cetak
                     </button>
                 </div>
-            </form>
+            </PageHeader>
         </>
     )
 }

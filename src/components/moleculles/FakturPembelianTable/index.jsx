@@ -3,7 +3,7 @@ import 'antd/dist/antd.css';
 import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Tag } from 'antd';
 import axios from 'axios';
-import Url from "../../../Config";;
+import Url from '../../../Config';
 import jsCookie from 'js-cookie'
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
@@ -19,17 +19,31 @@ const FakturPembelianTable = () => {
   // const token = jsCookie.get('auth')
   const auth = useSelector(state => state.auth);
 
-  const deletePurchaseFaktur = async (id) => {
-    await axios.delete(`${Url}/purchase_orders/${id}`, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    });
-    getFaktur()
-    Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
-  };
+  const deletePurchaseFaktur = async (id, code) => {
 
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Data akan dihapus",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.delete(`${Url}/purchase_invoices?id_faktur_pembelian=${id}`, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${auth.token}`,
+          },
+        });
+        getFaktur()
+        Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+
+      }
+    })
+  }
+  
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -132,7 +146,7 @@ const FakturPembelianTable = () => {
 
   const getFaktur = async (params = {}) => {
     setIsLoading(true);
-    await axios.get(`${Url}/purchase_invoices/Local`, {
+    await axios.get(`${Url}/purchase_invoices/dua`, {
       headers: {
         'Accept': 'application/json',
         'Authorization': `Bearer ${auth.token}`
@@ -186,6 +200,9 @@ const FakturPembelianTable = () => {
       dataIndex: 'type',
       key: 'total',
       width: '10%',
+      render:(_, record)=> (
+         record.supplier._group
+      ),
       ...getColumnSearchProps('total'),
     },
     {
@@ -227,7 +244,7 @@ const FakturPembelianTable = () => {
               size='small'
               type="danger"
               icon={<DeleteOutlined />}
-              onClick={() => deletePurchaseFaktur(record.id)}
+              onClick={() => deletePurchaseFaktur(record.id, record.code)}
             />
           </Space>
         </>
@@ -239,9 +256,9 @@ const FakturPembelianTable = () => {
     columns={columns}
     pagination={{ pageSize: 5 }}
     dataSource={getDataFaktur}
-    scroll={{
-      y: 240,
-    }}
+    // scroll={{
+    //   y: 240,
+    // }}
   />;
 };
 

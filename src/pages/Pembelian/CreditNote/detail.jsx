@@ -1,13 +1,10 @@
-import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tag } from 'antd'
-import { DeleteOutlined, LoadingOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import React, { useEffect, useState } from 'react'
-import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
-import Search from 'antd/lib/transfer/search'
 import axios from 'axios'
 import Url from '../../../Config';
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import CurrencyFormat from 'react-currency-format';
+import { PageHeader } from 'antd';
 
 export const DetailCreditNote = () => {
     const auth = useSelector(state => state.auth);
@@ -73,7 +70,12 @@ export const DetailCreditNote = () => {
         <>
             <form className="p-3 mb-3 bg-body rounded">
                 <div className="text-title text-start mb-4">
-                    <h4 className="title fw-bold">Buat Credit Note</h4>
+                <PageHeader
+                        ghost={false}
+                        onBack={() => window.history.back()}
+                        title="Detail Credit Note">
+                </PageHeader>
+                    {/* <h4 className="title fw-bold">Buat Credit Note</h4> */}
                 </div>
                 <div className="row">
                     <div className="col">

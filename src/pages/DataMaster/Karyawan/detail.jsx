@@ -7,15 +7,16 @@
 // import TablePagination from "@mui/material/TablePagination";
 // import TableRow from "@mui/material/TableRow";
 import axios from "axios";
-
+import jsCookie from "js-cookie";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import Url from "../../../Config";
 import "./form.css";
+import { PageHeader } from "antd";
 
 export const DetailKaryawan = () => {
-  // 
+  // const auth.token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [data, setData] = useState([]);
   const [dataWarehouse, setDataWarehouse] = useState([]);
@@ -58,10 +59,14 @@ export const DetailKaryawan = () => {
 
   return (
     <>
+    <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Detail Karyawan">
+    </PageHeader>
+
       <form className="  p-3 mb-3 bg-body rounded">
-        <div className="text-title text-start mb-4">
-          <h3 className="title fw-bold">Detail Karyawan</h3>
-        </div>
+       
         <div className="row mb-3">
           <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
             Kode

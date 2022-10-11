@@ -1,16 +1,13 @@
 import './form.css'
-import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Url from '../../../Config';
-import { Button, Modal, Checkbox, Space, Table, Tag } from 'antd';
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import Search from 'antd/lib/transfer/search';
 import Swal from 'sweetalert2';
 import CurrencyFormat from 'react-currency-format';
 import AsyncSelect from "react-select/async";
+import { PageHeader } from 'antd';
 
 const EditCreditNote = () => {
     const auth = useSelector(state => state.auth);
@@ -145,7 +142,6 @@ const EditCreditNote = () => {
                 setMataUang(getData.currency.name)
                 setNominal(getData.nominal);
                 setSelectedBiaya(getData.cost.name)
-                // setBiaya(getData.cost.name)
                 setDeskripsi(getData.description)
                 setLoading(false);
             })
@@ -267,7 +263,12 @@ const EditCreditNote = () => {
         <>
             <form className="p-3 mb-3 bg-body rounded">
                 <div className="text-title text-start mb-4">
-                    <h4 className="title fw-bold">Buat Credit Note</h4>
+                <PageHeader
+                        ghost={false}
+                        onBack={() => window.history.back()}
+                        title="Edit Credit Note">
+                     </PageHeader>
+                    {/* <h4 className="title fw-bold">Buat Credit Note</h4> */}
                 </div>
                 <div className="row">
                     <div className="col">
@@ -395,12 +396,13 @@ const EditCreditNote = () => {
                     </div>
                 </div>
 
-                <div className="mt-5 mb-4 btn-group" role="group" aria-label="Basic mixed styles example">
+                <div className="mt-5 mb-4 btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right', position:'relative'}}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
                         value="Draft"
                         onClick={handleDraft}
+                        width="100px"
                     >
                         Simpan
                     </button>
@@ -409,15 +411,18 @@ const EditCreditNote = () => {
                         className="btn btn-primary rounded m-1"
                         value="Submitted"
                         onClick={handleSubmit}
+                        width="100px"
                     >
                         Submit
                     </button>
                     <button
                         type="button"
+                        width="100px"
                         className="btn btn-warning rounded m-1">
                         Cetak
                     </button>
                 </div>
+                <div style={{clear:'both'}}></div>
             </form>
         </>
     )

@@ -1,14 +1,17 @@
 import axios from 'axios';
+import jsCookie from 'js-cookie';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Url from '../../../Config';
 import './form.css'
+import SendIcon from '@mui/icons-material/Send';
+import Button from '@mui/material/Button';
 import { useSelector } from 'react-redux';
-import { Button } from 'antd';
-import { SendOutlined } from '@ant-design/icons';
+import { PageHeader} from 'antd';
 
 const EditGrup = () => {
+    // const token = jsCookie.get('auth')
     const auth = useSelector(state => state.auth);
     const [kode, setKode] = useState();
     const [name, setName] = useState();
@@ -98,10 +101,13 @@ const EditGrup = () => {
 
         return (
             <>
+           <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Edit Grup Pengguna">
+          </PageHeader>
+
                 <form className="  p-3 mb-3 bg-body rounded">
-                    <div className="text-title text-start mb-4">
-                        <h3 className="title fw-bold">Edit Grup Pengguna</h3>
-                    </div>
                     <div className="row mb-3">
                         <label htmlFor="inputKode3" className="col-sm-2 col-form-label">Kode</label>
                         <div className="col-sm-10">
@@ -142,13 +148,9 @@ const EditGrup = () => {
                         </div>
                     </div>
                     <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <Button
-                            type="primary"
-                            icon={<SendOutlined />}
-                            size="large"
-                            onClick={handleUpdate}
-                        >
-                            Submit
+                        {/* <button className="btn btn-success" type="button" onClick={handleUpdate}>Simpan</button> */}
+                        <Button onClick={handleUpdate} variant="contained" endIcon={<SendIcon />}>
+                            Simpan
                         </Button>
                     </div>
                 </form>

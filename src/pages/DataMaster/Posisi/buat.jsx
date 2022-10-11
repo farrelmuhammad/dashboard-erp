@@ -1,14 +1,30 @@
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
+import TableRow from "@mui/material/TableRow";
+import SendIcon from "@mui/icons-material/Send";
+import Button from "@mui/material/Button";
+// import InfoIcon from '@mui/icons-material/Info';
+// import EditIcon from '@mui/icons-material/Edit';
+// import DeleteIcon from '@mui/icons-material/Delete';
 import axios from "axios";
+import jsCookie from "js-cookie";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
+import { Checkbox } from "@mui/material";
 import { useSelector } from "react-redux";
-import { Button } from "antd";
-import { SendOutlined } from "@ant-design/icons";
+import { PageHeader} from 'antd';
+
 
 const BuatPosisi = () => {
+  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   // const [id, setId] = useState();
   const [name, setName] = useState("");
@@ -127,10 +143,13 @@ const BuatPosisi = () => {
   if (getEmployee?.length > 0) {
     return (
       <>
+       <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Buat Posisi">
+          </PageHeader>
+
         <form className="  p-3 mb-3 bg-body rounded">
-          <div className="text-title text-start mb-4">
-            <h3 className="title fw-bold">Buat Posisi</h3>
-          </div>
           <div className="row mb-3">
             <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
               Kode
@@ -175,16 +194,73 @@ const BuatPosisi = () => {
             </div>
           </div>
           <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+            {/* <button onClick={handleSubmit} className="btn btn-success" type="button">Simpan</button> */}
             <Button
-              type="primary"
-              icon={<SendOutlined />}
-              size="large"
               onClick={handleSubmit}
+              variant="contained"
+              endIcon={<SendIcon />}
             >
-              Submit
+              Simpan
             </Button>
           </div>
         </form>
+
+        {/* <form className="  p-3 mb-3 bg-body rounded">
+          <div className="text-title text-start mb-2">
+            <h4 className="title fw-bold">Masukkan Data Karyawan</h4>
+          </div>
+          <Paper sx={{ width: "100%", overflow: "hidden" }}>
+            <TableContainer sx={{ maxHeight: 440 }}>
+              <Table stickyHeader aria-label="sticky table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Kode</TableCell>
+                    <TableCell>Nama Karyawan</TableCell>
+                    <TableCell>Departmen</TableCell>
+                    <TableCell>Posisi</TableCell>
+                    <TableCell>Actions</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {getEmployee
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((d) => {
+                      return (
+                        <TableRow
+                          hover
+                          role="checkbox"
+                          tabIndex={-1}
+                          key={d.id}
+                        >
+                          <TableCell>{d.id}</TableCell>
+                          <TableCell>{d.name}</TableCell>
+                          <TableCell>{d.department_id}</TableCell>
+                          <TableCell>{d.position_id}</TableCell>
+                          <TableCell>
+                            <Checkbox
+                              key={d.id}
+                              value={d.id}
+                              id={d.id}
+                              onChange={handleCheck}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 100]}
+              component="div"
+              count={getEmployee.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Paper>
+        </form> */}
       </>
     );
   }

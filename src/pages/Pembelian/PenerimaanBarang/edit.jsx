@@ -9,6 +9,7 @@ import { Button, Modal, Checkbox, Space, Table, Tag } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import Search from 'antd/lib/transfer/search';
 import Swal from 'sweetalert2';
+import { PageHeader } from 'antd';
 
 const EditPenerimaanBarang = () => {
 
@@ -171,7 +172,7 @@ const EditPenerimaanBarang = () => {
             ...dataTS.map((item, i) => ({
                 code: item.code,
                 product_name: item.product_name,
-                quantity: item.quantity,
+                quantity: item.quantity.replace('.', ','),
                 unit: item.unit,
                 // action:
                 //     <Space size="middle">
@@ -228,19 +229,29 @@ const EditPenerimaanBarang = () => {
     };
 
     const handleSubmit = async (e) => {
-        console.log(productTampil)
+        console.log(dataTS)
         const formData = new URLSearchParams();
         formData.append("tanggal", dataPenerimaan.date);
         formData.append("grup", grup);
         formData.append("pemasok", supplierId);
         formData.append("catatan", dataPenerimaan.notes);
-        
-        formData.append("alamat", addressId);
+        formData.append("referensi", dataPenerimaan.reference);
+        // formData.append("alamat", addressId);
         formData.append("gudang", dataPenerimaan.warehouse_id);
 
-        for (let x = 0; x < dataTS.length; x++) {
-            formData.append("id_tally_sheet[]", dataTS[x].id);
-        }
+        // for (let x = 0; x < dataTS.length; x++) {
+            formData.append("id_tally_sheet[]", dataTS[0].id);
+        // }
+        // console.log(dataTS)
+
+        // for (let x = 0; x < productTampil.length; x++) {
+        //     formData.append("id_tally_sheet[]", productTampil[x].id);
+        //     for (let y = 0; y < productTampil[x].tally_sheet_details.length; y++) {
+        //         formData.append("id_pesanan_penjualan[]", productTampil[x].tally_sheet_details[y].purchase_order.id)
+        //         formData.append("kuantitas_produk_box[]", productTampil[x].tally_sheet_details[y].boxes_quantity);
+        //     }
+        // }
+
 
         formData.append("status", "Submitted");
 
@@ -284,15 +295,15 @@ const EditPenerimaanBarang = () => {
         const formData = new URLSearchParams();
         formData.append("tanggal", dataPenerimaan.date);
         formData.append("grup", grup);
-        formData.append("pemasok", "1");
+        formData.append("pemasok", supplierId);
         formData.append("catatan", dataPenerimaan.notes);
         
-        formData.append("alamat", "30");
+        // formData.append("alamat", "30");
         formData.append("gudang", dataPenerimaan.warehouse_id);
 
-        for (let x = 0; x < dataTS.length; x++) {
-            formData.append("id_tally_sheet[]", dataTS[x].id);
-        }
+        // for (let x = 0; x < dataTS.length; x++) {
+            formData.append("id_tally_sheet[]", dataTS[0].id);
+        // }
         formData.append("status", "Draft");
 
 
@@ -336,7 +347,12 @@ const EditPenerimaanBarang = () => {
         <>
             <form className="shadow-lg p-3 mb-5 bg-body rounded">
                 <div className="text-title text-start mb-4">
-                    <h3 className="title fw-bold">Buat Penerimaan Barang</h3>
+                    <PageHeader
+                        ghost={false}
+                        onBack={() => window.history.back()}
+                        title="Edit Penerimaan Barang">
+                     </PageHeader>
+                    {/* <h3 className="title fw-bold">Buat Penerimaan Barang</h3> */}
                 </div>
                 <div class="row">
                     <div class="col">
@@ -435,11 +451,12 @@ const EditPenerimaanBarang = () => {
                         isLoading={true}
                         columns={defaultColumns}
                     />
-                </div> <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                    <button type="button" class="btn btn-success rounded m-1" onClick={() => handleDraft()}>Simpan</button>
-                    <button type="button" class="btn btn-primary rounded m-1" onClick={() => handleSubmit()}>Submit</button>
-                    <button type="button" class="btn btn-warning rounded m-1" onClick={() => handleDraft()}>Cetak</button>
+                </div> <div class="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right', position:'relative'}}>
+                    <button type="button" width="100px" class="btn btn-success rounded m-1" onClick={() => handleDraft()}>Simpan</button>
+                    <button type="button" width="100px" class="btn btn-primary rounded m-1" onClick={() => handleSubmit()}>Submit</button>
+                    <button type="button" width="100px" class="btn btn-warning rounded m-1" onClick={() => handleDraft()}>Cetak</button>
                 </div>
+                <div style={{clear:'both'}}></div>
             </form>
 
         </>

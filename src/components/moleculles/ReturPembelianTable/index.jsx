@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import 'antd/dist/antd.css';
-import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { CloseOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Tag } from 'antd';
 import axios from 'axios';
-import Url from "../../../Config";;
+import Url from '../../../Config';
 import jsCookie from 'js-cookie'
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
@@ -19,16 +19,62 @@ const ReturPembelianTable = () => {
   // const token = jsCookie.get('auth')
   const auth = useSelector(state => state.auth);
 
-  const deletePurchaseFaktur = async (id) => {
-    await axios.delete(`${Url}/purchase_orders/${id}`, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    });
-    getFaktur()
-    Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+  const deletePurchaseRetur = async (id, code) => {
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Data akan dihapus",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.delete(`${Url}/purchase_returns/${id}`, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${auth.token}`,
+          },
+        });
+        getRetur()
+        Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+
+      }
+    })
+  }
+
+  const cancelPurchaseRetur = async (id, code) => {
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Status data akan diubah ",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        try {
+          axios({
+            method: "patch",
+            url: `${Url}/purchase_returns/cancel/${id}`,
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          })
+
+          getRetur();
+          Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
+        }
+        catch (err) {
+          console.log(err);
+        }
+      }
+    })
+
   };
+
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -127,12 +173,12 @@ const ReturPembelianTable = () => {
   });
 
   useEffect(() => {
-    getFaktur()
+    getRetur()
   }, [])
 
-  const getFaktur = async (params = {}) => {
+  const getRetur = async (params = {}) => {
     setIsLoading(true);
-    await axios.get(`${Url}/purchase_invoices/Local`, {
+    await axios.get(`${Url}/purchase_returns`, {
       headers: {
         'Accept': 'application/json',
         'Authorization': `Bearer ${auth.token}`
@@ -202,28 +248,54 @@ const ReturPembelianTable = () => {
       render: (_, record) => (
         <>
           <Space size="middle">
-            <Link to={`/fakturpembelian/detail/${record.id}`}>
-              <Button
-                size='small'
-                type="primary"
-                icon={<InfoCircleOutlined />}
-              />
-            </Link>
-            <Link to={`/fakturpembelian/edit/${record.id}`}>
-              <Button
-                size='small'
-                type="success"
-                icon={<EditOutlined />}
-              />
-            </Link>
-            <Button
-              size='small'
-              type="danger"
-              icon={<DeleteOutlined />}
-              onClick={() => deletePurchaseFaktur(record.id)}
-            />
+            {record.can['read-purchase_return'] ? (
+              <Link to={`/returpembelian/detail/${record.id}`}>
+                <Button
+                  size='small'
+                  type="primary"
+                  icon={<InfoCircleOutlined />}
+                />
+              </Link>
+            ) : null}
+            {
+              record.can['cancel-purchase_return'] ? (
+
+                <Button
+                  size='small'
+                  type="danger"
+                  icon={<CloseOutlined />}
+                  onClick={() => cancelPurchaseRetur(record.id, record.code)}
+                />
+
+              ) : null
+            }
+            {
+              record.can['delete-purchase_return'] ? (
+                // <Space size="middle">
+                <Button
+                  size='small'
+                  type="danger"
+                  icon={<DeleteOutlined />}
+                  onClick={() => deletePurchaseRetur(record.id, record.code)}
+                />
+                // </Space>
+              ) : null
+            }
+            {
+              record.can['update-purchase_return'] ? (
+                <Link to={`/returpembelian/edit/${record.id}`}>
+                  <Button
+                    size='small'
+                    type="success"
+                    icon={<EditOutlined />}
+                  />
+                </Link>
+              ) : null
+            }
           </Space>
         </>
+
+
       ),
     },
   ];

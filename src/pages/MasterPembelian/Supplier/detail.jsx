@@ -9,6 +9,7 @@ import Url from "../../../Config";
 import "./form.css";
 import SendIcon from "@mui/icons-material/Send";
 import { useSelector } from "react-redux";
+import { PageHeader } from "antd";
 
 const DetailSupplier = () => {
   // const token = jsCookie.get("auth");
@@ -56,7 +57,12 @@ const DetailSupplier = () => {
         <>
           <form className="  p-3 mb-3 bg-body rounded">
             <div className="text-title text-start mb-4">
-              <h3 className="title fw-bold">Detail Supplier</h3>
+                      <PageHeader
+                        ghost={false}
+                        onBack={() => window.history.back()}
+                        title="Detail Supplier">
+                     </PageHeader>
+              {/* <h3 className="title fw-bold">Detail Supplier</h3> */}
             </div>
             <div className="row mb-3">
               <label htmlFor="inputKode3" className="col-sm-2 col-form-label">

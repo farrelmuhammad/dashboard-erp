@@ -1,16 +1,17 @@
 import axios from "axios";
-
+import jsCookie from "js-cookie";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
-
-
+import SendIcon from "@mui/icons-material/Send";
+import Button from "@mui/material/Button";
 import { useSelector } from "react-redux";
+import { PageHeader } from "antd";
 
 const DetailGudang = () => {
-  // const auth = useSelector(state => state.auth);
+  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const { id } = useParams();
   const [data, setData] = useState([]);
@@ -32,10 +33,13 @@ const DetailGudang = () => {
   if (data) {
     return (
       <>
+       <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Detail Gudang">
+        </PageHeader>
         <form className="  p-3 mb-3 bg-body rounded">
-          <div className="text-title text-start mb-4">
-            <h3 className="title fw-bold">Detail Gudang</h3>
-          </div>
+         
           <div className="row mb-3">
             <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
               Kode

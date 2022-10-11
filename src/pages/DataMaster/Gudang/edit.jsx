@@ -1,14 +1,17 @@
 import axios from "axios";
+import jsCookie from "js-cookie";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
+import SendIcon from "@mui/icons-material/Send";
+import Button from "@mui/material/Button";
 import { useSelector } from "react-redux";
-import { Button } from "antd";
-import { SendOutlined } from "@ant-design/icons";
+import { PageHeader } from "antd";
 
 const EditGudang = () => {
+  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
@@ -126,10 +129,13 @@ const EditGudang = () => {
     if (employeesData)
       return (
         <>
+         <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Edit Gudang">
+        </PageHeader>
           <form className="  p-3 mb-3 bg-body rounded">
-            <div className="text-title text-start mb-4">
-              <h3 className="title fw-bold">Edit Gudang</h3>
-            </div>
+           
             <div className="row mb-3">
               <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
                 Kode
@@ -269,13 +275,13 @@ const EditGudang = () => {
             </div>
           </form>
           <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+            {/* <button onClick={handleUpdate} className="btn btn-success" type="button">Simpan</button> */}
             <Button
-              type="primary"
-              icon={<SendOutlined />}
-              size="large"
               onClick={handleUpdate}
+              variant="contained"
+              endIcon={<SendIcon />}
             >
-              Submit
+              Simpan
             </Button>
           </div>
         </>

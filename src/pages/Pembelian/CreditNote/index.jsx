@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import jsCookie from 'js-cookie'
 import Url from '../../../Config'
 import axios from 'axios'
-import TallyTable from '../../../components/moleculles/TallyTable'
 import { PlusOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
-import TallyPembelianTable from '../../../components/moleculles/TallyPembelianTable'
-import PenerimaanBarangTable from '../../../components/moleculles/PenerimaanBarangTable'
 import { useSelector } from 'react-redux'
 import CreditNoteTable from '../../../components/moleculles/CreditNoteTable'
 

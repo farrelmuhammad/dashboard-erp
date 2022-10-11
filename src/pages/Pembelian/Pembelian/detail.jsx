@@ -10,6 +10,8 @@ import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
 import ReactToPrint from "react-to-print";
 import logo from "../../Logo.jpeg"
+import "./form.css";
+import { PageHeader } from 'antd';
 
 export const DetailPesananPembelian = () => {
     // const auth.token = jsCookie.get("auth");
@@ -261,25 +263,11 @@ export const DetailPesananPembelian = () => {
       marginBottom:50px
     }
     }`;
-    
+
     const handlePrint = useReactToPrint({
-        // content: () => {
-        //     const tableStat = componentRef.current;
-        //     const PrintElem = document.createElement('div');
-        //     const header =  
-        //       `<div class="page-footer">
-        //         <div class="page-number"></div>
-        //       </div>`;
-        //     PrintElem.innerHTML = header;
-        //     PrintElem.appendChild(tableStat);
-        //     return PrintElem;
-        //   },
-
         content: () => componentRef.current,
-        copyStyles: true,
-        pageStyle: pageStyle
     })
-
+    //
     if (loading) {
         return (
             <div></div>
@@ -293,19 +281,22 @@ export const DetailPesananPembelian = () => {
         },
         {
             title: 'QTY',
-            dataIndex: 'qty',
+            dataIndex: 'qty'
+
         },
         {
             title: 'PRICE',
-            dataIndex: 'prc',
+            dataIndex: 'prc'
+
         },
         {
             title: 'DISC',
-            dataIndex: 'disc',
+            dataIndex: 'disc'
         },
         {
             title: 'TOTAL',
-            dataIndex: 'total',
+            dataIndex: 'total'
+
         },
 
     ]
@@ -323,29 +314,27 @@ export const DetailPesananPembelian = () => {
 
 
     return (
-
+        //
         <>
 
             <div style={{ display: "none", position: "absolute" }}>
                 <div ref={componentRef} className="p-4" >
                     <div className='d-flex'>
-                        <div><img src={logo} width="100px"></img></div>
+                        <div><img src={logo} width="60px"></img></div>
                         <div className='ms-2'>
-                            <div className='header-cetak'>P T . B U M I M A E S T R O A Y U</div>
-                            <div className='header-cetak'>J L . R A Y A D U R E N T I G A N O . 1 1</div>
-                            <div className='header-cetak'>T E L P . ( 0 2 1 ) 7 9 8 1 3 6 8 - 7 9 4 3 9 6 8</div>
-                            <div className='header-cetak'>F A X . ( 0 2 1 ) 7 9 8 3 2 4 9</div>
-                            <div className='header-cetak'>J A K A R T A S E L A T A N 1 2 7 6 0</div>
-
+                            <div className='header-cetak'><b>PT. BUMI MAESTROAYU</b></div>
+                            <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
+                            <div className='header-cetak'>JAKARTA SELATAN 12760</div>
+                            <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
                         </div>
                     </div>
 
                     <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold" }}>
-                        <div style={{ fontSize: "25px", textDecoration: "underline" }}>PURCHASE ORDER</div>
-                        <div style={{ fontSize: "20px" }}>NO. {code}</div>
+                        <div style={{ fontSize: "16px", textDecoration: "underline" }}>PURCHASE ORDER</div>
+                        <div style={{ fontSize: "10px", marginTop: "-5px" }}>NO. {code}</div>
                     </div>
 
-                    <div className='mt-4 mb-4 col d-flex justify-content-center ps-4 pe-4'>
+                    <div className='mt-4 mb-4 col d-flex justify-content-center ps-4 pe-4' style={{ fontSize: "12px" }}>
                         <div className='col-6'>
                             <div className="d-flex flex-row">
                                 <label className='col-6'>ORDER DATE</label>
@@ -376,11 +365,46 @@ export const DetailPesananPembelian = () => {
                         </div>
                     </div>
 
-                    <div className='mt-4 ps-4 pe-4'>
-                        <Table pagination={false} columns={cetakColumn} dataSource={cetakData} />
+                    <div className='mt-4 ps-4 pe-4 ' >
+                        {/* <Table pagination={false} columns={cetakColumn} dataSource={cetakData} /> */}
+                        <table style={{ fontSize: "10px", width: "100%" }}>
+                            <tr className='text-center border' style={{ height: "50px" }}>
+                                <th width="50px" className='border'>NO</th>
+                                <th width="350px" className='border'>DESCRIPTION OF GOODS</th>
+                                <th width="100px" className='border'>Qty</th>
+                                <th width="150px" className='border'>PRICE</th>
+                                <th width="100px" className='border'>DISC</th>
+                                <th width="150px" className='border'>TOTAL</th>
+                            </tr>
+                            <tbody className="border">
+                                {
+                                    details.map((item, i) => (
+                                        <tr >
+                                            <td className='border-isi text-center'>{i + 1}</td>
+                                            <td className='border-isi text-start'>{item.product_name}</td>
+                                            <td className='border-isi text-center'>{item.quantity}</td>
+                                            <td className='border-isi text-end'>{
+                                                namaMataUang + ' ' + Number(item.price).toLocaleString('id')
+                                            }</td>
+                                            {item.fixed_discount != 0 && item.discount_percentage == 0 ? <td className='text-end border-isi'>{namaMataUang + ' ' + item.fixed_discount}</td> :
+                                                item.fixed_discount == 0 && item.discount_percentage != 0 ? <td className='text-end border-isi'>{item.discount_percentage + '%'}</td> : <td className='text-center border-isi'>-</td>
+                                            }
+
+                                            <td className='border-isi text-end'>
+                                                {
+                                                    namaMataUang + ' ' + Number(item.total).toLocaleString('id')}</td>
+
+                                        </tr>
+
+                                    ))
+                                }
+                            </tbody>
+
+
+                        </table>
                     </div>
 
-                    <div className='d-flex mt-3 ps-4 pe-4'>
+                    <div className='d-flex mt-3 ps-4 pe-4' style={{ fontSize: "10px" }}>
                         <div style={{ width: "65%" }}>
                             <div className='mb-2 mt-4' ><b>Condition of Purchase</b></div>
                             <div className='d-flex'>
@@ -408,28 +432,28 @@ export const DetailPesananPembelian = () => {
                             <div className='d-flex mt-5'>
                                 <label className='col-6'>Sub Total</label>
                                 <div>:</div>
-                                <div className='ms-3'>  {namaMataUang + ' ' + Number(subTotal).toLocaleString('id')} </div>
+                                <div className='ms-3 text-end' width="100%">  {namaMataUang + ' ' + Number(subTotal).toLocaleString('id')} </div>
                             </div>
                             <div className='d-flex'>
                                 <label className='col-6'>Discount</label>
                                 <div>:</div>
-                                <div className='ms-3'>  {namaMataUang + ' ' + Number(diskon).toLocaleString('id')}</div>
+                                <div className='ms-3 text-end' width="100%">  {namaMataUang + ' ' + Number(diskon).toLocaleString('id')}</div>
                             </div>
                             <div className='d-flex'>
-                                <label className='col-6'>Tax</label>
+                                <label className='col-6'>VAT</label>
                                 <div>:</div>
-                                <div className='ms-3'>  {namaMataUang + ' ' + Number(PPN).toLocaleString('id')}</div>
+                                <div className='ms-3 text-end' width="100%">  {namaMataUang + ' ' + Number(PPN).toLocaleString('id')}</div>
                             </div>
                             <div className='d-flex'>
                                 <label className='col-6'><b>Total</b></label>
                                 <div>:</div>
-                                <div className='ms-3'>  {namaMataUang + ' ' + Number(total).toLocaleString('id')}</div>
+                                <div className='ms-3 text-end' width="100%">  {namaMataUang + ' ' + Number(total).toLocaleString('id')}</div>
                             </div>
 
                         </div>
                     </div>
 
-                    <div className='d-flex flex-column align-contents-end ps-4 pe-4' style={{ width: "200px", marginLeft: "auto", marginTop: "200px" }}>
+                    <div className='d-flex flex-column align-contents-end ps-4 pe-4' style={{ width: "200px", fontSize: "12px", marginLeft: "auto", marginTop: "300px" }}>
                         <div className='text-center' >Dhany Saputra</div>
                     </div>
                 </div>
@@ -439,14 +463,23 @@ export const DetailPesananPembelian = () => {
                 <div className="row">
                     <div className="col text-title text-start">
                         <div className="text-title text-start mb-4">
-                            <h3 className="title fw-bold">Detail Pesanan</h3>
+                            <PageHeader
+                                ghost={false}
+                                onBack={() => window.history.back()}
+                                title="Detail Pesanan">
+                            </PageHeader>
+                            {/* <h3 className="title fw-bold">Detail Pesanan</h3> */}
                         </div>
                     </div>
-                    <div className="col button-add text-end me-3">
-                        <button type="button" onClick={handlePrint} class="btn btn-warning rounded m-1">
-                            Cetak
-                        </button>
-                    </div>
+                    {
+                        status == 'Cancelled' ? null :
+                            <div className="col button-add text-end me-3">
+                                <button type="button" onClick={handlePrint} class="btn btn-warning rounded m-1">
+                                    Cetak
+                                </button>
+                            </div>
+                    }
+
                 </div>
                 <div class="row">
                     <div class="col">

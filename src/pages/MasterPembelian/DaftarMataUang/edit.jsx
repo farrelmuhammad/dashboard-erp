@@ -36,6 +36,7 @@ import { useSelector } from "react-redux";
 // import DeleteIcon from "@mui/icons-material/Delete";
 // import { TextField } from "@mui/material";
 // import CheckIcon from "@mui/icons-material/Check";
+import { PageHeader } from "antd";
 
 const EditMataUang = () => {
   // const token = jsCookie.get("auth");
@@ -163,10 +164,15 @@ const EditMataUang = () => {
 
   return (
     <>
+      <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Edit Mata Uang">
+        </PageHeader>
       <form className="  p-3 mb-4 bg-body rounded">
-        <div className="text-title text-start mb-4">
+        {/* <div className="text-title text-start mb-4">
           <h3 className="title fw-bold">Edit Mata Uang</h3>
-        </div>
+        </div> */}
         <div className="row mb-3">
           <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
             Kode

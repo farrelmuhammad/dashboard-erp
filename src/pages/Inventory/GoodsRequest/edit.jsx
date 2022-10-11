@@ -369,7 +369,7 @@ const EditGoodsRequest = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const userData = new FormData();
+        const userData = new URLSearchParams();
         userData.append("date", date);
         userData.append("warehouse_source", warehouse_source);
         userData.append("warehouse_destination", warehouse_destination);

@@ -6,13 +6,19 @@ import ProdukPesananTable from '../../../components/moleculles/PesananTable/Prod
 import Search from 'antd/lib/transfer/search'
 import axios from 'axios'
 import Url from '../../../Config';
-import { useParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import ReactDataSheet from 'react-datasheet'
+import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import ReactDataSheet from 'react-datasheet';
+import { useReactToPrint } from 'react-to-print';
+import { useRef } from 'react';
+import logo from "../../Logo.jpeg";
+import { PageHeader } from 'antd';
+import { width } from '@mui/system'
 
 export const DetailTallySheet = () => {
 
-
+    const [code, setCode] = useState();
+    const [cetak, setCetak] = useState(false);
     const { id } = useParams();
     const auth = useSelector(state => state.auth);
     const [product, setProduct] = useState([]);
@@ -33,7 +39,8 @@ export const DetailTallySheet = () => {
     const [selectedWarehouse, setSelectedWarehouse] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState([]);
     const [modal2Visible2, setModal2Visible2] = useState(false);
-    const [detailTallySheet, setDetailTallySheet] = useState([])
+    const [detailTallySheet, setDetailTallySheet] = useState([]);
+
     const valueRenderer = (cell) => cell.value;
     const onContextMenu = (e, cell, i, j) =>
         cell.readOnly ? e.preventDefault() : null;
@@ -52,13 +59,13 @@ export const DetailTallySheet = () => {
                 setDetailTallySheet(getData.tally_sheet_details);
 
                 let arrData = [];
-                let huruf = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+                let huruf = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
                 if (data.length == 0) {
 
                     for (let i = 0; i < getData.tally_sheet_details.length; i++) {
                         let tempData = []
 
-                        for (let x = 0; x <= 10; x++) {
+                        for (let x = 0; x <= getData.tally_sheet_details[i].boxes.length; x++) {
 
                             let baris = []
                             let kolom = [];
@@ -75,14 +82,14 @@ export const DetailTallySheet = () => {
                                 else {
                                     if (y == 0) {
                                         kolom.push(
-                                            { readOnly: true, value: x}
+                                            { readOnly: true, value: x }
 
                                         );
 
                                     }
-                                    else if (y<= getData.tally_sheet_details[i].boxes.length && x == 1) {
+                                    else if (y <= getData.tally_sheet_details[i].boxes.length && x == 1) {
                                         kolom.push(
-                                            { value: getData.tally_sheet_details[i].boxes[y-1].quantity.replace('.', ',') , readOnly: true}
+                                            { value: getData.tally_sheet_details[i].boxes[y - 1].quantity.replace('.', ','), readOnly: true }
                                         );
                                     }
                                     else {
@@ -111,6 +118,7 @@ export const DetailTallySheet = () => {
             });
     }, []);
 
+
     const [quantityPO, setQuantityPO] = useState("0")
     function klikTampilSheet(indexPO) {
         setQuantityPO(detailTallySheet[indexPO].purchase_order_qty)
@@ -119,142 +127,219 @@ export const DetailTallySheet = () => {
         setIndexPO(indexPO);
         // setProductPO(product[indexProduct].purchase_order_details);
         setModal2Visible2(true);
-
-
     }
 
-  
-        const columns = [
-            {
-                title: 'No. Pesanan',
-                dataIndex: 'code',
-                width: '25%',
-                key: 'name',
-            },
-            {
-                title: 'Nama Product',
-                dataIndex: 'product_name',
-                width: '25%',
-                key: 'name',
-            },
-            {
-                title: 'Qty',
-                dataIndex: 'quantity',
-                width: '10%',
-                align: 'center',
-                editable: true,
-            },
-            {
-                title: 'Stn',
-                dataIndex: 'unit',
-                align: 'center',
-                width: '10%',
-                key: 'name',
-            },
-            {
-                title: 'Box',
-                dataIndex: 'box',
-                align: 'center',
-                width: '10%',
-                key: 'box',
+    const [quantityTotal, setQuantityTotal] = useState("0")
+    let totalQty = 0;
 
-            },
-            {
-                title: 'Action',
-                dataIndex: 'action',
-                align: 'center',
-                width: '10%',
-                key: 'operation',
+    function hitungTotal(indexPO) {
+        for (let i = 0; i < indexPO.length; i++) {
+            totalQty = Number(totalQty) + Number(detailTallySheet[i].boxes_quantity)
+            setQuantityTotal(totalQty);
+            //console.log(totalQty);
+        }
+        //return totalQty;
+    }
 
-            },
-        ];
+    useEffect(() => {
+        hitungTotal(detailTallySheet)
+    }, [detailTallySheet])
 
-        const dataPurchase =
-            [...detailTallySheet.map((item, i) => ({
-                code: item.purchase_order.code,
-                product_name: item.product_name,
-                quantity: item.boxes_quantity.replace('.', ','),
-                unit: item.boxes_unit,
-                box:
-                    <>
-                    
-                        <a onClick={() => klikTampilSheet(i)} style={{color: "#1890ff"}}>
-                            {item.number_of_boxes}
-                        </a>
-                        <Modal
-                            centered
-                            visible={modal2Visible2}
-                            onCancel={() => setModal2Visible2(false)}
-                            onOk={() => setModal2Visible2(false)}
-                            width={1000}
-                        >
-                            <div className="text-title text-start">
-                                <div className="row">
-                                    <div className="col">
-                                        <div className="row">
-                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
-                                            <div className="col-sm-3">
-                                                <input
-                                                    value={detailTallySheet[indexPO].purchase_order.code}
-                                                    type="Nama"
-                                                    className="form-control"
-                                                    id="inputNama3"
-                                                    disabled
-                                                />
-                                            </div>
-                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
-                                            <div className="col-sm-3">
-                                                <input
-                                                    value={quantityPO.replace('.', ',')}
-                                                    type="Nama"
-                                                    className="form-control"
-                                                    id="inputNama3"
-                                                    disabled
-                                                />
+    const columns = [
+        {
+            title: 'No. Pesanan',
+            dataIndex: 'code',
+            width: '25%',
+            key: 'name',
+        },
+        {
+            title: 'Nama Produk',
+            dataIndex: 'product_name',
+            width: '25%',
+            key: 'name',
+        },
+        {
+            title: 'Qty',
+            dataIndex: 'quantity',
+            width: '10%',
+            align: 'center',
+            editable: true,
+        },
+        {
+            title: 'Stn',
+            dataIndex: 'unit',
+            align: 'center',
+            width: '10%',
+            key: 'name',
+        },
+        {
+            title: 'Box',
+            dataIndex: 'box',
+            align: 'center',
+            width: '10%',
+            key: 'box',
 
-                                            </div>
+        },
+        {
+            title: 'Action',
+            dataIndex: 'action',
+            align: 'center',
+            width: '10%',
+            key: 'operation',
+
+        },
+    ];
+
+    const componentRef = useRef();
+    const pageStyle = `{
+      
+        @page { 
+            size: auto;  margin: 0mm ; } @media print { body { -webkit-print-color-adjust: exact; } }
+            
+            .page-header, .page-header-space {
+                height: 100px;
+              }
+              
+              .page-footer, .page-footer-space {
+                height: 50px;
+              
+              }
+              
+              .page-footer {
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                border-top: 1px solid black; /* for demo */
+                background: yellow; /* for demo */
+              }
+              
+              .page-header {
+                position: fixed;
+                top: 0mm;
+                width: 100%;
+                border-bottom: 1px solid black; /* for demo */
+                background: yellow; /* for demo */
+              }
+              
+              .page {
+                page-break-after: always;
+              }
+              
+              @page {
+                margin: 20mm
+              }
+              
+              @media print {
+                 thead {display: table-header-group;} 
+                 tfoot {display: table-footer-group;}
+                 
+                 button {display: none;}
+                 
+                 body {margin-bottom:20;
+                margin-top:5;}
+
+                table { page-break-after:auto }
+                tr    { page-break-inside:avoid; page-break-after:auto }
+                td    { page-break-inside:avoid; page-break-after:auto }
+              }
+    
+           
+            }`;
+
+
+    const dataPurchase =
+        [...detailTallySheet.map((item, i) => ({
+            code: item.purchase_order.code,
+            product_name: item.product_name,
+            quantity: item.boxes_quantity.replace('.', ','),
+            unit: item.boxes_unit,
+
+            box:
+                <>
+
+                    <a onClick={() => klikTampilSheet(i)} style={{ color: "#1890ff" }}>
+                        {item.number_of_boxes}
+                    </a>
+                    <Modal
+                        centered
+                        visible={modal2Visible2}
+                        onCancel={() => setModal2Visible2(false)}
+                        onOk={() => setModal2Visible2(false)}
+                        width={1000}
+                    >
+                        <div className="text-title text-start">
+                            <div className="row">
+                                <div className="col">
+                                    <div className="row">
+                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
+                                        <div className="col-sm-3">
+                                            <input
+                                                value={detailTallySheet[indexPO].purchase_order.code}
+                                                type="Nama"
+                                                className="form-control"
+                                                id="inputNama3"
+                                                disabled
+                                            />
                                         </div>
-                                        <div className="row mb-1 mt-2">
-                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
-                                            <div className="col-sm-3">
-                                                <input
-                                                    value={detailTallySheet[indexPO].product_name}
-                                                    type="Nama"
-                                                    className="form-control"
-                                                    id="inputNama3"
-                                                    disabled
-                                                />
+                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
+                                        <div className="col-sm-3">
+                                            <input
+                                                value={quantityPO.replace('.', ',')}
+                                                type="Nama"
+                                                className="form-control"
+                                                id="inputNama3"
+                                                disabled
+                                            />
 
-                                            </div>
-                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
-                                            <div className="col-sm-3">
-                                                <input
-                                                    value={detailTallySheet[indexPO].boxes_quantity.replace('.', ',')}
-                                                    type="Nama"
-                                                    className="form-control"
-                                                    id="inputNama3"
-                                                    disabled
-                                                />
-                                            </div>
                                         </div>
                                     </div>
-                                    <div className="w-10" style={{ overflowY: "scroll", height: "300px", display: loadingSpreedSheet ? "none" : 'block' }}>
-                                        <ReactDataSheet
-                                            data={data[indexPO]}
-                                            valueRenderer={valueRenderer}
-                                            onContextMenu={onContextMenu}
-                                        />
+                                    <div className="row mb-1 mt-2">
+                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
+                                        <div className="col-sm-3">
+                                            <input
+                                                value={detailTallySheet[indexPO].product_name}
+                                                type="Nama"
+                                                className="form-control"
+                                                id="inputNama3"
+                                                disabled
+                                            />
+
+                                        </div>
+                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
+                                        <div className="col-sm-3">
+                                            <input
+                                                value={detailTallySheet[indexPO].boxes_quantity.replace('.', ',')}
+                                                type="Nama"
+                                                className="form-control"
+                                                id="inputNama3"
+                                                disabled
+                                            />
+                                        </div>
                                     </div>
                                 </div>
+                                <div className="w-10" style={{ overflowY: "scroll", height: "300px", display: loadingSpreedSheet ? "none" : 'block' }}>
+                                    <ReactDataSheet
+                                        data={data[indexPO]}
+                                        valueRenderer={valueRenderer}
+                                        onContextMenu={onContextMenu}
+                                    />
+                                </div>
                             </div>
-                        </Modal>
-                    </>,
-                action: item.action === 'Done' ? <Tag color="green">{item.action}</Tag> : item.action === 'Next delivery' ? <Tag color="orange">{item.action}</Tag> : <Tag color="red">{item.action}</Tag>
+                        </div>
+                    </Modal>
+                </>,
+            action: item.action === 'Done' ? <Tag color="green">{item.action}</Tag> : item.action === 'Next delivery' ? <Tag color="orange">{item.action}</Tag> : <Tag color="red">{item.action}</Tag>
 
 
-            }))
+        }))
 
-            ];
+        ];
+
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+         copyStyles: true,
+        pageStyle: pageStyle
+    })
 
     if (loading) {
         return (
@@ -262,13 +347,225 @@ export const DetailTallySheet = () => {
         )
     }
 
-    return (
+    const cetakColumn = [
+        {
+            title: 'NAMA BARANG',
+            dataIndex: 'desc',
+            fontSize:'10px'
+        },
+        {
+            title: 'BOX',
+            dataIndex: 'box',
+            align: 'center',
+            fontSize:'10px'
+        },
+        {
+            title: 'QTY',
+            dataIndex: 'qty',
+            fontSize:'10px'
+        }
+    ]
 
+
+    const cetakData = [
+        ...detailTallySheet.map((item, i) => ({
+
+            desc: item.product_name,
+            qty: item.boxes_quantity,
+            box:
+                <ReactDataSheet
+                    data={data[i]}
+                    valueRenderer={valueRenderer}
+                    onContextMenu={onContextMenu}
+                    style={{border: '1px black', fontColor:'black', backgroundColor:'white'}}
+                />,
+
+
+        }))
+
+    ]
+
+
+
+    return (
         <>
-            <form className="  p-3 mb-5 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <h3 className="title fw-bold">Detail Pesanan</h3>
+ <div style={{ display: "none" , position:"absolute"}} >
+                <div ref={componentRef} className="p-4" >
+
+  <table>
+    <thead>
+      <tr>
+        <td>
+         
+          <div className="page-header-space"></div>
+          <div className="page-header">
+          <div className='d-flex' style={{position:"fixed", height:"100px", top:"0"}}>
+                      
+                      <div><img src={logo} width="60px"></img></div>
+                      <div className='ms-2' >
+                          <div className='header-cetak'>PT. BUMI MAESTROAYU</div>
+                          <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
+                          <div className='header-cetak'>JAKARTA SELATAN 12760</div>
+                          <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
+                      </div>
+                     
+                  </div>
+        <br/>
+        <br/>
+
+    <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold" }}>
+                      <div style={{ fontSize: "16px", textDecoration: "underline", textAlign:'center'}}>TALLY SHEET</div>
+                      <div style={{ fontSize: "10px", textAlign:'center' }}>NO. {getTallySheet.code}</div>
+                  </div>
+
+                  <div className='mt-4 mb-4 col d-flex justify-content-center ps-4 pe-4'  style={{ fontSize: "12px" }}>
+                      <div className='col-6'>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>TANGGAL</label>
+                              <div className='col-6'> : {getTallySheet.date}</div>
+                          </div>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>SUPPLIER</label>
+                              <div className='col-6'> : {getTallySheet.supplier_name}</div>
+                          </div>
+                      </div>
+                      <div className='col-6'>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>GUDANG</label>
+                              <div className='col-6'> : {getTallySheet.warehouse_name} </div>
+                          </div>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>CATATAN</label>
+                              <div className='col-6'> : {getTallySheet.notes}</div>
+                          </div>
+                      </div>
+                  </div>
+
+                    <br/>
                 </div>
+        </td>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>
+       
+        
+          <div className="page" style={{lineHeight:"3"}}>
+           
+          <div className='mt-4 ps-4 pe-4' >
+                       
+                        <table style={{ fontSize: "10px", width: "100%", pageBreakAfter:"auto"}}>
+                            <tr className='text-center border' style={{ height: "50px", pageBreakInside:"avoid", pageBreakAfter:"auto" }}>
+                                <th width="50px" className='border' >No</th>
+                                <th width="300px" className='border'>Box</th>
+                                <th width="100px" className='border'>Qty</th>
+                            
+                            </tr>
+                            <tbody className="border">
+                                {
+                                    detailTallySheet.map((item, i) => (
+                                        <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{i + 1}</td>
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-start'><b> {item.product_name} </b> <br/> 
+                                            <ReactDataSheet
+                                                    data={data[i]}
+                                                    valueRenderer={valueRenderer}
+                                                    onContextMenu={onContextMenu}
+                                                    style={{border: '1px black', fontColor:'black', backgroundColor:'white', borderInlineColor:'black'}}
+                                                />
+                                                <br/>
+                                             </td>
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{item.boxes_quantity}</td>
+                                        </tr>
+
+                                    ))
+                                }
+                            </tbody>
+
+
+                        </table>
+                    </div>
+
+
+                    <div className='d-flex mt-3 ps-4 pe-4'>
+                        <div style={{ width: "80%" }}>
+                        </div>
+                        <div style={{ width: "20%" }}>
+                            <div className='d-flex mt-4' style={{fontSize:"10px"}}>
+                                <label className='col-6'><b>Total</b></label>
+                                <div>:</div>
+                                <div className='ms-3'>{quantityTotal} <br/> </div>
+                                <div>
+                                    <br/>
+                                    <br/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    </td>
+                </tr>
+                </tbody>
+
+    <tfoot>
+      <tr>
+        <td>
+         
+          <div className="page-footer-space"></div>
+          <div className="page-footer" >
+          <div className='d-flex' style={{width:"100%", bottom:"0"}}>
+          <table style={{ fontSize: "10px", width: "100%", height:"100%"}} >
+                            <tr className='text-center border' style={{ height: "50px", width:"70%" }}>
+                                <th width="35px" className='border'>Dibuat Oleh,</th>
+                                <th width="35px" className='border'>Pengirim,</th>
+                                <th width="35px" className='border'>Disetujui Oleh,</th>
+                                <th width="35px" className='border'>Diterima Oleh,</th>
+                            </tr>
+                           
+                                    <tr className='text-center border ' style={{ height: "80px" ,width:"70%"}}>
+                                     
+                                    <td width="35px" className='border'><b>_________________</b></td>
+                                    <td width="35px"className='border'><b>_________________</b></td>
+                                    <td width="35px"className='border'><b>_________________</b></td>
+                                    <td width="35px"className='border'><b>_________________</b></td>
+                                       
+                                    </tr>
+                        </table>
+                        </div>
+                        </div>
+                        </td>
+                    </tr>
+                    </tfoot>
+
+                    </table>
+
+                    </div>
+                    </div>
+
+            <form className="  p-3 mb-5 bg-body rounded">
+
+                <div className="row">
+                    <div className="col text-title text-start">
+                        <PageHeader
+                            ghost={false}
+                            onBack={() => window.history.back()}
+                            title="Detail Pesanan">
+                        </PageHeader>
+                        {/* <div className="text-title text-start mb-4">
+                            <h3 className="title fw-bold">Detail Pesanan</h3>
+                        </div> */}
+                    </div>
+                    <div className="col button-add text-end me-3">
+                        <button type="button" onClick={handlePrint} class="btn btn-warning rounded m-1">
+                            Cetak
+                        </button>
+                    </div>
+                </div>
+                {/* <div className="text-title text-start mb-4">
+                    <h3 className="title fw-bold">Detail Pesanan</h3>
+                </div> */}
                 <div class="row">
                     <div class="col">
                         <div className="row mb-3">
@@ -319,45 +616,8 @@ export const DetailTallySheet = () => {
                         <div className="col">
                             <h4 className="title fw-normal">Daftar Pesanan</h4>
                         </div>
-                        {/* <div className="col text-end me-2">
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
-                            />
-                            <Modal
-                                title="Tambah Produk"
-                                centered
-                                visible={modal2Visible}
-                                onCancel={() => setModal2Visible(false)}
-                                width={1000}
-                                footer={null}
-                            >
-                                <div className="text-title text-start">
-                                    <div className="row">
-                                        <div className="col mb-3">
-                                            <Search
-                                                placeholder="Cari Nomor Pesanan.."
-                                                style={{
-                                                    width: 400,
-                                                }}
-                                                onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                            />
-                                        </div>
-                                        <Table
-                                            columns={columnsModal}
-                                            dataSource={getDataProduct}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
-                                    </div>
-                                </div>
-                            </Modal>
-                        </div> */}
+                    
+                    
                     </div>
                     <Table
                         bordered
@@ -370,63 +630,8 @@ export const DetailTallySheet = () => {
                     />
                 </div>
             </form>
-            {/* <form className="  p-3 mb-5 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <div class="row">
-                        <div class="col">
-                            <h4 className="title fw-normal">Cari Produk</h4>
-                        </div>
-                        <div class="col-sm-3 me-5">
-                        <div class="input-group">
-                            <input disabled="true" type="text" class="form-control" id="inlineFormInputGroupUsername" placeholder="Type..."/>
-                            <div class="input-group-text">Search</div>
-                        </div>
-                        </div>
-                    </div>
-                <ProdukPesananTable />
-                </div>
-            <div class="row p-0">
-                <div class="col ms-5">
-                    <div class="form-check">
-                        <input disabled="true" class="form-check-input" type="checkbox" value="" id="flexCheckDefault"/>
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Harga Termasuk Pajak
-                        </label>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="row mb-3">
-                        <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>
-                        <div class="col-sm-6">
-                            <input disabled="true" type="email" class="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">Diskon</label>
-                        <div class="col-sm-6">
-                            <input disabled="true" type="email" class="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">PPN</label>
-                        <div class="col-sm-6">
-                            <input disabled="true" type="email" class="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">Total</label>
-                        <div class="col-sm-6">
-                            <input disabled="true" type="email" class="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                <button type="button" class="btn btn-success rounded m-1">Simpan</button>
-                <button type="button" class="btn btn-primary rounded m-1">Submit</button>
-                <button type="button" class="btn btn-warning rounded m-1">Cetak</button>
-            </div>
-            </form> */}
+        
+        
         </>
     )
 }

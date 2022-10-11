@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import 'antd/dist/antd.css';
-import { CloseOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { CloseOutlined, DeleteOutlined, EditOutlined, CheckCircleOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Tag } from 'antd';
 import axios from 'axios';
-import Url from "../../../Config";;
+import Url from '../../../Config';
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -18,6 +18,33 @@ const PesananPembelianTable = () => {
     const [namaMataUang, setNamaMataUang] = useState();
     // const token = jsCookie.get('auth')
     const auth = useSelector(state => state.auth);
+
+    const forceDonePurchaseOrder = async (id, code) => {
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Status akan diubah menjadi done",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios({
+                    method: "patch",
+                    url: `${Url}/purchase_orders/force_done/${id}`,
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${auth.token}`,
+                    },
+                })
+
+                getPesananPembelian()
+                Swal.fire("Berhasil Diubah!", `${code} Done`, "success");
+
+            }
+        })
+    }
 
     const deletePurchaseOrders = async (id, code) => {
         Swal.fire({
@@ -59,7 +86,7 @@ const PesananPembelianTable = () => {
                 try {
                     const datakirim = new FormData();
                     datakirim.append("", '');
-        
+
                     axios({
                         method: "patch",
                         url: `${Url}/purchase_orders/cancel/${id}`,
@@ -69,7 +96,7 @@ const PesananPembelianTable = () => {
                             Authorization: `Bearer ${auth.token}`,
                         },
                     })
-        
+
                     getPesananPembelian();
                     Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
                 }
@@ -80,7 +107,7 @@ const PesananPembelianTable = () => {
             }
         })
 
-       
+
     };
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -275,70 +302,7 @@ const PesananPembelianTable = () => {
             dataIndex: 'action',
             width: '20%',
             align: 'center',
-            // render: (_, record, index) => (
-            //     <>
-            //         {record.status === 'Submitted' ? (
-            //             <Space size="middle">
-            //                 <Button
-            //                     size='small'
-            //                     type="danger"
-            //                     icon={<CloseOutlined />}
-            //                     onClick={() => cancelPurchaseOrders(record.id, record.code)}
-            //                 />
-            //                 <Link to={`/pesananpembelian/detail/${record.id}`}>
-            //                     <Button
-            //                         size='small'
-            //                         type="primary"
-            //                         icon={<InfoCircleOutlined />}
-            //                     />
-            //                 </Link>
-            //                 <Link to={`/pesananpembelian/edit/${record.id}`}>
-            //                     <Button
-            //                         size='small'
-            //                         type="success"
-            //                         icon={<EditOutlined />}
-            //                     />
-            //                 </Link>
-            //             </Space>
-            //         ) : record.status === 'Draft' ? (
-            //             <Space size="middle">
-            //                 <Link to={`/pesananpembelian/detail/${record.id}`}>
-            //                     <Button
-            //                         size='small'
-            //                         type="primary"
-            //                         icon={<InfoCircleOutlined />}
-            //                     />
-            //                 </Link>
-            //                 <Link to={`/pesananpembelian/edit/${record.id}`}>
-            //                     <Button
-            //                         size='small'
-            //                         type="success"
-            //                         icon={<EditOutlined />}
-            //                     />
-            //                 </Link>
-            //                 <Button
-            //                     size='small'
-            //                     type="danger"
-            //                     icon={<DeleteOutlined />}
-            //                     onClick={() => deletePurchaseOrders(record.id, record.code)}
-            //                 />
-            //             </Space>
-            //         ) : record.status === 'Done' || record.status === 'Done' ? (
-            //             <Space size="middle">
-            //                 <Link to={`/pesananpembelian/detail/${record.id}`}>
-            //                     <Button
-            //                         size='small'
-            //                         type="primary"
-            //                         icon={<InfoCircleOutlined />}
-            //                     />
-            //                 </Link>
-            //             </Space>
-            //         ) : (
-            //             <>
-            //             </>
-            //         )}
-            //     </>
-            // ),
+           
         },
     ];
 
@@ -355,14 +319,8 @@ const PesananPembelianTable = () => {
                 </>,
             action:
                 <>
-                    {item.status === 'Submitted' ? (
-                        <Space size="middle">
-                            <Button
-                                size='small'
-                                type="danger"
-                                icon={<CloseOutlined />}
-                                onClick={() => cancelPurchaseOrders(item.id, item.code)}
-                            />
+                    <Space size="middle">
+                        {item.can['read-purchase_order'] ? (
                             <Link to={`/pesananpembelian/detail/${item.id}`}>
                                 <Button
                                     size='small'
@@ -370,51 +328,41 @@ const PesananPembelianTable = () => {
                                     icon={<InfoCircleOutlined />}
                                 />
                             </Link>
-                            <Link to={`/pesananpembelian/edit/${item.id}`}>
+                        ) : null}
+                        {
+                            item.can['cancel-purchase_order'] ? (
+
                                 <Button
                                     size='small'
-                                    type="success"
-                                    icon={<EditOutlined />}
+                                    type="danger"
+                                    icon={<CloseOutlined />}
+                                    onClick={() => cancelPurchaseOrders(item.id, item.code)}
                                 />
-                            </Link>
-                        </Space>
-                    ) : item.status === 'Draft' ? (
-                        <Space size="middle">
-                            <Link to={`/pesananpembelian/detail/${item.id}`}>
-                                <Button
-                                    size='small'
-                                    type="primary"
-                                    icon={<InfoCircleOutlined />}
-                                />
-                            </Link>
-                            <Link to={`/pesananpembelian/edit/${item.id}`}>
-                                <Button
-                                    size='small'
-                                    type="success"
-                                    icon={<EditOutlined />}
-                                />
-                            </Link>
-                            <Button
-                                size='small'
-                                type="danger"
-                                icon={<DeleteOutlined />}
-                                onClick={() => deletePurchaseOrders(item.id, item.code)}
-                            />
-                        </Space>
-                    ) : item.status === 'Done' || item.status === 'Done' ? (
-                        <Space size="middle">
-                            <Link to={`/pesananpembelian/detail/${item.id}`}>
-                                <Button
-                                    size='small'
-                                    type="primary"
-                                    icon={<InfoCircleOutlined />}
-                                />
-                            </Link>
-                        </Space>
-                    ) : (
-                        <>
-                        </>
-                    )}
+
+                            ) : null
+                        }
+                        {
+                            item.can['delete-purchase_order'] ? (
+                                    <Button
+                                        size='small'
+                                        type="danger"
+                                        icon={<DeleteOutlined />}
+                                        onClick={() => deletePurchaseOrders(item.id, item.code)}
+                                    />
+                            ) : null
+                        }
+                        {
+                            item.can['update-purchase_order'] ? (
+                                <Link to={`/pesananpembelian/edit/${item.id}`}>
+                                    <Button
+                                        size='small'
+                                        type="success"
+                                        icon={<EditOutlined />}
+                                    />
+                                </Link>
+                            ) : null
+                        }
+                    </Space>
                 </>
         }))
 
@@ -423,8 +371,11 @@ const PesananPembelianTable = () => {
     return <Table
         loading={isLoading}
         columns={columns}
-        pagination={{ pageSize: 5 }}
         dataSource={dataColumn}
+        pagination=
+        {
+            pesananPembelian.length < 50 ? { pageSize: 5 } : null
+        }
     />;
 };
 

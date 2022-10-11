@@ -7,7 +7,7 @@ import Url from "../../../Config";
 import "./form.css";
 import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
-import { Button } from "antd";
+import { Button, PageHeader, Switch } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 
 const BuatProduk = () => {
@@ -28,6 +28,7 @@ const BuatProduk = () => {
   const [discount, setDiscount] = useState('');
   const [taxes_id, setTaxes_id] = useState('');
   const [status, setStatus] = useState('');
+  const [checked, setChecked] = useState(false);
   const navigate = useNavigate();
 
   const [getProduct, setGetProduct] = useState();
@@ -127,7 +128,7 @@ const BuatProduk = () => {
 
   const handleChangePackaging = (value) => {
     setSelectedPackaging(value);
-    setPackaging_id(value.id);
+    setPackaging_id(value.name);
   };
   // load options using API call
   const loadOptionsPackaging = (inputValue) => {
@@ -142,8 +143,8 @@ const BuatProduk = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const userData = new FormData();
-    userData.append("nama", name);
-    userData.append("nama_alias", alias);
+    // userData.append("nama", name);
+    // userData.append("nama_alias", alias);
     userData.append("bagian", pieces_id);
     userData.append("grup", group);
     userData.append("kategori", category_id);
@@ -157,6 +158,11 @@ const BuatProduk = () => {
     userData.append("pajak", taxes_id);
     userData.append("jenis_kemasan", packaging_id);
     userData.append("status", status);
+
+    // for (var pair of userData.entries()) {
+    //   console.log(pair[0] + ', ' + pair[1]);
+    // }
+
     axios({
       method: "post",
       url: `${Url}/products`,
@@ -210,16 +216,30 @@ const BuatProduk = () => {
       });
   }
 
+  const onChange = () => {
+    checked ? setChecked(false) : setChecked(true)
+
+    if (checked === false) {
+      setStatus("Active");
+      // console.log('Active');
+    } else {
+      setStatus("Inactive");
+      // console.log('Inactive');
+    }
+  };
+
   useEffect(() => {
     getCodeById()
   }, []);
 
   return (
     <>
-      <form className="  p-3 mb-3 bg-body rounded">
-        <div className="text-title text-start mb-4">
-          <h3 className="title fw-bold">Buat Produk</h3>
-        </div>
+
+      <PageHeader
+        className="bg-body rounded mb-2"
+        onBack={() => window.history.back()}
+        title="Buat Produk"
+      >
         <div className="row mb-3">
           <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
             Kode
@@ -229,8 +249,10 @@ const BuatProduk = () => {
               type="kode"
               className="form-control"
               id="inputKode3"
-              value={getProduct}
-              readOnly={getProduct}
+              // value={getProduct}
+              // readOnly={getProduct}
+              value="Otomatis"
+              disabled
             />
           </div>
         </div>
@@ -243,8 +265,8 @@ const BuatProduk = () => {
               type="kode"
               className="form-control"
               id="inputKode3"
-              readOnly="Data di isi dari sistem"
-              onChange={(e) => setName(e.target.value)}
+              value="Otomatis"
+              disabled
             />
           </div>
         </div>
@@ -257,8 +279,8 @@ const BuatProduk = () => {
               type="Nama"
               className="form-control"
               id="inputNama3"
-              readOnly="Data di isi dari sistem"
-              onChange={(e) => setAlias(e.target.value)}
+              value="Otomatis"
+              disabled
             />
           </div>
         </div>
@@ -382,7 +404,7 @@ const BuatProduk = () => {
               placeholder="Pilih..."
               cacheOptions
               defaultOptions
-              value={selectedValue5}
+              value={selectedValue7}
               getOptionLabel={(e) => e.name}
               getOptionValue={(e) => e.id}
               loadOptions={loadOptionsPackaging}
@@ -390,11 +412,12 @@ const BuatProduk = () => {
             />
           </div>
         </div>
-      </form>
-      <form className="  p-3 mb-3 bg-body rounded">
-        <div className="text-title text-start mb-4">
-          <h3 className="title fw-bold">Lain-lain</h3>
-        </div>
+      </PageHeader>
+
+      <PageHeader
+        className="bg-body rounded mb-2"
+        title="Lain - lain"
+      >
         <div className="row mb-3">
           <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
             Harga Beli
@@ -452,57 +475,39 @@ const BuatProduk = () => {
               cacheOptions
               defaultOptions
               value={selectedValue6}
-              getOptionLabel={(e) => e.name}
+              getOptionLabel={(e) => e.type}
               getOptionValue={(e) => e.id}
               loadOptions={loadOptionsTaxes}
               onChange={handleChangeTaxes}
             />
           </div>
         </div>
-        <fieldset className="row mb-3">
-          <legend className="col-form-label col-sm-2 pt-0">Status</legend>
-          <div className="col-sm-10">
-            <div className="form-check">
-              <input
-                onChange={(e) => setStatus(e.target.value)}
-                value="Aktif"
-                checked={status === "Aktif"}
-                className="form-check-input"
-                type="radio"
-                name="gridRadios"
-                id="gridRadios1"
-              />
-              <label className="form-check-label" htmlFor="gridRadios1">
-                Aktif
-              </label>
-            </div>
-            <div className="form-check">
-              <input
-                onChange={(e) => setStatus(e.target.value)}
-                value="Arsip"
-                checked={status === "Arsip"}
-                className="form-check-input"
-                type="radio"
-                name="gridRadios"
-                id="gridRadios2"
-              />
-              <label className="form-check-label" htmlFor="gridRadios2">
-                Arsip
-              </label>
-            </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
+          <div className="col-sm-7">
+            <Switch defaultChecked={checked} onChange={onChange} />
+            <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
+              {
+                checked ? "Aktif"
+                  : "Nonaktif"
+              }
+            </label>
           </div>
-        </fieldset>
-      </form>
-      <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-        <Button
-          type="primary"
-          icon={<SendOutlined />}
-          size="large"
-          onClick={handleSubmit}
-        >
-          Submit
-        </Button>
-      </div>
+        </div>
+
+        <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+          <Button
+            type="primary"
+            icon={<SendOutlined />}
+            size="large"
+            onClick={handleSubmit}
+          >
+            Submit
+          </Button>
+        </div>
+      </PageHeader>
+
+
     </>
   );
 };

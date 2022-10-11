@@ -3,7 +3,7 @@ import 'antd/dist/antd.css';
 import { CheckOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Input, Modal, Space, Table, Tag } from 'antd';
 import axios from 'axios';
-import Url from "../../../Config";;
+import Url from '../../../Config';
 import jsCookie from 'js-cookie'
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
@@ -15,7 +15,7 @@ const PembayaranPembelianTable = () => {
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);
-    const [getDataSO, setGetDataSO] = useState([]);
+    const [dataPembayaran, setDataPembayaran] = useState([]);
     const [status, setStatus] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     // const auth.token = jsCookie.get('auth')
@@ -112,15 +112,15 @@ const PembayaranPembelianTable = () => {
         setVisible(false);
     };
 
-    const deleteDeliveryNotes = async (id) => {
-        await axios.delete(`${Url}/delivery_notes/${id}`, {
+    const deletePembayaran = async (id, code) => {
+        await axios.delete(`${Url}/purchase_invoice_payments/${id}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
         });
-        getDeliveryNotes()
-        Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+        getDataPembayaran()
+        Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
     };
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -220,12 +220,12 @@ const PembayaranPembelianTable = () => {
     });
 
     useEffect(() => {
-        getDeliveryNotes()
+        getDataPembayaran()
     }, [])
 
-    const getDeliveryNotes = async (params = {}) => {
+    const getDataPembayaran = async (params = {}) => {
         setIsLoading(true);
-        await axios.get(`${Url}/delivery_notes`, {
+        await axios.get(`${Url}/purchase_invoice_payments`, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${auth.token}`
@@ -233,7 +233,7 @@ const PembayaranPembelianTable = () => {
         })
             .then(res => {
                 const getData = res.data.data
-                setGetDataSO(getData)
+                setDataPembayaran(getData)
                 setStatus(getData.map(d => d.status))
                 setIsLoading(false);
                 console.log(getData)
@@ -263,8 +263,10 @@ const PembayaranPembelianTable = () => {
             key: 'customer_id',
             width: '20%',
             ...getColumnSearchProps('customer_id'),
-            // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
-            // sortDirections: ['descend', 'ascend'],
+            render: (text, record, index) => (
+                <>{dataPembayaran[index].supplier.name}</>
+            )
+
         },
         {
             title: 'Total',
@@ -294,14 +296,14 @@ const PembayaranPembelianTable = () => {
             render: (_, record) => (
                 <>
                     <Space size="middle">
-                        <Link to={`/pelunasan/detail/${record.id}`}>
+                        <Link to={`/pembayaranpembelian/detail/${record.id}`}>
                             <Button
                                 size='small'
                                 type="primary"
                                 icon={<InfoCircleOutlined />}
                             />
                         </Link>
-                        <Link to={`/pelunasan/edit/${record.id}`}>
+                        <Link to={`/pembayaranpembelian/edit/${record.id}`}>
                             <Button
                                 size='small'
                                 type="success"
@@ -312,7 +314,7 @@ const PembayaranPembelianTable = () => {
                             size='small'
                             type="danger"
                             icon={<DeleteOutlined />}
-                        // onClick={() => deleteDeliveryNotes(record.id)}
+                            onClick={() => deletePembayaran(record.id, record.code)}
                         />
                     </Space>
                 </>
@@ -323,7 +325,7 @@ const PembayaranPembelianTable = () => {
         loading={isLoading}
         columns={columns}
         pagination={{ pageSize: 5 }}
-        dataSource={getDataSO}
+        dataSource={dataPembayaran}
         scroll={{
             y: 240,
         }}

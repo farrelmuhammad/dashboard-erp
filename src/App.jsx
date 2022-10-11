@@ -16,6 +16,7 @@ import {
   BoxPlotOutlined,
   ContainerOutlined,
   ImportOutlined,
+  HomeOutlined,
 } from '@ant-design/icons';
 import { Affix, Breadcrumb, Button, Col, Dropdown, Layout, Menu, Row, Tooltip } from 'antd';
 import { useSelector } from 'react-redux';
@@ -573,6 +574,20 @@ function App() {
                 <Breadcrumb.Item>User</Breadcrumb.Item>
                 <Breadcrumb.Item>Bill</Breadcrumb.Item>
               </Breadcrumb> */}
+              <Breadcrumb
+                style={{
+                  margin: '10px 0',
+                  // marginTop: '5.5rem'
+                }}>
+                <Breadcrumb.Item href="">
+                  <HomeOutlined />
+                </Breadcrumb.Item>
+                <Breadcrumb.Item href="" className="text-decoration-none">
+                  <UserOutlined />
+                  <span className='p-1'>Application List</span>
+                </Breadcrumb.Item>
+                <Breadcrumb.Item>Application</Breadcrumb.Item>
+              </Breadcrumb>
               <div
                 className="site-layout-background"
                 bordered
@@ -582,9 +597,7 @@ function App() {
                   minHeight: 360,
                 }}
               >
-                <React.Suspense fallback={<SkeletonPage />}>
-                  <RouteApp />
-                </React.Suspense>
+                <RouteApp />
               </div>
             </Content>
             {/* <Footer

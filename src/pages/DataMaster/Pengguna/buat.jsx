@@ -1,18 +1,22 @@
 import * as React from "react";
 import axios from "axios";
+// import { useFormik } from "formik";
+import jsCookie from "js-cookie";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
+import SendIcon from "@mui/icons-material/Send";
+import Button from "@mui/material/Button";
 import ReactSelect from "react-select";
+// import { AsyncPaginate } from "react-select-async-paginate";
 import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
-import { Button } from "antd";
-import { SendOutlined } from "@ant-design/icons";
-
+import { PageHeader} from 'antd';
 
 const BuatPengguna = () => {
+  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -197,10 +201,13 @@ const BuatPengguna = () => {
   if ((groupsData?.length > 0)) {
     return (
       <>
+        <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Buat Pengguna">
+          </PageHeader>
+
         <form className="  p-3 mb-5 bg-body rounded">
-          <div className="text-title text-start mb-4">
-            <h3 className="title fw-bold">Buat Pengguna</h3>
-          </div>
           <div className="row mb-3">
             <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
               Karyawan
@@ -309,12 +316,11 @@ const BuatPengguna = () => {
           </div>
           <div className="d-grid gap-2 d-md-flex justify-content-md-end">
             <Button
-              type="primary"
-              icon={<SendOutlined />}
-              size="large"
               onClick={handleSubmit}
+              variant="contained"
+              endIcon={<SendIcon />}
             >
-              Submit
+              Simpan
             </Button>
           </div>
         </form>

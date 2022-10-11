@@ -3,12 +3,13 @@ import 'antd/dist/antd.css';
 import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Tag } from 'antd';
 import axios from 'axios';
-import Url from "../../../Config";;
+import Url from '../../../Config';
 import jsCookie from 'js-cookie'
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { toTitleCase } from '../../../utils/helper';
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 
 const GoodsRequestTable = () => {
   const [searchText, setSearchText] = useState('');
@@ -19,6 +20,13 @@ const GoodsRequestTable = () => {
     const [isLoading, setIsLoading] = useState(false);
     // const token = jsCookie.get('auth')
     const auth = useSelector(state => state.auth);
+
+    const [tableParams, setTableParams] = useState({
+        pagination: {
+          current: 1,
+          pageSize: 10,
+        },
+      });
 
     const deleteGoodsRequest= async (id) => {
         await axios.delete(`${Url}/goodsrequests/${id}`, {
@@ -127,13 +135,22 @@ const GoodsRequestTable = () => {
         //   ),
     });
 
-    useEffect(() => {
-        getGoodsRequest()
-    }, [])
+    const handleTableChange = (pagination, filters, sorter) => {
+        setTableParams({
+          pagination,
+          filters,
+          ...sorter,
+        });
+    };
+    const getParams = (params) => ({
+        results: params.pagination?.pageSize,
+        page: params.pagination?.current,
+        ...params,
+    });
 
     const getGoodsRequest= async (params = {}) => {
         setIsLoading(true);
-        await axios.get(`${Url}/goodsrequests`, {
+        await axios.get(`${Url}/goodsrequests?${qs.stringify(getParams(tableParams))}`, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${auth.token}`
@@ -144,17 +161,29 @@ const GoodsRequestTable = () => {
                 setGetDataGoodsRequest(getData)
                 setStatus(getData.map(d => d.status))
                 setIsLoading(false);
-                console.log(getData)
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                      ...tableParams.pagination,
+                      total: 200,
+                    },
+                  });
             })
     }
+
+    useEffect(() => {
+        getGoodsRequest();
+      }, [JSON.stringify(tableParams)]);
 
     const columns = [
         {
             title: 'Tanggal',
             dataIndex: 'date',
             key: 'date',
-            width: '10%',
+            width: '15%',
             ...getColumnSearchProps('date'),
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'No. Permintaan Barang',
@@ -167,19 +196,21 @@ const GoodsRequestTable = () => {
         },
         {
             title: 'Gudang Awal',
-            dataIndex: 'warehouse_source',
-            key: 'warehouse_source',
-            ...getColumnSearchProps('warehouse_source'),
-            // sorter: (a, b) => a.warehouse_source.length - b.warehouse_source.length,
-            // sortDirections: ['descend', 'ascend'],
+            dataIndex: 'warehouse_source_name',
+            key: 'warehouse_source_name',
+            width: '20%',
+            ...getColumnSearchProps('warehouse_source_name'),
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Gudang Tujuan',
-            dataIndex: 'warehouse_destination',
-            key: 'warehouse_destination',
-            ...getColumnSearchProps('warehouse_destination'),
-            // sorter: (a, b) => a.warehouse_destination.length - b.warehouse_destination.length,
-            // sortDirections: ['descend', 'ascend'],
+            dataIndex: 'warehouse_destination_name',
+            key: 'warehouse_destination_name',
+            width: '20%',
+            ...getColumnSearchProps('warehouse_destination_name'),
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Status',
@@ -194,6 +225,8 @@ const GoodsRequestTable = () => {
                 </>
             ),
             ...getColumnSearchProps('status'),
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Actions',
@@ -201,7 +234,18 @@ const GoodsRequestTable = () => {
             align: 'center',
             render: (_, record) => (
                 <>
-                    <Space size="middle">
+                    {record.status === 'publish' ? (
+                        <Space size="middle">
+                        <Link to={`/goodsrequest/detail/${record.id}`}>
+                            <Button
+                                size='small'
+                                type="primary"
+                                icon={<InfoCircleOutlined />}
+                            />
+                        </Link>
+                    </Space>
+                    ) : (
+                        <Space size="middle">
                         <Link to={`/goodsrequest/detail/${record.id}`}>
                             <Button
                                 size='small'
@@ -223,6 +267,7 @@ const GoodsRequestTable = () => {
                             onClick={() => deleteGoodsRequest(record.id)}
                         />
                     </Space>
+                    )}
                 </>
             ),
         },
@@ -230,8 +275,11 @@ const GoodsRequestTable = () => {
     return <Table
         loading={isLoading}
         columns={columns}
+        rowKey={(record) => record.id}
+        sortDirections={["descend", "ascend"]}
         pagination={{ pageSize: 5 }}
         dataSource={getDataGoodsRequest}
+        onChange={handleTableChange}
         scroll={{
             y: 240,
         }}

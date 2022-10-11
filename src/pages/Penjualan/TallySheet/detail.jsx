@@ -1,390 +1,161 @@
-import './form.css'
-import jsCookie from "js-cookie";
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Url from "../../../Config";;
-import axios from 'axios';
-import AsyncSelect from "react-select/async";
+
 import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tag } from 'antd'
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
-import Column from 'antd/lib/table/Column';
-import { Option } from 'antd/lib/mentions';
-import Swal from 'sweetalert2';
-import Search from 'antd/lib/transfer/search';
-import Spreadsheet from 'react-spreadsheet';
+import { BarsOutlined, DeleteOutlined, LoadingOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons'
+import React, { useEffect, useState } from 'react'
+import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
+import Search from 'antd/lib/transfer/search'
+import axios from 'axios'
+import Url from '../../../Config';
+import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import ReactDataSheet from 'react-datasheet';
+import { useReactToPrint } from 'react-to-print';
+import { useRef } from 'react';
+import logo from "../../Logo.jpeg";
+import { PageHeader } from 'antd';
 
-const EditableContext = createContext(null);
+export const DetailTally = () => {
 
-const EditableRow = ({ index, ...props }) => {
-    const [form] = Form.useForm();
-    return (
-        <Form form={form} component={false}>
-            <EditableContext.Provider value={form}>
-                <tr {...props} />
-            </EditableContext.Provider>
-        </Form>
-    );
-};
+    const [code, setCode] = useState();
+    const [cetak, setCetak] = useState(false);
+    const { id } = useParams();
+    const auth = useSelector(state => state.auth);
+    const [product, setProduct] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [getTallySheet, setGetTallySheet] = useState([])
+    const [loadingTable, setLoadingTable] = useState(false);
+    const [delIndex, setDelIndex] = useState([]);
+    const [totalTallySheet, setTotalTallySheet] = useState([]);
+    const [data, setData] = useState([]);
+    const [dataSheet, setDataSheet] = useState([]);
+    const [loadingSpreedSheet, setLoadingSpreadSheet] = useState(false);
+    const [totalBox, setTotalBox] = useState([]);
+    const [quantity, setQuantity] = useState([]);
+    const [indexPO, setIndexPO] = useState(0);
+    const [kuantitasBox, setKuantitasBox] = useState([]);
+    const [idxPesanan, setIdxPesanan] = useState(0);
+    const [selectedSupplier, setSelectedSupplier] = useState(null);
+    const [selectedWarehouse, setSelectedWarehouse] = useState(null);
+    const [selectedProduct, setSelectedProduct] = useState([]);
+    const [modal2Visible2, setModal2Visible2] = useState(false);
+    const [detailTallySheet, setDetailTallySheet] = useState([]);
 
-const EditableCell = ({
-    title,
-    editable,
-    children,
-    dataIndex,
-    record,
-    handleSave,
-    ...restProps
-}) => {
-    const [editing, setEditing] = useState(false);
-    const inputRef = useRef(null);
-    const form = useContext(EditableContext);
+    const valueRenderer = (cell) => cell.value;
+    const onContextMenu = (e, cell, i, j) =>
+        cell.readOnly ? e.preventDefault() : null;
+
+
     useEffect(() => {
-        if (editing) {
-            inputRef.current.focus();
-        }
-    }, [editing]);
+        axios.get(`${Url}/tally_sheets?id=${id}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        })
+            .then((res) => {
+                const getData = res.data.data[0];
+                setGetTallySheet(getData)
+                setDetailTallySheet(getData.tally_sheet_details);
 
-    const toggleEdit = () => {
-        setEditing(!editing);
-        form.setFieldsValue({
-            [dataIndex]: record[dataIndex],
-        });
-    };
+                let arrData = [];
+                let huruf = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+                if (data.length == 0) {
 
-    const save = async () => {
-        try {
-            const values = await form.validateFields();
-            toggleEdit();
-            handleSave({ ...record, ...values });
-        } catch (errInfo) {
-            console.log('Save failed:', errInfo);
-        }
-    };
+                    for (let i = 0; i < getData.tally_sheet_details.length; i++) {
+                        let tempData = []
 
-    let childNode = children;
+                        for (let x = 0; x <= getData.tally_sheet_details[i].boxes.length; x++) {
 
-    if (editable) {
-        childNode = editing ? (
-            <Form.Item
-                style={{
-                    margin: 0,
-                }}
-                name={dataIndex}
-                rules={[
-                    {
-                        required: true,
-                        message: `${title} is required.`,
-                    },
-                ]}
-            >
-                {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
-            </Form.Item>
-        ) : (
-            <div
-                className="editable-cell-value-wrap"
-                onClick={toggleEdit}
-            >
-                {children}
-            </div>
-        );
+                            let baris = []
+                            let kolom = [];
+                            for (let y = 0; y <= 10; y++) {
+                                if (x == 0) {
+                                    if (y == 0) {
+                                        kolom.push({ readOnly: true, value: "" })
+                                    }
+                                    else {
+                                        kolom.push({ value: huruf[y - 1], readOnly: true })
+                                    }
+
+                                }
+                                else {
+                                    if (y == 0) {
+                                        kolom.push(
+                                            { readOnly: true, value: x }
+
+                                        );
+
+                                    }
+                                    else if (y <= getData.tally_sheet_details[i].boxes.length && x == 1) {
+                                        kolom.push(
+                                            { value: getData.tally_sheet_details[i].boxes[y - 1].quantity.replace('.', ','), readOnly: true }
+                                        );
+                                    }
+                                    else {
+                                        kolom.push(
+                                            { value: '', readOnly: true },
+                                        );
+                                    }
+
+                                    baris.push(kolom)
+
+                                }
+
+                            }
+                            tempData.push(kolom);
+                        }
+                        arrData.push(tempData)
+                    }
+
+                    setData(arrData);
+
+                    setLoading(false);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
+
+
+    const [quantityPO, setQuantityPO] = useState("0")
+    function klikTampilSheet(indexPO) {
+        setQuantityPO(detailTallySheet[indexPO].sales_order_qty)
+        console.log(indexPO)
+        console.log(data)
+        setIndexPO(indexPO);
+        // setProductPO(product[indexProduct].sales_order_details);
+        setModal2Visible2(true);
     }
 
-    return <td {...restProps}>{childNode}</td>;
-};
+    const [quantityTotal, setQuantityTotal] = useState("0")
+    let totalQty = 0;
 
-const DetailTally = () => {
-    // const auth.token = jsCookie.get("auth");
-    const auth = useSelector(state => state.auth);
-    const [date, setDate] = useState(null);
-    const [referensi, setReferensi] = useState('');
-    const [description, setDescription] = useState('');
-    const [status, setStatus] = useState("");
-    const [customer, setCustomer] = useState("");
-    const [warehouse, setWarehouse] = useState("");
-    const [product, setProduct] = useState([]);
-    const [productSelect, setProductSelect] = useState([]);
-    const [query, setQuery] = useState("");
-    const [getCode, setGetCode] = useState('');
-    const navigate = useNavigate();
-
-    const [getDataProduct, setGetDataProduct] = useState('');
-    const [getDataDetailSO, setGetDataDetailSO] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-
-    const [subTotal, setSubTotal] = useState("");
-    const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
-    const [totalPpn, setTotalPpn] = useState("");
-    const [grandTotal, setGrandTotal] = useState("");
-    const [checked, setChecked] = useState("");
-    const [count, setCount] = useState(0);
-
-    const [selectedValue, setSelectedCustomer] = useState(null);
-    const [selectedValue2, setSelectedWarehouse] = useState(null);
-    const [selectedValue3, setSelectedProduct] = useState([]);
-    const [modal2Visible, setModal2Visible] = useState(false);
-    const [modal2Visible2, setModal2Visible2] = useState(false);
-
-    const [data, setData] = useState([
-        [{ value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }],
-        [{ value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }],
-        [{ value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }],
-        [{ value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }],
-        [{ value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }],
-        [{ value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }],
-        [{ value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }],
-        [{ value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }],
-        [{ value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }],
-        [{ value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }, { value: '' }, { value: "" }],
-    ]);
-
-    const expandedRowRender = (product) => {
-        const handleAddBox = () => {
-            // const box = [...data];
-            const newBox = [{ value: '' } * 10]
-            setData([...data], newBox)
+    function hitungTotal(indexPO) {
+        for (let i = 0; i < indexPO.length; i++) {
+            totalQty = Number(totalQty) + Number(detailTallySheet[i].boxes_quantity)
+            setQuantityTotal(totalQty);
+            //console.log(totalQty);
         }
+        //return totalQty;
+    }
 
-        const columns = [
-            {
-                title: 'Nama Alias',
-                dataIndex: 'alias_name',
-                width: '25%',
-                key: 'date',
+    useEffect(() => {
+        hitungTotal(detailTallySheet)
+    }, [detailTallySheet])
 
-            },
-            {
-                title: 'Nama Product',
-                dataIndex: 'name',
-                width: '25%',
-                key: 'name',
-                render: (text, record) => (
-                    <>
-                        <AsyncSelect
-                            placeholder="Pilih Product..."
-                            cacheOptions
-                            defaultOptions
-                            value={selectedValue3}
-                            getOptionLabel={(e) => e.name}
-                            getOptionValue={(e) => e.id}
-                            loadOptions={loadOptionsProduct}
-                            onChange={handleChangeProduct}
-                        />
-                    </>
-                )
-            },
-            {
-                title: 'Qty',
-                dataIndex: 'quantity',
-                width: '10%',
-                align: 'center',
-                editable: true,
-                key: 'name',
-                render: (record) => (
-                    <>
-                        <a>dari box</a>
-                    </>
-                )
-            },
-            {
-                title: 'Stn',
-                dataIndex: 'unit',
-                align: 'center',
-                width: '10%',
-                key: 'name',
-            },
-            {
-                title: 'Box',
-                dataIndex: 'box',
-                align: 'center',
-                width: '10%',
-                key: 'box',
-                render: (text) =>
-                    <>
-                        <a onClick={() => setModal2Visible2(true)}>
-                            0
-                        </a>
-                        <Modal
-                            centered
-                            visible={modal2Visible2}
-                            onCancel={() => setModal2Visible2(false)}
-                            width={1000}
-                            footer={[
-                                <Button
-                                    key="submit"
-                                    type="primary"
-                                    style={{ background: "green", borderColor: "white" }}
-                                >
-                                    Simpan
-                                </Button>,
-                            ]}
-                        >
-                            <div className="text-title text-start">
-                                <div className="row">
-                                    <div className="col">
-                                        <div className="row">
-                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
-                                            <div className="col-sm-3">
-                                                <Input
-                                                    placeholder="No. Pesanan"
-                                                    disabled
-                                                />
-                                            </div>
-                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
-                                            <div className="col-sm-3">
-                                                <Input
-                                                    placeholder="Qty Pesanan"
-                                                    disabled
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="row mb-1">
-                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
-                                            <div className="col-sm-3">
-                                                <Input
-                                                    placeholder="Nama Produk"
-                                                    disabled
-                                                />
-                                            </div>
-                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
-                                            <div className="col-sm-3">
-                                                <Input
-                                                    placeholder="Qty Tally Sheet"
-                                                    disabled
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="w-10">
-                                        <Spreadsheet
-                                            data={data}
-                                            onChange={setData}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </Modal>
-                    </>
-            },
-            {
-                title: 'Action',
-                dataIndex: 'action',
-                align: 'center',
-                width: '10%',
-                key: 'operation',
-                render: (record) => (
-                    <Space size="middle">
-                        <Button
-                            size='small'
-                            type="danger"
-                            icon={<DeleteOutlined />}
-                        // onClick={() => handleDelete(record.id)}
-                        />
-                        <Button
-                            size='small'
-                            type="primary"
-                            icon={<PlusOutlined />}
-                        // onClick={handleAdd}
-                        />
-                    </Space>
-                ),
-            },
-        ];
-
-        return <Table
-            columns={columns}
-            dataSource={product.sales_order_details}
-            pagination={false}
-            rowClassName={() => 'editable-row'}
-        />;
-    };
-
-    console.log(product.map(d => d.details.map(data => data)))
-
-    const dataSelect = [
-        {
-            code: 'BM220906-SO001',
-            customer_id: 2,
-            notes: 'asdf',
-            details: [
-                {
-                    id: 8,
-                    sales_order_id: 17,
-                    product_alias_name: "Bagian 1-Grade 1-Merk 1",
-                    quantity: "2",
-                    unit: "kg",
-                    price: "1500",
-                    subtotal: "3000",
-                    discount_percentage: "50",
-                    fixed_discount: "100",
-                    subtotal_after_discount: "1400",
-                    ppn: "50",
-                    total: "1450",
-                    created_at: "2022-09-06T07:10:42.000000Z",
-                    updated_at: "2022-09-06T07:10:42.000000Z",
-                    sales_order_code: "BM220906-SO001",
-                    customer_id: 2,
-                    notes: "C4",
-                    tally_sheets_qty: 0
-                },
-                {
-                    id: 9,
-                    sales_order_id: 17,
-                    product_alias_name: "Bagian 1 Grade 1 Merk 1",
-                    quantity: "50",
-                    unit: "kg",
-                    price: "5000",
-                    subtotal: "250000",
-                    discount_percentage: "0",
-                    fixed_discount: "1000",
-                    subtotal_after_discount: "249000",
-                    ppn: "1000",
-                    total: "250000",
-                    created_at: "2022-09-06T07:10:42.000000Z",
-                    updated_at: "2022-09-06T07:10:42.000000Z",
-                    sales_order_code: "BM220906-SO001",
-                    customer_id: 2,
-                    notes: "C4",
-                    tally_sheets_qty: 0
-                }
-            ]
-        }
-    ];
-
-    const defaultColumns = [
+    const columns = [
         {
             title: 'No. Pesanan',
-            dataIndex: 'sales_order_code',
-            key: 'code',
-            width: '20%',
-        },
-        {
-            title: 'Nama Alias',
-            dataIndex: 'product_alias_name',
-            width: '20%',
-            // key: 'date',
-
+            dataIndex: 'code',
+            width: '25%',
+            key: 'name',
         },
         {
             title: 'Nama Product',
-            dataIndex: 'name',
+            dataIndex: 'product_name',
             width: '25%',
             key: 'name',
-            render: (text, record) => (
-                <>
-                    {/* <AsyncSelect
-                        placeholder="Pilih Product..."
-                        cacheOptions
-                        defaultOptions
-                        value={selectedValue3}
-                        getOptionLabel={(e) => e.name}
-                        getOptionValue={(e) => e.id}
-                        loadOptions={loadOptionsProduct}
-                        onChange={handleChangeProduct}
-                    /> */}
-                </>
-            )
         },
         {
             title: 'Qty',
@@ -392,12 +163,6 @@ const DetailTally = () => {
             width: '10%',
             align: 'center',
             editable: true,
-            key: 'name',
-            render: (record) => (
-                <>
-                    <a>dari box</a>
-                </>
-            )
         },
         {
             title: 'Stn',
@@ -412,73 +177,7 @@ const DetailTally = () => {
             align: 'center',
             width: '10%',
             key: 'box',
-            render: (text, record) =>
-                <>
-                    <a onClick={() => setModal2Visible2(true)}>
-                        0
-                    </a>
-                    <Modal
-                        centered
-                        visible={modal2Visible2}
-                        onCancel={() => setModal2Visible2(false)}
-                        width={1000}
-                        footer={[
-                            <Button
-                                key="submit"
-                                type="primary"
-                                style={{ background: "green", borderColor: "white" }}
-                            >
-                                Simpan
-                            </Button>,
-                        ]}
-                    >
-                        <div className="text-title text-start">
-                            <div className="row">
-                                <div className="col">
-                                    <div className="row">
-                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
-                                        <div className="col-sm-3">
-                                            <Input
-                                                value={record.sales_order_code}
-                                                disabled
-                                            />
-                                        </div>
-                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
-                                        <div className="col-sm-3">
-                                            <Input
-                                                value={record.quantity}
-                                                disabled
-                                                style={{ fontWeight: 'bold' }}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="row mb-1">
-                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
-                                        <div className="col-sm-3">
-                                            <Input
-                                                value={productSelect}
-                                                disabled
-                                            />
-                                        </div>
-                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
-                                        <div className="col-sm-3">
-                                            <Input
-                                                value="Qty Tally Sheet"
-                                                disabled
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="w-10">
-                                    <Spreadsheet
-                                        data={data}
-                                        onChange={setData}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </Modal>
-                </>
+
         },
         {
             title: 'Action',
@@ -486,345 +185,323 @@ const DetailTally = () => {
             align: 'center',
             width: '10%',
             key: 'operation',
-            render: (record) => (
-                <Space size="middle">
-                    <Button
-                        size='small'
-                        type="danger"
-                        icon={<DeleteOutlined />}
-                    // onClick={() => handleDelete(record.id)}
-                    />
-                    <Button
-                        size='small'
-                        type="primary"
-                        icon={<PlusOutlined />}
-                    // onClick={handleAdd}
-                    />
-                </Space>
-            ),
+
         },
     ];
 
-    const handleChangeCustomer = (value) => {
-        setSelectedCustomer(value);
-        setCustomer(value.id);
-    };
-    // load options using API call
-    const loadOptionsCustomer = (inputValue) => {
-        return fetch(`${Url}/select_customers?limit=10&nama=${inputValue}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        }).then((res) => res.json());
-    };
+    const componentRef = useRef();
+    const pageStyle = `{
+            @page { 
+              size: auto;  margin: 0mm ; } @media print { body { -webkit-print-color-adjust: exact; } }
+            @media print {
+              div.page-footer {
+              position: fixed;
+              bottom:0mm;
+              width: 100%;
+              height: 900px;
+              font-size: 15px;
+              color: #fff;
+              /* For testing */
+              background: red; 
+              opacity: 0.5;
+              
+              page-break-after: always;
+              }
+              .page-number:before {
+                /* counter-increment: page; */
+                content: "Pagina "counter(page);
+              }
+          
+          
+            }
+            body {
+              marginBottom:50px
+            }
+            }`;
 
-    const handleChangeWarehouse = (value) => {
-        setSelectedWarehouse(value);
-        setWarehouse(value.id);
-    };
-    // load options using API call
-    const loadOptionsWarehouse = (inputValue) => {
-        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        }).then((res) => res.json());
-    };
 
-    const handleChangeProduct = (value) => {
-        setSelectedProduct(value);
-        setProductSelect(value.id);
-    };
-    // load options using API call
-    const loadOptionsProduct = (inputValue) => {
-        return fetch(`${Url}/select_products?limit=10&nama=${inputValue}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        }).then((res) => res.json());
-    };
+    const dataPurchase =
+        [...detailTallySheet.map((item, i) => ({
+            code: item.sales_order.code,
+            product_name: item.product_name,
+            quantity: item.boxes_quantity.replace('.', ','),
+            unit: item.boxes_unit,
 
-    // useEffect(() => {
-    //     getNewCodeTally()
-    // })
-
-    console.log(customer);
-
-    useEffect(() => {
-        const getProduct = async (costumer) => {
-            const res = await axios.get(`${Url}/select_sales_order_details/17`, {
-                headers: {
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${auth.token}`
-                }
-            })
-            setGetDataProduct(res.data);
-            setGetDataDetailSO(res.data.map(d => d.sales_order_details))
-            // console.log(res.data.map(d => d.sales_order_details))
-        };
-
-        if (query.length === 0 || query.length > 2) getProduct();
-    }, [query])
-
-    // Column for modal input product
-    const columnsModal = [
-        {
-            title: 'No. Transaksi',
-            width: '20%',
-            dataIndex: 'code',
-        },
-        {
-            title: 'Pelanggan',
-            dataIndex: 'customer_id',
-            width: '15%',
-            align: 'center',
-        },
-        {
-            title: 'Catatan',
-            dataIndex: 'notes',
-            width: '30%',
-            align: 'center',
-        },
-        {
-            title: 'actions',
-            // dataIndex: 'address',
-            width: '8%',
-            align: 'center',
-            render: (_, record) => (
+            box:
                 <>
-                    <Checkbox
-                        value={record}
-                        onChange={handleCheck}
-                    />
-                </>
-            )
+
+                    <a onClick={() => klikTampilSheet(i)} style={{ color: "#1890ff" }}>
+                        {item.number_of_boxes}
+                    </a>
+                    <Modal
+                        centered
+                        visible={modal2Visible2}
+                        onCancel={() => setModal2Visible2(false)}
+                        onOk={() => setModal2Visible2(false)}
+                        width={1000}
+                    >
+                        <div className="text-title text-start">
+                            <div className="row">
+                                <div className="col">
+                                    <div className="row">
+                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
+                                        <div className="col-sm-3">
+                                            <input
+                                                value={detailTallySheet[indexPO].sales_order.code}
+                                                type="Nama"
+                                                className="form-control"
+                                                id="inputNama3"
+                                                disabled
+                                            />
+                                        </div>
+                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
+                                        <div className="col-sm-3">
+                                            <input
+                                                value={quantityPO.replace('.', ',')}
+                                                type="Nama"
+                                                className="form-control"
+                                                id="inputNama3"
+                                                disabled
+                                            />
+
+                                        </div>
+                                    </div>
+                                    <div className="row mb-1 mt-2">
+                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
+                                        <div className="col-sm-3">
+                                            <input
+                                                value={detailTallySheet[indexPO].product_name}
+                                                type="Nama"
+                                                className="form-control"
+                                                id="inputNama3"
+                                                disabled
+                                            />
+
+                                        </div>
+                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
+                                        <div className="col-sm-3">
+                                            <input
+                                                value={detailTallySheet[indexPO].boxes_quantity.replace('.', ',')}
+                                                type="Nama"
+                                                className="form-control"
+                                                id="inputNama3"
+                                                disabled
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="w-10" style={{ overflowY: "scroll", height: "300px", display: loadingSpreedSheet ? "none" : 'block' }}>
+                                    <ReactDataSheet
+                                        data={data[indexPO]}
+                                        valueRenderer={valueRenderer}
+                                        onContextMenu={onContextMenu}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </Modal>
+                </>,
+            action: item.action === 'Done' ? <Tag color="green">{item.action}</Tag> : item.action === 'Next delivery' ? <Tag color="orange">{item.action}</Tag> : <Tag color="red">{item.action}</Tag>
+
+
+        }))
+
+        ];
+
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+        copyStyles: true,
+        pageStyle: pageStyle
+    })
+
+    if (loading) {
+        return (
+            <div></div>
+        )
+    }
+
+    const cetakColumn = [
+        {
+            title: 'NAMA BARANG',
+            dataIndex: 'desc',
         },
-    ];
-
-    const handleCheck = (event) => {
-        var updatedList = [...product];
-        if (event.target.checked) {
-            updatedList = [...product, event.target.value];
-        } else {
-            updatedList.splice(product.indexOf(event.target.value), 1);
+        {
+            title: 'BOX',
+            dataIndex: 'box',
+            align: 'center',
+        },
+        {
+            title: 'QTY',
+            dataIndex: 'qty',
         }
-        setProduct(updatedList);
-        setGetDataDetailSO(updatedList.map(d => d.sales_order_details))
-        console.log(updatedList.map(d => d.sales_order_details));
-    };
+    ]
 
-    // const getNewCodeTally = async () => {
-    //     await axios.get(`${Url}/get_new_tally_sheet_code/sales_orders?tanggal=${date}`, {
-    //         headers: {
-    //             Accept: "application/json",
-    //             Authorization: `Bearer ${auth.token}`,
-    //         },
-    //     })
-    //         .then((res) => {
-    //             setGetCode(res.data.data);
-    //             console.log(res.data.data)
-    //         })
-    //         .catch((err) => {
-    //             // Jika Gagal
-    //             console.log(err);
-    //         });
-    // }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const userData = new FormData();
-        userData.append("tanggal", date);
-        userData.append("referensi", referensi);
-        userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("status", "Submitted");
-        product.map((p) => {
-            console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("harga[]", p.price);
-            userData.append("persentase_diskon[]", p.discount);
-            userData.append("diskon_tetap[]", p.nominal_disc);
-            userData.append("ppn[]", p.ppn);
-        });
-        userData.append("termasuk_pajak", checked);
+    const cetakData = [
+        ...detailTallySheet.map((item, i) => ({
 
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
+            desc: item.product_name,
+            qty: item.boxes_quantity,
+            box:
+                <ReactDataSheet
+                    data={data[i]}
+                    valueRenderer={valueRenderer}
+                    onContextMenu={onContextMenu}
+                />,
 
-        axios({
-            method: "post",
-            url: `${Url}/tally_sheets`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/pesanan");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
-            });
-    };
 
-    const handleDraft = async (e) => {
-        e.preventDefault();
-        const userData = new FormData();
-        userData.append("tanggal", date);
-        userData.append("referensi", referensi);
-        userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("status", "Draft");
-        product.map((p) => {
-            console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("harga[]", p.price);
-            userData.append("persentase_diskon[]", p.discount);
-            userData.append("diskon_tetap[]", p.nominal_disc);
-            userData.append("ppn[]", p.ppn);
-        });
-        userData.append("termasuk_pajak", checked);
+        }))
 
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
+    ]
 
-        axios({
-            method: "post",
-            url: `${Url}/tally_sheets`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/pesanan");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
-            });
-    };
+
 
     return (
         <>
-            <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <h4 className="title fw-bold">Buat Tally Sheet</h4>
+
+            <div style={{ display: "none", position: "absolute" }}>
+                <div ref={componentRef} className="p-4" >
+                    <div className='d-flex'>
+                        <div><img src={logo} width="100px"></img></div>
+                        <div className='ms-2'>
+                            <div className='header-cetak'>P T . B U M I M A E S T R O A Y U</div>
+                            <div className='header-cetak'>J L . R A Y A D U R E N T I G A N O . 1 1</div>
+                            <div className='header-cetak'>T E L P . ( 0 2 1 ) 7 9 8 1 3 6 8 - 7 9 4 3 9 6 8</div>
+                            <div className='header-cetak'>F A X . ( 0 2 1 ) 7 9 8 3 2 4 9</div>
+                            <div className='header-cetak'>J A K A R T A S E L A T A N 1 2 7 6 0</div>
+
+                        </div>
+                    </div>
+
+                    <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold" }}>
+                        <div style={{ fontSize: "25px", textDecoration: "underline" }}>TALLY SHEET</div>
+                        <div style={{ fontSize: "20px" }}>NO. {getTallySheet.code}</div>
+                    </div>
+
+                    <div className='mt-4 mb-4 col d-flex justify-content-center ps-4 pe-4'>
+                        <div className='col-6'>
+                            <div className="d-flex flex-row">
+                                <label className='col-6'>ORDER DATE</label>
+                                <div className='col-6'> : {getTallySheet.date}</div>
+                            </div>
+                            <div className="d-flex flex-row">
+                                <label className='col-6'>TO</label>
+                                <div className='col-6'> : {getTallySheet.supplier_name}</div>
+                            </div>
+                        </div>
+                        <div className='col-6'>
+                            <div className="d-flex flex-row">
+                                <label className='col-6'>WAREHOUSE</label>
+                                <div className='col-6'> : {getTallySheet.warehouse_name} </div>
+                            </div>
+                            <div className="d-flex flex-row">
+                                <label className='col-6'>NOTES</label>
+                                <div className='col-6'> : {getTallySheet.notes}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className='mt-4 ps-4 pe-4 justify-content-center'>
+                        <Table pagination={false} columns={cetakColumn} dataSource={cetakData} />
+                    </div>
+
+                    <div className='d-flex mt-3 ps-4 pe-4'>
+                        <div style={{ width: "80%" }}>
+                        </div>
+                        <div style={{ width: "20%" }}>
+                            <div className='d-flex mt-4'>
+                                <label className='col-6'><b>Total</b></label>
+                                <div>:</div>
+                                <div className='ms-3'>{quantityTotal} </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className='d-flex mt-3 ps-4 pe-4'>
+
+                        <div className='d-flex flex-column align-contents-left ps-4 pe-4' style={{ width: "200px", marginRight: "auto", marginTop: "100px" }}>
+                            <div className='text-center'>Penerima,</div>
+                            <br />
+                            <br />
+                            <br />
+                            <div className='text-center' >_________________</div>
+                        </div>
+
+
+                        <div className='d-flex flex-column align-contents-end ps-4 pe-4' style={{ width: "200px", marginLeft: "auto", marginTop: "100px" }}>
+                            <div className='text-center'>Pengirim,</div>
+                            <br />
+                            <br />
+                            <br />
+                            <div className='text-center' >_________________</div>
+                        </div>
+                    </div>
+
+
                 </div>
+            </div>
+
+            <form className="  p-3 mb-5 bg-body rounded">
+
                 <div className="row">
-                    <div className="col">
+                    <div className="col text-title text-start">
+                        <PageHeader
+                            ghost={false}
+                            onBack={() => window.history.back()}
+                            title="Detail Pesanan">
+                        </PageHeader>
+                        {/* <div className="text-title text-start mb-4">
+                            <h3 className="title fw-bold">Detail Pesanan</h3>
+                        </div> */}
+                    </div>
+                    <div className="col button-add text-end me-3">
+                        <button type="button" onClick={handlePrint} class="btn btn-warning rounded m-1">
+                            Cetak
+                        </button>
+                    </div>
+                </div>
+                {/* <div className="text-title text-start mb-4">
+                    <h3 className="title fw-bold">Detail Pesanan</h3>
+                </div> */}
+                <div class="row">
+                    <div class="col">
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
-                            <div className="col-sm-4">
-                                <input
-                                    id="startDate"
-                                    className="form-control"
-                                    type="date"
-                                    onChange={(e) => setDate(e.target.value)}
-                                />
+                            <div className="col-sm-7">
+                                <input disabled="true" value={getTallySheet.date} id="startDate" className="form-control" type="date" />
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Pesanan</label>
                             <div className="col-sm-7">
-                                <input
-                                    value="Otomatis"
-                                    type="Nama"
-                                    className="form-control"
-                                    id="inputNama3"
-                                    disabled
-                                />
+                                <input disabled="true" value={getTallySheet.code} type="Nama" className="form-control" id="inputNama3" />
                             </div>
                         </div>
                         <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pelanggan</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                             <div className="col-sm-7">
-                                <AsyncSelect
-                                    placeholder="Pilih Pelanggan..."
-                                    cacheOptions
-                                    defaultOptions
-                                    value={selectedValue}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsCustomer}
-                                    onChange={handleChangeCustomer}
-                                />
+                                <input disabled="true" value={getTallySheet.supplier_name} id="startDate" className="form-control" type="text" />
+
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang</label>
                             <div className="col-sm-7">
-                                <AsyncSelect
-                                    placeholder="Pilih Gudang..."
-                                    cacheOptions
-                                    defaultOptions
-                                    value={selectedValue2}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsWarehouse}
-                                    onChange={handleChangeWarehouse}
-                                />
+                                <input disabled="true" type="text" value={getTallySheet.warehouse_name} className="form-control" id="inputNama3" />
                             </div>
                         </div>
                     </div>
-                    <div className="col">
+                    <div class="col">
                         <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Catatan</label>
                         <div className="row mb-3">
                             <div className="col-sm-10">
-                                <textarea
-                                    className="form-control"
-                                    id="form4Example3"
-                                    rows="4"
-                                    onChange={(e) => setDescription(e.target.value)}
-                                />
+                                <textarea disabled="true" value={getTallySheet.notes} className="form-control" id="form4Example3" rows="4" />
+                            </div>
+                        </div>
+                        <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
+                            <div className="col-sm-4 p-1">
+                                {getTallySheet.status === 'Submitted' ? <Tag color="blue">{getTallySheet.status}</Tag> : getTallySheet.status === 'Draft' ? <Tag color="orange">{getTallySheet.status}</Tag> : getTallySheet.status === 'Done' ? <Tag color="green">{getTallySheet.status}</Tag> : <Tag color="red">{getTallySheet.status}</Tag>}
                             </div>
                         </div>
                     </div>
@@ -836,82 +513,22 @@ const DetailTally = () => {
                         <div className="col">
                             <h4 className="title fw-normal">Daftar Pesanan</h4>
                         </div>
-                        <div className="col text-end me-2">
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
-                            />
-                            <Modal
-                                title="Tambah Produk"
-                                centered
-                                visible={modal2Visible}
-                                onCancel={() => setModal2Visible(false)}
-                                width={1000}
-                                footer={null}
-                            >
-                                <div className="text-title text-start">
-                                    <div className="row">
-                                        <div className="col mb-3">
-                                            <Search
-                                                placeholder="Cari Produk..."
-                                                style={{
-                                                    width: 400,
-                                                }}
-                                                onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                            />
-                                        </div>
-                                        <Table
-                                            columns={columnsModal}
-                                            dataSource={dataSelect}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
-                                    </div>
-                                </div>
-                            </Modal>
-                        </div>
+                    
+                    
                     </div>
                     <Table
                         bordered
                         pagination={false}
-                        dataSource={product.map(d => d.details)}
+                        dataSource={dataPurchase}
                         // expandable={{ expandedRowRender }}
-                        columns={defaultColumns}
+                        // defaultExpandAllRows
+                        columns={columns}
                         onChange={(e) => setProduct(e.target.value)}
                     />
                 </div>
-
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
-                    <button
-                        type="button"
-                        className="btn btn-success rounded m-1"
-                        value="Draft"
-                        onChange={(e) => setStatus(e.target.value)}
-                        onClick={handleDraft}
-                    >
-                        Simpan
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-primary rounded m-1"
-                        value="Submitted"
-                        onChange={(e) => setStatus(e.target.value)}
-                        onClick={handleSubmit}
-                    >
-                        Submit
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-warning rounded m-1">
-                        Cetak
-                    </button>
-                </div>
             </form>
+        
+        
         </>
     )
 }

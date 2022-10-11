@@ -12,6 +12,7 @@ import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
+import { PageHeader } from 'antd';
 
 const EditableContext = createContext(null);
 
@@ -113,7 +114,6 @@ const BuatPesananPembelian = () => {
     const [totalPpn, setTotalPpn] = useState(0);
     const [grandTotal, setGrandTotal] = useState("");
     const [checked, setChecked] = useState("");
-    const [grantTotalPPN, setGrandTotalPPN] = useState("");
     const [selectedValue, setSelectedSupplier] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
     const [dataSupplier, setDataSupplier] = useState([]);
@@ -122,7 +122,7 @@ const BuatPesananPembelian = () => {
     const [namaMataUang, setNamaMataUang] = useState('Rp');
     const [pilihanDiskon, setPilihanDiskon] = useState([]);
     const [jumlahDiskon, setJumlahDiskon] = useState([]);
-    const [PIC, setPIC] = useState()
+    const [PIC, setPIC] = useState('')
     const [namaPenerima, setNamaPenerima] = useState('Dhany Saputra')
     const [tanggalAwal, setTanggalAwal] = useState();
     const [tanggalAkhir, setTanggalAkhir] = useState()
@@ -573,12 +573,12 @@ const BuatPesananPembelian = () => {
                 if (updatedList[i].id == event.target.value.id) {
                     tmp[i] = '%';
                     tmpJumlah[i] = 0;
-                    
+
                 }
                 else {
                     tmp[i] = pilihanDiskon[i];
                     tmpJumlah[i] = jumlahDiskon[i]
-                   
+
                 }
 
             }
@@ -781,10 +781,12 @@ const BuatPesananPembelian = () => {
 
     return (
         <>
+            <PageHeader
+                ghost={false}
+                onBack={() => window.history.back()}
+                title="Buat Pesanan Pembelian">
+            </PageHeader>
             <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <h3 className="title fw-bold">Buat Pesanan Pembelian</h3>
-                </div>
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -849,10 +851,8 @@ const BuatPesananPembelian = () => {
                             <div className="col-sm-7">
                                 <Select
                                     placeholder="Pilih Supplier..."
-                                    className="basic-single"
-                                    classNamePrefix="select"
                                     isLoading={isLoading}
-                                    isClearable={true}
+                                    isClearable={false}
                                     isSearchable={true}
                                     options={dataSupplier}
                                     onChange={(e) => setSupplier(e.value)}
@@ -1026,13 +1026,14 @@ const BuatPesananPembelian = () => {
                         </div>
                     </div>
                 </div>
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
                         value="Draft"
                         onChange={(e) => setStatus(e.target.value)}
                         onClick={handleDraft}
+                        style={{ width: '100px' }}
                     >
                         Simpan
                     </button>
@@ -1042,15 +1043,18 @@ const BuatPesananPembelian = () => {
                         value="Submitted"
                         onChange={(e) => setStatus(e.target.value)}
                         onClick={handleSubmit}
+                        style={{ width: '100px' }}
                     >
                         Submit
                     </button>
                     <button
                         type="button"
+                        style={{ width: '100px' }}
                         className="btn btn-warning rounded m-1">
                         Cetak
                     </button>
                 </div>
+                <div style={{ clear: 'both' }}></div>
             </form>
         </>
     )

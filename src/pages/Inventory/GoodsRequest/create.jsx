@@ -215,7 +215,7 @@ const CreateGoodsRequest = () => {
         },
         {
             title: 'Satuan',
-            dataIndex: 'product_unit',
+            dataIndex: 'unit',
             width: '30%',
             align: 'center',
         },
@@ -240,7 +240,7 @@ const CreateGoodsRequest = () => {
     };
     const handleSave = (row) => {
         const newData = [...product];
-        const index = newData.findIndex((item) => row.id === item.id);
+        const index = newData.findIndex((item) => row.product_id === item.product_id);
         const item = newData[index];
         newData.splice(index, 1, { ...item, ...row });
         setProduct(newData);
@@ -338,7 +338,7 @@ const CreateGoodsRequest = () => {
         userData.append("status", "publish");
         product.map((p) => {
             console.log(p);
-            userData.append("product_id[]", p.id);
+            userData.append("product_id[]", p.product_id);
             userData.append("qty[]", p.qty);
         });
 
@@ -370,7 +370,7 @@ const CreateGoodsRequest = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text: "Gagal Ditambahkan Mohon Cek Dahulu..",
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -393,7 +393,7 @@ const CreateGoodsRequest = () => {
         userData.append("status", "draft");
         product.map((p) => {
             console.log(p);
-            userData.append("product_id[]", p.id);
+            userData.append("product_id[]", p.product_id);
             userData.append("qty[]", p.qty);
         });
 
@@ -425,7 +425,7 @@ const CreateGoodsRequest = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text: "Gagal Ditambahkan Mohon Cek Dahulu..",
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);

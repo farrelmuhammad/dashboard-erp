@@ -1,9 +1,9 @@
 // import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-
+import jsCookie from 'js-cookie'
 import axios from 'axios'
-import Url from "../../../Config";
+import Url from '../../../Config'
 import GrupTable from '../../../components/moleculles/GrupTable'
 import { Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';

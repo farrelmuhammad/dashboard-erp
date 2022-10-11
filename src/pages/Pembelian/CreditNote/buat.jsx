@@ -1,20 +1,13 @@
 import './form.css'
-import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import Select from "react-select";
-import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Space, Table, Tag } from 'antd'
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
-import Column from 'antd/lib/table/Column';
-import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
-import Search from 'antd/lib/transfer/search';
-import Spreadsheet from 'react-spreadsheet';
 import { useSelector } from 'react-redux';
 import CurrencyFormat from 'react-currency-format';
+import { PageHeader} from 'antd';
 
 const BuatCreditNote = () => {
     const auth = useSelector(state => state.auth);
@@ -23,7 +16,7 @@ const BuatCreditNote = () => {
     const [loadingTable, setLoadingTable] = useState(false);
 
     const [selectedSupplier, setSelectedSupplier] = useState(null);
-    const [selectedMataUang, setSelectedMataUang] = useState(null);
+    const [selectedMataUang, setSelectedMataUang] = useState('Rp ');
     const [selectedFaktur, setSelectedFaktur] = useState(null);
     const [selectedCOA, setSelectedCOA] = useState(null);
     const [selectedBiaya, setSelectedBiaya] = useState(null);
@@ -174,7 +167,7 @@ const BuatCreditNote = () => {
         formData.append("mata_uang", mataUangId);
         formData.append("bagan_akun", COAId);
         formData.append("biaya", biayaId);
-        formData.append("nominal", nominal.replaceAll('.', '').replace(/[^0-9\.]+/g, ""));
+        formData.append("nominal", nominal.replace('.', '').replace(/[^0-9\.]+/g, ""));
         formData.append("deskripsi", deskripsi);
         formData.append("status", 'Draft');
 
@@ -217,10 +210,12 @@ const BuatCreditNote = () => {
 
     return (
         <>
+          <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Buat Credit Note">
+          </PageHeader>
             <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <h4 className="title fw-bold">Buat Credit Note</h4>
-                </div>
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -338,12 +333,13 @@ const BuatCreditNote = () => {
                     </div>
                 </div>
 
-                <div className="mt-5 mb-4 btn-group" role="group" aria-label="Basic mixed styles example">
+                <div className="mt-5 mb-4 btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right',position:'relative'}}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
                         value="Draft"
                         onClick={handleDraft}
+                        width="100px"
                     >
                         Simpan
                     </button>
@@ -352,15 +348,18 @@ const BuatCreditNote = () => {
                         className="btn btn-primary rounded m-1"
                         value="Submitted"
                         onClick={handleSubmit}
+                        width="100px"
                     >
                         Submit
                     </button>
                     <button
                         type="button"
+                        width="100px"
                         className="btn btn-warning rounded m-1">
                         Cetak
                     </button>
                 </div>
+                <div style={{clear:'both'}}></div>
             </form>
 
         </>

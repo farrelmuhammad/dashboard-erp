@@ -32,12 +32,12 @@ deploy_preview:
         - vercel build --token=$VERCEL_TOKEN
         - vercel deploy --prebuilt  --token=$VERCEL_TOKEN
 
-deploy_production:
-    stage: deploy
-    only:
-        - main
-    script:
-        - npm install --global vercel
-        - vercel pull --yes --environment=production --token=$VERCEL_ORG_ID --force
-        - vercel build --prod --token=$VERCEL_ORG_ID
-        - vercel deploy --prebuilt --prod --token=$VERCEL_ORG_ID
+# deploy_production:
+#     stage: deploy
+#     only:
+#         - main
+#     script:
+#         - npm install --global vercel
+#         - vercel pull --yes --environment=production --token=$VERCEL_ORG_ID --force
+#         - vercel build --prod --token=$VERCEL_ORG_ID
+#         - vercel deploy --prebuilt --prod --token=$VERCEL_ORG_ID

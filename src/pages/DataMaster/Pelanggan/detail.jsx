@@ -1,22 +1,26 @@
 import axios from "axios";
 // import MaterialTable from "material-table";
 import React, { useEffect } from "react";
-
+import jsCookie from "js-cookie";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
-
+import SendIcon from "@mui/icons-material/Send";
 import { useSelector } from "react-redux";
+import { PageHeader , Switch} from "antd";
 
 const DetailPelanggan = () => {
-  // const auth = useSelector(state => state.auth);
+  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const { id } = useParams();
 
   const [data, setData] = useState([]);
   const [address, setAddress] = useState([]);
+
+  const [checked, setChecked] = useState(false);
+  const [status, setStatus] = useState('');
 
   const columns = [
     { title: "ID", field: "customer_id" },
@@ -50,14 +54,30 @@ const DetailPelanggan = () => {
     });
   }
 
+  const onChange = () => {
+    checked ? setChecked(false) : setChecked(true)
+
+    if (checked === false) {
+      setStatus("Active");
+      // console.log('Active');
+    } else {
+      setStatus("Inactive");
+      // console.log('Inactive');
+    }
+  };
+
+
 
   if(data) {
       return (
         <>
+        <PageHeader
+          ghost={false}
+          onBack={() => window.history.back()}
+          title="Detail Pelanggan">
+          </PageHeader>
+
           <form className="  p-3 mb-3 bg-body rounded">
-            <div className="text-title text-start mb-4">
-              <h3 className="title fw-bold">Detail Pelanggan</h3>
-            </div>
             <div className="row mb-3">
               <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
                 Kode
@@ -186,7 +206,22 @@ const DetailPelanggan = () => {
               ))}
               </div>
             </div>
-            <fieldset className="row mb-3">
+
+          <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
+          <div className="col-sm-7">
+            <Switch defaultChecked={checked} onChange={onChange} />
+            <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
+              {
+                checked ? "Aktif"
+                  : "Nonaktif"
+              }
+            </label>
+            </div>
+          </div>
+
+
+            {/* <fieldset className="row mb-3">
               <legend className="col-form-label col-sm-2 pt-0">Status</legend>
               <div className="col-sm-10">
                 {data?.map((d) => {
@@ -205,7 +240,7 @@ const DetailPelanggan = () => {
                 }
               })}
               </div>
-            </fieldset>
+            </fieldset> */}
           </form>
           <form className="  p-3 mb-3 bg-body rounded">
             {/* <MaterialTable

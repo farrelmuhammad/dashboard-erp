@@ -3,13 +3,13 @@ import { Link } from "react-router-dom";
 import jsCookie from "js-cookie";
 import Url from "../../../Config";
 import axios from "axios";
-import GoodsRequestTable from "../../../components/moleculles/GoodsRequestTable";
+import GoodsTransferTable from "../../../components/moleculles/GoodsTransferTable";
 import { Button } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { useSelector } from "react-redux";
 
 
-const GoodsRequest = () => {
+const GoodsTransfer = () => {
   // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [userAccess, setUserAccess] = useState([]);
@@ -32,13 +32,13 @@ const GoodsRequest = () => {
       <div className="container   p-3 mb-5 bg-body rounded d-flex flex-column">
         <div className="row">
           <div className="col text-title text-start">
-            <h5 className="title fw-bold">Daftar Permintaan barang</h5>
+            <h5 className="title fw-bold">Daftar Transfer Barang</h5>
           </div>
           {userAccess?.map(d => {
             if (d.ability_name === "create-adjustment") {
               return (
                 <div className="col button-add text-end me-3">
-                  <Link to="/goodsrequest/create">
+                  <Link to="/goodstransfer/create">
                     <Button
                       type="primary"
                       icon={<PlusOutlined />}
@@ -52,7 +52,7 @@ const GoodsRequest = () => {
         {userAccess?.map(d => {
           if (d.ability_name === "create-adjustment") {
             return (
-              <GoodsRequestTable />
+              <GoodsTransferTable />
             )
           }
         })}
@@ -61,11 +61,11 @@ const GoodsRequest = () => {
   } else {
     <div>
       <div className="text-title text-start">
-        <h3 className="title fw-bold">Daftar Permintaan barang</h3>
+        <h3 className="title fw-bold">Daftar Transfer Barang</h3>
       </div>
-      <GoodsRequestTable />
+      <GoodsTransferTable />
     </div>
   }
 };
 
-export default GoodsRequest;
+export default GoodsTransfer;
