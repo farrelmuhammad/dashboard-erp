@@ -16,7 +16,6 @@ import {
   BoxPlotOutlined,
   ContainerOutlined,
   ImportOutlined,
-  HomeOutlined,
 } from '@ant-design/icons';
 import { Affix, Breadcrumb, Button, Col, Dropdown, Layout, Menu, Row, Tooltip } from 'antd';
 import { useSelector } from 'react-redux';
@@ -157,9 +156,13 @@ function App() {
         <Link to="/goodsrequest" />
         Permintaan Barang
       </Menu.Item>
-      <Menu.Item key="47">
+      <Menu.Item key="48">
         <Link to="/goodstransfer" />
         Transfer Barang
+      </Menu.Item>
+      <Menu.Item key="49">
+        <Link to="/production" />
+        Produksi
       </Menu.Item>
     </Menu.SubMenu>
     <Menu.SubMenu title="Penjualan" icon={<RiseOutlined />}>
@@ -218,6 +221,10 @@ function App() {
       <Menu.Item key="31">
         <Link to="/fakturpembelian" />
         Faktur Pembelian
+      </Menu.Item> 
+      <Menu.Item key="53">
+        <Link to="/creditnote" />
+        Credit Note
       </Menu.Item>
       <Menu.Item key="51">
         <Link to="/returpembelian" />
@@ -226,6 +233,10 @@ function App() {
       <Menu.Item key="52">
         <Link to="/pembayaranpembelian" />
         Pembayaran Pembelian
+      </Menu.Item>
+      <Menu.Item key="54">
+        <Link to="/pib" />
+        PIB
       </Menu.Item>
     </Menu.SubMenu>
 
@@ -299,7 +310,7 @@ function App() {
         <Link to="/" />
         PIB
       </Menu.Item>
-      <Menu.Item key="88">
+      <Menu.Item key="47">
         <Link to="/" />
         Credit Note
       </Menu.Item>
@@ -388,7 +399,7 @@ function App() {
         <Link to="/goodsrequest" />
         Permintaan Barang
       </Menu.Item>
-      <Menu.Item key="49">
+      <Menu.Item key="48">
         <Link to="/goodstransfer" />
         Transfer Barang
       </Menu.Item>
@@ -574,20 +585,6 @@ function App() {
                 <Breadcrumb.Item>User</Breadcrumb.Item>
                 <Breadcrumb.Item>Bill</Breadcrumb.Item>
               </Breadcrumb> */}
-              <Breadcrumb
-                style={{
-                  margin: '10px 0',
-                  // marginTop: '5.5rem'
-                }}>
-                <Breadcrumb.Item href="">
-                  <HomeOutlined />
-                </Breadcrumb.Item>
-                <Breadcrumb.Item href="" className="text-decoration-none">
-                  <UserOutlined />
-                  <span className='p-1'>Application List</span>
-                </Breadcrumb.Item>
-                <Breadcrumb.Item>Application</Breadcrumb.Item>
-              </Breadcrumb>
               <div
                 className="site-layout-background"
                 bordered
@@ -597,7 +594,9 @@ function App() {
                   minHeight: 360,
                 }}
               >
-                <RouteApp />
+                <React.Suspense fallback={<SkeletonPage />}>
+                  <RouteApp />
+                </React.Suspense>
               </div>
             </Content>
             {/* <Footer
