@@ -37,6 +37,7 @@
     "lodash": "^4.17.21",
     "material-table": "1.69.2",
     "react": "^18.2.0",
+    "react-currency-format": "^1.1.0",
     "react-datasheet": "^1.4.12",
     "react-dom": "^18.2.0",
     "react-pdf-print": "^0.2.0",
