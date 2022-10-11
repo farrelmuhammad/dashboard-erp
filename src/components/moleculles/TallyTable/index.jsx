@@ -134,7 +134,7 @@ const TallyTable = () => {
 
   const getTallySheet = async (params = {}) => {
     setIsLoading(true);
-    await axios.get(`${Url}/tally_sheets?tipe=Sales`, {
+    await axios.get(`${Url}/tally_sheets`, {
       headers: {
         'Accept': 'application/json',
         'Authorization': `Bearer ${auth.token}`

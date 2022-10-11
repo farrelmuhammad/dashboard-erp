@@ -12,8 +12,6 @@ import ReactDataSheet from 'react-datasheet'
 import Swal from 'sweetalert2';
 import AsyncSelect from "react-select/async";
 import { PageHeader } from 'antd';
-import { ProductionQuantityLimits } from '@mui/icons-material'
-
 
 const EditTally = () => {
     const { id } = useParams();
@@ -38,7 +36,7 @@ const EditTally = () => {
     const [loadingSpreedSheet, setLoadingSpreadSheet] = useState(false);
     const [totalBox, setTotalBox] = useState([]);
     const [quantity, setQuantity] = useState([]);
-    const [indexPO, setIndexPO] = useState(0);
+    const [indexSO, setindexSO] = useState(0);
     const [kuantitasBox, setKuantitasBox] = useState([]);
     const [idxPesanan, setIdxPesanan] = useState(0);
     const [selectedSupplier, setSelectedSupplier] = useState(null);
@@ -54,6 +52,8 @@ const EditTally = () => {
     const [quantityPO, setQuantityPO] = useState()
     const [qtyPesanan, setQtyPesanan] = useState([])
     const [statusSO, setStatusSO] = useState([]);
+    const [productSelect, setProductSelect] = useState([]);
+    const [productSelectName, setProductSelectName] = useState([]);
 
     // const [quantityTally, setQuantityPO] = useState()
     const valueRenderer = (cell) => cell.value;
@@ -74,6 +74,8 @@ const EditTally = () => {
                 setCustomerName(getData.customer.name)
                 setWarehouse(getData.warehouse.id)
                 setWarehouseName(getData.warehouse.name)
+                setProductSelect([getData.tally_sheet_details[0].product_id])
+                setProductSelectName(getData.tally_sheet_details[0].product_name)
                 console.log(getData);
                 setDetailTallySheet(getData.tally_sheet_details);
                 setStatus(getData.status);
@@ -197,7 +199,7 @@ const EditTally = () => {
         }).then((res) => res.json());
     };
 
-    const handleChangeProduct = (value, record, idx) => {
+    const handleChangeProduct = (value, idx) => {
         // console.log(selectedValue3)
         let idKey = [];
         let key = [];
@@ -206,18 +208,20 @@ const EditTally = () => {
         console.log(value);
 
         for (let x = 0; x < data.length; x++) {
-            if (x == record) {
-                for (let y = 0; y < data[x].length; y++) {
-                    if (y == idx) {
-                        idKey.push(value.id)
-                        store.push(value)
-                    } else {
-                        idKey.push(productSelect[x][y])
-                        store.push(selectedValue3[x][y])
-                    }
-                }
-                key.push(idKey)
-                store2.push(store)
+            if (x == idx) {
+                // for (let y = 0; y < data[x].length; y++) {
+                //     if (y == idx) {
+                //         idKey.push(value.id)
+                //         store.push(value)
+                //     } else {
+                //         idKey.push(productSelect[x][y])
+                //         store.push(selectedValue3[x][y])
+                //     }
+                // }
+                // key.push(idKey)
+                // store2.push(store)
+                key.push(value.id)
+                store2.push(value)
             } else {
                 key.push(productSelect[x])
                 store2.push(selectedValue3[x])
@@ -225,7 +229,7 @@ const EditTally = () => {
         }
         setSelectedProduct(store2);
         setProductSelect(key);
-        console.log(store2)
+        console.log(key)
     };
 
     // load options using API call
@@ -309,7 +313,7 @@ const EditTally = () => {
             title: 'Action',
             dataIndex: 'action',
             align: 'center',
-            width: '10%',
+            width: '5%',
             key: 'operation',
 
         },
@@ -320,14 +324,14 @@ const EditTally = () => {
         console.log(changes)
         const newGrid = [];
 
-        // tempGrid[indexPO] = data[idxPesanan][indexPO];
-        newGrid[indexPO] = data[indexPO];
+        // tempGrid[indexSO] = data[idxPesanan][indexSO];
+        newGrid[indexSO] = data[indexSO];
 
         // menyimpan perubahan 
         changes.forEach(({ cell, row, col, value }) => {
 
             for (let x = 0; x < product.length; x++) {
-                if (x === indexPO) {
+                if (x === indexSO) {
                     newGrid[x][row][col] = { ...data[x][row][col], value };
                 }
 
@@ -353,7 +357,7 @@ const EditTally = () => {
         let arrData = [];
         for (let x = 0; x < product.length; x++) {
             tempData = [];
-            if (x == indexPO) {
+            if (x == indexSO) {
                 arrData.push(newGrid[x]);
             }
             else {
@@ -371,7 +375,7 @@ const EditTally = () => {
 
         for (let x = 0; x < product.length; x++) {
             kuantitas = [];
-            if (x == indexPO) {
+            if (x == indexSO) {
                 total[x] = 0;
                 for (let a = 1; a < data[x].length; a++) {
                     for (let b = 1; b < data[x][a].length; b++) {
@@ -397,7 +401,7 @@ const EditTally = () => {
         let tmp = []
         for (let i = 0; i < product.length; i++) {
 
-            if (i == indexPO) {
+            if (i == indexSO) {
                 tmp.push({
                     id_produk: product[i].id_produk,
                     id_pesanan_pembelian: product[i].id_pesanan_pembelian,
@@ -405,9 +409,10 @@ const EditTally = () => {
                     boxes_quantity: totTly[i].toString(),
                     number_of_boxes: total[i],
                     boxes_unit: product[i].boxes_unit,
+                    product_alias_name: product[i].product_alias_name,
                     product_name: product[i].product_name,
-                    action: totTly[i] + product[i].tally_sheets_qty >= product[i].purchase_order_qty ? 'Done' : 'Next delivery',
-                    purchase_order_qty: product[i].purchase_order_qty,
+                    action: totTly[i] + product[i].tally_sheets_qty >= product[i].sales_order_qty ? 'Done' : 'Next delivery',
+                    sales_order_qty: product[i].sales_order_qty,
                     tally_sheets_qty: product[i].tally_sheets_qty,
                     key: product[i].key
                 })
@@ -427,7 +432,7 @@ const EditTally = () => {
         // for (let x = 0; x < dataTS.length; x++) {
         product.splice(index, 1);
         data.splice(index, 1);
-        setIndexPO(0)
+        setindexSO(0)
         console.log(product)
 
         Swal.fire({
@@ -734,12 +739,26 @@ const EditTally = () => {
         }).then(() => setLoadingTable(false));
     }
 
+    // console.log(product.map(d => d.product_alias_name));
 
     const dataPurchase =
         [...product.map((item, i) => ({
             code: item.code,
             product_alias_name: item.product_alias_name,
-            product_name: item.product_name,
+            // product_name: item.product_name,
+            product_name: <>
+                <AsyncSelect
+                    placeholder="Pilih Produk..."
+                    cacheOptions
+                    defaultOptions
+                    defaultInputValue={productSelectName}
+                    value={selectedValue3[i]}
+                    getOptionLabel={(e) => e.name}
+                    getOptionValue={(e) => e.id}
+                    loadOptions={loadOptionsProduct}
+                    onChange={(value) => handleChangeProduct(value, i)}
+                />
+            </>,
             quantity: item.boxes_quantity.toString().replace('.', ','),
             unit: item.boxes_unit,
             box:
@@ -762,7 +781,7 @@ const EditTally = () => {
                                         <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
                                         <div className="col-sm-3">
                                             <input
-                                                value={product[indexPO].code}
+                                                value={product[indexSO].code}
                                                 type="Nama"
                                                 className="form-control"
                                                 id="inputNama3"
@@ -785,7 +804,7 @@ const EditTally = () => {
                                         <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
                                         <div className="col-sm-3">
                                             <input
-                                                value={product[indexPO].product_name}
+                                                value={product[indexSO].product_name}
                                                 type="Nama"
                                                 className="form-control"
                                                 id="inputNama3"
@@ -796,7 +815,7 @@ const EditTally = () => {
                                         <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
                                         <div className="col-sm-3">
                                             <input
-                                                value={product[indexPO].boxes_quantity.toString().replace('.', ',')}
+                                                value={product[indexSO].boxes_quantity.toString().replace('.', ',')}
                                                 type="Nama"
                                                 className="form-control"
                                                 id="inputNama3"
@@ -807,7 +826,7 @@ const EditTally = () => {
                                 </div>
                                 <div className="w-10" style={{ overflowY: "scroll", height: "300px", display: loadingSpreedSheet ? "none" : 'block' }}>
                                     <ReactDataSheet
-                                        data={data[indexPO]}
+                                        data={data[indexSO]}
                                         valueRenderer={valueRenderer}
                                         onContextMenu={onContextMenu}
                                         onCellsChanged={onCellsChanged}
@@ -826,12 +845,12 @@ const EditTally = () => {
                     icon={<DeleteOutlined />}
                     onClick={() => { hapusIndexProduct(i) }}
                 />
-                <Button
+                {/* <Button
                     size='small'
                     type="primary"
                     icon={<PlusOutlined />}
                     onClick={() => { tambahIndexProduct(i) }}
-                />
+                /> */}
             </Space>
 
         }))
@@ -898,7 +917,7 @@ const EditTally = () => {
                             product_alias_name: value.sales_order_details[x].product_alias_name,
                             product_name: value.sales_order_details[x].product_name,
                             action: qtyAkhir >= qtyAwal ? 'Done' : 'Next delivery',
-                            purchase_order_qty: qtyAwal,
+                            sales_order_qty: qtyAwal,
                             tally_sheets_qty: qtyAkhir,
                             key: "baru"
                         })
@@ -1075,12 +1094,12 @@ const EditTally = () => {
         else {
             const value = event.target.value;
             for (let i = 0; i < updatedList.length; i++) {
-                for (let x = 0; x < value.purchase_order_details.length; x++) {
-                    if (updatedList[i].id_pesanan_pembelian == value.id && updatedList[i].id_produk == value.purchase_order_details[x].product_id && updatedList[i].key == "baru") {
+                for (let x = 0; x < value.sales_order_details.length; x++) {
+                    if (updatedList[i].id_pesanan_pembelian == value.id && updatedList[i].id_produk == value.sales_order_details[x].product_id && updatedList[i].key == "baru") {
                         console.log("kehpaus")
                         updatedList.splice(i, 1);
                         data.splice(i, 1);
-                        setIndexPO(0)
+                        setindexSO(0)
                     }
                 }
             }
@@ -1094,17 +1113,17 @@ const EditTally = () => {
         e.preventDefault();
         const tallySheetData = new URLSearchParams();
         tallySheetData.append("tanggal", getTallySheet.date);
-        tallySheetData.append("pemasok", getTallySheet.supplier_id);
+        tallySheetData.append("pelanggan", getTallySheet.customer_id);
         tallySheetData.append("gudang", getTallySheet.warehouse_id);
         tallySheetData.append("catatan", getTallySheet.notes);
         tallySheetData.append("status", "Submitted");
         product.map((p, pi) => {
-            tallySheetData.append("id_produk[]", p.id_produk);
+            tallySheetData.append("id_produk[]", productSelect[pi]);
             tallySheetData.append("jumlah_box[]", p.number_of_boxes);
             tallySheetData.append("satuan_box[]", p.boxes_unit);
             tallySheetData.append("kuantitas_box[]", p.boxes_quantity);
             tallySheetData.append("aksi[]", p.action);
-            tallySheetData.append("id_pesanan_pembelian[]", p.id_pesanan_pembelian);
+            tallySheetData.append("id_pesanan_penjualan[]", p.id_pesanan_pembelian);
         });
 
         console.log(tallySheetData)
@@ -1118,7 +1137,7 @@ const EditTally = () => {
 
         axios({
             method: "put",
-            url: `${Url}/tally_sheet_ins/${id}`,
+            url: `${Url}/tally_sheets/${id}`,
             data: tallySheetData,
             headers: {
                 Accept: "application/json",
@@ -1132,7 +1151,7 @@ const EditTally = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/tallypembelian");
+                navigate("/tally");
             })
             .catch((err) => {
                 if (err.response) {
@@ -1140,7 +1159,7 @@ const EditTally = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text: err.response.data.error,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -1156,20 +1175,19 @@ const EditTally = () => {
         e.preventDefault();
         const tallySheetData = new URLSearchParams();
         tallySheetData.append("tanggal", getTallySheet.date);
-        tallySheetData.append("pemasok", getTallySheet.supplier_id);
+        tallySheetData.append("pelanggan", getTallySheet.customer_id);
         tallySheetData.append("gudang", getTallySheet.warehouse_id);
         tallySheetData.append("catatan", getTallySheet.notes);
         tallySheetData.append("status", "Draft");
         product.map((p, pi) => {
-            tallySheetData.append("id_produk[]", p.id_produk);
+            tallySheetData.append("id_produk[]", productSelect[pi]);
             tallySheetData.append("jumlah_box[]", p.number_of_boxes);
-            tallySheetData.append("aksi[]", p.action);
             tallySheetData.append("satuan_box[]", p.boxes_unit);
             tallySheetData.append("kuantitas_box[]", p.boxes_quantity);
-            tallySheetData.append("id_pesanan_pembelian[]", p.id_pesanan_pembelian);
+            tallySheetData.append("aksi[]", p.action);
+            tallySheetData.append("id_pesanan_penjualan[]", p.id_pesanan_pembelian);
         });
 
-        console.log(tallySheetData)
         let key = 0;
         for (let idx = 0; idx < kuantitasBox.length; idx++) {
             for (let x = 0; x < kuantitasBox[idx].length; x++) {
@@ -1181,7 +1199,7 @@ const EditTally = () => {
 
         axios({
             method: "put",
-            url: `${Url}/tally_sheet_ins/${id}`,
+            url: `${Url}/tally_sheets/${id}`,
             data: tallySheetData,
             headers: {
                 Accept: "application/json",
@@ -1195,7 +1213,7 @@ const EditTally = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/tallypembelian");
+                navigate("/tally");
             })
             .catch((err) => {
                 if (err.response) {
@@ -1215,12 +1233,12 @@ const EditTally = () => {
             });
     };
 
-    function klikTampilSheet(indexPO) {
+    function klikTampilSheet(indexSO) {
         console.log(data)
-        // console.log(product[indexPO].purchase_order_qty)
-        // setQuantityTally(product[indexPO].boxes_quantity)
-        setQuantityPO(product[indexPO].sales_order_qty)
-        setIndexPO(indexPO);
+        // console.log(product[indexSO].sales_order_qty)
+        // setQuantityTally(product[indexSO].boxes_quantity)
+        setQuantityPO(product[indexSO].sales_order_qty)
+        setindexSO(indexSO);
         setModal2Visible2(true);
     }
 

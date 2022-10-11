@@ -14,6 +14,8 @@ import Search from 'antd/lib/transfer/search';
 import CurrencyFormat from 'react-currency-format';
 import { useSelector } from 'react-redux';
 import { PageHeader } from 'antd';
+import logo from "../../Logo.jpeg";
+import { useReactToPrint } from 'react-to-print';
 
 const { Text } = Typography;
 
@@ -78,6 +80,86 @@ const DetailPembayaranPembelian = () => {
             });
     }
 
+    const componentRef = useRef();
+    const pageStyle = `{
+      
+        @page { 
+            size: 210mm 148mm; margin:0mm; } @media print { body {  size: a5 ;  height: 210mm;
+                width: 148.5mm; margin:0mm;
+                 -webkit-print-color-adjust: exact; } }
+            
+                .float-container {
+                    
+                    padding: 20px;
+                }
+                
+                .float-child {
+                    width: 50%;
+                    float: left;
+                    padding: 20px;
+                    
+                }  
+            
+            .page-header, .page-header-space {
+                height: 100px;
+              }
+              
+              .page-footer, .page-footer-space {
+                height: 50px;
+              
+              }
+              
+              .page-footer {
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                border-top: 1px solid black; /* for demo */
+                background: yellow; /* for demo */
+              }
+              
+              .page-header {
+                position: fixed;
+                top: 0mm;
+                width: 100%;
+                border-bottom: 1px solid black; /* for demo */
+                background: yellow; /* for demo */
+              }
+              
+              .page {
+                page-break-after: always;
+              }
+              
+              @page {
+                margin: 0mm
+              }
+              
+              @media print {
+
+                size: a5 landscape;
+                margin: 0mm !important;
+
+                 thead {display: table-header-group;} 
+                 tfoot {display: table-footer-group;}
+                 
+                 button {display: none;}
+                 
+                 body {margin-bottom:20;
+                margin-top:5;}
+
+                table { page-break-after:auto }
+                tr    { page-break-inside:avoid; page-break-after:auto }
+                td    { page-break-inside:avoid; page-break-after:auto }
+              }
+    
+           
+            }`;
+
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+         copyStyles: true,
+       //pageStyle: pageStyle
+        
+    })
 
     const defaultColumns = [
         {
@@ -139,15 +221,123 @@ const DetailPembayaranPembelian = () => {
 
     return (
         <>
-            <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
+
+<div style={{ display: "none"}} >
+                <div ref={componentRef} className="p-4" style={{width:"100%"}} >
+
+  <table style={{width:"100%"}}>
+    <thead>
+      <tr>
+        <td>
+         
+          <div className="page-header-space"></div>
+          <div className="page-header">
+            <div className='row'>
+           
+
+                <div className='d-flex mb-3 float-container' style={{position:"fixed", height:"100px", top:"0"}}>
+                <div className='col float-child'>
+                      <div><img src={logo} width="60px"></img></div>
+                      <div className='ms-2' >
+                          <div className='header-cetak'>PT. BUMI MAESTROAYU</div>
+                          <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
+                          <div className='header-cetak'>JAKARTA SELATAN 12760</div>
+                          <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
+                      </div>
+                     
+                  </div>
+               
+
+                <div className='col float-child'>
+                    <div height="100px"></div>
+
+                <div className=' mt-4 mb-4 col d-flex justify-content-right ps-4 pe-4' height="100px" style={{ fontSize: "12px", fontStyle:"bold"}}>
+                      <div className='col-md-4'>
+                        <div className="d-flex flex-row">
+                              <label className='col-6'>No. Kwitansi</label>
+                              <div className='col-6'> : {dataHeader.code}</div>
+                          </div>
+                          <div className="d-flex flex-row">
+                          <label className='col-6'>Tanggal</label>
+                              <div className='col-6'> : {dataHeader.date}</div>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+                </div>
+
+            </div>
+        
+        <br/>
+        <br/>
+        <br/>
+   
+        <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold", textAlign:"center"}}>
+                      <div className='align-items-center' style={{ fontSize: "14px", textDecoration: "underline", textAlign:"center"}}>KWITANSI</div>
+                  </div>
+                    <br/>
+                </div>
+        </td>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>
+       
+        
+          <div className="page d-flex" style={{lineHeight:"5"}}>
+           
+          <div className='mt-4 ps-4 pe-4' >
+
+
+                        <div className='row'>
+                            <div className='col'>
+                            <div className="row mb-3 d-flex">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Tanggal</label>
+                            <input
+                                    value={dataHeader.supplier.name}
+                                    id="inputNama3"
+                                    className="form-control small-input"
+                                    type="Nama"
+                                    style={{width:"50%"}}
+                             />     
+                        </div>
+                        </div>
+                        </div>
+
+
+                    </div>
+
+
+                 
+                    </div>
+                    </td>
+                </tr>
+                </tbody>
+
+                    </table>
+
+                    </div>
+                    </div>
+
+
+
+            <form className="p-3 mb-3 bg-body rounded"> 
+                <div className='row'>
+                <div className="col text-title text-start">
                     <PageHeader
                         ghost={false}
                         onBack={() => window.history.back()}
                         title="Detail Pembayaran Pembelian">
                     </PageHeader>
-                    {/* <h4 className="title fw-bold">Detail Pembayaran Pembelian</h4> */}
                 </div>
+                <div className="col button-add text-end me-3">
+                        <button type="button" onClick={handlePrint}  class="btn btn-warning rounded m-1">
+                            Cetak
+                        </button>
+                    </div>
+                    </div>
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">

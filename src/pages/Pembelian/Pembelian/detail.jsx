@@ -267,7 +267,7 @@ export const DetailPesananPembelian = () => {
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
     })
-//
+    //
     if (loading) {
         return (
             <div></div>
@@ -314,7 +314,7 @@ export const DetailPesananPembelian = () => {
 
 
     return (
-//
+        //
         <>
 
             <div style={{ display: "none", position: "absolute" }}>
@@ -463,19 +463,23 @@ export const DetailPesananPembelian = () => {
                 <div className="row">
                     <div className="col text-title text-start">
                         <div className="text-title text-start mb-4">
-                        <PageHeader
-                        ghost={false}
-                        onBack={() => window.history.back()}
-                        title="Detail Pesanan">
-                         </PageHeader>
+                            <PageHeader
+                                ghost={false}
+                                onBack={() => window.history.back()}
+                                title="Detail Pesanan">
+                            </PageHeader>
                             {/* <h3 className="title fw-bold">Detail Pesanan</h3> */}
                         </div>
                     </div>
-                    <div className="col button-add text-end me-3">
-                        <button type="button" onClick={handlePrint} class="btn btn-warning rounded m-1">
-                            Cetak
-                        </button>
-                    </div>
+                    {
+                        status == 'Cancelled' ? null :
+                            <div className="col button-add text-end me-3">
+                                <button type="button" onClick={handlePrint} class="btn btn-warning rounded m-1">
+                                    Cetak
+                                </button>
+                            </div>
+                    }
+
                 </div>
                 <div class="row">
                     <div class="col">

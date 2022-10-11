@@ -13,6 +13,7 @@ import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
 import logo from "../../Logo.jpeg";
 import { PageHeader } from 'antd';
+import { width } from '@mui/system'
 
 export const DetailTallySheet = () => {
 
@@ -152,7 +153,7 @@ export const DetailTallySheet = () => {
             key: 'name',
         },
         {
-            title: 'Nama Product',
+            title: 'Nama Produk',
             dataIndex: 'product_name',
             width: '25%',
             key: 'name',
@@ -191,32 +192,58 @@ export const DetailTallySheet = () => {
 
     const componentRef = useRef();
     const pageStyle = `{
-            @page { 
-              size: auto;  margin: 0mm ; } @media print { body { -webkit-print-color-adjust: exact; } }
-            @media print {
-              div.page-footer {
-              position: fixed;
-              bottom:0mm;
-              width: 100%;
-              height: 900px;
-              font-size: 15px;
-              color: #fff;
-              /* For testing */
-              background: red; 
-              opacity: 0.5;
+      
+        @page { 
+            size: auto;  margin: 0mm ; } @media print { body { -webkit-print-color-adjust: exact; } }
+            
+            .page-header, .page-header-space {
+                height: 100px;
+              }
               
-              page-break-after: always;
+              .page-footer, .page-footer-space {
+                height: 50px;
+              
               }
-              .page-number:before {
-                /* counter-increment: page; */
-                content: "Pagina "counter(page);
+              
+              .page-footer {
+                position: fixed;
+                bottom: 0;
+                width: 100%;
+                border-top: 1px solid black; /* for demo */
+                background: yellow; /* for demo */
               }
-          
-          
-            }
-            body {
-              marginBottom:50px
-            }
+              
+              .page-header {
+                position: fixed;
+                top: 0mm;
+                width: 100%;
+                border-bottom: 1px solid black; /* for demo */
+                background: yellow; /* for demo */
+              }
+              
+              .page {
+                page-break-after: always;
+              }
+              
+              @page {
+                margin: 20mm
+              }
+              
+              @media print {
+                 thead {display: table-header-group;} 
+                 tfoot {display: table-footer-group;}
+                 
+                 button {display: none;}
+                 
+                 body {margin-bottom:20;
+                margin-top:5;}
+
+                table { page-break-after:auto }
+                tr    { page-break-inside:avoid; page-break-after:auto }
+                td    { page-break-inside:avoid; page-break-after:auto }
+              }
+    
+           
             }`;
 
 
@@ -310,7 +337,7 @@ export const DetailTallySheet = () => {
 
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
-        copyStyles: true,
+         copyStyles: true,
         pageStyle: pageStyle
     })
 
@@ -324,15 +351,18 @@ export const DetailTallySheet = () => {
         {
             title: 'NAMA BARANG',
             dataIndex: 'desc',
+            fontSize:'10px'
         },
         {
             title: 'BOX',
             dataIndex: 'box',
             align: 'center',
+            fontSize:'10px'
         },
         {
             title: 'QTY',
             dataIndex: 'qty',
+            fontSize:'10px'
         }
     ]
 
@@ -347,6 +377,7 @@ export const DetailTallySheet = () => {
                     data={data[i]}
                     valueRenderer={valueRenderer}
                     onContextMenu={onContextMenu}
+                    style={{border: '1px black', fontColor:'black', backgroundColor:'white'}}
                 />,
 
 
@@ -358,88 +389,160 @@ export const DetailTallySheet = () => {
 
     return (
         <>
-
-            <div style={{ display: "none", position: "absolute" }}>
+ <div style={{ display: "none" , position:"absolute"}} >
                 <div ref={componentRef} className="p-4" >
-                    <div className='d-flex'>
-                        <div><img src={logo} width="100px"></img></div>
-                        <div className='ms-2'>
-                            <div className='header-cetak'>P T . B U M I M A E S T R O A Y U</div>
-                            <div className='header-cetak'>J L . R A Y A D U R E N T I G A N O . 1 1</div>
-                            <div className='header-cetak'>T E L P . ( 0 2 1 ) 7 9 8 1 3 6 8 - 7 9 4 3 9 6 8</div>
-                            <div className='header-cetak'>F A X . ( 0 2 1 ) 7 9 8 3 2 4 9</div>
-                            <div className='header-cetak'>J A K A R T A S E L A T A N 1 2 7 6 0</div>
 
-                        </div>
+  <table>
+    <thead>
+      <tr>
+        <td>
+         
+          <div className="page-header-space"></div>
+          <div className="page-header">
+          <div className='d-flex' style={{position:"fixed", height:"100px", top:"0"}}>
+                      
+                      <div><img src={logo} width="60px"></img></div>
+                      <div className='ms-2' >
+                          <div className='header-cetak'>PT. BUMI MAESTROAYU</div>
+                          <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
+                          <div className='header-cetak'>JAKARTA SELATAN 12760</div>
+                          <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
+                      </div>
+                     
+                  </div>
+        <br/>
+        <br/>
+
+    <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold" }}>
+                      <div style={{ fontSize: "16px", textDecoration: "underline", textAlign:'center'}}>TALLY SHEET</div>
+                      <div style={{ fontSize: "10px", textAlign:'center' }}>NO. {getTallySheet.code}</div>
+                  </div>
+
+                  <div className='mt-4 mb-4 col d-flex justify-content-center ps-4 pe-4'  style={{ fontSize: "12px" }}>
+                      <div className='col-6'>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>TANGGAL</label>
+                              <div className='col-6'> : {getTallySheet.date}</div>
+                          </div>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>SUPPLIER</label>
+                              <div className='col-6'> : {getTallySheet.supplier_name}</div>
+                          </div>
+                      </div>
+                      <div className='col-6'>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>GUDANG</label>
+                              <div className='col-6'> : {getTallySheet.warehouse_name} </div>
+                          </div>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>CATATAN</label>
+                              <div className='col-6'> : {getTallySheet.notes}</div>
+                          </div>
+                      </div>
+                  </div>
+
+                    <br/>
+                </div>
+        </td>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>
+       
+        
+          <div className="page" style={{lineHeight:"3"}}>
+           
+          <div className='mt-4 ps-4 pe-4' >
+                       
+                        <table style={{ fontSize: "10px", width: "100%", pageBreakAfter:"auto"}}>
+                            <tr className='text-center border' style={{ height: "50px", pageBreakInside:"avoid", pageBreakAfter:"auto" }}>
+                                <th width="50px" className='border' >No</th>
+                                <th width="300px" className='border'>Box</th>
+                                <th width="100px" className='border'>Qty</th>
+                            
+                            </tr>
+                            <tbody className="border">
+                                {
+                                    detailTallySheet.map((item, i) => (
+                                        <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{i + 1}</td>
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-start'><b> {item.product_name} </b> <br/> 
+                                            <ReactDataSheet
+                                                    data={data[i]}
+                                                    valueRenderer={valueRenderer}
+                                                    onContextMenu={onContextMenu}
+                                                    style={{border: '1px black', fontColor:'black', backgroundColor:'white', borderInlineColor:'black'}}
+                                                />
+                                                <br/>
+                                             </td>
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{item.boxes_quantity}</td>
+                                        </tr>
+
+                                    ))
+                                }
+                            </tbody>
+
+
+                        </table>
                     </div>
 
-                    <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold" }}>
-                        <div style={{ fontSize: "25px", textDecoration: "underline" }}>TALLY SHEET</div>
-                        <div style={{ fontSize: "20px" }}>NO. {getTallySheet.code}</div>
-                    </div>
-
-                    <div className='mt-4 mb-4 col d-flex justify-content-center ps-4 pe-4'>
-                        <div className='col-6'>
-                            <div className="d-flex flex-row">
-                                <label className='col-6'>ORDER DATE</label>
-                                <div className='col-6'> : {getTallySheet.date}</div>
-                            </div>
-                            <div className="d-flex flex-row">
-                                <label className='col-6'>TO</label>
-                                <div className='col-6'> : {getTallySheet.supplier_name}</div>
-                            </div>
-                        </div>
-                        <div className='col-6'>
-                            <div className="d-flex flex-row">
-                                <label className='col-6'>WAREHOUSE</label>
-                                <div className='col-6'> : {getTallySheet.warehouse_name} </div>
-                            </div>
-                            <div className="d-flex flex-row">
-                                <label className='col-6'>NOTES</label>
-                                <div className='col-6'> : {getTallySheet.notes}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className='mt-4 ps-4 pe-4 justify-content-center'>
-                        <Table pagination={false} columns={cetakColumn} dataSource={cetakData} />
-                    </div>
 
                     <div className='d-flex mt-3 ps-4 pe-4'>
                         <div style={{ width: "80%" }}>
                         </div>
                         <div style={{ width: "20%" }}>
-                            <div className='d-flex mt-4'>
+                            <div className='d-flex mt-4' style={{fontSize:"10px"}}>
                                 <label className='col-6'><b>Total</b></label>
                                 <div>:</div>
-                                <div className='ms-3'>{quantityTotal} </div>
+                                <div className='ms-3'>{quantityTotal} <br/> </div>
+                                <div>
+                                    <br/>
+                                    <br/>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div className='d-flex mt-3 ps-4 pe-4'>
-
-                        <div className='d-flex flex-column align-contents-left ps-4 pe-4' style={{ width: "200px", marginRight: "auto", marginTop: "100px" }}>
-                            <div className='text-center'>Penerima,</div>
-                            <br />
-                            <br />
-                            <br />
-                            <div className='text-center' >_________________</div>
-                        </div>
-
-
-                        <div className='d-flex flex-column align-contents-end ps-4 pe-4' style={{ width: "200px", marginLeft: "auto", marginTop: "100px" }}>
-                            <div className='text-center'>Pengirim,</div>
-                            <br />
-                            <br />
-                            <br />
-                            <div className='text-center' >_________________</div>
-                        </div>
                     </div>
+                    </td>
+                </tr>
+                </tbody>
 
+    <tfoot>
+      <tr>
+        <td>
+         
+          <div className="page-footer-space"></div>
+          <div className="page-footer" >
+          <div className='d-flex' style={{width:"100%", bottom:"0"}}>
+          <table style={{ fontSize: "10px", width: "100%", height:"100%"}} >
+                            <tr className='text-center border' style={{ height: "50px", width:"70%" }}>
+                                <th width="35px" className='border'>Dibuat Oleh,</th>
+                                <th width="35px" className='border'>Pengirim,</th>
+                                <th width="35px" className='border'>Disetujui Oleh,</th>
+                                <th width="35px" className='border'>Diterima Oleh,</th>
+                            </tr>
+                           
+                                    <tr className='text-center border ' style={{ height: "80px" ,width:"70%"}}>
+                                     
+                                    <td width="35px" className='border'><b>_________________</b></td>
+                                    <td width="35px"className='border'><b>_________________</b></td>
+                                    <td width="35px"className='border'><b>_________________</b></td>
+                                    <td width="35px"className='border'><b>_________________</b></td>
+                                       
+                                    </tr>
+                        </table>
+                        </div>
+                        </div>
+                        </td>
+                    </tr>
+                    </tfoot>
 
-                </div>
-            </div>
+                    </table>
+
+                    </div>
+                    </div>
 
             <form className="  p-3 mb-5 bg-body rounded">
 

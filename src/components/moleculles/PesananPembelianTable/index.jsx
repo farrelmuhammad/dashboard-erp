@@ -302,70 +302,7 @@ const PesananPembelianTable = () => {
             dataIndex: 'action',
             width: '20%',
             align: 'center',
-            // render: (_, record, index) => (
-            //     <>
-            //         {record.status === 'Submitted' ? (
-            //             <Space size="middle">
-            //                 <Button
-            //                     size='small'
-            //                     type="danger"
-            //                     icon={<CloseOutlined />}
-            //                     onClick={() => cancelPurchaseOrders(record.id, record.code)}
-            //                 />
-            //                 <Link to={`/pesananpembelian/detail/${record.id}`}>
-            //                     <Button
-            //                         size='small'
-            //                         type="primary"
-            //                         icon={<InfoCircleOutlined />}
-            //                     />
-            //                 </Link>
-            //                 <Link to={`/pesananpembelian/edit/${record.id}`}>
-            //                     <Button
-            //                         size='small'
-            //                         type="success"
-            //                         icon={<EditOutlined />}
-            //                     />
-            //                 </Link>
-            //             </Space>
-            //         ) : record.status === 'Draft' ? (
-            //             <Space size="middle">
-            //                 <Link to={`/pesananpembelian/detail/${record.id}`}>
-            //                     <Button
-            //                         size='small'
-            //                         type="primary"
-            //                         icon={<InfoCircleOutlined />}
-            //                     />
-            //                 </Link>
-            //                 <Link to={`/pesananpembelian/edit/${record.id}`}>
-            //                     <Button
-            //                         size='small'
-            //                         type="success"
-            //                         icon={<EditOutlined />}
-            //                     />
-            //                 </Link>
-            //                 <Button
-            //                     size='small'
-            //                     type="danger"
-            //                     icon={<DeleteOutlined />}
-            //                     onClick={() => deletePurchaseOrders(record.id, record.code)}
-            //                 />
-            //             </Space>
-            //         ) : record.status === 'Done' || record.status === 'Done' ? (
-            //             <Space size="middle">
-            //                 <Link to={`/pesananpembelian/detail/${record.id}`}>
-            //                     <Button
-            //                         size='small'
-            //                         type="primary"
-            //                         icon={<InfoCircleOutlined />}
-            //                     />
-            //                 </Link>
-            //             </Space>
-            //         ) : (
-            //             <>
-            //             </>
-            //         )}
-            //     </>
-            // ),
+           
         },
     ];
 
@@ -406,14 +343,12 @@ const PesananPembelianTable = () => {
                         }
                         {
                             item.can['delete-purchase_order'] ? (
-                                <Space size="middle">
                                     <Button
                                         size='small'
                                         type="danger"
                                         icon={<DeleteOutlined />}
                                         onClick={() => deletePurchaseOrders(item.id, item.code)}
                                     />
-                                </Space>
                             ) : null
                         }
                         {

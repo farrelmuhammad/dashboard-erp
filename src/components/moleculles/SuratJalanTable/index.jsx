@@ -101,9 +101,18 @@ const SuratJalanTable = () => {
         }
     };
 
+    const [tampil, setTampil] = useState(false)
     const onChange = (e) => {
         // checked ? setChecked(false) : setChecked(true)
         // console.log(checked);
+        if (tampil) {
+            setTampil(false)
+
+        }
+        else {
+            setTampil(true)
+
+        }
         console.log(e.target.checked);
     };
 
@@ -350,7 +359,18 @@ const SuratJalanTable = () => {
                                                 <div className="row">
                                                     <label htmlFor="inputNama3" className="col-sm-4 ms-5 mb-2 col-form-label">Penerima</label>
                                                     <div className="col-sm-6">
-                                                        {checked === false ?
+                                                        <AsyncSelect
+                                                            placeholder="Pilih Penerima..."
+                                                            cacheOptions
+                                                            defaultOptions
+                                                            defaultInputValue={tampil?getCustomerName: null}
+                                                            value={selectedValue}
+                                                            getOptionLabel={(e) => e.name}
+                                                            getOptionValue={(e) => e.id}
+                                                            loadOptions={loadOptionsCustomer}
+                                                            onChange={handleChangeCustomer}
+                                                        />
+                                                        {/* {checked === false ?
                                                             <AsyncSelect
                                                                 placeholder="Pilih Penerima..."
                                                                 cacheOptions
@@ -373,7 +393,7 @@ const SuratJalanTable = () => {
                                                                 loadOptions={loadOptionsCustomer}
                                                                 onChange={handleChangeCustomer}
                                                             />
-                                                        }
+                                                        } */}
                                                     </div>
                                                     <label htmlFor="inputNama3" className="col-sm-4 ms-5 mb-2 col-form-label">Alamat Penerima</label>
                                                     <div className="col-sm-6">
@@ -381,7 +401,7 @@ const SuratJalanTable = () => {
                                                             className="basic-single"
                                                             placeholder="Pilih Alamat..."
                                                             classNamePrefix="select"
-                                                            defaultInputValue={address}
+                                                            defaultInputValue={tampil ? address : null}
                                                             isSearchable
                                                             getOptionLabel={(e) => e.address}
                                                             getOptionValue={(e) => e.id}

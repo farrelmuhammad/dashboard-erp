@@ -221,11 +221,14 @@ const PIBTable = () => {
       key: 'supplier_name',
       width: '20%',
       ...getColumnSearchProps('supplier_name'),
+      render: (_, record) => (
+        <>{record.supplier.name}</>
+      )
     },
     {
       title: 'Nama Kapal',
-      dataIndex: 'nama_kapal',
-      key: 'nama_kapal',
+      dataIndex: 'ship_name',
+      key: 'ship_name',
       width: '20%',
       ...getColumnSearchProps('ship_name'),
     },
@@ -249,14 +252,8 @@ const PIBTable = () => {
       align: 'center',
       render: (_, record) => (
         <>
-          {record.status === 'Submitted' ? (
-            <Space size="middle">
-              <Button
-                size='small'
-                type="danger"
-                icon={<CloseOutlined />}
-                onClick={() => cancelPIB(record.id, record.code)}
-              />
+          <Space size="middle">
+            {record.can['read-goods_import_declaration'] ? (
               <Link to={`/pib/detail/${record.id}`}>
                 <Button
                   size='small'
@@ -264,78 +261,45 @@ const PIBTable = () => {
                   icon={<InfoCircleOutlined />}
                 />
               </Link>
-              <Link to={`/pib/edit/${record.id}`}>
-                <Button
-                  size='small'
-                  type="success"
-                  icon={<EditOutlined />}
-                />
-              </Link>
-            </Space>
-          ) : record.status === 'Draft' ? (
-            <Space size="middle">
-              <Link to={`/pib/detail/${record.id}`}>
-                <Button
-                  size='small'
-                  type="primary"
-                  icon={<InfoCircleOutlined />}
-                />
-              </Link>
-              <Link to={`/pib/edit/${record.id}`}>
-                <Button
-                  size='small'
-                  type="success"
-                  icon={<EditOutlined />}
-                />
-              </Link>
-              <Button
-                size='small'
-                type="danger"
-                icon={<DeleteOutlined />}
-                onClick={() => deletePIB(record.id, record.code)}
-              />
-            </Space>
-          ) : record.status === 'Done' || record.status === 'Done' ? (
-            <Space size="middle">
-              <Link to={`/pib/detail/${record.id}`}>
-                <Button
-                  size='small'
-                  type="primary"
-                  icon={<InfoCircleOutlined />}
-                />
-              </Link>
-            </Space>
-          ) : (
-            <>
-            </>
-          )}
-        </>
+            ) : null}
+            {
+              record.can['cancel-goods_import_declaration'] ? (
 
-        // <>
-        //   <Space size="middle">
-        //     <Link to={`/penerimaanbarang/detail/${record.id}`}>
-        //       <Button
-        //         size='small'
-        //         type="primary"
-        //         icon={<InfoCircleOutlined />}
-        //       />
-        //     </Link>
-        //     <Link to={`/penerimaanbarang/edit/${record.id}`}>
-        //       <Button
-        //         size='small'
-        //         type="success"
-        //         icon={<EditOutlined />}
-        //       />
-        //     </Link>
-        //     <Button
-        //       size='small'
-        //       type="danger"
-        //       icon={<DeleteOutlined />}
-        //       onClick={() => deleteTallySheet(record.id, record.code)}
-        //     />
-        //   </Space>
-        // </>
-      ),
+                <Button
+                  size='small'
+                  type="danger"
+                  icon={<CloseOutlined />}
+                  onClick={() => cancelPIB(record.id, record.code)}
+                />
+
+              ) : null
+            }
+            {
+              record.can['delete-goods_import_declaration'] ? (
+                <Space size="middle">
+                  <Button
+                    size='small'
+                    type="danger"
+                    icon={<DeleteOutlined />}
+                    onClick={() => deletePIB(record.id, record.code)}
+                  />
+                </Space>
+              ) : null
+            }
+            {
+              record.can['update-goods_import_declaration'] ? (
+                <Link to={`/pib/edit/${record.id}`}>
+                  <Button
+                    size='small'
+                    type="success"
+                    icon={<EditOutlined />}
+                  />
+                </Link>
+              ) : null
+            }
+          </Space>
+        </>
+      )
     },
   ];
   return <Table

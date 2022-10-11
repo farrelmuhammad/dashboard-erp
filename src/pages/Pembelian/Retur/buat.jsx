@@ -236,7 +236,7 @@ const BuatReturPembelian = () => {
     useEffect(() => {
         // getSalesOrderDetails()
         getCodeFaktur()
-    })
+    }, [date, grup])
 
     useEffect(() => {
         if (grup == "Impor") {
@@ -249,7 +249,7 @@ const BuatReturPembelian = () => {
     }, [grup])
 
     const getCodeFaktur = async () => {
-        await axios.get(`${Url}/get_new_standard_sales_invoice_code?tanggal=${date}`, {
+        await axios.get(`${Url}/get_new_purchase_return_code?tanggal=${date}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -862,7 +862,7 @@ const BuatReturPembelian = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Retur</label>
                             <div className="col-sm-7">
                                 <input
-                                    value={code}
+                                    value="OTOMATIS"
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"

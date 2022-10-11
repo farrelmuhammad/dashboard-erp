@@ -177,7 +177,7 @@ const BuatFakturPembelian = () => {
     }, [grup])
 
     const getCodeFaktur = async () => {
-        await axios.get(`${Url}/get_new_standard_sales_invoice_code?tanggal=${date}`, {
+        await axios.get(`${Url}/get_new_purchase_invoice_code/Local?tanggal=${date}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -809,7 +809,7 @@ const BuatFakturPembelian = () => {
     }
     function ubahCOA(value, id) {
         // console.log(tampilCOA)
-        let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+        let hasil = value.replace('.', '').replace(/[^0-9\.]+/g, "");
 
         let tmp = []
         let totalAkhir = 0;
@@ -1677,7 +1677,7 @@ const BuatFakturPembelian = () => {
                 <div className="text-title text-start mb-4">
                     <div className="row">
                         <div className="col">
-                            <h4 className="title fw-normal">Daftar Penerimaan Pesanan</h4>
+                            <h4 className="title fw-normal">Daftar Penerimaan Barang</h4>
                         </div>
                         <div className="col text-end me-2">
                             <Button

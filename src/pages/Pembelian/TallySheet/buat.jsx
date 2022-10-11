@@ -524,7 +524,7 @@ const BuatTallySheet = () => {
     const expandedRowRender = (record) => {
         const columns = [
             {
-                title: 'Nama Product',
+                title: 'Nama Produk',
                 dataIndex: 'product_name',
                 width: '25%',
                 key: 'name',

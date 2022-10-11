@@ -167,7 +167,7 @@ const BuatCreditNote = () => {
         formData.append("mata_uang", mataUangId);
         formData.append("bagan_akun", COAId);
         formData.append("biaya", biayaId);
-        formData.append("nominal", nominal.replaceAll('.', '').replace(/[^0-9\.]+/g, ""));
+        formData.append("nominal", nominal.replace('.', '').replace(/[^0-9\.]+/g, ""));
         formData.append("deskripsi", deskripsi);
         formData.append("status", 'Draft');
 
