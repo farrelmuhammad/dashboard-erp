@@ -124,9 +124,9 @@ const BuatTallySheet = () => {
     // const [tampilCek, setTampilCek]  = useState(true)
     const [quantityPO, setQuantityPO] = useState()
 
-    const [getDataProduct, setGetDataProduct] = useState('');
-    const [getDataFaktur, setGetDataFaktur] = useState('');
-    const [getDataRetur, setGetDataRetur] = useState('');
+    const [getDataProduct, setGetDataProduct] = useState([]);
+    const [getDataFaktur, setGetDataFaktur] = useState([]);
+    const [getDataRetur, setGetDataRetur] = useState([]);
     const [getDataDetailPO, setGetDataDetailPO] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -171,7 +171,18 @@ const BuatTallySheet = () => {
 
         for (let x = 0; x < product.length; x++) {
             total = [];
-            for (let i = 0; i < product[x].purchase_order_details.length; i++) {
+            let dataProduk;
+            if (sumber == 'Retur') {
+                dataProduk = product[x].sales_return_details;
+            }
+            else if (sumber == 'PO') {
+                dataProduk = product[x].purchase_order_details;
+            }
+            else if (sumber == 'Faktur') {
+                dataProduk = product[x].purchase_invoice_details;
+            }
+
+            for (let i = 0; i < dataProduk.length; i++) {
                 total[i] = 0;
                 for (let a = 1; a < data[x][i].length; a++) {
                     for (let b = 1; b < data[x][i][a].length; b++) {
@@ -188,12 +199,22 @@ const BuatTallySheet = () => {
 
         let arrStatus = []
         for (let x = 0; x < product.length; x++) {
+            let dataProduk;
+            if (sumber == 'Retur') {
+                dataProduk = product[x].sales_return_details;
+            }
+            else if (sumber == 'PO') {
+                dataProduk = product[x].purchase_order_details;
+            }
+            else if (sumber == 'Faktur') {
+                dataProduk = product[x].purchase_invoice_details;
+            }
 
             let stts = []
-            for (let i = 0; i < product[x].purchase_order_details.length; i++) {
+            for (let i = 0; i < dataProduk.length; i++) {
                 // status 
-                let qtyPO = product[x].purchase_order_details[i].quantity;
-                let qtySebelumnya = product[x].purchase_order_details[i].tally_sheets_qty;
+                let qtyPO = dataProduk[i].quantity;
+                let qtySebelumnya = dataProduk[i].tally_sheets_qty;
                 console.log(qtySebelumnya)
                 if (Number(arrTotal[x][i]) + Number(qtySebelumnya) >= qtyPO) {
                     stts.push('Done')
@@ -241,7 +262,19 @@ const BuatTallySheet = () => {
 
         for (let x = 0; x < product.length; x++) {
             totTly = [];
-            for (let i = 0; i < product[x].purchase_order_details.length; i++) {
+            let dataProduk;
+            if (sumber == 'Retur') {
+                dataProduk = product[x].sales_return_details;
+            }
+            else if (sumber == 'PO') {
+                dataProduk = product[x].purchase_order_details;
+            }
+            else if (sumber == 'Faktur') {
+                dataProduk = product[x].purchase_invoice_details;
+            }
+
+
+            for (let i = 0; i < dataProduk.length; i++) {
                 totTly[i] = 0;
                 for (let a = 1; a < data[x][i].length; a++) {
                     for (let b = 1; b < data[x][i][a].length; b++) {
@@ -292,8 +325,19 @@ const BuatTallySheet = () => {
         for (let x = 0; x < product.length; x++) {
             tempKuantitas = [];
             total = [];
+            let dataProduk;
+            if (sumber == 'Retur') {
+                dataProduk = product[x].sales_return_details;
+            }
+            else if (sumber == 'PO') {
+                dataProduk = product[x].purchase_order_details;
+            }
+            else if (sumber == 'Faktur') {
+                dataProduk = product[x].purchase_invoice_details;
+            }
+
             if (x === idxPesanan) {
-                for (let i = 0; i < product[x].purchase_order_details.length; i++) {
+                for (let i = 0; i < dataProduk.length; i++) {
                     indexBox = 0;
                     total[i] = 0;
 
@@ -328,7 +372,7 @@ const BuatTallySheet = () => {
             }
             else {
                 kuantitas = [];
-                for (let i = 0; i < product[x].purchase_order_details.length; i++) {
+                for (let i = 0; i < dataProduk.length; i++) {
                     if (kuantitasBox[x][i] == 0 || kuantitasBox[x].length == 0) {
                         kuantitas.push([0]);
                     }
@@ -429,13 +473,25 @@ const BuatTallySheet = () => {
         let arrtmp = [];
         let stts = [];
         let arrStatus = []
-        let qtyPO = product[idxPesanan].purchase_order_details[i].quantity;
-        let qtySebelumnya = product[idxPesanan].purchase_order_details[i].tally_sheets_qty;
+        let dataProduk;
+        if (sumber == 'Retur') {
+            dataProduk = product[idxPesanan].sales_return_details;
+        }
+        else if (sumber == 'PO') {
+            dataProduk = product[idxPesanan].purchase_order_details;
+        }
+        else if (sumber == 'Faktur') {
+            dataProduk = product[idxPesanan].purchase_invoice_details;
+        }
+
+
+        let qtyPO = dataProduk[i].quantity;
+        let qtySebelumnya = dataProduk[i].tally_sheets_qty;
 
         for (let x = 0; x < product.length; x++) {
             tmp = [];
             if (x == idxPesanan) {
-                for (let i = 0; i < product[x].purchase_order_details.length; i++) {
+                for (let i = 0; i < dataProduk.length; i++) {
                     if (i === indexPO) {
                         tmp[i] = 0;
                         tmp[i] = totalTallySheet[x][i];
@@ -467,28 +523,92 @@ const BuatTallySheet = () => {
     }
 
     function hapusIndexProduct(i, idx) {
-        console.log(statusPO)
         setLoadingTable(true)
+
+        // console.log(getDataProduct)
+
         for (let x = 0; x < product.length; x++) {
-            for (let y = 0; y < product[x].purchase_order_details.length; y++) {
+            let dataDetail;
+            if (sumber == 'Retur') {
+                dataDetail = product[x].sales_return_details;
+            }
+            else if (sumber == 'PO') {
+                dataDetail = product[x].purchase_order_details;
+            }
+            else if (sumber == 'Faktur') {
+                dataDetail = product[x].purchase_invoice_details;
+            }
+
+
+            for (let y = 0; y < dataDetail.length; y++) {
                 if (x == i && y == idx) {
-                    console.log(product[x].purchase_order_details.length);
-                    console.log(product[x].purchase_order_details);
-                    if (product[x].purchase_order_details.length == 1) {
+
+                    if (dataDetail.length == 1) {
+
+                        // pengecekan centang 
+                        if (sumber == 'Retur') {
+                            let tmp = [];
+                            for (let j = 0; j < getDataRetur.length; j++) {
+                                if (getDataRetur[j].detail.code == product[x].code) {
+                                    tmp.push({
+                                        detail: getDataRetur[j].detail,
+                                        statusCek: false
+                                    })
+                                }
+                                else {
+                                    tmp.push(getDataRetur[j])
+                                }
+                            }
+                            setGetDataRetur(tmp)
+
+                        }
+                        else if (sumber == 'PO') {
+                            // hapus cek 
+                            let tmp = [];
+                            for (let j = 0; j < getDataProduct.length; j++) {
+                                if (getDataProduct[j].detail.code == product[x].code) {
+                                    tmp.push({
+                                        detail: getDataProduct[j].detail,
+                                        statusCek: false
+                                    })
+                                }
+                                else {
+                                    tmp.push(getDataProduct[j])
+                                }
+                            }
+                            setGetDataProduct(tmp)
+                        }
+                        else if (sumber == 'Faktur') {
+                            let tmp = [];
+                            for (let j = 0; j < getDataFaktur.length; j++) {
+                                if (getDataFaktur[j].detail.code == product[x].code) {
+                                    tmp.push({
+                                        detail: getDataFaktur[j].detail,
+                                        statusCek: false
+                                    })
+                                }
+                                else {
+                                    tmp.push(getDataFaktur[j])
+                                }
+                            }
+                            setGetDataFaktur(tmp)
+
+                        }
+
+                        // hapus data 
                         data.splice(x, 1)
                         quantity.splice(x, 1)
                         totalBox.splice(x, 1)
                         product.splice(x, 1);
-                        // setProduct([]);
                         statusPO.splice(x, 1)
 
+                        setIndexPO(0)
                         setIdxPesanan(0)
                         Swal.fire({
                             icon: 'success',
                             title: 'Berhasil',
                             text: 'Data berhasil dihapus',
                         }).then(() => {
-                            console.log(statusPO)
                             setLoadingTable(false)
                         });
 
@@ -498,8 +618,8 @@ const BuatTallySheet = () => {
                         statusPO[x].splice(y, 1)
                         quantity[x].splice(y, 1)
                         totalBox[x].splice(y, 1)
-                        product[x].purchase_order_details.splice(y, 1);
-
+                        dataDetail.splice(y, 1);
+                        setIndexPO(0)
                         setIdxPesanan(0)
                         Swal.fire({
                             icon: 'success',
@@ -527,7 +647,17 @@ const BuatTallySheet = () => {
         setProductName(productName)
         setIndexPO(indexPO);
         setIdxPesanan(indexProduct);
-        setProductPO(product[indexProduct].purchase_order_details);
+        if (sumber == 'Retur') {
+
+            setProductPO(product[indexProduct].sales_return_details);
+        }
+        else if (sumber == 'PO') {
+            setProductPO(product[indexProduct].sales_return_details);
+        }
+        else if (sumber == 'Faktur') {
+            setProductPO(product[indexProduct].purchase_invoice_details);
+        }
+
         setModal2Visible2(true);
     }
 
@@ -667,145 +797,433 @@ const BuatTallySheet = () => {
 
         }
 
-        const dataPurchase =
-            [...product[record.key].purchase_order_details.map((item, i) => ({
-                product_name: item.product_name,
-                quantity: quantity[record.key][i].toFixed(2).replace('.', ','),
-                unit: item.unit,
-                status: statusPO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusPO[record.key][i] === 'Next Delivery' ? <Tag color="orange" type="button" onClick={() => forceDoneProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : statusPO[record.key][i] === 'Done' ? <Tag color="green" type="button" onClick={() => forceNexDeliveryProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : null
-                ,
-                box:
-                    <>
-                        <a onClick={() => klikTampilSheet(record.key, i, item.product_name, item.quantity, item.tally_sheets_qty)}>
-                            {totalBox[record.key][i]}
-                        </a>
-                        <Modal
-                            centered
-                            visible={modal2Visible2}
-                            onCancel={() => setModal2Visible2(false)}
-                            width={1000}
-                            footer={[
-                                <Button
-                                    key="submit"
-                                    type="primary"
-                                    style={{ background: "green", borderColor: "white" }}
-                                    onClick={() => simpanTallySheet(indexPO)}
-                                >
-                                    Simpan
-                                </Button>,
-                            ]}
-                        >
-                            <div className="text-title text-start">
-                                <div className="row">
-                                    <div className="col">
-                                        <div className="row">
-                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Tally Sheet</label>
-                                            <div className="col-sm-3">
-                                                <input
-                                                    value={product[idxPesanan].code}
-                                                    type="Nama"
-                                                    className="form-control"
-                                                    id="inputNama3"
-                                                    disabled
-                                                />
-                                            </div>
-                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
-                                            <div className="col-sm-3">
-                                                <input
-                                                    value={quantityPO}
-                                                    type="Nama"
-                                                    className="form-control"
-                                                    id="inputNama3"
-                                                    disabled
-                                                />
+        //  dataProdukTabel = []
+        if (sumber == 'PO') {
+            const dataProdukTabel =
+                [...product[record.key].purchase_order_details.map((item, i) => ({
+                    product_name: item.product_name,
+                    quantity: quantity[record.key][i].toFixed(2).replace('.', ','),
+                    unit: item.unit,
+                    status: statusPO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusPO[record.key][i] === 'Next Delivery' ? <Tag color="orange" type="button" onClick={() => forceDoneProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : statusPO[record.key][i] === 'Done' ? <Tag color="green" type="button" onClick={() => forceNexDeliveryProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : null
+                    ,
+                    box:
+                        <>
+                            <a onClick={() => klikTampilSheet(record.key, i, item.product_name, item.quantity, item.tally_sheets_qty)}>
+                                {totalBox[record.key][i]}
+                            </a>
+                            <Modal
+                                centered
+                                visible={modal2Visible2}
+                                onCancel={() => setModal2Visible2(false)}
+                                width={1000}
+                                footer={[
+                                    <Button
+                                        key="submit"
+                                        type="primary"
+                                        style={{ background: "green", borderColor: "white" }}
+                                        onClick={() => simpanTallySheet(indexPO)}
+                                    >
+                                        Simpan
+                                    </Button>,
+                                ]}
+                            >
+                                <div className="text-title text-start">
+                                    <div className="row">
+                                        <div className="col">
+                                            <div className="row">
+                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Tally Sheet</label>
+                                                <div className="col-sm-3">
+                                                    <input
+                                                        value={product[idxPesanan].code}
+                                                        type="Nama"
+                                                        className="form-control"
+                                                        id="inputNama3"
+                                                        disabled
+                                                    />
+                                                </div>
+                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
+                                                <div className="col-sm-3">
+                                                    <input
+                                                        value={quantityPO}
+                                                        type="Nama"
+                                                        className="form-control"
+                                                        id="inputNama3"
+                                                        disabled
+                                                    />
 
+                                                </div>
+                                            </div>
+                                            <div className="row mb-1 mt-2">
+                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
+                                                <div className="col-sm-3">
+                                                    <input
+                                                        value={productName}
+                                                        type="Nama"
+                                                        className="form-control"
+                                                        id="inputNama3"
+                                                        disabled
+                                                    />
+
+                                                </div>
+                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
+                                                <div className="col-sm-3">
+                                                    <input
+                                                        value={totalTallySheet[idxPesanan][indexPO].toFixed(2).replace('.', ',')}
+                                                        type="Nama"
+                                                        className="form-control"
+                                                        id="inputNama3"
+                                                        disabled
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
-                                        <div className="row mb-1 mt-2">
-                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
-                                            <div className="col-sm-3">
-                                                <input
-                                                    value={productName}
-                                                    type="Nama"
-                                                    className="form-control"
-                                                    id="inputNama3"
-                                                    disabled
-                                                />
 
-                                            </div>
-                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
-                                            <div className="col-sm-3">
-                                                <input
-                                                    value={totalTallySheet[idxPesanan][indexPO].toFixed(2).replace('.', ',')}
-                                                    type="Nama"
-                                                    className="form-control"
-                                                    id="inputNama3"
-                                                    disabled
-                                                />
-                                            </div>
+                                        <div className="w-10" style={{ overflowY: "scroll", height: "300px", display: loadingSpreedSheet ? "none" : 'block' }}>
+                                            <ReactDataSheet
+                                                data={data[idxPesanan][indexPO]}
+                                                valueRenderer={valueRenderer}
+                                                onCellsChanged={onCellsChanged}
+                                                onContextMenu={onContextMenu}
+                                            />
                                         </div>
-                                    </div>
+                                        <div className='mt-2 d-flex'>
+                                            <Button
+                                                size='small'
+                                                type="primary"
+                                                icon={<PlusOutlined />}
+                                                onClick={() => klikTambahBaris()}
+                                            />
+                                            {
+                                                data[idxPesanan][indexPO].length - 2 > 0 ?
+                                                    <Button
+                                                        className='ms-2'
+                                                        size='small'
+                                                        type="danger"
+                                                        icon={<MinusOutlined />}
+                                                        onClick={() => klikHapusBaris()}
+                                                    /> :
+                                                    <Button
+                                                        disabled
+                                                        className='ms-2'
+                                                        size='small'
+                                                        type="danger"
+                                                        icon={<MinusOutlined />}
+                                                        onClick={() => klikHapusBaris()}
+                                                    />
+                                            }
 
-                                    <div className="w-10" style={{ overflowY: "scroll", height: "300px", display: loadingSpreedSheet ? "none" : 'block' }}>
-                                        <ReactDataSheet
-                                            data={data[idxPesanan][indexPO]}
-                                            valueRenderer={valueRenderer}
-                                            onCellsChanged={onCellsChanged}
-                                            onContextMenu={onContextMenu}
-                                        />
-                                    </div>
-                                    <div className='mt-2 d-flex'>
-                                        <Button
-                                            size='small'
-                                            type="primary"
-                                            icon={<PlusOutlined />}
-                                            onClick={() => klikTambahBaris()}
-                                        />
-                                        {
-                                            data[idxPesanan][indexPO].length - 2 > 0 ?
-                                                <Button
-                                                    className='ms-2'
-                                                    size='small'
-                                                    type="danger"
-                                                    icon={<MinusOutlined />}
-                                                    onClick={() => klikHapusBaris()}
-                                                /> :
-                                                <Button
-                                                    disabled
-                                                    className='ms-2'
-                                                    size='small'
-                                                    type="danger"
-                                                    icon={<MinusOutlined />}
-                                                    onClick={() => klikHapusBaris()}
-                                                />
-                                        }
-
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </Modal>
-                    </>,
-                action:
-                    <Space size="middle">
-                        <Button
-                            size='small'
-                            type="danger"
-                            icon={<DeleteOutlined />}
-                            onClick={() => hapusIndexProduct(record.key, i)}
-                        />
-                    </Space>,
-            }))
+                            </Modal>
+                        </>,
+                    action:
+                        <Space size="middle">
+                            <Button
+                                size='small'
+                                type="danger"
+                                icon={<DeleteOutlined />}
+                                onClick={() => hapusIndexProduct(record.key, i)}
+                            />
+                        </Space>,
+                }))
 
-            ];
+                ];
 
-        return <Table
-            style={{ display: loadingTable ? "none" : 'block' }}
-            columns={columns}
-            dataSource={dataPurchase}
-            pagination={false}
-            isLoading={true}
-            rowClassName={() => 'editable-row'}
-        />;
+            return <Table
+                style={{ display: loadingTable ? "none" : 'block' }}
+                columns={columns}
+                dataSource={dataProdukTabel}
+                pagination={false}
+                isLoading={true}
+                rowClassName={() => 'editable-row'}
+            />;
+        }
+        else if (sumber == 'Retur') {
+            const dataProdukTabel =
+                [...product[record.key].sales_return_details.map((item, i) => ({
+                    product_name: item.product_name,
+                    quantity: quantity[record.key][i].toFixed(2).replace('.', ','),
+                    unit: item.unit,
+                    status: statusPO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusPO[record.key][i] === 'Next Delivery' ? <Tag color="orange" type="button" onClick={() => forceDoneProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : statusPO[record.key][i] === 'Done' ? <Tag color="green" type="button" onClick={() => forceNexDeliveryProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : null
+                    ,
+                    box:
+                        <>
+                            <a onClick={() => klikTampilSheet(record.key, i, item.product_name, item.quantity, item.tally_sheets_qty)}>
+                                {totalBox[record.key][i]}
+                            </a>
+                            <Modal
+                                centered
+                                visible={modal2Visible2}
+                                onCancel={() => setModal2Visible2(false)}
+                                width={1000}
+                                footer={[
+                                    <Button
+                                        key="submit"
+                                        type="primary"
+                                        style={{ background: "green", borderColor: "white" }}
+                                        onClick={() => simpanTallySheet(indexPO)}
+                                    >
+                                        Simpan
+                                    </Button>,
+                                ]}
+                            >
+                                <div className="text-title text-start">
+                                    <div className="row">
+                                        <div className="col">
+                                            <div className="row">
+                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Tally Sheet</label>
+                                                <div className="col-sm-3">
+                                                    <input
+                                                        value={product[idxPesanan].code}
+                                                        type="Nama"
+                                                        className="form-control"
+                                                        id="inputNama3"
+                                                        disabled
+                                                    />
+                                                </div>
+                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
+                                                <div className="col-sm-3">
+                                                    <input
+                                                        value={quantityPO}
+                                                        type="Nama"
+                                                        className="form-control"
+                                                        id="inputNama3"
+                                                        disabled
+                                                    />
+
+                                                </div>
+                                            </div>
+                                            <div className="row mb-1 mt-2">
+                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
+                                                <div className="col-sm-3">
+                                                    <input
+                                                        value={productName}
+                                                        type="Nama"
+                                                        className="form-control"
+                                                        id="inputNama3"
+                                                        disabled
+                                                    />
+
+                                                </div>
+                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
+                                                <div className="col-sm-3">
+                                                    <input
+                                                        value={totalTallySheet[idxPesanan][indexPO].toFixed(2).replace('.', ',')}
+                                                        type="Nama"
+                                                        className="form-control"
+                                                        id="inputNama3"
+                                                        disabled
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="w-10" style={{ overflowY: "scroll", height: "300px", display: loadingSpreedSheet ? "none" : 'block' }}>
+                                            <ReactDataSheet
+                                                data={data[idxPesanan][indexPO]}
+                                                valueRenderer={valueRenderer}
+                                                onCellsChanged={onCellsChanged}
+                                                onContextMenu={onContextMenu}
+                                            />
+                                        </div>
+                                        <div className='mt-2 d-flex'>
+                                            <Button
+                                                size='small'
+                                                type="primary"
+                                                icon={<PlusOutlined />}
+                                                onClick={() => klikTambahBaris()}
+                                            />
+                                            {
+                                                data[idxPesanan][indexPO].length - 2 > 0 ?
+                                                    <Button
+                                                        className='ms-2'
+                                                        size='small'
+                                                        type="danger"
+                                                        icon={<MinusOutlined />}
+                                                        onClick={() => klikHapusBaris()}
+                                                    /> :
+                                                    <Button
+                                                        disabled
+                                                        className='ms-2'
+                                                        size='small'
+                                                        type="danger"
+                                                        icon={<MinusOutlined />}
+                                                        onClick={() => klikHapusBaris()}
+                                                    />
+                                            }
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </Modal>
+                        </>,
+                    action:
+                        <Space size="middle">
+                            <Button
+                                size='small'
+                                type="danger"
+                                icon={<DeleteOutlined />}
+                                onClick={() => hapusIndexProduct(record.key, i)}
+                            />
+                        </Space>,
+                }))
+
+                ];
+
+            return <Table
+                style={{ display: loadingTable ? "none" : 'block' }}
+                columns={columns}
+                dataSource={dataProdukTabel}
+                pagination={false}
+                isLoading={true}
+                rowClassName={() => 'editable-row'}
+            />;
+        }
+
+        else if (sumber == 'Faktur') {
+            const dataProdukTabel =
+                [...product[record.key].purchase_invoice_details.map((item, i) => ({
+                    product_name: item.product_name,
+                    quantity: quantity[record.key][i].toFixed(2).replace('.', ','),
+                    unit: item.unit,
+                    status: statusPO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusPO[record.key][i] === 'Next Delivery' ? <Tag color="orange" type="button" onClick={() => forceDoneProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : statusPO[record.key][i] === 'Done' ? <Tag color="green" type="button" onClick={() => forceNexDeliveryProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : null
+                    ,
+                    box:
+                        <>
+                            <a onClick={() => klikTampilSheet(record.key, i, item.product_name, item.quantity, item.tally_sheets_qty)}>
+                                {totalBox[record.key][i]}
+                            </a>
+                            <Modal
+                                centered
+                                visible={modal2Visible2}
+                                onCancel={() => setModal2Visible2(false)}
+                                width={1000}
+                                footer={[
+                                    <Button
+                                        key="submit"
+                                        type="primary"
+                                        style={{ background: "green", borderColor: "white" }}
+                                        onClick={() => simpanTallySheet(indexPO)}
+                                    >
+                                        Simpan
+                                    </Button>,
+                                ]}
+                            >
+                                <div className="text-title text-start">
+                                    <div className="row">
+                                        <div className="col">
+                                            <div className="row">
+                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Tally Sheet</label>
+                                                <div className="col-sm-3">
+                                                    <input
+                                                        value={product[idxPesanan].code}
+                                                        type="Nama"
+                                                        className="form-control"
+                                                        id="inputNama3"
+                                                        disabled
+                                                    />
+                                                </div>
+                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
+                                                <div className="col-sm-3">
+                                                    <input
+                                                        value={quantityPO}
+                                                        type="Nama"
+                                                        className="form-control"
+                                                        id="inputNama3"
+                                                        disabled
+                                                    />
+
+                                                </div>
+                                            </div>
+                                            <div className="row mb-1 mt-2">
+                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
+                                                <div className="col-sm-3">
+                                                    <input
+                                                        value={productName}
+                                                        type="Nama"
+                                                        className="form-control"
+                                                        id="inputNama3"
+                                                        disabled
+                                                    />
+
+                                                </div>
+                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
+                                                <div className="col-sm-3">
+                                                    <input
+                                                        value={totalTallySheet[idxPesanan][indexPO].toFixed(2).replace('.', ',')}
+                                                        type="Nama"
+                                                        className="form-control"
+                                                        id="inputNama3"
+                                                        disabled
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="w-10" style={{ overflowY: "scroll", height: "300px", display: loadingSpreedSheet ? "none" : 'block' }}>
+                                            <ReactDataSheet
+                                                data={data[idxPesanan][indexPO]}
+                                                valueRenderer={valueRenderer}
+                                                onCellsChanged={onCellsChanged}
+                                                onContextMenu={onContextMenu}
+                                            />
+                                        </div>
+                                        <div className='mt-2 d-flex'>
+                                            <Button
+                                                size='small'
+                                                type="primary"
+                                                icon={<PlusOutlined />}
+                                                onClick={() => klikTambahBaris()}
+                                            />
+                                            {
+                                                data[idxPesanan][indexPO].length - 2 > 0 ?
+                                                    <Button
+                                                        className='ms-2'
+                                                        size='small'
+                                                        type="danger"
+                                                        icon={<MinusOutlined />}
+                                                        onClick={() => klikHapusBaris()}
+                                                    /> :
+                                                    <Button
+                                                        disabled
+                                                        className='ms-2'
+                                                        size='small'
+                                                        type="danger"
+                                                        icon={<MinusOutlined />}
+                                                        onClick={() => klikHapusBaris()}
+                                                    />
+                                            }
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </Modal>
+                        </>,
+                    action:
+                        <Space size="middle">
+                            <Button
+                                size='small'
+                                type="danger"
+                                icon={<DeleteOutlined />}
+                                onClick={() => hapusIndexProduct(record.key, i)}
+                            />
+                        </Space>,
+                }))
+
+                ];
+
+            return <Table
+                style={{ display: loadingTable ? "none" : 'block' }}
+                columns={columns}
+                dataSource={dataProdukTabel}
+                pagination={false}
+                isLoading={true}
+                rowClassName={() => 'editable-row'}
+            />;
+        }
+
+
 
     };
 
@@ -840,6 +1258,7 @@ const BuatTallySheet = () => {
     };
     // load options using API call
     const loadOptionsSupplier = (inputValue) => {
+
         return axios.get(`${Url}/tally_sheet_ins_available_suppliers/purchase_orders?nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
@@ -848,8 +1267,18 @@ const BuatTallySheet = () => {
         }).then((res) => res.data.data);
     };
 
+    const loadOptionsSupplierImpor = (inputValue) => {
+
+        return axios.get(`${Url}/tally_sheet_ins_available_suppliers/purchase_invoices?nama=${inputValue}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.data.data);
+    };
+
     const handleChangeCustomer = (value) => {
-        setGrup(value._group)
+        // setGrup(value._group)
         setProduct([])
         setSelectedCustomer(value);
         setCustomer(value.id);
@@ -894,7 +1323,7 @@ const BuatTallySheet = () => {
 
     useEffect(() => {
         getNewCodeTally()
-    })
+    }, [date])
 
     useEffect(() => {
         const getProduct = async () => {
@@ -904,8 +1333,17 @@ const BuatTallySheet = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data.data);
-            setGetDataDetailPO(res.data.data.map(d => d.purchase_order_details))
+            let tmp = []
+            for (let i = 0; i < res.data.data.length; i++) {
+                tmp.push({
+                    detail: res.data.data[i],
+                    statusCek: false
+                });
+            }
+            setGetDataProduct(tmp)
+
+            // setGetDataProduct(res.data.data);
+            // setGetDataDetailPO(res.data.data.map(d => d.purchase_order_details))
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -919,7 +1357,16 @@ const BuatTallySheet = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataRetur(res.data.data);
+
+            let tmp = []
+            for (let i = 0; i < res.data.data.length; i++) {
+                tmp.push({
+                    detail: res.data.data[i],
+                    statusCek: false
+                });
+            }
+            setGetDataRetur(tmp)
+
             // setGetDataDetailPO(res.data.data.map(d => d.purchase_order_details))
         };
 
@@ -935,94 +1382,88 @@ const BuatTallySheet = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataFaktur(res.data.data);
+            let tmp = []
+            for (let i = 0; i < res.data.data.length; i++) {
+                tmp.push({
+                    detail: res.data.data[i],
+                    statusCek: false
+                });
+            }
+            setGetDataFaktur(tmp)
+            // setGetDataFaktur(res.data.data);
         };
 
         if (query.length === 0 || query.length > 2) getFaktur();
     }, [query, supplier])
 
-    // Column for modal input product
-    const columnsModal = [
-        {
-            title: 'No. Pesanan',
-            width: '20%',
-            dataIndex: 'code',
-        },
-        {
-            title: 'Supplier',
-            dataIndex: 'supplier_name',
-            width: '15%',
-            align: 'center',
-        },
-        {
-            title: 'Catatan',
-            dataIndex: 'notes',
-            width: '30%',
-            align: 'center',
-        },
-        {
-            title: 'actions',
-            dataIndex: 'address',
-            width: '8%',
-            align: 'center',
-            render: (_, record) => (
-                <>
-                    <Checkbox
-                        // style={{ display: tampilCek ? "block" : "none"}}
-                        value={record}
-                        onChange={handleCheck}
-                    />
-                </>
-            )
-        },
-    ];
+    function klikUbahSumber(value) {
+        setSumber(value);
+        setProduct([])
+        setSelectedSupplier('');
+        setSelectedCustomer('')
+    }
+    const handleCheck = (event, indexRetur) => {
+        let tmpDataBaru = [];
 
-    const columnsModalFaktur = [
-        {
-            title: 'No. Pesanan',
-            width: '20%',
-            dataIndex: 'code',
-        },
-        {
-            title: 'Supplier',
-            dataIndex: 'supplier_name',
-            width: '15%',
-            align: 'center',
-        },
-        {
-            title: 'Catatan',
-            dataIndex: 'notes',
-            width: '30%',
-            align: 'center',
-        },
-        {
-            title: 'actions',
-            dataIndex: 'address',
-            width: '8%',
-            align: 'center',
-            render: (_, record) => (
-                <>
-                    <Checkbox
-                        // style={{ display: tampilCek ? "block" : "none"}}
-                        value={record}
-                        onChange={handleCheck}
-                    />
-                </>
-            )
-        },
-    ];
+        // perubahan data dan status ceked 
+        if (sumber == 'Retur') {
+            for (let i = 0; i < getDataRetur.length; i++) {
+                if (i == indexRetur) {
+                    tmpDataBaru.push({
+                        detail: getDataRetur[i].detail,
+                        statusCek: !getDataRetur[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataRetur[i])
+                }
+            }
+            setGetDataRetur(tmpDataBaru)
+        }
 
-    const handleCheck = (event) => {
+        else if (sumber == 'PO') {
+            for (let i = 0; i < getDataProduct.length; i++) {
+                if (i == indexRetur) {
+                    tmpDataBaru.push({
+                        detail: getDataProduct[i].detail,
+                        statusCek: !getDataProduct[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataProduct[i])
+                }
+            }
+            setGetDataProduct(tmpDataBaru)
+        }
+
+        else if (sumber == 'Faktur') {
+            for (let i = 0; i < getDataFaktur.length; i++) {
+                if (i == indexRetur) {
+                    tmpDataBaru.push({
+                        detail: getDataFaktur[i].detail,
+                        statusCek: !getDataFaktur[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataFaktur[i])
+                }
+            }
+            setGetDataFaktur(tmpDataBaru)
+        }
+
+
         var updatedList = [...product];
         let arrData = [];
         let arrBox = [];
         let arrqty = []
         let arrKuantitas = [];
         let arrStatus = []
-        if (event.target.checked) {
-            updatedList = [...product, event.target.value];
 
-            // tambah data pas di checked 
+        // jika ceked 
+        if (tmpDataBaru[indexRetur].statusCek) {
+            updatedList = [...product, event.target.value.detail];
+
+            // tambah data pas di checked ketika data masih 0
             if (data.length == 0) {
                 for (let i = 0; i < updatedList.length; i++) {
                     let tempData = [];
@@ -1030,8 +1471,20 @@ const BuatTallySheet = () => {
                     let qty = [];
                     let stts = []
                     let tempBox = [];
+                    let dataSumber = [];
+                    if (sumber == 'Retur') {
+                        dataSumber = updatedList[i].sales_return_details;
+                    }
+                    else if (sumber == 'PO') {
+                        dataSumber = updatedList[i].purchase_order_details;
+                    }
+                    else if (sumber == 'Faktur') {
+                        dataSumber = updatedList[i].purchase_invoice_details;
+                    }
 
-                    for (let x = 0; x < updatedList[i].purchase_order_details.length; x++) {
+
+
+                    for (let x = 0; x < dataSumber.length; x++) {
                         tempData.push([
                             [
                                 { readOnly: true, value: "" },
@@ -1177,10 +1630,10 @@ const BuatTallySheet = () => {
                                 { value: '' },
                             ]
                         ]);
-                        if (updatedList[i].purchase_order_details[x].tally_sheets_qty >= updatedList[i].purchase_order_details[x].quantity) {
+                        if (dataSumber[x].tally_sheets_qty >= dataSumber[x].quantity) {
                             stts.push('Done')
                         }
-                        else if (updatedList[i].purchase_order_details[x].tally_sheets_qty < updatedList[i].purchase_order_details[x].quantity) {
+                        else if (dataSumber[x].tally_sheets_qty < dataSumber[x].quantity) {
                             stts.push('Next Delivery')
 
                         }
@@ -1200,8 +1653,19 @@ const BuatTallySheet = () => {
                 // setting data 
                 for (let i = 0; i < updatedList.length; i++) {
                     let tempData = [];
+                    let dataSumber = [];
+                    if (sumber == 'Retur') {
+                        dataSumber = updatedList[i].sales_return_details;
+                    }
+                    else if (sumber == 'PO') {
+                        dataSumber = updatedList[i].purchase_order_details;
+                    }
+                    else if (sumber == 'Faktur') {
+                        dataSumber = updatedList[i].purchase_invoice_details;
+                    }
+
                     if (i == updatedList.length - 1) {
-                        for (let x = 0; x < updatedList[i].purchase_order_details.length; x++) {
+                        for (let x = 0; x < dataSumber.length; x++) {
                             tempData[x] = [
                                 [
                                     { readOnly: true, value: "" },
@@ -1360,8 +1824,19 @@ const BuatTallySheet = () => {
                 // memasukkan ulang kuantitas box 
                 for (let i = 0; i < updatedList.length; i++) {
                     let tempKuantitas = [];
+                    let dataSumber = [];
+                    if (sumber == 'Retur') {
+                        dataSumber = updatedList[i].sales_return_details;
+                    }
+                    else if (sumber == 'PO') {
+                        dataSumber = updatedList[i].purchase_order_details;
+                    }
+                    else if (sumber == 'Faktur') {
+                        dataSumber = updatedList[i].purchase_invoice_details;
+                    }
+
                     if (i == updatedList.length - 1) {
-                        for (let x = 0; x < updatedList[i].purchase_order_details.length; x++) {
+                        for (let x = 0; x < dataSumber.length; x++) {
                             tempKuantitas.push(0);
                         }
                         arrKuantitas[i] = tempKuantitas;
@@ -1376,10 +1851,19 @@ const BuatTallySheet = () => {
                     let qty = [];
                     let tempBox = [];
                     let stts = [];
-
+                    let dataSumber = [];
+                    if (sumber == 'Retur') {
+                        dataSumber = updatedList[i].sales_return_details;
+                    }
+                    else if (sumber == 'PO') {
+                        dataSumber = updatedList[i].purchase_order_details;
+                    }
+                    else if (sumber == 'Faktur') {
+                        dataSumber = updatedList[i].purchase_invoice_details;
+                    }
                     // ini jika data yang bertambah 
                     if (i == updatedList.length - 1) {
-                        for (let x = 0; x < updatedList[i].purchase_order_details.length; x++) {
+                        for (let x = 0; x < dataSumber.length; x++) {
                             qty.push(0);
                             tempBox.push(0);
                             stts.push('Next Delivery')
@@ -1402,14 +1886,24 @@ const BuatTallySheet = () => {
 
             // cek status done dari awal 
             for (let i = 0; i < updatedList.length; i++) {
-                for (let x = 0; x < updatedList[i].purchase_order_details.length; x++) {
-                    if (updatedList[i].purchase_order_details[x].tally_sheets_qty >= updatedList[i].purchase_order_details[x].quantity) {
+                let dataSumber = [];
+                if (sumber == 'Retur') {
+                    dataSumber = updatedList[i].sales_return_details;
+                }
+                else if (sumber == 'PO') {
+                    dataSumber = updatedList[i].purchase_order_details;
+                }
+                else if (sumber == 'Faktur') {
+                    dataSumber = updatedList[i].purchase_invoice_details;
+                }
+                for (let x = 0; x < dataSumber.length; x++) {
+                    if (dataSumber[x].tally_sheets_qty >= dataSumber[x].quantity) {
                         arrKuantitas[i].splice(x, 1);
                         arrData[i].splice(x, 1);
                         arrBox[i].splice(x, 1);
                         arrStatus[i].splice(x, 1);
                         arrqty[i].splice(x, 1);
-                        updatedList[i].purchase_order_details.splice(x, 1);
+                        dataSumber.splice(x, 1);
 
                     }
                 }
@@ -1426,23 +1920,148 @@ const BuatTallySheet = () => {
         }
         else {
             for (let i = 0; i < updatedList.length; i++) {
-                if (updatedList[i] == event.target.value) {
+                if (updatedList[i] == event.target.value.detail) {
                     updatedList.splice(i, 1);
                     kuantitasBox.splice(i, 1);
                     data.splice(i, 1);
                     statusPO.splice(i, 1);
                     totalBox.splice(i, 1);
                     quantity.splice(i, 1);
-                    console.log("harusnya kehapus")
                 }
             }
-            console.log(statusPO)
             setIdxPesanan(0)
             setGetDataDetailPO(updatedList.map(d => d.purchase_order_details))
 
         }
         setProduct(updatedList);
     };
+
+    // Column for modal input product
+    const columnsModal = [
+        {
+            title: 'No. Pesanan',
+            width: '20%',
+            dataIndex: 'code',
+        },
+        {
+            title: sumber == 'Retur' ? 'Customer' : 'Supplier',
+            dataIndex: 'nama',
+            width: '15%',
+            align: 'center',
+        },
+        {
+            title: 'Catatan',
+            dataIndex: 'notes',
+            width: '30%',
+            align: 'center',
+        },
+        {
+            title: 'actions',
+            dataIndex: 'action',
+            width: '8%',
+            align: 'center',
+            // render: (_, record) => (
+            //     <>
+            //         <Checkbox
+            //             // style={{ display: tampilCek ? "block" : "none"}}
+            //             value={record}
+            //             onChange={handleCheck}
+            //         />
+            //     </>
+            // )
+        },
+    ];
+
+    const columnDataRetur =
+        [...getDataRetur.map((item, i) => ({
+            code: item.detail.code,
+            nama: item.detail.customer_name,
+            notes: item.detail.notes,
+            action:
+                <>
+                    <Checkbox
+                        // style={{ display: tampilCek ? "block" : "none"}}
+                        value={item}
+                        checked={item.statusCek}
+                        onChange={(e) => handleCheck(e, i)}
+                    />
+                </>
+        }))
+
+        ]
+
+    const columnDataPO =
+        [...getDataProduct.map((item, i) => ({
+            code: item.detail.code,
+            nama: item.detail.supplier_name,
+            notes: item.detail.notes,
+            action:
+                <>
+                    <Checkbox
+                        // style={{ display: tampilCek ? "block" : "none"}}
+                        value={item}
+                        checked={item.statusCek}
+                        onChange={(e) => handleCheck(e, i)}
+                    />
+                </>
+        }))
+
+        ]
+
+    const columnDataFaktur =
+        [...getDataFaktur.map((item, i) => ({
+            code: item.detail.code,
+            nama: item.detail.supplier_name,
+            notes: item.detail.notes,
+            action:
+                <>
+                    <Checkbox
+                        // style={{ display: tampilCek ? "block" : "none"}}
+                        value={item}
+                        checked={item.statusCek}
+                        onChange={(e) => handleCheck(e, i)}
+                    />
+                </>
+        }))
+
+        ]
+
+    // const columnsModalFaktur = [
+    //     {
+    //         title: 'No. Pesanan',
+    //         width: '20%',
+    //         dataIndex: 'code',
+    //     },
+    //     {
+    //         title: 'Supplier',
+    //         dataIndex: 'supplier_name',
+    //         width: '15%',
+    //         align: 'center',
+    //     },
+    //     {
+    //         title: 'Catatan',
+    //         dataIndex: 'notes',
+    //         width: '30%',
+    //         align: 'center',
+    //     },
+    //     {
+    //         title: 'actions',
+    //         dataIndex: 'address',
+    //         width: '8%',
+    //         align: 'center',
+    //         render: (_, record) => (
+    //             <>
+    //                 <Checkbox
+    //                     // style={{ display: tampilCek ? "block" : "none"}}
+    //                     value={record}
+    //                     onChange={handleCheck}
+    //                 />
+    //             </>
+    //         )
+    //     },
+    // ];
+
+
 
     const getNewCodeTally = async () => {
         await axios.get(`${Url}/get_new_tally_sheet_draft_code/purchase_orders?tanggal=${date}`, {
@@ -1464,21 +2083,57 @@ const BuatTallySheet = () => {
         e.preventDefault();
         const tallySheetData = new FormData();
         tallySheetData.append("tanggal", date);
-        tallySheetData.append("pemasok", supplier);
+        if (sumber == 'Retur') {
+            tallySheetData.append("pelanggan", customer);
+        }
+        else {
+            tallySheetData.append("pemasok", supplier);
+        }
+        // tallySheetData.append("pemasok", supplier);
         tallySheetData.append("gudang", warehouse);
         tallySheetData.append("catatan", description);
         tallySheetData.append("status", "Submitted");
-        product.map((p, pi) => {
-            p.purchase_order_details.map((po, i) => {
-                tallySheetData.append("id_pesanan_pembelian[]", p.id);
-                tallySheetData.append("id_produk[]", po.product_id);
-                tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
-                tallySheetData.append("aksi[]", statusPO[pi][i]);
-                tallySheetData.append("satuan_box[]", po.unit);
-                tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
 
-            })
-        });
+        if (sumber == 'Retur') {
+            product.map((p, pi) => {
+                p.sales_return_details.map((po, i) => {
+                    tallySheetData.append("id_retur_penjualan[]", p.id);
+                    tallySheetData.append("id_produk[]", po.product_id);
+                    tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
+                    tallySheetData.append("aksi[]", statusPO[pi][i]);
+                    tallySheetData.append("satuan_box[]", po.unit);
+                    tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
+
+                })
+            });
+        }
+        else if (sumber == 'PO') {
+            product.map((p, pi) => {
+                p.purchase_order_details.map((po, i) => {
+                    tallySheetData.append("id_pesanan_pembelian[]", p.id);
+                    tallySheetData.append("id_produk[]", po.product_id);
+                    tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
+                    tallySheetData.append("aksi[]", statusPO[pi][i]);
+                    tallySheetData.append("satuan_box[]", po.unit);
+                    tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
+
+                })
+            });
+        }
+        else if (sumber == 'Faktur') {
+            product.map((p, pi) => {
+                p.purchase_invoice_details.map((po, i) => {
+                    tallySheetData.append("id_faktur_pembelian[]", p.id);
+                    tallySheetData.append("id_produk[]", po.product_id);
+                    tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
+                    tallySheetData.append("aksi[]", statusPO[pi][i]);
+                    tallySheetData.append("satuan_box[]", po.unit);
+                    tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
+
+                })
+            });
+        }
+
         let key = 0;
         for (let idx = 0; idx < kuantitasBox.length; idx++) {
             for (let x = 0; x < kuantitasBox[idx].length; x++) {
@@ -1529,20 +2184,54 @@ const BuatTallySheet = () => {
         e.preventDefault();
         const tallySheetData = new FormData();
         tallySheetData.append("tanggal", date);
-        tallySheetData.append("pemasok", supplier);
+        if (sumber == 'Retur') {
+            tallySheetData.append("pelanggan", customer);
+        }
+        else {
+            tallySheetData.append("pemasok", supplier);
+        }
         tallySheetData.append("gudang", warehouse);
         tallySheetData.append("catatan", description);
         tallySheetData.append("status", "Draft");
-        product.map((p, pi) => {
-            p.purchase_order_details.map((po, i) => {
-                tallySheetData.append("id_pesanan_pembelian[]", p.id);
-                tallySheetData.append("id_produk[]", po.product_id);
-                tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
-                tallySheetData.append("satuan_box[]", po.unit);
-                tallySheetData.append("aksi[]", statusPO[pi][i]);
-                tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
-            })
-        });
+        if (sumber == 'Retur') {
+            product.map((p, pi) => {
+                p.sales_return_details.map((po, i) => {
+                    tallySheetData.append("id_retur_penjualan[]", p.id);
+                    tallySheetData.append("id_produk[]", po.product_id);
+                    tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
+                    tallySheetData.append("aksi[]", statusPO[pi][i]);
+                    tallySheetData.append("satuan_box[]", po.unit);
+                    tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
+
+                })
+            });
+        }
+        else if (sumber == 'PO') {
+            product.map((p, pi) => {
+                p.purchase_order_details.map((po, i) => {
+                    tallySheetData.append("id_pesanan_pembelian[]", p.id);
+                    tallySheetData.append("id_produk[]", po.product_id);
+                    tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
+                    tallySheetData.append("aksi[]", statusPO[pi][i]);
+                    tallySheetData.append("satuan_box[]", po.unit);
+                    tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
+
+                })
+            });
+        }
+        else if (sumber == 'Faktur') {
+            product.map((p, pi) => {
+                p.purchase_invoice_details.map((po, i) => {
+                    tallySheetData.append("id_faktur_pembelian[]", p.id);
+                    tallySheetData.append("id_produk[]", po.product_id);
+                    tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
+                    tallySheetData.append("aksi[]", statusPO[pi][i]);
+                    tallySheetData.append("satuan_box[]", po.unit);
+                    tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
+
+                })
+            });
+        }
 
         let key = 0;
         for (let idx = 0; idx < kuantitasBox.length; idx++) {
@@ -1626,30 +2315,46 @@ const BuatTallySheet = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pilih Sumber</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pilih Transaksi</label>
                             <div className="col-sm-7">
                                 <select
-                                    onChange={(e) => setSumber(e.target.value)}
+                                    onChange={(e) => klikUbahSumber(e.target.value)}
                                     id="grupSelect"
                                     className="form-select"
                                 >
-                                    <option value="">Pilih Sumber</option>
+                                    <option value="">Pilih Transaksi</option>
                                     <option value="PO">
-                                        Pesanan Pembelian
+                                        Pembelian Lokal
                                     </option>
                                     <option value="Retur" >
                                         Retur Penjualan
                                     </option>
                                     <option value="Faktur">
-                                        Faktur Pembelian
+                                        Pembelian Impor
                                     </option>
 
                                 </select>
                             </div>
                         </div>
-                        <div className="row mb-3" style={{ display: sumber == 'Retur' || sumber == '' ? 'none' : 'flex' }}>
+                        <div className="row mb-3" style={{ display: sumber == 'Faktur' ? 'flex' : 'none' }}>
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                             <div className="col-sm-7">
+                                <AsyncSelect
+                                    placeholder="Pilih Supplier..."
+                                    cacheOptions
+                                    defaultOptions
+                                    value={selectedSupplier}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsSupplierImpor}
+                                    onChange={handleChangeSupplier}
+                                />
+                            </div>
+                        </div>
+                        <div className="row mb-3" style={{ display: sumber == 'PO' ? 'flex' : 'none' }}>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
+                            <div className="col-sm-7">
+
                                 <AsyncSelect
                                     placeholder="Pilih Supplier..."
                                     cacheOptions
@@ -1660,6 +2365,7 @@ const BuatTallySheet = () => {
                                     loadOptions={loadOptionsSupplier}
                                     onChange={handleChangeSupplier}
                                 />
+
                             </div>
                         </div>
                         <div className="row mb-3" style={{ display: sumber == 'Retur' ? 'flex' : 'none' }}>
@@ -1756,7 +2462,7 @@ const BuatTallySheet = () => {
                                         </div>
                                         <Table
                                             columns={columnsModal}
-                                            dataSource={getDataRetur}
+                                            dataSource={columnDataRetur}
                                             scroll={{
                                                 y: 250,
                                             }}
@@ -1791,7 +2497,7 @@ const BuatTallySheet = () => {
                                         </div>
                                         <Table
                                             columns={columnsModal}
-                                            dataSource={getDataProduct}
+                                            dataSource={columnDataPO}
                                             scroll={{
                                                 y: 250,
                                             }}
@@ -1822,8 +2528,8 @@ const BuatTallySheet = () => {
                                             />
                                         </div>
                                         <Table
-                                            columns={columnsModalFaktur}
-                                            dataSource={getDataFaktur}
+                                            columns={columnsModal}
+                                            dataSource={columnDataFaktur}
                                             scroll={{
                                                 y: 250,
                                             }}
