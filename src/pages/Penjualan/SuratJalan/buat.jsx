@@ -110,7 +110,7 @@ const BuatSuratJalan = () => {
     const [getCode, setGetCode] = useState('');
     const navigate = useNavigate();
 
-    const [getDataProduct, setGetDataProduct] = useState();
+    const [getDataProduct, setGetDataProduct] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const [subTotal, setSubTotal] = useState("");
@@ -187,13 +187,15 @@ const BuatSuratJalan = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_tally_sheets?nama_alias=${query}&pelanggan=${customer}&status=submitted`, {
+            // const res = await axios.get(`${Url}/select_tally_sheets?tipe=Sales?nama_alias=${query}&pelanggan=${customer}`, {
+                const res = await axios.get(`${Url}/select_tally_sheets?tipe=Sales`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
             setGetDataProduct(res.data);
+            console.log(res.data);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -564,7 +566,7 @@ const BuatSuratJalan = () => {
 
             <PageHeader
                 ghost={false}
-                title="Daftar Pesanan"
+                title="Daftar Tally Sheet"
                 extra={[
                     <Button
                         type="primary"
