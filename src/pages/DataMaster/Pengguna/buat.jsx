@@ -3,17 +3,16 @@ import axios from "axios";
 // import { useFormik } from "formik";
 import jsCookie from "js-cookie";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
-import SendIcon from "@mui/icons-material/Send";
-import Button from "@mui/material/Button";
 import ReactSelect from "react-select";
 // import { AsyncPaginate } from "react-select-async-paginate";
 import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
-import { PageHeader} from 'antd';
+import { Button, PageHeader, Tooltip } from 'antd';
+import { EditOutlined, SendOutlined } from "@ant-design/icons";
 
 const BuatPengguna = () => {
   // const token = jsCookie.get("auth");
@@ -204,10 +203,8 @@ const BuatPengguna = () => {
         <PageHeader
           ghost={false}
           onBack={() => window.history.back()}
-          title="Buat Pengguna">
-          </PageHeader>
-
-        <form className="  p-3 mb-5 bg-body rounded">
+          title="Buat Pengguna"
+        >
           <div className="row mb-3">
             <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
               Karyawan
@@ -316,14 +313,22 @@ const BuatPengguna = () => {
           </div>
           <div className="d-grid gap-2 d-md-flex justify-content-md-end">
             <Button
+              type="primary"
+              icon={<SendOutlined />}
+              size="large"
+              onClick={handleSubmit}
+            >
+              Submit
+            </Button>
+            {/* <Button
               onClick={handleSubmit}
               variant="contained"
               endIcon={<SendIcon />}
             >
               Simpan
-            </Button>
+            </Button> */}
           </div>
-        </form>
+        </PageHeader>
       </>
     );
   }

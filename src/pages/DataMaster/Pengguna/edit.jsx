@@ -13,7 +13,7 @@ import Button from "@mui/material/Button";
 import ReactSelect from "react-select";
 import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
-import { PageHeader } from "antd";
+import { PageHeader, Skeleton } from "antd";
 
 const EditPengguna = ({ defaultOptionValueEmp, defaultOptionValueGroups }) => {
   // const token = jsCookie.get("auth");
@@ -26,7 +26,7 @@ const EditPengguna = ({ defaultOptionValueEmp, defaultOptionValueGroups }) => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [employeesData, setEmployeesData] = useState([]);
   const [groupsData, setGroupsData] = useState([]);
@@ -113,7 +113,7 @@ const EditPengguna = ({ defaultOptionValueEmp, defaultOptionValueGroups }) => {
         },
       })
       .then(function (response) {
-        setData(response.data.data[0]);
+        setLoading(false);
         const getData = response.data.data[0];
         setCode(getData.code);
         setUsername(getData.username);
@@ -137,11 +137,11 @@ const EditPengguna = ({ defaultOptionValueEmp, defaultOptionValueGroups }) => {
 
   const getEmployees = async (inputValue) => {
     return axios(`${Url}/employees?limit=10&name=${inputValue}`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    })
       .then((res) => {
         setEmployeesData(res.data.data)
         console.log(res.data.data)
@@ -209,29 +209,38 @@ const EditPengguna = ({ defaultOptionValueEmp, defaultOptionValueGroups }) => {
     });
   };
 
-  if (data) {
-    if ((employeesData?.length > 0) & (groupsData?.length > 0)) {
-      return (
-        <>
+  if (loading) {
+    return (
+      <>
+        <form className="p-3 mb-3 bg-body rounded">
+          <Skeleton active />
+        </form>
+      </>
+    )
+  }
+
+  if ((employeesData?.length > 0) & (groupsData?.length > 0)) {
+    return (
+      <>
         <PageHeader
           ghost={false}
           onBack={() => window.history.back()}
           title="Edit Pengguna">
-          </PageHeader>
+        </PageHeader>
 
-          <form className="  p-3 mb-5 bg-body rounded">
-            <div className="row mb-3">
-              <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-                Karyawan
-              </label>
-              <div className="col-sm-10">
+        <form className="  p-3 mb-5 bg-body rounded">
+          <div className="row mb-3">
+            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+              Karyawan
+            </label>
+            <div className="col-sm-10">
               <AsyncSelect
                 placeholder="Masukkan Karyawan..."
                 cacheOptions
                 defaultOptions
                 value={optionsEmployees.find(op => {
                   return op.value === employees
-               })}
+                })}
                 onChange={handleSingleChange}
                 loadOptions={loadOptions}
               />
@@ -246,107 +255,106 @@ const EditPengguna = ({ defaultOptionValueEmp, defaultOptionValueGroups }) => {
                 placeholder="Masukkan Karyawan..."
                 onChange={handleSingleChange}
               /> */}
-              </div>
             </div>
-            <div className="row mb-3">
-              <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-                Grup
-              </label>
-              <div className="col-sm-10">
-                <ReactSelect
-                  key={groups}
-                  selectOption={groups}
-                  value={optionsGroups.filter((obj) =>
-                    groups.includes(obj.value)
-                  )}
-                  isMulti
-                  name="colors"
-                  options={optionsGroups}
-                  className="basic-multi-select"
-                  classNamePrefix="select"
-                  placeholder="Masukkan Grup..."
-                  onChange={handleMultipleChange}
-                />
-              </div>
-            </div>
-            <div className="row mb-3">
-              <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
-                Kode
-              </label>
-              <div className="col-sm-10">
-                <input
-                  type="kode"
-                  className="form-control"
-                  id="inputKode3"
-                  value={code}
-                  disabled
-                />
-              </div>
-            </div>
-            <div className="row mb-3">
-              <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-                Username
-              </label>
-              <div className="col-sm-10">
-                    <input
-                      type="Nama"
-                      className="form-control"
-                      id="inputNama3"
-                      defaultValue={data.username}
-                      onChange={(e) => setUsername(e.target.value)}
-                    />
-                {formik.errors.username && formik.touched.username && (
-                  <p>{formik.errors.username}</p>
+          </div>
+          <div className="row mb-3">
+            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+              Grup
+            </label>
+            <div className="col-sm-10">
+              <ReactSelect
+                key={groups}
+                selectOption={groups}
+                value={optionsGroups.filter((obj) =>
+                  groups.includes(obj.value)
                 )}
-              </div>
+                isMulti
+                name="colors"
+                options={optionsGroups}
+                className="basic-multi-select"
+                classNamePrefix="select"
+                placeholder="Masukkan Grup..."
+                onChange={handleMultipleChange}
+              />
             </div>
-            <div className="row mb-3">
-              <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-                Kata Sandi
-              </label>
-              <div className="col-sm-10">
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="inputpassword"
-                      defaultValue={data.password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
-                {formik.errors.password && formik.touched.password && (
-                  <p>{formik.errors.password}</p>
-                )}
-              </div>
+          </div>
+          <div className="row mb-3">
+            <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
+              Kode
+            </label>
+            <div className="col-sm-10">
+              <input
+                type="kode"
+                className="form-control"
+                id="inputKode3"
+                value={code}
+                disabled
+              />
             </div>
-            <div className="row mb-3">
-              <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-                Konfirmasi Kata Sandi
-              </label>
-              <div className="col-sm-10">
-                <input
-                  type="password"
-                  className="form-control"
-                  id="inputconfirmpassword"
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                {formik.errors.password && formik.touched.password && (
-                  <p>{formik.errors.password}</p>
-                )}
-              </div>
+          </div>
+          <div className="row mb-3">
+            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+              Username
+            </label>
+            <div className="col-sm-10">
+              <input
+                type="Nama"
+                className="form-control"
+                id="inputNama3"
+                defaultValue={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+              {formik.errors.username && formik.touched.username && (
+                <p>{formik.errors.username}</p>
+              )}
             </div>
-            <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-              <Button
-                onClick={handleSubmit}
-                variant="contained"
-                endIcon={<SendIcon />}
-              >
-                Simpan
-              </Button>
+          </div>
+          <div className="row mb-3">
+            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+              Kata Sandi
+            </label>
+            <div className="col-sm-10">
+              <input
+                type="password"
+                className="form-control"
+                id="inputpassword"
+                defaultValue={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              {formik.errors.password && formik.touched.password && (
+                <p>{formik.errors.password}</p>
+              )}
             </div>
-          </form>
-        </>
-      );
-    }
+          </div>
+          <div className="row mb-3">
+            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+              Konfirmasi Kata Sandi
+            </label>
+            <div className="col-sm-10">
+              <input
+                type="password"
+                className="form-control"
+                id="inputconfirmpassword"
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              {formik.errors.password && formik.touched.password && (
+                <p>{formik.errors.password}</p>
+              )}
+            </div>
+          </div>
+          <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+            <Button
+              onClick={handleSubmit}
+              variant="contained"
+              endIcon={<SendIcon />}
+            >
+              Simpan
+            </Button>
+          </div>
+        </form>
+      </>
+    );
   }
-};
+}
 
 export default EditPengguna;

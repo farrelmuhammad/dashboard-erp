@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Modal, PageHeader, Select, Space, Table, Tag } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import ReactSelect from 'react-select';
 import { useSelector } from 'react-redux';
+import { formatQuantity, formatRupiah } from '../../../utils/helper';
 
 const EditableContext = createContext(null);
 
@@ -106,7 +107,7 @@ const BuatRetur = () => {
     const [getCode, setGetCode] = useState('');
     const navigate = useNavigate();
 
-    const [getDataFaktur, setGetDataFaktur] = useState();
+    const [getDataFaktur, setGetDataFaktur] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const [subTotal, setSubTotal] = useState("");
@@ -117,6 +118,9 @@ const BuatRetur = () => {
 
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
+
+    const [pilihanDiskon, setPilihanDiskon] = useState('');
+    const [jumlahDiskon, setJumlahDiskon] = useState([]);
 
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
@@ -145,12 +149,234 @@ const BuatRetur = () => {
                 }
             })
             setGetDataFaktur(res.data);
+            console.log(res.data);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
     }, [query])
 
-    // Column for modal input product
+    function gantiPilihanDiskon(value, index) {
+        let tmp = [];
+        let totalPerProduk = 0;
+        let grandTotal = 0;
+        let total = 0;
+        let hasilDiskon = 0;
+        let subTotal = 0;
+        let totalPpn = 0;
+        let rowDiscount = 0;
+        let subTotalDiscount = 0;
+        let totalDiscount = 0;
+        if (pilihanDiskon.length === 0) {
+            for (let i = 0; i < faktur.length; i++) {
+                tmp[i] = '';
+            }
+            setPilihanDiskon(tmp);
+        }
+
+        for (let i = 0; i < faktur.length; i++) {
+            if (checked) {
+                total += (Number(faktur[i].quantity) * Number(faktur[i].price));
+                totalPerProduk = (Number(faktur[i].quantity) * Number(faktur[i].price));
+
+                if (i === index) {
+                    tmp[i] = value;
+                    if (value == 'percent') {
+                        hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                        rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    }
+                    else if (value == 'nominal') {
+
+                        hasilDiskon += Number(jumlahDiskon[i]);
+                        rowDiscount = Number(jumlahDiskon[i]);
+                    }
+                }
+                else {
+                    tmp[i] = pilihanDiskon[i];
+                    if (pilihanDiskon[i] == 'percent') {
+                        hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                        rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    }
+                    else if (pilihanDiskon[i] == 'nominal') {
+                        hasilDiskon += Number(jumlahDiskon[i]);
+                        rowDiscount = Number(jumlahDiskon[i]);
+                    }
+                }
+                // subTotalDiscount   = totalPerProduk - rowDiscount;
+                // subTotal   += (subTotalDiscount * 100) / (100 + faktur[i].ppn);
+                // totalPpn   = (subTotal * faktur[i].ppn) / 100;
+                // grandTotal = subTotal - hasilDiskon + Number(totalPpn);
+
+                // setSubTotal(Number(subTotal));
+                // setGrandTotalDiscount(hasilDiskon);
+                // setTotalPpn(totalPpn)
+                // setGrandTotal(grandTotal);
+                // setPilihanDiskon(tmp);
+
+
+
+                subTotalDiscount = totalPerProduk - rowDiscount;
+                subTotal += (totalPerProduk * 100) / (100 + faktur[i].ppn);
+                totalDiscount += ((rowDiscount * 100) / (100 + faktur[i].ppn));
+                totalPpn += ((((totalPerProduk * 100) / (100 + faktur[i].ppn)) - (rowDiscount * 100) / (100 + faktur[i].ppn)) * faktur[i].ppn) / (100);
+                grandTotal = subTotal - totalDiscount + Number(totalPpn);
+                setSubTotal(subTotal)
+                setGrandTotalDiscount(totalDiscount);
+                setTotalPpn(totalPpn)
+                setGrandTotal(grandTotal);
+                setPilihanDiskon(tmp);
+            } else {
+                total += (Number(faktur[i].quantity) * Number(faktur[i].price));
+                totalPerProduk = (Number(faktur[i].quantity) * Number(faktur[i].price));
+
+                if (i === index) {
+                    tmp[i] = value;
+                    if (value == 'percent') {
+                        hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                        rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    }
+                    else if (value == 'nominal') {
+
+                        hasilDiskon += Number(jumlahDiskon[i]);
+                        rowDiscount = Number(jumlahDiskon[i]);
+                    }
+                }
+                else {
+                    tmp[i] = pilihanDiskon[i];
+                    if (pilihanDiskon[i] == 'percent') {
+                        hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                        rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    }
+                    else if (pilihanDiskon[i] == 'nominal') {
+                        hasilDiskon += Number(jumlahDiskon[i]);
+                        rowDiscount = Number(jumlahDiskon[i]);
+                    }
+                }
+                grandTotal = Number(total) - Number(hasilDiskon) + Number(totalPpn);
+                subTotalDiscount = totalPerProduk - rowDiscount;
+                totalPpn += (subTotalDiscount * faktur[i].ppn) / 100;
+
+                setSubTotal(Number(total));
+                setGrandTotalDiscount(hasilDiskon);
+                setTotalPpn(totalPpn)
+                setGrandTotal(grandTotal);
+                setPilihanDiskon(tmp);
+            }
+        }
+
+    }
+
+    function ubahJumlahDiskon(value, index) {
+        let totalPerProduk = 0;
+        let grandTotal = 0;
+        let total = 0;
+        let hasilDiskon = 0;
+        let tmp = [];
+        let subTotal = 0;
+        let totalPpn = 0;
+        let rowDiscount = 0;
+        let subTotalDiscount = 0;
+        let totalDiscount = 0;
+        if (jumlahDiskon.length === 0) {
+            for (let i = 0; i < faktur.length; i++) {
+                tmp[i] = '';
+            }
+            setJumlahDiskon(tmp);
+        }
+
+        for (let i = 0; i < faktur.length; i++) {
+            if (checked) {
+                total += (Number(faktur[i].quantity) * Number(faktur[i].price));
+                totalPerProduk = (Number(faktur[i].quantity) * Number(faktur[i].price));
+
+                if (i === index) {
+                    tmp[i] = value;
+                    if (value == 'percent') {
+                        hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                        rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    }
+                    else if (value == 'nominal') {
+
+                        hasilDiskon += Number(jumlahDiskon[i]);
+                        rowDiscount = Number(jumlahDiskon[i]);
+                    }
+                }
+                else {
+                    tmp[i] = jumlahDiskon[i];
+                    if (pilihanDiskon[i] == 'percent') {
+                        hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                        rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    }
+                    else if (pilihanDiskon[i] == 'nominal') {
+                        hasilDiskon += Number(jumlahDiskon[i]);
+                        rowDiscount = Number(jumlahDiskon[i]);
+                    }
+                }
+                subTotalDiscount = totalPerProduk - rowDiscount;
+                subTotal += (totalPerProduk * 100) / (100 + faktur[i].ppn);
+                totalDiscount += ((rowDiscount * 100) / (100 + faktur[i].ppn));
+                totalPpn += ((((totalPerProduk * 100) / (100 + faktur[i].ppn)) - (rowDiscount * 100) / (100 + faktur[i].ppn)) * faktur[i].ppn) / (100);
+                grandTotal = subTotal - totalDiscount + Number(totalPpn);
+                console.log(rowDiscount, pilihanDiskon[i], "Cek")
+                setSubTotal(subTotal)
+                setGrandTotalDiscount(totalDiscount);
+                setTotalPpn(totalPpn)
+                setGrandTotal(grandTotal);
+                setJumlahDiskon(tmp);
+            } else {
+                total += (Number(faktur[i].quantity) * Number(faktur[i].price));
+                totalPerProduk = (Number(faktur[i].quantity) * Number(faktur[i].price));
+                if (i === index) {
+                    tmp[i] = value;
+                    if (pilihanDiskon[i] == 'percent') {
+                        hasilDiskon += (Number(totalPerProduk) * Number(value) / 100);
+                        rowDiscount = (Number(totalPerProduk) * Number(value) / 100);
+                    }
+                    else if (pilihanDiskon[i] == 'nominal') {
+
+                        hasilDiskon += Number(value);
+                        rowDiscount = Number(value);
+                    }
+                }
+                else {
+                    tmp[i] = jumlahDiskon[i];
+                    if (pilihanDiskon[i] == 'percent') {
+                        hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                        rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    }
+                    else if (pilihanDiskon[i] == 'nominal') {
+
+                        hasilDiskon += Number(jumlahDiskon[i]);
+                        rowDiscount = Number(jumlahDiskon[i]);
+                    }
+                }
+
+                totalDiscount += Number(rowDiscount);
+                subTotalDiscount = totalPerProduk - rowDiscount;
+                totalPpn += (subTotalDiscount * Number(faktur[i].ppn)) / 100;
+                grandTotal = Number(total) - Number(totalDiscount) + Number(totalPpn);
+
+                setSubTotal(Number(total));
+                setGrandTotalDiscount(totalDiscount);
+                setTotalPpn(totalPpn)
+                setGrandTotal(grandTotal);
+                setJumlahDiskon(tmp);
+            }
+        }
+    }
+
+    const convertToRupiah = (angka, namaMataUang) => {
+        return <input
+            value={namaMataUang + ' ' + angka.toLocaleString('id')}
+            readOnly="true"
+            className="form-control form-control-sm"
+            id="colFormLabelSm"
+        />
+    }
+    const tableToRupiah = (angka, namaMataUang) => {
+        return namaMataUang + ' ' + angka.toLocaleString('id');
+    }
+
+    // Column for modal input faktur
     const columnsModal = [
         {
             title: 'No. Faktur',
@@ -185,77 +411,72 @@ const BuatRetur = () => {
 
     const defaultColumns = [
         {
-            title: 'No. Faktur',
-            dataIndex: 'code',
-            width: '15%',
+            title: 'No.',
+            dataIndex: '',
+            width: '5%',
             align: 'center',
-            // render: (text, record, index) => index + 1,
+            render(text, record, index) {
+                return {
+                    children: <div>{index + 1}</div>
+                };
+            }
         },
         {
-            title: 'Nama Produk',
-            dataIndex: 'sales_invoice_details',
-            render: (faktur) => (
-                <>
-                    <ReactSelect
-                        className="basic-single"
-                        placeholder="Pilih Alamat..."
-                        classNamePrefix="select"
-                        isLoading={isLoading}
-                        isSearchable
-                        getOptionLabel={(e) => e.product_alias_name}
-                        getOptionValue={(e) => e.id}
-                        options={faktur}
-                        onChange={(e) => setFaktur(e.id)}
-                    />
-                </>
-            ),
+            title: 'Nama Produk Alias',
+            dataIndex: 'product_alias_name',
         },
         {
             title: 'Qty',
             dataIndex: 'quantity',
-            width: '8%',
+            width: '10%',
             align: 'center',
             editable: true,
-            render: (text) => <a>{text}.00</a>,
+            render(text, record) {
+                return {
+                    props: {
+                    },
+                    children: <div>{formatQuantity(text)}</div>
+                };
+            }
         },
         {
             title: 'Stn',
-            dataIndex: 'sales_invoice_details',
+            dataIndex: 'unit',
             width: '5%',
             align: 'center',
-            render: (delivery_note_details) => delivery_note_details.map(service => service.unit),
         },
         {
             title: 'Harga',
             dataIndex: 'price',
-            width: '10%',
+            width: '15%',
             align: 'center',
-            editable: true,
-            render: (text) => <a>Rp. {text}</a>,
         },
+        // {
+        //     title: 'Discount (Rp)',
+        //     dataIndex: 'fixed_discount',
+        //     width: '10%',
+        //     align: 'center',
+        // },
+        // {
+        //     title: 'Discount (%)',
+        //     dataIndex: 'discount_percentage',
+        //     width: '5%',
+        //     align: 'center',
+        // },
         {
-            title: 'Discount (Rp)',
-            dataIndex: 'nominal_disc',
-            width: '10%',
-            align: 'center',
-            editable: true,
-            render: (text) => <a>Rp. {text}</a>,
-        },
-        {
-            title: 'Discount (%)',
+            title: 'Discount',
             dataIndex: 'discount',
-            width: '5%',
+            width: '20%',
             align: 'center',
-            editable: true,
-            render: (text) => <a>{text} %</a>,
+            render: (text, record, index) => {
+                return
+            }
         },
         {
             title: 'PPN',
             dataIndex: 'ppn',
             width: '10%',
             align: 'center',
-            editable: true,
-            render: (text) => <a>{text} %</a>,
         },
         {
             title: 'Jumlah',
@@ -263,19 +484,90 @@ const BuatRetur = () => {
             width: '14%',
             align: 'center',
             render:
-                (text, record) => {
-                    let total = (record.quantity * record.price) - record.nominal_disc;
-                    let getPercent = (total * record.discount) / 100;
-                    let totalDiscount = total - getPercent;
-                    let getPpn = (totalDiscount * record.ppn) / 100;
-                    if (checked) {
-                        return totalDiscount;
+                (text, record, index) => {
+                    let grandTotalAmount = 0;
+                    if (pilihanDiskon[index] == 'percent' || pilihanDiskon == 'percent') {
+                        // console.log("masuk percent")
+                        let total = (record.quantity * record.price);
+                        let getPercent = (total * jumlahDiskon[index]) / 100;
+                        let totalDiscount = total - getPercent;
+                        let getPpn = (totalDiscount * record.ppn) / 100;
+                        if (checked) {
+                            grandTotalAmount = tableToRupiah(totalDiscount, "Rp");
+                        } else {
+                            grandTotalAmount = tableToRupiah(totalDiscount + getPpn, "Rp");
+                        }
+                    } else if (pilihanDiskon[index] == 'nominal') {
+                        // console.log("masuk nominal")
+                        let total = (record.quantity * record.price) - jumlahDiskon[index];
+                        let getPpn = (total * record.ppn) / 100;
+                        if (checked) {
+                            grandTotalAmount = tableToRupiah(total, "Rp");
+                        } else {
+                            grandTotalAmount = tableToRupiah(total + getPpn, "Rp");
+                        }
                     } else {
-                        return totalDiscount + getPpn;
+                        grandTotalAmount = tableToRupiah(record.quantity * Number(record.price), "Rp");
+                    }
+                    return {
+                        props: {
+                            style: { background: "#f5f5f5" }
+                        },
+                        children: grandTotalAmount
                     }
                 }
         },
     ];
+
+    const dataTable =
+        [...faktur.map((item, i) => ({
+            product_alias_name: item.product_alias_name,
+            quantity: item.quantity,
+            unit: item.unit,
+            price: item.price,
+            discount: <>
+                <div class="input-group input-group-sm mb-3">
+                    <input
+                        style={{ width: "30px" }}
+                        type="text"
+                        class="form-control"
+                        aria-label="Small"
+                        onChange={(e) => ubahJumlahDiskon(e.target.value, i)}
+                        defaultValue={jumlahDiskon[i]}
+                        aria-describedby="inputGroup-sizing-sm"
+                    />
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px", height: "35px" }}>
+                            <select
+                                onChange={(e) => gantiPilihanDiskon(e.target.value, i)}
+                                id="grupSelect"
+                                className="form-select select-diskon"
+                                style={{ width: "70px" }}
+                            >
+                                {/* <option value="" >
+                                    Pilih
+                                </option> */}
+                                <option value="percent">
+                                    %
+                                </option>
+                                <option value="nominal">
+                                    Rp
+                                </option>
+                            </select>
+                        </span>
+                    </div>
+                </div>
+            </>,
+            discount_percentage: item.discount_percentage,
+            fixed_discount: item.fixed_discount,
+            ppn: item.ppn
+        })
+        )]
+
+    useEffect(() => {
+        setGrandTotal(Number(subTotal) - Number(grandTotalDiscount) + Number(totalPpn));
+    }, [totalPpn]);
+
     const handleChange = () => {
         setChecked(!checked);
         let check_checked = !checked;
@@ -283,61 +575,76 @@ const BuatRetur = () => {
     };
     const handleSave = (row) => {
         const newData = [...faktur];
-        const index = newData.findIndex((item) => row.id === item.id);
+        const index = newData.findIndex((item) => row.product_alias_name === item.product_alias_name);
         const item = newData[index];
         newData.splice(index, 1, { ...item, ...row });
         setFaktur(newData);
         let check_checked = checked;
-        calculate(faktur, check_checked);
+        calculate(newData, check_checked);
     };
 
-
     const calculate = (faktur, check_checked) => {
-        let subTotal = 0;
-        let totalDiscount = 0;
-        let totalNominalDiscount = 0;
-        let grandTotalDiscount = 0;
-        let getPpnDiscount = 0;
-        let allTotalDiscount = 0;
-        let totalPpn = 0;
+        let totalPerProduk = 0;
         let grandTotal = 0;
-        let getPpn = 0;
         let total = 0;
-        faktur.map((values) => {
+        let hasilDiskon = 0;
+        let subTotal = 0;
+        let totalPpn = 0;
+        let rowDiscount = 0;
+        let subTotalDiscount = 0;
+        let totalDiscount = 0;
+        faktur.map((values, i) => {
             if (check_checked) {
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
+                total += (Number(values.quantity) * Number(values.price));
+                totalPerProduk = (Number(values.quantity) * Number(values.price));
 
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                subTotal += ((total - getPpnDiscount) * 100) / (100 + values.ppn);
-                allTotalDiscount += total - getPpnDiscount;
-                totalPpn = allTotalDiscount - subTotal;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
+                if (pilihanDiskon[i] == 'percent') {
+                    hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                }
+                else if (pilihanDiskon[i] == 'nominal') {
+
+                    hasilDiskon += Number(jumlahDiskon[i]);
+                    rowDiscount = Number(jumlahDiskon[i]);
+                }
+
+                subTotalDiscount = totalPerProduk - rowDiscount;
+                // subTotal   += (subTotalDiscount * 100) / (100 + values.ppn);
+                subTotal += (totalPerProduk * 100) / (100 + values.ppn);
+                totalDiscount += ((rowDiscount * 100) / (100 + values.ppn));
+                totalPpn += ((((totalPerProduk * 100) / (100 + values.ppn)) - (rowDiscount * 100) / (100 + values.ppn)) * values.ppn) / (100);
+                grandTotal = subTotal - totalDiscount + Number(totalPpn);
                 setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
+                setGrandTotalDiscount(totalDiscount);
                 setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
+                setGrandTotal(grandTotal);
             } else {
-                subTotal += (values.quantity * values.price);
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
+                total += (Number(values.quantity) * Number(values.price));
+                totalPerProduk = (Number(values.quantity) * Number(values.price));
 
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                allTotalDiscount = total - getPpnDiscount;
-                getPpn = (allTotalDiscount * values.ppn) / 100;
-                totalPpn += getPpn;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
-                setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
+                if (pilihanDiskon[i] == 'percent') {
+                    hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                }
+                else if (pilihanDiskon[i] == 'nominal') {
+
+                    hasilDiskon += Number(jumlahDiskon[i]);
+                    rowDiscount = Number(jumlahDiskon[i]);
+                }
+                totalDiscount += ((totalPerProduk * jumlahDiskon[i]) / 100);
+                subTotal = total - (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                subTotalDiscount = totalPerProduk - rowDiscount;
+                totalPpn += (subTotalDiscount * values.ppn) / 100;
+                grandTotal = total - totalDiscount + Number(totalPpn);
+
+                setSubTotal(total)
+                setGrandTotalDiscount(totalDiscount);
                 setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
+                setGrandTotal(grandTotal);
             }
         })
     }
+
     const components = {
         body: {
             row: EditableRow,
@@ -364,9 +671,59 @@ const BuatRetur = () => {
     const handleCheck = (event) => {
         var updatedList = [...faktur];
         if (event.target.checked) {
-            updatedList = [...faktur, event.target.value];
+            // updatedList = [...faktur, event.target.value];
+            const value = event.target.value;
+            const dataFaktur = value.sales_invoice_details.length;
+
+            let tmp = [];
+            for (let i = 0; i <= faktur.length; i++) {
+                if (i == faktur.length) {
+                    for (let x = 0; x < value.sales_invoice_details.length; x++) {
+                        // let qtyAwal = value.sales_order_details[x].quantity;
+                        // let qtyAkhir = value.sales_order_details[x].tally_sheets_qty;
+                        // tmp.push({
+                        //     id_produk: value.sales_order_details[x].product_id,
+                        //     id_pesanan_pembelian: value.id,
+                        //     code: value.code,
+                        //     boxes_quantity: 0,
+                        //     number_of_boxes: 0,
+                        //     boxes_unit: value.sales_order_details[x].unit,
+                        //     product_alias_name: value.sales_order_details[x].product_alias_name,
+                        //     product_name: value.sales_order_details[x].product_name,
+                        //     action: qtyAkhir >= qtyAwal ? 'Done' : 'Next delivery',
+                        //     sales_order_qty: qtyAwal,
+                        //     tally_sheets_qty: qtyAkhir,
+                        //     key: "baru"
+                        // })
+
+                        tmp.push({
+                            product_alias_name: value.sales_invoice_details[x].product_alias_name,
+                            quantity: value.sales_invoice_details[x].quantity,
+                            unit: value.sales_invoice_details[x].unit,
+                            price: value.sales_invoice_details[x].price,
+                            discount_percentage: value.sales_invoice_details[x].discount_percentage,
+                            fixed_discount: value.sales_invoice_details[x].fixed_discount,
+                            ppn: value.sales_invoice_details[x].ppn
+                        })
+
+                    }
+                }
+                else (
+                    tmp.push(product[i])
+                )
+            }
+            updatedList = tmp
         } else {
-            updatedList.splice(faktur.indexOf(event.target.value), 1);
+            for (let i = 0; i < updatedList.length; i++) {
+                for (let x = 0; x < value.sales_order_details.length; x++) {
+                    if (updatedList[i].id_pesanan_pembelian == value.id && updatedList[i].id_produk == value.sales_order_details[x].product_id && updatedList[i].key == "baru") {
+                        console.log("kehpaus")
+                        updatedList.splice(i, 1);
+                        data.splice(i, 1);
+                        // setindexSO(0)
+                    }
+                }
+            }
         }
         setFaktur(updatedList);
     };
@@ -460,7 +817,7 @@ const BuatRetur = () => {
         faktur.map((p) => {
             console.log(p);
             userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("id_product[]", p.product_id);
+            userData.append("product[]", p.product_id);
             userData.append("kuantitas[]", p.quantity);
             userData.append("satuan[]", p.delivery_note_details.unit);
             userData.append("harga[]", p.price);
@@ -512,10 +869,11 @@ const BuatRetur = () => {
 
     return (
         <>
-            <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <h3 className="title fw-bold">Buat Retur</h3>
-                </div>
+            <PageHeader
+                className="bg-body rounded mb-2"
+                onBack={() => window.history.back()}
+                title="Buat Retur Penjualan"
+            >
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -582,78 +940,75 @@ const BuatRetur = () => {
                         </div>
                     </div>
                 </div>
-            </form>
-            <form className="p-3 mb-5 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <div className="row">
-                        <div className="col">
-                            <h4 className="title fw-normal">Daftar Faktur</h4>
-                        </div>
-                        <div className="col text-end me-2">
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
-                            />
-                            <Modal
-                                title="Tambah Faktur"
-                                centered
-                                visible={modal2Visible}
-                                onCancel={() => setModal2Visible(false)}
-                                // footer={[
-                                //     <Button
-                                //         key="submit"
-                                //         type="primary"
+            </PageHeader>
 
-                                //     >
-                                //         Tambah
-                                //     </Button>,
-                                // ]}
-                                footer={null}
-                                width={600}
-                            >
-                                <div className="text-title text-start">
-                                    <div className="row">
-                                        <div className="col mb-3">
-                                            <Search
-                                                placeholder="Cari Faktur..."
-                                                style={{
-                                                    width: 400,
-                                                }}
-                                                onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                            />
-                                        </div>
-                                        <Table
-                                            columns={columnsModal}
-                                            dataSource={getDataFaktur}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
-                                    </div>
+            <PageHeader
+                ghost={false}
+                title="Daftar Faktur Penjualan"
+                extra={[
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => setModal2Visible(true)}
+                    />,
+                    <Modal
+                        title="Tambah Faktur"
+                        centered
+                        visible={modal2Visible}
+                        onCancel={() => setModal2Visible(false)}
+                        // footer={[
+                        //     <Button
+                        //         key="submit"
+                        //         type="primary"
+
+                        //     >
+                        //         Tambah
+                        //     </Button>,
+                        // ]}
+                        footer={null}
+                        width={600}
+                    >
+                        <div className="text-title text-start">
+                            <div className="row">
+                                <div className="col mb-3">
+                                    <Search
+                                        placeholder="Cari Faktur..."
+                                        style={{
+                                            width: 400,
+                                        }}
+                                        onChange={(e) => setQuery(e.target.value.toLowerCase())}
+                                    />
                                 </div>
-                            </Modal>
+                                <Table
+                                    columns={columnsModal}
+                                    dataSource={getDataFaktur}
+                                    scroll={{
+                                        y: 250,
+                                    }}
+                                    pagination={false}
+                                    loading={isLoading}
+                                    size="middle"
+                                />
+                            </div>
                         </div>
-                    </div>
-                    <Table
-                        components={components}
-                        rowClassName={() => 'editable-row'}
-                        bordered
-                        pagination={false}
-                        dataSource={faktur}
-                        columns={columns}
-                        onChange={(e) => setFaktur(e.target.value)}
-                    />
-                </div>
-                <div className="row p-0">
+                    </Modal>,
+                ]}
+            >
+                <Table
+                    components={components}
+                    rowClassName={() => 'editable-row'}
+                    bordered
+                    pagination={false}
+                    dataSource={dataTable}
+                    columns={columns}
+                    onChange={(e) => setFaktur(e.target.value)}
+                />
+                <div className="row p-0 mt-3">
                     <div className="col ms-5">
                         <div className="form-check">
                             <input className="form-check-input" type="checkbox" id="flexCheckDefault" onChange={handleChange} />
                             <label className="form-check-label" for="flexCheckDefault">
-                                Harga Termasuk Pajak
+                                Harga Termasuk PPN
                             </label>
                         </div>
                     </div>
@@ -661,53 +1016,25 @@ const BuatRetur = () => {
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>
                             <div className="col-sm-6">
-                                <input
-                                    defaultValue={subTotal}
-                                    readOnly="true"
-                                    type="number"
-                                    className="form-control form-control-sm"
-                                    id="colFormLabelSm"
-                                // placeholder='(Total Qty X harga) per item + ... '
-                                />
+                                {convertToRupiah(subTotal, "Rp")}
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Diskon</label>
                             <div className="col-sm-6">
-                                <input
-                                    defaultValue={grandTotalDiscount}
-                                    readOnly="true"
-                                    type="number"
-                                    className="form-control form-control-sm"
-                                    id="colFormLabelSm"
-                                // placeholder='(total disc/item) ditotal semua'
-                                />
+                                {convertToRupiah(grandTotalDiscount, "Rp")}
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">PPN</label>
                             <div className="col-sm-6">
-                                <input
-                                    defaultValue={totalPpn}
-                                    readOnly="true"
-                                    type="number"
-                                    className="form-control form-control-sm"
-                                    id="colFormLabelSm"
-                                // placeholder='ppn per item di total semua row'
-                                />
+                                {convertToRupiah(totalPpn, "Rp")}
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Total</label>
                             <div className="col-sm-6">
-                                <input
-                                    defaultValue={grandTotal}
-                                    readOnly="true"
-                                    type="number"
-                                    className="form-control form-control-sm"
-                                    id="colFormLabelSm"
-                                // placeholder='subtotal - diskon + ppn'
-                                />
+                                {convertToRupiah(grandTotal, "Rp")}
                             </div>
                         </div>
                     </div>
@@ -735,7 +1062,7 @@ const BuatRetur = () => {
                         Cetak
                     </button>
                 </div>
-            </form>
+            </PageHeader>
         </>
     )
 }
