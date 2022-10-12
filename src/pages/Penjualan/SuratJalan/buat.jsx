@@ -6,7 +6,7 @@ import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
 // import Select from 'react-select';
-import { Button, Checkbox, Form, Input, InputNumber, Modal, PageHeader, Select, Space, Table, Tag } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Modal, notification, PageHeader, Select, Space, Table, Tag } from 'antd'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
@@ -110,7 +110,7 @@ const BuatSuratJalan = () => {
     const [getCode, setGetCode] = useState('');
     const navigate = useNavigate();
 
-    const [getDataProduct, setGetDataProduct] = useState();
+    const [getDataProduct, setGetDataProduct] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const [subTotal, setSubTotal] = useState("");
@@ -187,13 +187,15 @@ const BuatSuratJalan = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_tally_sheets?nama_alias=${query}&pelanggan=${customer}&status=submitted`, {
+            const res = await axios.get(`${Url}/select_tally_sheets?tipe=Sales&nama_alias=${query}&pelanggan=${customer}&status=submitted`, {
+                // const res = await axios.get(`${Url}/select_tally_sheets?tipe=Sales`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
             setGetDataProduct(res.data);
+            console.log(res.data);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -203,25 +205,27 @@ const BuatSuratJalan = () => {
     const columnsModal = [
         {
             title: 'No. Transaksi',
-            width: '25%',
+            width: '20%',
             dataIndex: 'code',
         },
         {
             title: 'Pelanggan',
-            dataIndex: 'customer_id',
-            width: '15%',
+            dataIndex: 'customer',
+            width: '20%',
             align: 'center',
+            render: (customer) => customer.name
         },
         {
             title: 'Gudang',
-            dataIndex: 'warehouse_id',
-            width: '15%',
+            dataIndex: 'warehouse',
+            width: '20%',
             align: 'center',
+            render: (warehouse) => warehouse.name
         },
         {
             title: 'actions',
             dataIndex: 'address',
-            width: '15%',
+            width: '10%',
             align: 'center',
             render: (_, record) => (
                 <>
@@ -345,6 +349,7 @@ const BuatSuratJalan = () => {
             updatedList.splice(product.indexOf(event.target.value), 1);
         }
         setProduct(updatedList);
+        console.log(updatedList);
         setTally(updatedList.map(d => d.id));
     };
 
@@ -385,14 +390,52 @@ const BuatSuratJalan = () => {
             .catch((err) => {
                 if (err.response) {
                     console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: err.response.data.message,
-                    });
+                    // Swal.fire({
+                    //     icon: "error",
+                    //     title: "Oops...",
+                    //     text: err.response.data.message,
+                    // });
+                    if (err.response.data.error.pelanggan) {
+                        notification['error']({
+                            message: 'Silahkan Cek Input Anda!',
+                            description:
+                                err.response.data.error.pelanggan,
+                        });
+                    } else if (err.response.data.error.alamat_pelanggan) {
+                        notification['error']({
+                            message: 'Silahkan Cek Input Anda!',
+                            description:
+                                err.response.data.error.alamat_pelanggan,
+                        });
+                    } else if (err.response.data.error.id_tally_sheet) {
+                        notification['error']({
+                            message: 'Silahkan Cek Input Anda!',
+                            description:
+                                err.response.data.error.id_tally_sheet,
+                        });
+                    } 
+                    // notification['error']({
+                    //     message: 'Silahkan Cek Input Anda!',
+                    //     description:
+                    //         err.response.data.error.pelanggan,
+                    // });
+                    // notification['error']({
+                    //     message: 'Silahkan Cek Input Anda!',
+                    //     description:
+                    //         err.response.data.error.alamat_pelanggan,
+                    // });
+                    // notification['error']({
+                    //     message: 'Silahkan Cek Input Anda!',
+                    //     description:
+                    //         err.response.data.error.id_tally_sheet,
+                    // });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    notification['error']({
+                        message: 'Gagal Ditambahkan',
+                        description:
+                            "Mohon Cek Dahulu..",
+                    });
                 } else if (err.message) {
                     // do something other than the other two
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
@@ -564,7 +607,7 @@ const BuatSuratJalan = () => {
 
             <PageHeader
                 ghost={false}
-                title="Daftar Pesanan"
+                title="Daftar Tally Sheet"
                 extra={[
                     <Button
                         type="primary"
@@ -586,6 +629,7 @@ const BuatSuratJalan = () => {
                         //     </Button>,
                         // ]}
                         footer={null}
+                        width={600}
                     >
                         <div className="text-title text-start">
                             <div className="row">
