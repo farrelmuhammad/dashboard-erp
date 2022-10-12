@@ -30,7 +30,7 @@ const SuratJalan = () => {
     return (
       <>
         {userAccess?.map(d => {
-          if (d.ability_name === "create-sales_order") {
+          if (d.ability_name === "create-delivery_note") {
             return (
               <PageHeader
                 ghost={false}

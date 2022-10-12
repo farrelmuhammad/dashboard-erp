@@ -1,5 +1,5 @@
 
-import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Skeleton, Space, Table, Tag } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Skeleton, Space, Table, Tag, Tooltip } from 'antd'
 import { BarsOutlined, DeleteOutlined, EditOutlined, LoadingOutlined, MinusOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons'
 import React, { useEffect, useState } from 'react'
 import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
@@ -460,18 +460,22 @@ export const DetailTally = () => {
                 title="Detail Tally Sheet"
                 onBack={() => window.history.back()}
                 extra={[
-                    <Link to={`/tally/edit/${id}`}>
+                    <Tooltip title="Edit" placement="bottom">
+                        <Link to={`/tally/edit/${id}`}>
+                            <Button
+                                type="primary"
+                                icon={<EditOutlined />}
+                            />
+                        </Link>
+                    </Tooltip>,
+                    <Tooltip title="Cetak" placement="bottom">
                         <Button
                             type="primary"
-                            icon={<EditOutlined />}
+                            icon={<PrinterOutlined />}
+                            style={{ background: "orange", borderColor: "orange" }}
+                            onClick={handlePrint}
                         />
-                    </Link>,
-                    <Button
-                        type="primary"
-                        icon={<PrinterOutlined />}
-                        style={{ background: "orange", borderColor: "orange" }}
-                        onClick={handlePrint}
-                    />,
+                    </Tooltip>,
                 ]}
             >
                 <div class="row">

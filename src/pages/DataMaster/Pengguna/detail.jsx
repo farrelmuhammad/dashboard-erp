@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react'
 import jsCookie from "js-cookie";
 import ReactSelect from 'react-select';
 import AsyncSelect from "react-select/async";
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Url from '../../../Config';
 import { useSelector } from 'react-redux';
-import { PageHeader } from 'antd';
+import { Button, PageHeader, Tooltip } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 
 export const DetailPengguna = () => {
     // const token = jsCookie.get("auth");
@@ -66,14 +67,21 @@ export const DetailPengguna = () => {
 
     return (
         <>
-          <PageHeader
-          ghost={false}
-          onBack={() => window.history.back()}
-          title="Detail Pengguna">
-          </PageHeader>
-
-            <form className="  p-3 mb-5 bg-body rounded">
-               
+            <PageHeader
+                ghost={false}
+                onBack={() => window.history.back()}
+                title="Detail Pengguna"
+                extra={[
+                    <Tooltip title="Edit" placement="bottom">
+                        <Link to={`/pengguna/edit/${id}`}>
+                            <Button
+                                type="primary"
+                                icon={<EditOutlined />}
+                            />
+                        </Link>
+                    </Tooltip>,
+                ]}
+            >
                 <div className="row mb-3">
                     <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
                         Karyawan
@@ -148,33 +156,7 @@ export const DetailPengguna = () => {
                         ))}
                     </div>
                 </div>
-                {/* <div className="row mb-3">
-                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-                        Kata Sandi
-                    </label>
-                    <div className="col-sm-10">
-                        <input
-                            type="password"
-                            className="form-control"
-                            id="inputpassword"
-                        //   defaultValue={data.password}
-                        />
-                    </div>
-                </div>
-                <div className="row mb-3">
-                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-                        Konfirmasi Kata Sandi
-                    </label>
-                    <div className="col-sm-10">
-                        <input
-                            type="password"
-                            className="form-control"
-                            id="inputconfirmpassword"
-                        />
-                    </div>
-                </div> */}
-            </form>
-
+            </PageHeader>
         </>
     )
 }
