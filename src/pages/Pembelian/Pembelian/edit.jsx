@@ -173,15 +173,20 @@ const EditPesananPembelian = () => {
         setSupplierId(value.id);
     };
 
-    const loadOptionsSupplier = (inputValue) => {
-        return axios.get(`${Url}/suppliers?nama=${inputValue}&status=Active&grup=${grup}`, {
+    const loadOptionsSupplierLokal = (inputValue) => {
+        return axios.get(`${Url}/suppliers?nama=${inputValue}&status=Active&grup=Lokal`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => {
-            res.data.data
-        });
+        }).then((res) => res.data.data);
+    }; const loadOptionsSupplierImpor = (inputValue) => {
+        return axios.get(`${Url}/suppliers?nama=${inputValue}&status=Active&grup=Impor`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.data.data);
     };
 
     useEffect(() => {
@@ -1007,7 +1012,7 @@ const EditPesananPembelian = () => {
 
                             </div>
                         </div>
-                        <div className="row mb-3">
+                        <div className="row mb-3" style={{display: grup=='Lokal' ? 'flex' : 'none'}}>
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                             <div className="col-sm-7">
                                 <AsyncSelect
@@ -1018,7 +1023,24 @@ const EditPesananPembelian = () => {
                                     value={selectedSupplier}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsSupplier}
+                                    loadOptions={loadOptionsSupplierLokal}
+                                    onChange={handleChangeSupplier}
+                                />
+
+                            </div>
+                        </div>
+                        <div className="row mb-3" style={{display: grup=='Lokal' ? 'none' : 'flex'}}>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
+                            <div className="col-sm-7">
+                                <AsyncSelect
+                                    placeholder="Pilih Supplier..."
+                                    cacheOptions
+                                    defaultOptions
+                                    defaultInputValue={selectedSupplier}
+                                    value={selectedSupplier}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsSupplierImpor}
                                     onChange={handleChangeSupplier}
                                 />
 

@@ -57,15 +57,23 @@ export const DetailTallySheet = () => {
                 const getData = res.data.data[0];
                 setGetTallySheet(getData)
                 setDetailTallySheet(getData.tally_sheet_details);
+                // let jumlahBaris = 0;
 
                 let arrData = [];
-                let huruf = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+                let huruf = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
                 if (data.length == 0) {
-
                     for (let i = 0; i < getData.tally_sheet_details.length; i++) {
+                        // console.log(getData.tally_sheet_details[i].boxes[indexBox].quantity)
+
                         let tempData = []
 
-                        for (let x = 0; x <= getData.tally_sheet_details[i].boxes.length; x++) {
+                        let jumlahBaris = (Number(getData.tally_sheet_details[i].boxes.length) / 10) + 1;
+                        let jumlahKolom = getData.tally_sheet_details[i].boxes.length;
+                        let buatKolom  =0 
+                        let indexBox = 0;
+
+
+                        for (let x = 0; x <= jumlahBaris.toFixed(); x++) {
 
                             let baris = []
                             let kolom = [];
@@ -87,10 +95,19 @@ export const DetailTallySheet = () => {
                                         );
 
                                     }
-                                    else if (y <= getData.tally_sheet_details[i].boxes.length && x == 1) {
+                                    else if (buatKolom < jumlahKolom && x <= jumlahBaris.toFixed()) {
                                         kolom.push(
-                                            { value: getData.tally_sheet_details[i].boxes[y - 1].quantity.replace('.', ','), readOnly: true }
+                                            {
+                                                value: getData.tally_sheet_details[i].boxes[indexBox].quantity.replace('.', ','),
+                                                readOnly: true,
+                                            }
                                         );
+                                        if (indexBox < getData.tally_sheet_details[i].boxes.length-1) {
+
+                                            indexBox = indexBox + 1;
+                                        }
+                                        buatKolom = buatKolom +1;
+                                        // console.log(indexBox)
                                     }
                                     else {
                                         kolom.push(
@@ -337,7 +354,7 @@ export const DetailTallySheet = () => {
 
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
-         copyStyles: true,
+        copyStyles: true,
         pageStyle: pageStyle
     })
 
@@ -351,18 +368,18 @@ export const DetailTallySheet = () => {
         {
             title: 'NAMA BARANG',
             dataIndex: 'desc',
-            fontSize:'10px'
+            fontSize: '10px'
         },
         {
             title: 'BOX',
             dataIndex: 'box',
             align: 'center',
-            fontSize:'10px'
+            fontSize: '10px'
         },
         {
             title: 'QTY',
             dataIndex: 'qty',
-            fontSize:'10px'
+            fontSize: '10px'
         }
     ]
 
@@ -377,7 +394,7 @@ export const DetailTallySheet = () => {
                     data={data[i]}
                     valueRenderer={valueRenderer}
                     onContextMenu={onContextMenu}
-                    style={{border: '1px black', fontColor:'black', backgroundColor:'white'}}
+                    style={{ border: '1px black', fontColor: 'black', backgroundColor: 'white' }}
                 />,
 
 
@@ -389,160 +406,160 @@ export const DetailTallySheet = () => {
 
     return (
         <>
- <div style={{ display: "none" , position:"absolute"}} >
+            <div style={{ display: "none", position: "absolute" }} >
                 <div ref={componentRef} className="p-4" >
 
-  <table>
-    <thead>
-      <tr>
-        <td>
-         
-          <div className="page-header-space"></div>
-          <div className="page-header">
-          <div className='d-flex' style={{position:"fixed", height:"100px", top:"0"}}>
-                      
-                      <div><img src={logo} width="60px"></img></div>
-                      <div className='ms-2' >
-                          <div className='header-cetak'>PT. BUMI MAESTROAYU</div>
-                          <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
-                          <div className='header-cetak'>JAKARTA SELATAN 12760</div>
-                          <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
-                      </div>
-                     
-                  </div>
-        <br/>
-        <br/>
+                    <table>
+                        <thead>
+                            <tr>
+                                <td>
 
-    <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold" }}>
-                      <div style={{ fontSize: "16px", textDecoration: "underline", textAlign:'center'}}>TALLY SHEET</div>
-                      <div style={{ fontSize: "10px", textAlign:'center' }}>NO. {getTallySheet.code}</div>
-                  </div>
+                                    <div className="page-header-space"></div>
+                                    <div className="page-header">
+                                        <div className='d-flex' style={{ position: "fixed", height: "100px", top: "0" }}>
 
-                  <div className='mt-4 mb-4 col d-flex justify-content-center ps-4 pe-4'  style={{ fontSize: "12px" }}>
-                      <div className='col-6'>
-                          <div className="d-flex flex-row">
-                              <label className='col-6'>TANGGAL</label>
-                              <div className='col-6'> : {getTallySheet.date}</div>
-                          </div>
-                          <div className="d-flex flex-row">
-                              <label className='col-6'>SUPPLIER</label>
-                              <div className='col-6'> : {getTallySheet.supplier_name}</div>
-                          </div>
-                      </div>
-                      <div className='col-6'>
-                          <div className="d-flex flex-row">
-                              <label className='col-6'>GUDANG</label>
-                              <div className='col-6'> : {getTallySheet.warehouse_name} </div>
-                          </div>
-                          <div className="d-flex flex-row">
-                              <label className='col-6'>CATATAN</label>
-                              <div className='col-6'> : {getTallySheet.notes}</div>
-                          </div>
-                      </div>
-                  </div>
+                                            <div><img src={logo} width="60px"></img></div>
+                                            <div className='ms-2' >
+                                                <div className='header-cetak'>PT. BUMI MAESTROAYU</div>
+                                                <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
+                                                <div className='header-cetak'>JAKARTA SELATAN 12760</div>
+                                                <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
+                                            </div>
 
-                    <br/>
-                </div>
-        </td>
-      </tr>
-    </thead>
+                                        </div>
+                                        <br />
+                                        <br />
 
-    <tbody>
-      <tr>
-        <td>
-       
-        
-          <div className="page" style={{lineHeight:"3"}}>
-           
-          <div className='mt-4 ps-4 pe-4' >
-                       
-                        <table style={{ fontSize: "10px", width: "100%", pageBreakAfter:"auto"}}>
-                            <tr className='text-center border' style={{ height: "50px", pageBreakInside:"avoid", pageBreakAfter:"auto" }}>
-                                <th width="50px" className='border' >No</th>
-                                <th width="300px" className='border'>Box</th>
-                                <th width="100px" className='border'>Qty</th>
-                            
+                                        <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold" }}>
+                                            <div style={{ fontSize: "16px", textDecoration: "underline", textAlign: 'center' }}>TALLY SHEET</div>
+                                            <div style={{ fontSize: "10px", textAlign: 'center' }}>NO. {getTallySheet.code}</div>
+                                        </div>
+
+                                        <div className='mt-4 mb-4 col d-flex justify-content-center ps-4 pe-4' style={{ fontSize: "12px" }}>
+                                            <div className='col-6'>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>TANGGAL</label>
+                                                    <div className='col-6'> : {getTallySheet.date}</div>
+                                                </div>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>SUPPLIER</label>
+                                                    <div className='col-6'> : {getTallySheet.supplier_name}</div>
+                                                </div>
+                                            </div>
+                                            <div className='col-6'>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>GUDANG</label>
+                                                    <div className='col-6'> : {getTallySheet.warehouse_name} </div>
+                                                </div>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>CATATAN</label>
+                                                    <div className='col-6'> : {getTallySheet.notes}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <br />
+                                    </div>
+                                </td>
                             </tr>
-                            <tbody className="border">
-                                {
-                                    detailTallySheet.map((item, i) => (
-                                        <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
-                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{i + 1}</td>
-                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-start'><b> {item.product_name} </b> <br/> 
-                                            <ReactDataSheet
-                                                    data={data[i]}
-                                                    valueRenderer={valueRenderer}
-                                                    onContextMenu={onContextMenu}
-                                                    style={{border: '1px black', fontColor:'black', backgroundColor:'white', borderInlineColor:'black'}}
-                                                />
-                                                <br/>
-                                             </td>
-                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{item.boxes_quantity}</td>
-                                        </tr>
+                        </thead>
 
-                                    ))
-                                }
-                            </tbody>
+                        <tbody>
+                            <tr>
+                                <td>
 
 
-                        </table>
-                    </div>
+                                    <div className="page" style={{ lineHeight: "3" }}>
+
+                                        <div className='mt-4 ps-4 pe-4' >
+
+                                            <table style={{ fontSize: "10px", width: "100%", pageBreakAfter: "auto" }}>
+                                                <tr className='text-center border' style={{ height: "50px", pageBreakInside: "avoid", pageBreakAfter: "auto" }}>
+                                                    <th width="50px" className='border' >No</th>
+                                                    <th width="300px" className='border'>Box</th>
+                                                    <th width="100px" className='border'>Qty</th>
+
+                                                </tr>
+                                                <tbody className="border">
+                                                    {
+                                                        detailTallySheet.map((item, i) => (
+                                                            <tr style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} >
+                                                                <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'>{i + 1}</td>
+                                                                <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-start'><b> {item.product_name} </b> <br />
+                                                                    <ReactDataSheet
+                                                                        data={data[i]}
+                                                                        valueRenderer={valueRenderer}
+                                                                        onContextMenu={onContextMenu}
+                                                                        style={{ border: '1px black', fontColor: 'black', backgroundColor: 'white', borderInlineColor: 'black' }}
+                                                                    />
+                                                                    <br />
+                                                                </td>
+                                                                <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'>{item.boxes_quantity}</td>
+                                                            </tr>
+
+                                                        ))
+                                                    }
+                                                </tbody>
 
 
-                    <div className='d-flex mt-3 ps-4 pe-4'>
-                        <div style={{ width: "80%" }}>
-                        </div>
-                        <div style={{ width: "20%" }}>
-                            <div className='d-flex mt-4' style={{fontSize:"10px"}}>
-                                <label className='col-6'><b>Total</b></label>
-                                <div>:</div>
-                                <div className='ms-3'>{quantityTotal} <br/> </div>
-                                <div>
-                                    <br/>
-                                    <br/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-                    </td>
-                </tr>
-                </tbody>
+                                            </table>
+                                        </div>
 
-    <tfoot>
-      <tr>
-        <td>
-         
-          <div className="page-footer-space"></div>
-          <div className="page-footer" >
-          <div className='d-flex' style={{width:"100%", bottom:"0"}}>
-          <table style={{ fontSize: "10px", width: "100%", height:"100%"}} >
-                            <tr className='text-center border' style={{ height: "50px", width:"70%" }}>
-                                <th width="35px" className='border'>Dibuat Oleh,</th>
-                                <th width="35px" className='border'>Pengirim,</th>
-                                <th width="35px" className='border'>Disetujui Oleh,</th>
-                                <th width="35px" className='border'>Diterima Oleh,</th>
+
+                                        <div className='d-flex mt-3 ps-4 pe-4'>
+                                            <div style={{ width: "80%" }}>
+                                            </div>
+                                            <div style={{ width: "20%" }}>
+                                                <div className='d-flex mt-4' style={{ fontSize: "10px" }}>
+                                                    <label className='col-6'><b>Total</b></label>
+                                                    <div>:</div>
+                                                    <div className='ms-3'>{quantityTotal} <br /> </div>
+                                                    <div>
+                                                        <br />
+                                                        <br />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
-                           
-                                    <tr className='text-center border ' style={{ height: "80px" ,width:"70%"}}>
-                                     
-                                    <td width="35px" className='border'><b>_________________</b></td>
-                                    <td width="35px"className='border'><b>_________________</b></td>
-                                    <td width="35px"className='border'><b>_________________</b></td>
-                                    <td width="35px"className='border'><b>_________________</b></td>
-                                       
-                                    </tr>
-                        </table>
-                        </div>
-                        </div>
-                        </td>
-                    </tr>
-                    </tfoot>
+                        </tbody>
+
+                        <tfoot>
+                            <tr>
+                                <td>
+
+                                    <div className="page-footer-space"></div>
+                                    <div className="page-footer" >
+                                        <div className='d-flex' style={{ width: "100%", bottom: "0" }}>
+                                            <table style={{ fontSize: "10px", width: "100%", height: "100%" }} >
+                                                <tr className='text-center border' style={{ height: "50px", width: "70%" }}>
+                                                    <th width="35px" className='border'>Dibuat Oleh,</th>
+                                                    <th width="35px" className='border'>Pengirim,</th>
+                                                    <th width="35px" className='border'>Disetujui Oleh,</th>
+                                                    <th width="35px" className='border'>Diterima Oleh,</th>
+                                                </tr>
+
+                                                <tr className='text-center border ' style={{ height: "80px", width: "70%" }}>
+
+                                                    <td width="35px" className='border'><b>_________________</b></td>
+                                                    <td width="35px" className='border'><b>_________________</b></td>
+                                                    <td width="35px" className='border'><b>_________________</b></td>
+                                                    <td width="35px" className='border'><b>_________________</b></td>
+
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
 
                     </table>
 
-                    </div>
-                    </div>
+                </div>
+            </div>
 
             <form className="  p-3 mb-5 bg-body rounded">
 
@@ -616,8 +633,8 @@ export const DetailTallySheet = () => {
                         <div className="col">
                             <h4 className="title fw-normal">Daftar Produk</h4>
                         </div>
-                    
-                    
+
+
                     </div>
                     <Table
                         bordered
@@ -630,8 +647,8 @@ export const DetailTallySheet = () => {
                     />
                 </div>
             </form>
-        
-        
+
+
         </>
     )
 }
