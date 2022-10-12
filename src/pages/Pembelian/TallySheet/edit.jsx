@@ -94,9 +94,14 @@ const EditTallySheet = () => {
                             key: "lama"
                         })
 
+                        let jumlahBaris = (Number(getData.tally_sheet_details[i].boxes.length) / 10) + 1;
+                        let jumlahKolom = getData.tally_sheet_details[i].boxes.length;
+                        let buatKolom  =0 
+                        let indexBox = 0;
+
                         tmpBox.push(getData.tally_sheet_details[i].number_of_boxes);
                         tmpTally.push(getData.tally_sheet_details[i].boxes_quantity)
-                        for (let x = 0; x <= 10; x++) {
+                        for (let x = 0; x <= jumlahBaris.toFixed(); x++) {
                             let baris = []
                             let kolom = [];
                             for (let y = 0; y <= 10; y++) {
@@ -117,10 +122,16 @@ const EditTallySheet = () => {
                                         );
 
                                     }
-                                    else if (y <= getData.tally_sheet_details[i].boxes.length && x == 1) {
+                                    else if (buatKolom < jumlahKolom && x <= jumlahBaris.toFixed()) {
                                         kolom.push(
-                                            { value: getData.tally_sheet_details[i].boxes[y - 1].quantity.replace('.', ',') }
+                                            { value: getData.tally_sheet_details[i].boxes[indexBox].quantity.replace('.', ',') }
                                         );
+                                        // pengecekan index box 
+                                        if (indexBox < getData.tally_sheet_details[i].boxes.length-1) {
+                                            indexBox = indexBox + 1;
+                                        }
+                                        // penjumlahan kolom yang sudah diisi 
+                                        buatKolom = buatKolom +1;
 
                                         kuantitas.push(getData.tally_sheet_details[i].boxes[y - 1].quantity);
 
@@ -245,19 +256,25 @@ const EditTallySheet = () => {
 
             }
         });
-
-        // update jumlah tally sheet 
         let totTly = [];
+
+        console.log(totTly)
+        console.log(data)
+        // update jumlah tally sheet 
         for (let x = 0; x < product.length; x++) {
             totTly[x] = 0;
             for (let a = 1; a < data[x].length; a++) {
                 for (let b = 1; b < data[x][a].length; b++) {
                     if (data[x][a][b].value != 0) {
+                        console.log(data[x][a][b])
                         totTly[x] = Number(totTly[x]) + Number(data[x][a][b].value.replace(',', '.'));
+                        console.log(totTly[x])
                     }
                 }
             }
         }
+        console.log(totTly)
+
         setTotalTallySheet(totTly);
 
         // update pada state 
@@ -352,6 +369,57 @@ const EditTallySheet = () => {
         // console.log(dataTS)
 
     }
+
+    function klikTambahBaris() {
+        let hasilData = [];
+        let tmpData = [];
+        // let defaultData 
+        for (let x = 0; x < product.length; x++) {
+            if (x == indexPO) {
+                let defaultData = [
+                    { readOnly: true, value: data[x].length },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' }
+                ]
+                hasilData.push(...data[x], defaultData);
+            }
+            else {
+                hasilData.push(data[x]);
+            }
+            tmpData.push(hasilData);
+
+        }
+       
+
+        setData(tmpData);
+    }
+
+    function klikHapusBaris() {
+        // setLoadingSpreadSheet(true);
+        let hasilData = [];
+        let tmpData = [...data];
+        for (let x = 0; x < product.length; x++) {
+            if (x === indexPO) {
+
+                if (tmpData[x].length - 2 > 0) {
+                    tmpData[x].splice(tmpData[x].length - 1, 1);
+                }
+            }
+        }
+        setData(tmpData)
+
+    }
+
+
+
 
 
     function forceDoneProduct(index) {
@@ -521,6 +589,33 @@ const EditTallySheet = () => {
                                         onContextMenu={onContextMenu}
                                         onCellsChanged={onCellsChanged}
                                     />
+                                </div>
+                                <div className='mt-2 d-flex'>
+                                    <Button
+                                        size='small'
+                                        type="primary"
+                                        icon={<PlusOutlined />}
+                                        onClick={() => klikTambahBaris()}
+                                    />
+                                    {
+                                        data[indexPO].length - 2 > 0 ?
+                                            <Button
+                                                className='ms-2'
+                                                size='small'
+                                                type="danger"
+                                                icon={<MinusOutlined />}
+                                                onClick={() => klikHapusBaris()}
+                                            /> :
+                                            <Button
+                                                disabled
+                                                className='ms-2'
+                                                size='small'
+                                                type="danger"
+                                                icon={<MinusOutlined />}
+                                                onClick={() => klikHapusBaris()}
+                                            />
+                                    }
+
                                 </div>
                             </div>
                         </div>
