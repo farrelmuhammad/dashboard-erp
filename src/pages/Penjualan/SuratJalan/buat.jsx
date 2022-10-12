@@ -187,8 +187,8 @@ const BuatSuratJalan = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            // const res = await axios.get(`${Url}/select_tally_sheets?tipe=Sales?nama_alias=${query}&pelanggan=${customer}`, {
-                const res = await axios.get(`${Url}/select_tally_sheets?tipe=Sales`, {
+            const res = await axios.get(`${Url}/select_tally_sheets?tipe=Sales&nama_alias=${query}&pelanggan=${customer}&status=submitted`, {
+                // const res = await axios.get(`${Url}/select_tally_sheets?tipe=Sales`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -205,25 +205,27 @@ const BuatSuratJalan = () => {
     const columnsModal = [
         {
             title: 'No. Transaksi',
-            width: '25%',
+            width: '20%',
             dataIndex: 'code',
         },
         {
             title: 'Pelanggan',
-            dataIndex: 'customer_id',
-            width: '15%',
+            dataIndex: 'customer',
+            width: '20%',
             align: 'center',
+            render: (customer) => customer.name
         },
         {
             title: 'Gudang',
-            dataIndex: 'warehouse_id',
-            width: '15%',
+            dataIndex: 'warehouse',
+            width: '20%',
             align: 'center',
+            render: (warehouse) => warehouse.name
         },
         {
             title: 'actions',
             dataIndex: 'address',
-            width: '15%',
+            width: '10%',
             align: 'center',
             render: (_, record) => (
                 <>
@@ -588,6 +590,7 @@ const BuatSuratJalan = () => {
                         //     </Button>,
                         // ]}
                         footer={null}
+                        width={600}
                     >
                         <div className="text-title text-start">
                             <div className="row">
