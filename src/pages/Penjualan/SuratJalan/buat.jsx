@@ -6,7 +6,7 @@ import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
 // import Select from 'react-select';
-import { Button, Checkbox, Form, Input, InputNumber, Modal, PageHeader, Select, Space, Table, Tag } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Modal, notification, PageHeader, Select, Space, Table, Tag } from 'antd'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
@@ -349,6 +349,7 @@ const BuatSuratJalan = () => {
             updatedList.splice(product.indexOf(event.target.value), 1);
         }
         setProduct(updatedList);
+        console.log(updatedList);
         setTally(updatedList.map(d => d.id));
     };
 
@@ -389,14 +390,52 @@ const BuatSuratJalan = () => {
             .catch((err) => {
                 if (err.response) {
                     console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: err.response.data.message,
-                    });
+                    // Swal.fire({
+                    //     icon: "error",
+                    //     title: "Oops...",
+                    //     text: err.response.data.message,
+                    // });
+                    if (err.response.data.error.pelanggan) {
+                        notification['error']({
+                            message: 'Silahkan Cek Input Anda!',
+                            description:
+                                err.response.data.error.pelanggan,
+                        });
+                    } else if (err.response.data.error.alamat_pelanggan) {
+                        notification['error']({
+                            message: 'Silahkan Cek Input Anda!',
+                            description:
+                                err.response.data.error.alamat_pelanggan,
+                        });
+                    } else if (err.response.data.error.id_tally_sheet) {
+                        notification['error']({
+                            message: 'Silahkan Cek Input Anda!',
+                            description:
+                                err.response.data.error.id_tally_sheet,
+                        });
+                    } 
+                    // notification['error']({
+                    //     message: 'Silahkan Cek Input Anda!',
+                    //     description:
+                    //         err.response.data.error.pelanggan,
+                    // });
+                    // notification['error']({
+                    //     message: 'Silahkan Cek Input Anda!',
+                    //     description:
+                    //         err.response.data.error.alamat_pelanggan,
+                    // });
+                    // notification['error']({
+                    //     message: 'Silahkan Cek Input Anda!',
+                    //     description:
+                    //         err.response.data.error.id_tally_sheet,
+                    // });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    notification['error']({
+                        message: 'Gagal Ditambahkan',
+                        description:
+                            "Mohon Cek Dahulu..",
+                    });
                 } else if (err.message) {
                     // do something other than the other two
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
