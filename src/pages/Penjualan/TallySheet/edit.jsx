@@ -739,8 +739,6 @@ const EditTally = () => {
         }).then(() => setLoadingTable(false));
     }
 
-    // console.log(product.map(d => d.product_alias_name));
-
     const dataPurchase =
         [...product.map((item, i) => ({
             code: item.code,

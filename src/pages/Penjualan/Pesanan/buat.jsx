@@ -144,6 +144,7 @@ const BuatPesanan = () => {
                 }
             })
             setGetDataProduct(res.data);
+            console.log(res.data);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -661,7 +662,6 @@ const BuatPesanan = () => {
         let check_checked = checked;
         calculate(newData, check_checked);
     };
-
 
     const calculate = (product, check_checked) => {
         let totalPerProduk = 0;
