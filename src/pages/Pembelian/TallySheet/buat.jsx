@@ -220,7 +220,7 @@ const BuatTallySheet = () => {
                     stts.push('Done')
                 }
                 else if (Number(arrTotal[x][i]) + Number(qtySebelumnya) < qtyPO) {
-                    stts.push('Next Delivery')
+                    stts.push('Next delivery')
                 }
 
             }
@@ -500,7 +500,7 @@ const BuatTallySheet = () => {
                             stts[i] = 'Done'
                         }
                         else if (Number(totalTallySheet[x][i]) + Number(qtySebelumnya) < qtyPO) {
-                            stts[i] = 'Next Delivery'
+                            stts[i] = 'Next delivery'
                         }
                     }
                     else {
@@ -652,7 +652,7 @@ const BuatTallySheet = () => {
             setProductPO(product[indexProduct].sales_return_details);
         }
         else if (sumber == 'PO') {
-            setProductPO(product[indexProduct].sales_return_details);
+            setProductPO(product[indexProduct].purchase_order_details);
         }
         else if (sumber == 'Faktur') {
             setProductPO(product[indexProduct].purchase_invoice_details);
@@ -775,7 +775,7 @@ const BuatTallySheet = () => {
                             if (x == baris) {
                                 for (let y = 0; y < product[x].purchase_order_details.length; y++) {
                                     if (y == kolom) {
-                                        status.push('Next Delivery')
+                                        status.push('Next delivery')
                                     }
                                     else {
                                         status.push(statusPO[x][y])
@@ -804,7 +804,7 @@ const BuatTallySheet = () => {
                     product_name: item.product_name,
                     quantity: quantity[record.key][i].toFixed(2).replace('.', ','),
                     unit: item.unit,
-                    status: statusPO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusPO[record.key][i] === 'Next Delivery' ? <Tag color="orange" type="button" onClick={() => forceDoneProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : statusPO[record.key][i] === 'Done' ? <Tag color="green" type="button" onClick={() => forceNexDeliveryProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : null
+                    status: statusPO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusPO[record.key][i] === 'Next delivery' ? <Tag color="orange" type="button" onClick={() => forceDoneProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : statusPO[record.key][i] === 'Done' ? <Tag color="green" type="button" onClick={() => forceNexDeliveryProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : null
                     ,
                     box:
                         <>
@@ -945,7 +945,7 @@ const BuatTallySheet = () => {
                     product_name: item.product_name,
                     quantity: quantity[record.key][i].toFixed(2).replace('.', ','),
                     unit: item.unit,
-                    status: statusPO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusPO[record.key][i] === 'Next Delivery' ? <Tag color="orange" type="button" onClick={() => forceDoneProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : statusPO[record.key][i] === 'Done' ? <Tag color="green" type="button" onClick={() => forceNexDeliveryProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : null
+                    status: statusPO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusPO[record.key][i] === 'Next delivery' ? <Tag color="orange" type="button" onClick={() => forceDoneProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : statusPO[record.key][i] === 'Done' ? <Tag color="green" type="button" onClick={() => forceNexDeliveryProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : null
                     ,
                     box:
                         <>
@@ -1087,7 +1087,7 @@ const BuatTallySheet = () => {
                     product_name: item.product_name,
                     quantity: quantity[record.key][i].toFixed(2).replace('.', ','),
                     unit: item.unit,
-                    status: statusPO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusPO[record.key][i] === 'Next Delivery' ? <Tag color="orange" type="button" onClick={() => forceDoneProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : statusPO[record.key][i] === 'Done' ? <Tag color="green" type="button" onClick={() => forceNexDeliveryProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : null
+                    status: statusPO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusPO[record.key][i] === 'Next delivery' ? <Tag color="orange" type="button" onClick={() => forceDoneProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : statusPO[record.key][i] === 'Done' ? <Tag color="green" type="button" onClick={() => forceNexDeliveryProduct(record.key, i)}>{statusPO[record.key][i]}</Tag> : null
                     ,
                     box:
                         <>
@@ -1634,7 +1634,7 @@ const BuatTallySheet = () => {
                             stts.push('Done')
                         }
                         else if (dataSumber[x].tally_sheets_qty < dataSumber[x].quantity) {
-                            stts.push('Next Delivery')
+                            stts.push('Next delivery')
 
                         }
                         tempKuantitas.push(0);
@@ -1866,7 +1866,7 @@ const BuatTallySheet = () => {
                         for (let x = 0; x < dataSumber.length; x++) {
                             qty.push(0);
                             tempBox.push(0);
-                            stts.push('Next Delivery')
+                            stts.push('Next delivery')
                         }
                         arrStatus[i] = stts;
                         arrqty[i] = qty;

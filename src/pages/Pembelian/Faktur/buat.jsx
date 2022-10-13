@@ -155,24 +155,38 @@ const BuatFakturPembelian = () => {
     useEffect(() => {
         if (grup == "Impor") {
             setImpor(true);
+            axios.get(`${Url}/purchase_invoices_available_suppliers/Import`, {
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            })
+                .then((res) => {
+                    let supplier = [];
+                    res.data.data.map((item) => {
+                        supplier.push({ value: item.id, label: item.name })
+                    })
+                    setDataSupplier(supplier);
+                })
         }
-        else {
+        else if(grup == 'Lokal') {
             setImpor(false);
+            axios.get(`${Url}/purchase_invoices_available_suppliers/Local`, {
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            })
+                .then((res) => {
+                    let supplier = [];
+                    res.data.data.map((item) => {
+                        supplier.push({ value: item.id, label: item.name })
+                    })
+                    setDataSupplier(supplier);
+                })
         }
 
-        axios.get(`${Url}/purchase_invoices_available_suppliers/${grup}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then((res) => {
-                let supplier = [];
-                res.data.data.map((item) => {
-                    supplier.push({ value: item.id, label: item.name })
-                })
-                setDataSupplier(supplier);
-            })
+      
 
     }, [grup])
 
@@ -193,6 +207,7 @@ const BuatFakturPembelian = () => {
     }
 
     useEffect(() => {
+        console.log(supplier)
         const getProduct = async () => {
             const res = await axios.get(`${Url}/purchase_invoices_available_goods_receipts?kode=${query}&id_pemasok=${supplier}`, {
                 headers: {
@@ -1338,7 +1353,7 @@ const BuatFakturPembelian = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text: err.response.data.message,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -1549,7 +1564,7 @@ const BuatFakturPembelian = () => {
                                         Lokal
                                     </option>
                                     <option value="Impor" checked={grup === "Impor"}>
-                                        Import
+                                        Impor
                                     </option>
 
                                 </select>
@@ -1559,7 +1574,7 @@ const BuatFakturPembelian = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Faktur</label>
                             <div className="col-sm-7">
                                 <input
-                                    value={code}
+                                    value='Otomatis'
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
@@ -1576,10 +1591,10 @@ const BuatFakturPembelian = () => {
                                     className="basic-single"
                                     classNamePrefix="select"
                                     isLoading={isLoading}
-                                    isClearable={true}
+                                    // isClearable={true}
                                     isSearchable={true}
                                     options={dataSupplier}
-                                    onChange={(e) => setSupplier(e.value)}
+                                    onChange={(e) => {setSupplier(e.value), setProduct([])}}
                                 />
 
                             </div>
@@ -1677,7 +1692,7 @@ const BuatFakturPembelian = () => {
                 <div className="text-title text-start mb-4">
                     <div className="row">
                         <div className="col">
-                            <h4 className="title fw-normal">Daftar Penerimaan Barang</h4>
+                            <h4 className="title fw-normal">Daftar Produk</h4>
                         </div>
                         <div className="col text-end me-2">
                             <Button
@@ -1695,7 +1710,7 @@ const BuatFakturPembelian = () => {
                                 }
                             />
                             <Modal
-                                title="Tambah Penerima Pembelian"
+                                title="Tambah Penerimaan Pembelian"
                                 centered
                                 visible={modalListLokal}
                                 onCancel={() => setModalListLokal(false)}
@@ -1706,7 +1721,7 @@ const BuatFakturPembelian = () => {
                                     <div className="row">
                                         <div className="col mb-3">
                                             <Search
-                                                placeholder="Cari No Pesanan..."
+                                                placeholder="Cari No Penerimaan..."
                                                 style={{
                                                     width: 400,
                                                 }}
@@ -1727,7 +1742,7 @@ const BuatFakturPembelian = () => {
                                 </div>
                             </Modal>
                             <Modal
-                                title="Tambah Penerima Pembelian"
+                                title="Tambah Pesanan Pembelian"
                                 centered
                                 visible={modalListImpor}
                                 onCancel={() => setModalListImpor(false)}

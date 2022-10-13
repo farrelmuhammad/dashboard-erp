@@ -32,10 +32,14 @@ export const DetailTallySheet = () => {
     const [loadingSpreedSheet, setLoadingSpreadSheet] = useState(false);
     const [totalBox, setTotalBox] = useState([]);
     const [quantity, setQuantity] = useState([]);
+    const [sumber, setSumber] = useState('')
     const [indexPO, setIndexPO] = useState(0);
     const [kuantitasBox, setKuantitasBox] = useState([]);
     const [idxPesanan, setIdxPesanan] = useState(0);
     const [selectedSupplier, setSelectedSupplier] = useState(null);
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const [supplier, setSupplier] = useState(null);
+    const [customer, setCustomer] = useState(null);
     const [selectedWarehouse, setSelectedWarehouse] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState([]);
     const [modal2Visible2, setModal2Visible2] = useState(false);
@@ -55,6 +59,7 @@ export const DetailTallySheet = () => {
         })
             .then((res) => {
                 const getData = res.data.data[0];
+                const tallySheetDetail = getData.tally_sheet_details;
                 setGetTallySheet(getData)
                 setDetailTallySheet(getData.tally_sheet_details);
 
@@ -67,8 +72,23 @@ export const DetailTallySheet = () => {
 
                         let jumlahBaris = (Number(getData.tally_sheet_details[i].boxes.length) / 10) + 1;
                         let jumlahKolom = getData.tally_sheet_details[i].boxes.length;
-                        let buatKolom  =0 
+                        let buatKolom = 0
                         let indexBox = 0;
+                        if (tallySheetDetail[i].purchase_invoice_id) {
+                            setSumber('Faktur');
+                            setSelectedSupplier(getData.supplier_name);
+                            setSupplier(getData.supplier_id)
+                        }
+                        else if (tallySheetDetail[i].purchase_order_id) {
+                            setSumber('PO')
+                            setSelectedSupplier(getData.supplier_name);
+                            setSupplier(getData.supplier_id)
+                        }
+                        else if (tallySheetDetail[i].sales_return_id) {
+                            setSumber('Retur')
+                            setSelectedCustomer(getData.customer_name);
+                            setCustomer(getData.customer_id)
+                        }
 
 
                         for (let x = 0; x <= jumlahBaris.toFixed(); x++) {
@@ -100,11 +120,11 @@ export const DetailTallySheet = () => {
                                                 readOnly: true,
                                             }
                                         );
-                                        if (indexBox < getData.tally_sheet_details[i].boxes.length-1) {
+                                        if (indexBox < getData.tally_sheet_details[i].boxes.length - 1) {
 
                                             indexBox = indexBox + 1;
                                         }
-                                        buatKolom = buatKolom +1;
+                                        buatKolom = buatKolom + 1;
                                         // console.log(indexBox)
                                     }
                                     else {
@@ -136,11 +156,19 @@ export const DetailTallySheet = () => {
 
     const [quantityPO, setQuantityPO] = useState("0")
     function klikTampilSheet(indexPO) {
-        setQuantityPO(detailTallySheet[indexPO].purchase_order_qty)
-        console.log(indexPO)
-        console.log(data)
+
+        if(sumber == 'PO'){
+            setQuantityPO(detailTallySheet[indexPO].purchase_order_qty)
+        }
+        else if(sumber == 'Faktur'){
+            setQuantityPO(detailTallySheet[indexPO].purchase_invoice_qty)
+
+        }
+        else if(sumber == 'Retur'){
+            setQuantityPO(detailTallySheet[indexPO].sales_return_qty)
+
+        }
         setIndexPO(indexPO);
-        // setProductPO(product[indexProduct].purchase_order_details);
         setModal2Visible2(true);
     }
 
@@ -264,7 +292,7 @@ export const DetailTallySheet = () => {
 
     const dataPurchase =
         [...detailTallySheet.map((item, i) => ({
-            code: item.purchase_order.code,
+            code: sumber=='PO' ? item.purchase_order.code : sumber=='Faktur' ? item.purchase_invoice.code : sumber=='Retur' ? item.sales_return.code : null,
             product_name: item.product_name,
             quantity: item.boxes_quantity.replace('.', ','),
             unit: item.boxes_unit,
@@ -288,8 +316,8 @@ export const DetailTallySheet = () => {
                                         <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
                                         <div className="col-sm-3">
                                             <input
-                                            
-                                                value={detailTallySheet[indexPO].purchase_order.code}
+
+                                                value={sumber=='PO' ? detailTallySheet[indexPO].purchase_order.code : sumber=='Faktur' ?detailTallySheet[indexPO].purchase_invoice.code : sumber=='Retur' ? detailTallySheet[indexPO].sales_return.code : null  }
                                                 type="Nama"
                                                 className="form-control"
                                                 id="inputNama3"
@@ -595,11 +623,16 @@ export const DetailTallySheet = () => {
                                 <input disabled="true" value={getTallySheet.code} type="Nama" className="form-control" id="inputNama3" />
                             </div>
                         </div>
-                        <div className="row mb-3">
+                        <div className="row mb-3" style={{display: sumber=='Retur' ? 'flex' : 'none'}}>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
+                            <div className="col-sm-7">
+                                <input disabled="true" value={getTallySheet.customer_name} id="startDate" className="form-control" type="text" />
+                            </div>
+                        </div>
+                        <div className="row mb-3" style={{display: sumber=='Retur' ? 'none' : 'flex'}}>
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                             <div className="col-sm-7">
                                 <input disabled="true" value={getTallySheet.supplier_name} id="startDate" className="form-control" type="text" />
-
                             </div>
                         </div>
                         <div className="row mb-3">

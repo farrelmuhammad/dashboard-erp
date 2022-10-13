@@ -221,6 +221,31 @@ const PenerimaanBarangTable = () => {
       key: 'supplier_name',
       width: '20%',
       ...getColumnSearchProps('supplier_name'),
+      render: (text) => {
+        if (text == null) {
+          return <>-</>
+        }
+        else {
+          return <>{text}</>
+        }
+      }
+      // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
+      // sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Customer',
+      dataIndex: 'customer_name',
+      key: 'customer_name',
+      width: '20%',
+      ...getColumnSearchProps('supplier_name'),
+      render: (text) => {
+        if (text == null) {
+          return <>-</>
+        }
+        else {
+          return <>{text}</>
+        }
+      }
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
       // sortDirections: ['descend', 'ascend'],
     },

@@ -157,6 +157,7 @@ const EditTallySheet = () => {
                         let jumlahKolom = getData.tally_sheet_details[i].boxes.length;
                         let buatKolom = 0
                         let indexBox = 0;
+                        let statusEdit = getData.tally_sheet_details[i].editable;
 
                         tmpBox.push(getData.tally_sheet_details[i].number_of_boxes);
                         tmpTally.push(getData.tally_sheet_details[i].boxes_quantity)
@@ -191,10 +192,10 @@ const EditTallySheet = () => {
                                     }
                                     else if (buatKolom < jumlahKolom && x <= jumlahBaris.toFixed()) {
                                         kolom.push(
-                                            { value: getData.tally_sheet_details[i].boxes[indexBox].quantity.replace('.', ',') }
+                                            { value: getData.tally_sheet_details[i].boxes[indexBox].quantity.replace('.', ','), readOnly: !statusEdit}
                                         );
                                         kolomLama.push(
-                                            { value: getData.tally_sheet_details[i].boxes[indexBox].quantity.replace('.', ',') }
+                                            { value: getData.tally_sheet_details[i].boxes[indexBox].quantity.replace('.', ','), readOnly: !statusEdit }
                                         );
                                         // pengecekan index box 
                                         if (indexBox < getData.tally_sheet_details[i].boxes.length - 1) {
@@ -209,10 +210,15 @@ const EditTallySheet = () => {
                                     }
                                     else {
                                         kolom.push(
-                                            { value: '' },
+                                            { 
+                                                value: '',
+                                                readOnly: !statusEdit
+                                            },
                                         );
                                         kolomLama.push(
-                                            { value: '' },
+                                            {   value: '',
+                                                readOnly: !statusEdit
+                                            },
                                         );
                                     }
                                     baris.push(kolom)
@@ -845,7 +851,7 @@ const EditTallySheet = () => {
                                         <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
                                         <div className="col-sm-3">
                                             <input
-                                                value={product[indexPO].boxes_quantity.toString().replace('.', ',')}
+                                                value={Number(product[indexPO].boxes_quantity).toFixed(2).toString().replace('.', ',')}
                                                 type="Nama"
                                                 className="form-control"
                                                 id="inputNama3"
@@ -1437,6 +1443,7 @@ const EditTallySheet = () => {
 
     function klikTampilSheet(indexPO) {
         // console.log(data)
+        console.log(product)
         setQuantityPO(Number(product[indexPO].transaksi_qty).toFixed(2).toString())
 
         setIndexPO(indexPO);

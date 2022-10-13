@@ -14,7 +14,8 @@ import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import Spreadsheet from 'react-spreadsheet';
 import { useSelector } from 'react-redux';
-import { PageHeader} from 'antd';
+import { PageHeader } from 'antd';
+
 
 // const EditableContext = createContext(null);
 
@@ -113,8 +114,10 @@ const BuatPenerimaanBarang = () => {
     const [loadingTable, setLoadingTable] = useState(false);
 
     const [getDataProduct, setGetDataProduct] = useState('');
+    const [getDataRetur, setGetDataRetur] = useState('');
     const [getDataDetailSO, setGetDataDetailSO] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [sumber, setSumber] = useState('')
 
     const [subTotal, setSubTotal] = useState("");
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
@@ -124,8 +127,10 @@ const BuatPenerimaanBarang = () => {
     const [count, setCount] = useState(0);
 
     const [selectedSupplier, setSelectedSupplier] = useState(null);
-    const [supplierId, setSupplierId] = useState();
-    const [selectedValue, setSelectedCustomer] = useState(null);
+    // const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const [supplierId, setSupplierId] = useState('');
+    const [customerId, setCustomerId] = useState('');
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [selectedValue2, setSelectedWarehouse] = useState(null);
     const [selectedValue3, setSelectedProduct] = useState([]);
     const [modal2Visible, setModal2Visible] = useState(false);
@@ -133,7 +138,7 @@ const BuatPenerimaanBarang = () => {
     const [indexTS, setIndexTS] = useState()
     const [tampil, setTampil] = useState(false)
     const [address, setAddress] = useState()
-    const [dataAddress, setDataAddress] =  useState([])
+    const [dataAddress, setDataAddress] = useState([])
     const [gudang, setGudang] = useState()
 
     function hapusIndexProduct(index1, index2) {
@@ -275,12 +280,28 @@ const BuatPenerimaanBarang = () => {
     };
     // load options using API call
     const loadOptionsSupplier = (inputValue) => {
-        return fetch(`${Url}/select_suppliers?nama=${inputValue}`, {
+        return axios.get(`${Url}/goods_receipts_available_suppliers?nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => res.data.data);
+    };
+
+    const handleChangeCustomer = (value) => {
+        // setGrup(value._group)
+        setProduct([])
+        setSelectedCustomer(value);
+        setCustomerId(value.id);
+    };
+    // load options using API call
+    const loadOptionsCustomer = (inputValue) => {
+        return axios.get(`${Url}/goods_receipts_available_customers?nama=${inputValue}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.data.data);
     };
 
     // const handleChangeWarehouse = (value) => {
@@ -317,13 +338,13 @@ const BuatPenerimaanBarang = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_tally_sheet_ins?kode=${query}&status=Submitted&id_pemasok=${supplierId}`, {
+            const res = await axios.get(`${Url}/goods_receipts_available_tally_sheets?kode=${query}&id_pemasok=${supplierId}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
+            setGetDataProduct(res.data.data);
             setGudang(res.data.warehouse_id)
             setGetDataDetailSO(res.data.map(d => d.sales_order_details))
             // console.log(res.data.map(d => d.sales_order_details))
@@ -331,6 +352,23 @@ const BuatPenerimaanBarang = () => {
 
         if (query.length === 0 || query.length > 2) getProduct();
     }, [query, supplierId])
+
+    useEffect(() => {
+        const getProduct = async () => {
+            const res = await axios.get(`${Url}/goods_receipts_available_tally_sheets?kode=${query}&id_pelanggan=${customerId}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${auth.token}`
+                }
+            })
+            setGetDataRetur(res.data.data);
+            setGudang(res.data.warehouse_id)
+            // setGetDataDetailSO(res.data.map(d => d.sales_order_details))
+            // console.log(res.data.map(d => d.sales_order_details))
+        };
+
+        if (query.length === 0 || query.length > 2) getProduct();
+    }, [query, customerId])
 
     // Column for modal input product
     const columnsModal = [
@@ -340,14 +378,14 @@ const BuatPenerimaanBarang = () => {
             dataIndex: 'code',
         },
         {
-            title: 'Supplier',
-            dataIndex: 'supplier_name',
+            title: sumber == 'Retur' ? 'Customer' : 'Supplier',
+            dataIndex: sumber == 'Retur' ? 'customer_name' : 'supplier_name',
             width: '15%',
             align: 'center',
         },
         {
             title: 'Gudang',
-            dataIndex: 'notes',
+            dataIndex: 'warehouse_name',
             width: '30%',
             align: 'center',
         },
@@ -409,8 +447,14 @@ const BuatPenerimaanBarang = () => {
         e.preventDefault();
         const formData = new FormData();
         formData.append("tanggal", date);
-        formData.append("grup", productTampil[0].supplier._group);
-        formData.append("pemasok", supplierId);
+        if (sumber == 'PO') {
+            formData.append("grup", productTampil[0].supplier._group);
+            formData.append("pemasok", supplierId);
+        }
+        else{
+            formData.append("pelanggan", customerId);
+        }
+    
         formData.append("referensi", description);
 
         // formData.append("gudang", gudang);
@@ -465,9 +509,18 @@ const BuatPenerimaanBarang = () => {
         console.log(productTampil)
         const formData = new FormData();
         formData.append("tanggal", date);
-        formData.append("grup", productTampil[0].supplier._group);
+        if (sumber == 'PO') {
+            formData.append("grup", productTampil[0].supplier._group);
+            formData.append("pemasok", supplierId);
+        }
+        else{
+            formData.append("pelanggan", customerId);
+        }
+        // else if(grup=='Retur'){
+        //     formData.append("grup", productTampil[0].customer._group);
+
+        // }
         // formData.append("alamat", address);
-        formData.append("pemasok", supplierId);
         formData.append("referensi", description);
 
         for (let x = 0; x < productTampil.length; x++) {
@@ -518,16 +571,23 @@ const BuatPenerimaanBarang = () => {
             });
     };
 
+    function klikUbahSumber(value) {
+        setSumber(value);
+        setProduct([])
+        setSelectedSupplier('');
+        setSelectedCustomer('')
+    }
+
     return (
         <>
-          <PageHeader
-          ghost={false}
-          onBack={() => window.history.back()}
-          title="Buat Penerimaan Barang">
-          </PageHeader>
+            <PageHeader
+                ghost={false}
+                onBack={() => window.history.back()}
+                title="Buat Penerimaan Barang">
+            </PageHeader>
 
             <form className="p-3 mb-3 bg-body rounded">
-              
+
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -554,6 +614,26 @@ const BuatPenerimaanBarang = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pilih Transaksi</label>
+                            <div className="col-sm-7">
+                                <select
+                                    onChange={(e) => klikUbahSumber(e.target.value)}
+                                    id="grupSelect"
+                                    className="form-select"
+                                >
+                                    <option value="">Pilih Transaksi</option>
+                                    <option value="PO">
+                                        Pesanan Pembelian
+                                    </option>
+                                    <option value="Retur" >
+                                        Retur Penjualan
+                                    </option>
+
+
+                                </select>
+                            </div>
+                        </div>
+                        <div className="row mb-3" style={{ display: sumber == 'PO' ? 'flex' : 'none' }}>
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                             <div className="col-sm-7">
                                 <AsyncSelect
@@ -565,6 +645,21 @@ const BuatPenerimaanBarang = () => {
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsSupplier}
                                     onChange={handleChangeSupplier}
+                                />
+                            </div>
+                        </div>
+                        <div className="row mb-3" style={{ display: sumber == 'Retur' ? 'flex' : 'none' }}>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
+                            <div className="col-sm-7">
+                                <AsyncSelect
+                                    placeholder="Pilih Customer..."
+                                    cacheOptions
+                                    defaultOptions
+                                    value={selectedCustomer}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsCustomer}
+                                    onChange={handleChangeCustomer}
                                 />
                             </div>
                         </div>
@@ -609,7 +704,14 @@ const BuatPenerimaanBarang = () => {
                             <Button
                                 type="primary"
                                 icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
+                                onClick={() => {
+                                    if (sumber == '') {
+                                        Swal.fire("Gagal", "Mohon Pilih Transaksi Dahulu..", "error");
+                                    }
+                                    else {
+                                        setModal2Visible(true)
+                                    }
+                                }}
                             />
                             <Modal
                                 title="Tambah Tally Sheet"
@@ -630,16 +732,32 @@ const BuatPenerimaanBarang = () => {
                                                 onChange={(e) => setQuery(e.target.value.toLowerCase())}
                                             />
                                         </div>
-                                        <Table
-                                            columns={columnsModal}
-                                            dataSource={getDataProduct}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
+                                        {
+                                            sumber == 'PO' ?
+                                                <Table
+                                                    columns={columnsModal}
+                                                    dataSource={getDataProduct}
+                                                    scroll={{
+                                                        y: 250,
+                                                    }}
+                                                    pagination={false}
+                                                    loading={isLoading}
+                                                    size="middle"
+                                                /> :
+                                                sumber == 'Retur' ?
+                                                    <Table
+                                                        columns={columnsModal}
+                                                        dataSource={getDataRetur}
+                                                        scroll={{
+                                                            y: 250,
+                                                        }}
+                                                        pagination={false}
+                                                        loading={isLoading}
+                                                        size="middle"
+                                                    /> : null
+
+                                        }
+
                                     </div>
                                 </div>
                             </Modal>
@@ -655,14 +773,14 @@ const BuatPenerimaanBarang = () => {
                     />
                 </div>
 
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right', position:'relative'}}>
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
                         value="Draft"
                         onChange={(e) => setStatus(e.target.value)}
                         onClick={handleDraft}
-                        style = {{width: '100px'}}
+                        style={{ width: '100px' }}
                     >
                         Simpan
                     </button>
@@ -672,18 +790,18 @@ const BuatPenerimaanBarang = () => {
                         value="Submitted"
                         onChange={(e) => setStatus(e.target.value)}
                         onClick={handleSubmit}
-                        style = {{width: '100px'}}
+                        style={{ width: '100px' }}
                     >
                         Submit
                     </button>
                     <button
                         type="button"
-                        style = {{width: '100px'}}
+                        style={{ width: '100px' }}
                         className="btn btn-warning rounded m-1">
                         Cetak
                     </button>
                 </div>
-                <div style={{clear:'both'}}></div>
+                <div style={{ clear: 'both' }}></div>
             </form>
         </>
     )
