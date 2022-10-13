@@ -4,9 +4,9 @@ stages:
 
 image: node:lts
 
-cache:
-    paths:
-        - node_modules/
+# cache:
+#     paths:
+#         - node_modules/
 
 before_script:
     - apt-get update -qy
@@ -16,7 +16,7 @@ before_script:
 build job:
     stage: build
     script:
-        - yarn cache clean
+        # - yarn cache clean
         - yarn install
         - yarn build
     artifacts:
