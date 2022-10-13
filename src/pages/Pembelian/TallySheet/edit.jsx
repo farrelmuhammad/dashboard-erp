@@ -7,6 +7,7 @@ import Search from 'antd/lib/transfer/search'
 import axios from 'axios'
 import Url from '../../../Config';
 import { useNavigate, useParams } from 'react-router-dom'
+import AsyncSelect from "react-select/async";
 import { useSelector } from 'react-redux'
 import ReactDataSheet from 'react-datasheet'
 import Swal from 'sweetalert2';
@@ -20,11 +21,13 @@ const EditTallySheet = () => {
     const [modal2Visible, setModal2Visible] = useState(false)
     const [query, setQuery] = useState("")
     const [product, setProduct] = useState([]);
+    const [productNoEdit, setProductNoEdit] = useState([]);
     const [loading, setLoading] = useState(true);
     const [getTallySheet, setGetTallySheet] = useState([])
     const [loadingTable, setLoadingTable] = useState(false);
     const [delIndex, setDelIndex] = useState([]);
     const [data, setData] = useState([]);
+    const [sheetNoEdit, setsheetNoEdit] = useState([]);
     const [dataSheet, setDataSheet] = useState([]);
     const [loadingSpreedSheet, setLoadingSpreadSheet] = useState(false);
     const [totalBox, setTotalBox] = useState([]);
@@ -32,19 +35,32 @@ const EditTallySheet = () => {
     const [indexPO, setIndexPO] = useState(0);
     const [kuantitasBox, setKuantitasBox] = useState([]);
     const [idxPesanan, setIdxPesanan] = useState(0);
-    const [selectedSupplier, setSelectedSupplier] = useState(null);
+    const [supplier, setSupplier] = useState();
+    const [customer, setCustomer] = useState()
+    const [warehouse, setWarehouse] = useState()
+    const [selectedSupplier, setSelectedSupplier] = useState('');
+    const [selectedCustomer, setSelectedCustomer] = useState('');
     const [selectedWarehouse, setSelectedWarehouse] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState([]);
     const [modal2Visible2, setModal2Visible2] = useState(false);
-    const [getDataProduct, setGetDataProduct] = useState()
+    const [getDataProduct, setGetDataProduct] = useState([])
+    const [getDataFaktur, setGetDataFaktur] = useState([])
+    const [getDataRetur, setGetDataRetur] = useState([])
     const [getDataDetailPO, setGetDataDetailPO] = useState('');
     const [detailTallySheet, setDetailTallySheet] = useState([])
     const [isLoading, setIsLoading] = useState(false);
+    const [sumber, setSumber] = useState('');
     const [getStatus, setStatus] = useState();
     const [qty, setQty] = useState([]);
     const [box, setBox] = useState([])
     const [totalTallySheet, setTotalTallySheet] = useState([])
     const [quantityPO, setQuantityPO] = useState()
+    const [catatan, setCatatan] = useState()
+    const [date, setDate] = useState()
+
+    const [modalListImpor, setModalListImpor] = useState(false);
+    const [modalListLokal, setModalListLokal] = useState(false)
+    const [modalListRetur, setModalListRetur] = useState(false)
     // const [quantityTally, setQuantityPO] = useState()
     const valueRenderer = (cell) => cell.value;
     const onContextMenu = (e, cell, i, j) =>
@@ -59,9 +75,16 @@ const EditTallySheet = () => {
         })
             .then((res) => {
                 const getData = res.data.data[0];
+                const tallySheetDetail = getData.tally_sheet_details;
                 setGetTallySheet(getData)
                 setDetailTallySheet(getData.tally_sheet_details);
                 setStatus(getData.status);
+                setSelectedWarehouse(getData.warehouse_name);
+                setWarehouse(getData.warehouse_id);
+                setCatatan(getData.notes)
+                setDate(getData.date);
+
+                let arrDataLama = [];
                 let arrData = [];
                 let tmpQty = []
                 let tmpBox = []
@@ -73,30 +96,66 @@ const EditTallySheet = () => {
 
                 if (data.length == 0) {
 
+
                     for (let i = 0; i < getData.tally_sheet_details.length; i++) {
-                        let tempData = []
-                        kuantitas = []
-                        let qtyPesanan = getData.tally_sheet_details[i].purchase_order_qty
+                        let qtyPesanan;
+                        let qtySisa;
+                        let idSumber;
+                        let codeSumber;
                         let qtyTally = getData.tally_sheet_details[i].tally_sheets_qty
-                        let qtySisa = Number(getData.tally_sheet_details[i].purchase_order_qty) - Number(getData.tally_sheet_details[i].tally_sheets_qty);
-                        console.log(qtySisa)
+                        // let qtyBox = getData.tally_sheet_details[i].boxes_quantity
+
+                        if (tallySheetDetail[i].purchase_invoice_id) {
+                            setSumber('Faktur');
+                            setSelectedSupplier(getData.supplier_name);
+                            setSupplier(getData.supplier_id)
+                            idSumber = getData.tally_sheet_details[i].purchase_invoice.id;
+                            qtyPesanan = getData.tally_sheet_details[i].purchase_invoice_qty
+                            codeSumber = getData.tally_sheet_details[i].purchase_invoice.code
+                            // qtySisa = Number(qtyPesanan) - Number(qtyTally)+Number(qtyBox);
+                        }
+                        else if (tallySheetDetail[i].purchase_order_id) {
+                            setSumber('PO')
+                            setSelectedSupplier(getData.supplier_name);
+                            setSupplier(getData.supplier_id)
+                            idSumber = getData.tally_sheet_details[i].purchase_order.id;
+                            codeSumber = getData.tally_sheet_details[i].purchase_order.code
+                            qtyPesanan = getData.tally_sheet_details[i].purchase_order_qty
+                            // qtySisa = Number(qtyPesanan) - Number(qtyTally)+Number(qtyBox);
+                        }
+                        else if (tallySheetDetail[i].sales_return_id) {
+                            setSumber('Retur')
+                            setSelectedCustomer(getData.customer_name);
+                            setCustomer(getData.customer_id)
+                            codeSumber = getData.tally_sheet_details[i].sales_return.code
+                            idSumber = getData.tally_sheet_details[i].sales_return.id;
+                            qtyPesanan = getData.tally_sheet_details[i].sales_return_qty
+                            // qtySisa = Number(qtyPesanan) - Number(qtyTally);
+                        }
+
+                        let tempData = []
+                        let tempDataLama = []
+                        kuantitas = []
+                        qtySisa = Number(qtyPesanan) - Number(qtyTally);
+
                         tmp.push({
                             id_produk: getData.tally_sheet_details[i].product_id,
-                            id_pesanan_pembelian: getData.tally_sheet_details[i].purchase_order.id,
-                            code: getData.tally_sheet_details[i].purchase_order.code,
+                            id_sumber: idSumber,
+                            code: codeSumber,
                             boxes_quantity: getData.tally_sheet_details[i].boxes_quantity,
                             number_of_boxes: getData.tally_sheet_details[i].number_of_boxes,
                             boxes_unit: getData.tally_sheet_details[i].boxes_unit,
                             product_name: getData.tally_sheet_details[i].product_name,
-                            action: qtyTally >= qtyPesanan ? 'Done' : 'Next delivery',
-                            purchase_order_qty: qtySisa,
+                            action: getData.tally_sheet_details[i].action,
+                            transaksi_qty: qtySisa,
                             tally_sheets_qty: qtyTally,
+                            statusCek: true,
                             key: "lama"
                         })
 
                         let jumlahBaris = (Number(getData.tally_sheet_details[i].boxes.length) / 10) + 1;
                         let jumlahKolom = getData.tally_sheet_details[i].boxes.length;
-                        let buatKolom  =0 
+                        let buatKolom = 0
                         let indexBox = 0;
 
                         tmpBox.push(getData.tally_sheet_details[i].number_of_boxes);
@@ -104,13 +163,17 @@ const EditTallySheet = () => {
                         for (let x = 0; x <= jumlahBaris.toFixed(); x++) {
                             let baris = []
                             let kolom = [];
+                            let barisLama = []
+                            let kolomLama = [];
                             for (let y = 0; y <= 10; y++) {
                                 if (x == 0) {
                                     if (y == 0) {
                                         kolom.push({ readOnly: true, value: "" })
+                                        kolomLama.push({ readOnly: true, value: "" })
                                     }
                                     else {
                                         kolom.push({ value: huruf[y - 1], readOnly: true })
+                                        kolomLama.push({ value: huruf[y - 1], readOnly: true })
                                     }
 
                                 }
@@ -120,18 +183,25 @@ const EditTallySheet = () => {
                                             { readOnly: true, value: x }
 
                                         );
+                                        kolomLama.push(
+                                            { readOnly: true, value: x }
+
+                                        );
 
                                     }
                                     else if (buatKolom < jumlahKolom && x <= jumlahBaris.toFixed()) {
                                         kolom.push(
                                             { value: getData.tally_sheet_details[i].boxes[indexBox].quantity.replace('.', ',') }
                                         );
+                                        kolomLama.push(
+                                            { value: getData.tally_sheet_details[i].boxes[indexBox].quantity.replace('.', ',') }
+                                        );
                                         // pengecekan index box 
-                                        if (indexBox < getData.tally_sheet_details[i].boxes.length-1) {
+                                        if (indexBox < getData.tally_sheet_details[i].boxes.length - 1) {
                                             indexBox = indexBox + 1;
                                         }
                                         // penjumlahan kolom yang sudah diisi 
-                                        buatKolom = buatKolom +1;
+                                        buatKolom = buatKolom + 1;
 
                                         kuantitas.push(getData.tally_sheet_details[i].boxes[y - 1].quantity);
 
@@ -141,22 +211,31 @@ const EditTallySheet = () => {
                                         kolom.push(
                                             { value: '' },
                                         );
+                                        kolomLama.push(
+                                            { value: '' },
+                                        );
                                     }
                                     baris.push(kolom)
+                                    barisLama.push(kolomLama)
 
                                 }
 
 
                             }
                             tempData.push(kolom);
+                            tempDataLama.push(kolomLama)
                         }
                         arrKuantitas.push(kuantitas);
+                        arrDataLama.push(tempDataLama)
                         arrData.push(tempData)
                     }
                     setProduct(tmp)
+                    setProductNoEdit(tmp)
                     setKuantitasBox(arrKuantitas);
                     setTotalTallySheet(tmpTally);
                     setData(arrData);
+                    // console.log(arrData)
+                    setsheetNoEdit(arrDataLama)
                     setQty(tmpQty);
                     setBox(tmpBox)
 
@@ -168,8 +247,8 @@ const EditTallySheet = () => {
             });
     }, []);
 
+    // jika dari PO 
     useEffect(() => {
-        console.log(getTallySheet.supplier_id)
         const getProduct = async () => {
             const res = await axios.get(`${Url}/tally_sheet_ins_available_purchase_orders?include_tally_sheet_purchase_orders=${id}&kode=${query}&id_pemasok=${getTallySheet.supplier_id}`, {
                 headers: {
@@ -177,13 +256,159 @@ const EditTallySheet = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            console.log(res.data.data)
-            setGetDataProduct(res.data.data);
-            setGetDataDetailPO(res.data.data.map(d => d.purchase_order_details))
+            let tmp = []
+            for (let i = 0; i < res.data.data.length; i++) {
+                for (let x = 0; x < product.length; x++) {
+
+                    if (res.data.data[i].code == product[x].code) {
+                        tmp.push({
+                            detail: res.data.data[i],
+                            statusCek: true
+                        });
+                    }
+                    else {
+                        tmp.push({
+                            detail: res.data.data[i],
+                            statusCek: false
+                        });
+                    }
+
+                }
+
+            }
+            console.log(tmp)
+            setGetDataProduct(tmp)
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
     }, [query, getTallySheet])
+
+    // jika dari faktur 
+    useEffect(() => {
+        const getProduct = async () => {
+            const res = await axios.get(`${Url}/tally_sheet_ins_available_purchase_invoices?include_tally_sheet_purchase_invoices=${id}&kode=${query}&id_pemasok=${getTallySheet.supplier_id}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${auth.token}`
+                }
+            })
+            let tmp = []
+            for (let i = 0; i < res.data.data.length; i++) {
+                for (let x = 0; x < product.length; x++) {
+
+                    if (res.data.data[i].code == product[x].code) {
+                        tmp.push({
+                            detail: res.data.data[i],
+                            statusCek: true
+                        });
+                    }
+                    else {
+                        tmp.push({
+                            detail: res.data.data[i],
+                            statusCek: false
+                        });
+                    }
+
+                }
+
+            }
+            setGetDataFaktur(tmp)
+        };
+
+        if (query.length === 0 || query.length > 2) getProduct();
+    }, [query, getTallySheet])
+
+    // jika dari retur 
+    useEffect(() => {
+        const getProduct = async () => {
+            const res = await axios.get(`${Url}/tally_sheet_ins_available_sales_returns?include_tally_sheet_sales_returns=${id}&kode=${query}&id_pemasok=${getTallySheet.customer_id}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${auth.token}`
+                }
+            })
+            let tmp = []
+            let status;
+            for (let i = 0; i < res.data.data.length; i++) {
+                for (let x = 0; x < product.length; x++) {
+
+                    if (res.data.data[i].code == product[x].code) {
+                        tmp.push({
+                            detail: res.data.data[i],
+                            statusCek: true
+                        });
+                    }
+                    else {
+                        tmp.push({
+                            detail: res.data.data[i],
+                            statusCek: false
+                        });
+                    }
+
+                }
+            }
+            setGetDataRetur(tmp)
+        };
+
+        if (query.length === 0 || query.length > 2) getProduct();
+    }, [query, getTallySheet])
+
+
+    const handleChangeSupplier = (value) => {
+        setGrup(value._group)
+        setProduct([])
+        setSelectedSupplier(value);
+        setSupplier(value.id);
+    };
+    const loadOptionsSupplier = (inputValue) => {
+
+        return axios.get(`${Url}/tally_sheet_ins_available_suppliers/purchase_orders?nama=${inputValue}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.data.data);
+    };
+    const loadOptionsSupplierImpor = (inputValue) => {
+
+        return axios.get(`${Url}/tally_sheet_ins_available_suppliers/purchase_invoices?nama=${inputValue}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.data.data);
+    };
+
+    const handleChangeCustomer = (value) => {
+        // setGrup(value._group)
+        setProduct([])
+        setSelectedCustomer(value);
+        setCustomer(value.id);
+    };
+    const loadOptionsCustomer = (inputValue) => {
+        return axios.get(`${Url}/tally_sheet_ins_available_customers?nama=${inputValue}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.data.data);
+    };
+
+    const handleChangeWarehouse = (value) => {
+        // setGrup(value._group)
+        setProduct([])
+        setSelectedWarehouse(value);
+        setWarehouse(value.id);
+    };
+    const loadOptionsWarehouse = (inputValue) => {
+        return axios.get(`${Url}/select_warehouses?nama=${inputValue}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.data.data);
+    };
+
 
     const columns = [
         {
@@ -239,11 +464,8 @@ const EditTallySheet = () => {
     ];
 
     const onCellsChanged = (changes) => {
-        // const tempGrid = [];
-        console.log(changes)
+        console.log(sheetNoEdit)
         const newGrid = [];
-
-        // tempGrid[indexPO] = data[idxPesanan][indexPO];
         newGrid[indexPO] = data[indexPO];
 
         // menyimpan perubahan 
@@ -258,8 +480,6 @@ const EditTallySheet = () => {
         });
         let totTly = [];
 
-        console.log(totTly)
-        console.log(data)
         // update jumlah tally sheet 
         for (let x = 0; x < product.length; x++) {
             totTly[x] = 0;
@@ -273,15 +493,14 @@ const EditTallySheet = () => {
                 }
             }
         }
-        console.log(totTly)
 
         setTotalTallySheet(totTly);
 
         // update pada state 
-        let tempData = [];
+        // let tempData = [];
         let arrData = [];
         for (let x = 0; x < product.length; x++) {
-            tempData = [];
+            // tempData = [];
             if (x == indexPO) {
                 arrData.push(newGrid[x]);
             }
@@ -329,14 +548,14 @@ const EditTallySheet = () => {
             if (i == indexPO) {
                 tmp.push({
                     id_produk: product[i].id_produk,
-                    id_pesanan_pembelian: product[i].id_pesanan_pembelian,
+                    id_sumber: product[i].id_sumber,
                     code: product[i].code,
-                    boxes_quantity: totTly[i].toString(),
+                    boxes_quantity: totTly[i].toFixed(2),
                     number_of_boxes: total[i],
                     boxes_unit: product[i].boxes_unit,
                     product_name: product[i].product_name,
-                    action: totTly[i] >= product[i].purchase_order_qty ? 'Done' : 'Next delivery',
-                    purchase_order_qty: product[i].purchase_order_qty,
+                    action: totTly[i] >= product[i].transaksi_qty ? 'Done' : 'Next delivery',
+                    transaksi_qty: product[i].transaksi_qty,
                     tally_sheets_qty: product[i].tally_sheets_qty,
                     key: product[i].key
                 })
@@ -347,26 +566,83 @@ const EditTallySheet = () => {
 
         }
         console.log(tmp)
+        console.log(sheetNoEdit)
         setProduct(tmp)
     };
 
     function hapusIndexProduct(index) {
-        console.log(index)
+        // console.log(index)
+        let code = product[index].code;
+        let status;
         setLoadingTable(true);
-        // for (let x = 0; x < dataTS.length; x++) {
+
         product.splice(index, 1);
         data.splice(index, 1);
         setIndexPO(0)
-        console.log(product)
+
+        for (let x = 0; x < product.length; x++) {
+            if (product[x].code == code) {
+                status = 'ada';
+            }
+        }
+
+        if (status != 'ada') {
+            // pengecekan centang 
+            if (sumber == 'Retur') {
+                let tmp = [];
+                for (let j = 0; j < getDataRetur.length; j++) {
+                    if (getDataRetur[j].detail.code == code) {
+                        tmp.push({
+                            detail: getDataRetur[j].detail,
+                            statusCek: false
+                        })
+                    }
+                    else {
+                        tmp.push(getDataRetur[j])
+                    }
+                }
+                setGetDataRetur(tmp)
+
+            }
+            else if (sumber == 'PO') {
+                // hapus cek 
+                let tmp = [];
+                for (let j = 0; j < getDataProduct.length; j++) {
+                    if (getDataProduct[j].detail.code == code) {
+                        tmp.push({
+                            detail: getDataProduct[j].detail,
+                            statusCek: false
+                        })
+                    }
+                    else {
+                        tmp.push(getDataProduct[j])
+                    }
+                }
+                setGetDataProduct(tmp)
+            }
+            else if (sumber == 'Faktur') {
+                let tmp = [];
+                for (let j = 0; j < getDataFaktur.length; j++) {
+                    if (getDataFaktur[j].detail.code == code) {
+                        tmp.push({
+                            detail: getDataFaktur[j].detail,
+                            statusCek: false
+                        })
+                    }
+                    else {
+                        tmp.push(getDataFaktur[j])
+                    }
+                }
+                setGetDataFaktur(tmp)
+
+            }
+        }
 
         Swal.fire({
             icon: 'success',
             title: 'Berhasil',
             text: 'Data berhasil dihapus',
         }).then(() => setLoadingTable(false));
-        // }
-
-        // console.log(dataTS)
 
     }
 
@@ -397,7 +673,7 @@ const EditTallySheet = () => {
             tmpData.push(hasilData);
 
         }
-       
+
 
         setData(tmpData);
     }
@@ -418,10 +694,6 @@ const EditTallySheet = () => {
 
     }
 
-
-
-
-
     function forceDoneProduct(index) {
         Swal.fire({
             title: 'Apakah Anda Yakin?',
@@ -439,14 +711,14 @@ const EditTallySheet = () => {
                     if (i == index) {
                         newProduct.push({
                             id_produk: product[i].id_produk,
-                            id_pesanan_pembelian: product[i].id_pesanan_pembelian,
+                            id_sumber: product[i].id_sumber,
                             code: product[i].code,
                             boxes_quantity: product[i].boxes_quantity,
                             number_of_boxes: product[i].number_of_boxes,
                             boxes_unit: product[i].boxes_unit,
                             product_name: product[i].product_name,
                             action: 'Done',
-                            purchase_order_qty: product[i].purchase_order_qty,
+                            transaksi_qty: product[i].transaksi_qty,
                             tally_sheets_qty: product[i].tally_sheets_qty,
                             key: product[i].key
                         })
@@ -464,7 +736,7 @@ const EditTallySheet = () => {
     }
 
     function forceNexDeliveryProduct(index) {
-        if (product[index].boxes_quantity >= product[index].purchase_order_qty) {
+        if (product[index].boxes_quantity >= product[index].transaksi_qty) {
             Swal.fire(
                 "Tidak bisa mengubah status",
                 `Jumlah ini sudah melebihi jumlah pesanan`,
@@ -487,14 +759,14 @@ const EditTallySheet = () => {
                         if (i == index) {
                             newProduct.push({
                                 id_produk: product[i].id_produk,
-                                id_pesanan_pembelian: product[i].id_pesanan_pembelian,
+                                id_sumber: product[i].id_sumber,
                                 code: product[i].code,
                                 boxes_quantity: product[i].boxes_quantity,
                                 number_of_boxes: product[i].number_of_boxes,
                                 boxes_unit: product[i].boxes_unit,
                                 product_name: product[i].product_name,
                                 action: 'Next delivery',
-                                purchase_order_qty: product[i].purchase_order_qty,
+                                transaksi_qty: product[i].transaksi_qty,
                                 tally_sheets_qty: product[i].tally_sheets_qty,
                                 key: product[i].key
                             })
@@ -633,7 +905,6 @@ const EditTallySheet = () => {
             </Space>
 
         }))
-
         ];
 
     // Column for modal input product
@@ -644,8 +915,8 @@ const EditTallySheet = () => {
             dataIndex: 'code',
         },
         {
-            title: 'Supplier',
-            dataIndex: 'supplier_name',
+            title: sumber == 'Retur' ? 'Customer' : 'Supplier',
+            dataIndex: 'nama',
             width: '15%',
             align: 'center',
         },
@@ -656,52 +927,164 @@ const EditTallySheet = () => {
             align: 'center',
         },
         {
-            title: 'actions',
-            dataIndex: 'address',
+            title: 'Actions',
+            dataIndex: 'action',
             width: '8%',
             align: 'center',
-            render: (_, record) => (
-                <>
-                    <Checkbox
-                        value={record}
-                        onChange={handleCheck}
-                    />
-                </>
-            )
         },
     ];
 
-    const handleCheck = (event) => {
+    const columnDataRetur =
+        [...getDataRetur.map((item, i) => ({
+            code: item.detail.code,
+            nama: item.detail.customer_name,
+            notes: item.detail.notes,
+            action:
+                <>
+                    <Checkbox
+                        // style={{ display: tampilCek ? "block" : "none"}}
+                        value={item}
+                        checked={item.statusCek}
+                        onChange={(e) => handleCheck(e, i)}
+                    />
+                </>
+        }))
+
+        ]
+
+    const columnDataPO =
+        [...getDataProduct.map((item, i) => ({
+            code: item.detail.code,
+            nama: item.detail.supplier_name,
+            notes: item.detail.notes,
+            action:
+                <>
+                    <Checkbox
+                        value={item}
+                        checked={item.statusCek}
+                        onChange={(e) => handleCheck(e, i)}
+                    />
+                </>
+        }))
+
+        ]
+
+    const columnDataFaktur =
+        [...getDataFaktur.map((item, i) => ({
+            code: item.detail.code,
+            nama: item.detail.supplier_name,
+            notes: item.detail.notes,
+            action:
+                <>
+                    <Checkbox
+                        // style={{ display: tampilCek ? "block" : "none"}}
+                        value={item}
+                        checked={item.statusCek}
+                        onChange={(e) => handleCheck(e, i)}
+                    />
+                </>
+        }))
+
+        ]
+
+    const handleCheck = (event, indexTransaksi) => {
+        console.log(data)
+        console.log(sheetNoEdit)
         var updatedList = [...product];
         let arrData = [];
+        let panjang;
+        let dataSumber;
+        let tmpDataBaru = []
+        const value = event.target.value.detail;
 
-        if (event.target.checked) {
-            const value = event.target.value;
-            const panjang = value.purchase_order_details.length;
+        // perubahan data dan status ceked 
+        if (sumber == 'Retur') {
+            for (let i = 0; i < getDataRetur.length; i++) {
+                if (i == indexTransaksi) {
+                    tmpDataBaru.push({
+                        detail: getDataRetur[i].detail,
+                        statusCek: !getDataRetur[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataRetur[i])
+                }
+            }
+            setGetDataRetur(tmpDataBaru)
+            dataSumber = value.sales_return_details;
+            panjang = value.sales_return_details.length;
+
+        }
+
+        else if (sumber == 'PO') {
+            for (let i = 0; i < getDataProduct.length; i++) {
+                if (i == indexTransaksi) {
+                    tmpDataBaru.push({
+                        detail: getDataProduct[i].detail,
+                        statusCek: !getDataProduct[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataProduct[i])
+                }
+            }
+            setGetDataProduct(tmpDataBaru)
+            panjang = value.purchase_order_details.length;
+            dataSumber = value.purchase_order_details;
+        }
+
+        else if (sumber == 'Faktur') {
+            for (let i = 0; i < getDataFaktur.length; i++) {
+                if (i == indexTransaksi) {
+                    tmpDataBaru.push({
+                        detail: getDataFaktur[i].detail,
+                        statusCek: !getDataFaktur[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataFaktur[i])
+                }
+            }
+            setGetDataFaktur(tmpDataBaru)
+            dataSumber = value.purchase_invoice_details;
+            panjang = value.purchase_invoice_details.length;
+        }
+
+
+        if (tmpDataBaru[indexTransaksi].statusCek) {
 
             let tmp = [];
             // setting baris 
-            for (let i = 0; i <= product.length; i++) {
-                if (i == product.length) {
-                    for (let x = 0; x < value.purchase_order_details.length; x++) {
-                        let qtyAwal = value.purchase_order_details[x].quantity;
-                        let qtyAkhir = value.purchase_order_details[x].tally_sheets_qty;
-                        if (qtyAkhir < qtyAwal) {
-                            tmp.push({
-                                id_produk: value.purchase_order_details[x].product_id,
-                                id_pesanan_pembelian: value.id,
-                                code: value.code,
-                                boxes_quantity: 0,
-                                number_of_boxes: 0,
-                                boxes_unit: value.purchase_order_details[x].unit,
-                                product_name: value.purchase_order_details[x].product_name,
-                                action: qtyAkhir >= qtyAwal ? 'Done' : 'Next delivery',
-                                purchase_order_qty: Number(qtyAwal) - Number(qtyAkhir),
-                                tally_sheets_qty: qtyAkhir,
-                                key: "baru"
-                            })
+            for (let i = 0; i <= updatedList.length; i++) {
+                if (i == updatedList.length) {
+                    // console.log(dataSumber.length)
+                    for (let x = 0; x < dataSumber.length; x++) {
+                        let qtyAwal = dataSumber[x].quantity;
+                        let qtyAkhir = dataSumber[x].tally_sheets_qty;
+                        // pengecekan qty sebelumnya 
+                        for (let j = 0; j < productNoEdit.length; j++) {
+                            console.log(productNoEdit)
+                            if (value.code == productNoEdit[j].code) {
+                                tmp.push(
+                                    productNoEdit[j]
+                                )
+                            }
+                            else if (qtyAkhir < qtyAwal) {
+                                tmp.push({
+                                    id_produk: dataSumber[x].product_id,
+                                    id_sumber: value.id,
+                                    code: value.code,
+                                    boxes_quantity: 0,
+                                    number_of_boxes: 0,
+                                    boxes_unit: dataSumber[x].unit,
+                                    product_name: dataSumber[x].product_name,
+                                    action: qtyAkhir >= qtyAwal ? 'Done' : 'Next delivery',
+                                    transaksi_qty: Number(qtyAwal) - Number(qtyAkhir),
+                                    tally_sheets_qty: qtyAkhir,
+                                    key: "baru"
+                                })
+                            }
                         }
-
 
                     }
                 }
@@ -709,209 +1092,233 @@ const EditTallySheet = () => {
                     tmp.push(product[i])
                 )
             }
+            // console.log(tmp)
             updatedList = tmp
 
             // setting data 
             for (let i = 0; i < updatedList.length; i++) {
                 if (i < updatedList.length - panjang) {
-                    arrData[i] = data[i];
+                    arrData.push(data[i])
                 }
                 else {
-                    arrData[i] = [
-                        [
-                            { readOnly: true, value: "" },
-                            { value: "A", readOnly: true },
-                            { value: "B", readOnly: true },
-                            { value: "C", readOnly: true },
-                            { value: "D", readOnly: true },
-                            { value: "E", readOnly: true },
-                            { value: "F", readOnly: true },
-                            { value: "G", readOnly: true },
-                            { value: "H", readOnly: true },
-                            { value: "I", readOnly: true },
-                            { value: "J", readOnly: true },
-                        ],
-                        [
-                            { readOnly: true, value: 1 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ],
-                        [
-                            { readOnly: true, value: 2 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ],
-                        [
-                            { readOnly: true, value: 3 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ],
-                        [
-                            { readOnly: true, value: 4 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ],
-                        [
-                            { readOnly: true, value: 5 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ],
-                        [
-                            { readOnly: true, value: 6 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ],
-                        [
-                            { readOnly: true, value: 7 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ],
-                        [
-                            { readOnly: true, value: 8 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ],
-                        [
-                            { readOnly: true, value: 9 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ],
-                        [
-                            { readOnly: true, value: 10 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ]
-                    ];
-                }
+                    for (let j = 0; j < productNoEdit.length; j++) {
+                        // console.log(productNoEdit)
+                        if (value.code == productNoEdit[j].code) {
+                            arrData.push(sheetNoEdit[j])
+                            // console.log(sheetNoEdit[j])
+                        }
+                        else {
+                            arrData[i] = [
+                                [
+                                    { readOnly: true, value: "" },
+                                    { value: "A", readOnly: true },
+                                    { value: "B", readOnly: true },
+                                    { value: "C", readOnly: true },
+                                    { value: "D", readOnly: true },
+                                    { value: "E", readOnly: true },
+                                    { value: "F", readOnly: true },
+                                    { value: "G", readOnly: true },
+                                    { value: "H", readOnly: true },
+                                    { value: "I", readOnly: true },
+                                    { value: "J", readOnly: true },
+                                ],
+                                [
+                                    { readOnly: true, value: 1 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ],
+                                [
+                                    { readOnly: true, value: 2 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ],
+                                [
+                                    { readOnly: true, value: 3 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ],
+                                [
+                                    { readOnly: true, value: 4 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ],
+                                [
+                                    { readOnly: true, value: 5 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ],
+                                [
+                                    { readOnly: true, value: 6 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ],
+                                [
+                                    { readOnly: true, value: 7 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ],
+                                [
+                                    { readOnly: true, value: 8 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ],
+                                [
+                                    { readOnly: true, value: 9 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ],
+                                [
+                                    { readOnly: true, value: 10 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ]
+                            ];
+                        }
+                    }
 
+                }
             }
+            console.log(arrData)
             setProduct(updatedList);
             setData(arrData);
 
         }
         else {
-            const value = event.target.value;
+            arrData = [...data]
             for (let i = 0; i < updatedList.length; i++) {
-                for (let x = 0; x < value.purchase_order_details.length; x++) {
-                    if (updatedList[i].id_pesanan_pembelian == value.id && updatedList[i].id_produk == value.purchase_order_details[x].product_id && updatedList[i].key == "baru") {
-                        // console.log("kehpaus")
+                for (let x = 0; x < dataSumber.length; x++) {
+                    if (updatedList[i].id_sumber == value.id && updatedList[i].id_produk == dataSumber[x].product_id) {
                         updatedList.splice(i, 1);
-                        data.splice(i, 1);
+                        arrData.splice(i, 1);
                         setIndexPO(0)
                     }
                 }
             }
+            console.log(arrData)
+            setProduct(updatedList);
+            setData(arrData)
         }
-        // console.log(updatedList)
-        // console.log(data);
-        setProduct(updatedList);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const tallySheetData = new URLSearchParams();
-        tallySheetData.append("tanggal", getTallySheet.date);
-        tallySheetData.append("pemasok", getTallySheet.supplier_id);
-        tallySheetData.append("gudang", getTallySheet.warehouse_id);
-        tallySheetData.append("catatan", getTallySheet.notes);
+        tallySheetData.append("tanggal", date);
+        if (sumber == 'Retur') {
+            tallySheetData.append("pelanggan", customer);
+        }
+        else {
+            tallySheetData.append("pemasok", supplier);
+        }
+        tallySheetData.append("gudang", warehouse);
+        tallySheetData.append("catatan", catatan);
         tallySheetData.append("status", "Submitted");
+
         product.map((p, pi) => {
             tallySheetData.append("id_produk[]", p.id_produk);
             tallySheetData.append("jumlah_box[]", p.number_of_boxes);
+            tallySheetData.append("aksi[]", p.action);
             tallySheetData.append("satuan_box[]", p.boxes_unit);
             tallySheetData.append("kuantitas_box[]", p.boxes_quantity);
-            tallySheetData.append("aksi[]", p.action);
-            tallySheetData.append("id_pesanan_pembelian[]", p.id_pesanan_pembelian);
+            if (sumber == 'Faktur') {
+                tallySheetData.append("id_faktur_pembelian[]", p.id_sumber);
+            }
+            else if (sumber == 'Retur') {
+                tallySheetData.append("id_retur_penjualan[]", p.id_sumber);
+            }
+            else if (sumber == 'PO') {
+                tallySheetData.append("id_pesanan_pembelian[]", p.id_sumber);
+            }
         });
 
-        console.log(tallySheetData)
         let key = 0;
         for (let idx = 0; idx < kuantitasBox.length; idx++) {
             for (let x = 0; x < kuantitasBox[idx].length; x++) {
-                tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + x + "]", kuantitasBox[idx][x])
+                tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + x + "]", kuantitasBox[idx][x].toString().replace(',', '.'))
             }
             key++;
         }
+
 
 
 
@@ -954,25 +1361,39 @@ const EditTallySheet = () => {
     const handleDraft = async (e) => {
         e.preventDefault();
         const tallySheetData = new URLSearchParams();
-        tallySheetData.append("tanggal", getTallySheet.date);
-        tallySheetData.append("pemasok", getTallySheet.supplier_id);
-        tallySheetData.append("gudang", getTallySheet.warehouse_id);
-        tallySheetData.append("catatan", getTallySheet.notes);
+        tallySheetData.append("tanggal", date);
+        if (sumber == 'Retur') {
+            tallySheetData.append("pelanggan", customer);
+        }
+        else {
+            tallySheetData.append("pemasok", supplier);
+        }
+        tallySheetData.append("gudang", warehouse);
+        tallySheetData.append("catatan", catatan);
         tallySheetData.append("status", "Draft");
+
         product.map((p, pi) => {
             tallySheetData.append("id_produk[]", p.id_produk);
             tallySheetData.append("jumlah_box[]", p.number_of_boxes);
             tallySheetData.append("aksi[]", p.action);
             tallySheetData.append("satuan_box[]", p.boxes_unit);
             tallySheetData.append("kuantitas_box[]", p.boxes_quantity);
-            tallySheetData.append("id_pesanan_pembelian[]", p.id_pesanan_pembelian);
+            if (sumber == 'Faktur') {
+                tallySheetData.append("id_faktur_pembelian[]", p.id_sumber);
+            }
+            else if (sumber == 'Retur') {
+                tallySheetData.append("id_retur_penjualan[]", p.id_sumber);
+            }
+            else if (sumber == 'PO') {
+                tallySheetData.append("id_pesanan_pembelian[]", p.id_sumber);
+            }
         });
 
-        console.log(tallySheetData)
+        // console.log(tallySheetData)
         let key = 0;
         for (let idx = 0; idx < kuantitasBox.length; idx++) {
             for (let x = 0; x < kuantitasBox[idx].length; x++) {
-                tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + x + "]", kuantitasBox[idx][x])
+                tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + x + "]", kuantitasBox[idx][x].toString().replace(',', '.'))
             }
             key++;
         }
@@ -1015,11 +1436,9 @@ const EditTallySheet = () => {
     };
 
     function klikTampilSheet(indexPO) {
-        console.log(data)
-        // console.log(product[indexPO].purchase_order_qty)
-        // setQuantityTally(product[indexPO].boxes_quantity)
-        // console.log(product)
-        setQuantityPO(product[indexPO].purchase_order_qty.toFixed(2).toString())
+        // console.log(data)
+        setQuantityPO(Number(product[indexPO].transaksi_qty).toFixed(2).toString())
+
         setIndexPO(indexPO);
         setModal2Visible2(true);
 
@@ -1049,26 +1468,85 @@ const EditTallySheet = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
                             <div className="col-sm-7">
-                                <input disabled="true" value={getTallySheet.date} id="startDate" className="form-control" type="date" />
+                                <input defaultValue={date} id="startDate" onChange={(e) => setDate(e.target.value)} className="form-control" type="date" />
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Pesanan</label>
                             <div className="col-sm-7">
-                                <input disabled="true" value={getTallySheet.code} type="Nama" className="form-control" id="inputNama3" />
+                                <input disabled="true" value={getTallySheet.code}  type="Nama" className="form-control" id="inputNama3" />
                             </div>
                         </div>
                         <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Transaksi</label>
+                            <div className="col-sm-7">
+                                <input disabled="true" value={sumber == 'Retur' ? 'Retur Penjualan' : sumber == 'Faktur' ? 'Pembelian Impor' : sumber == 'PO' ? 'Pembelian Lokal' : null} type="Nama" className="form-control" id="inputNama3" />
+                            </div>
+                        </div>
+                        <div className="row mb-3" style={{ display: sumber == 'Faktur' ? 'flex' : 'none' }}>
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                             <div className="col-sm-7">
-                                <input disabled="true" value={getTallySheet.supplier_name} id="startDate" className="form-control" type="text" />
+                                <AsyncSelect
+                                    placeholder="Pilih Supplier..."
+                                    cacheOptions
+                                    defaultInputValue={selectedSupplier}
+                                    defaultOptions
+                                    value={selectedSupplier}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsSupplierImpor}
+                                    onChange={handleChangeSupplier}
+                                />
+                            </div>
+                        </div>
+                        <div className="row mb-3" style={{ display: sumber == 'PO' ? 'flex' : 'none' }}>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
+                            <div className="col-sm-7">
 
+                                <AsyncSelect
+                                    placeholder="Pilih Supplier..."
+                                    cacheOptions
+                                    defaultInputValue={selectedSupplier}
+                                    defaultOptions
+                                    value={selectedSupplier}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsSupplier}
+                                    onChange={handleChangeSupplier}
+                                />
+
+                            </div>
+                        </div>
+                        <div className="row mb-3" style={{ display: sumber == 'Retur' ? 'flex' : 'none' }}>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
+                            <div className="col-sm-7">
+                                <AsyncSelect
+                                    placeholder="Pilih Customer..."
+                                    cacheOptions
+                                    defaultOptions
+                                    defaultInputValue={selectedCustomer}
+                                    value={selectedCustomer}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsCustomer}
+                                    onChange={handleChangeCustomer}
+                                />
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang</label>
                             <div className="col-sm-7">
-                                <input disabled="true" type="text" value={getTallySheet.warehouse_name} className="form-control" id="inputNama3" />
+                                <AsyncSelect
+                                    placeholder="Pilih Gudang..."
+                                    cacheOptions
+                                    defaultOptions
+                                    defaultInputValue={selectedWarehouse}
+                                    value={selectedWarehouse}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsWarehouse}
+                                    onChange={handleChangeWarehouse}
+                                />
                             </div>
                         </div>
                     </div>
@@ -1076,7 +1554,7 @@ const EditTallySheet = () => {
                         <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Catatan</label>
                         <div className="row mb-3">
                             <div className="col-sm-10">
-                                <textarea disabled="true" value={getTallySheet.notes} className="form-control" id="form4Example3" rows="4" />
+                                <textarea defaultValue={catatan}  onChange={(e) => setCatatan(e.target.value)}  className="form-control" id="form4Example3" rows="4" />
                             </div>
                         </div>
                         <div className="row mb-3">
@@ -1098,13 +1576,28 @@ const EditTallySheet = () => {
                             <Button
                                 type="primary"
                                 icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
+                                onClick={() => {
+                                    if (sumber == "") {
+                                        Swal.fire("Gagal", "Mohon Pilih Sumber Dahulu..", "error");
+                                    }
+                                    else if (sumber == "Faktur") {
+                                        setModalListImpor(true)
+                                    }
+                                    else if (sumber == "PO") {
+                                        setModalListLokal(true)
+                                    }
+                                    else if (sumber == "Retur") {
+                                        setModalListRetur(true)
+                                    }
+
+                                }}
                             />
+                            {/* modal dari PO  */}
                             <Modal
                                 title="Tambah Pesanan"
                                 centered
-                                visible={modal2Visible}
-                                onCancel={() => setModal2Visible(false)}
+                                visible={modalListLokal}
+                                onCancel={() => setModalListLokal(false)}
                                 width={1000}
                                 footer={null}
                             >
@@ -1121,7 +1614,75 @@ const EditTallySheet = () => {
                                         </div>
                                         <Table
                                             columns={columnsModal}
-                                            dataSource={getDataProduct}
+                                            dataSource={columnDataPO}
+                                            scroll={{
+                                                y: 250,
+                                            }}
+                                            pagination={false}
+                                            loading={isLoading}
+                                            size="middle"
+                                        />
+                                    </div>
+                                </div>
+                            </Modal>
+
+                            {/* modal dari faktur  */}
+                            <Modal
+                                title="Tambah Faktur"
+                                centered
+                                visible={modalListImpor}
+                                onCancel={() => setModalListImpor(false)}
+                                width={1000}
+                                footer={null}
+                            >
+                                <div className="text-title text-start">
+                                    <div className="row">
+                                        <div className="col mb-3">
+                                            <Search
+                                                placeholder="Cari Nomor Faktur.."
+                                                style={{
+                                                    width: 400,
+                                                }}
+                                                onChange={(e) => setQuery(e.target.value.toLowerCase())}
+                                            />
+                                        </div>
+                                        <Table
+                                            columns={columnsModal}
+                                            dataSource={columnDataFaktur}
+                                            scroll={{
+                                                y: 250,
+                                            }}
+                                            pagination={false}
+                                            loading={isLoading}
+                                            size="middle"
+                                        />
+                                    </div>
+                                </div>
+                            </Modal>
+
+                            {/* modal dari retur  */}
+                            <Modal
+                                title="Tambah Retur"
+                                centered
+                                visible={modalListRetur}
+                                onCancel={() => setModalListRetur(false)}
+                                width={1000}
+                                footer={null}
+                            >
+                                <div className="text-title text-start">
+                                    <div className="row">
+                                        <div className="col mb-3">
+                                            <Search
+                                                placeholder="Cari Nomor Retur.."
+                                                style={{
+                                                    width: 400,
+                                                }}
+                                                onChange={(e) => setQuery(e.target.value.toLowerCase())}
+                                            />
+                                        </div>
+                                        <Table
+                                            columns={columnsModal}
+                                            dataSource={columnDataRetur}
                                             scroll={{
                                                 y: 250,
                                             }}
@@ -1138,8 +1699,6 @@ const EditTallySheet = () => {
                         bordered
                         pagination={false}
                         dataSource={dataPurchase}
-                        // expandable={{ expandedRowRender }}
-                        // defaultExpandAllRows
                         columns={columns}
                         onChange={(e) => setProduct(e.target.value)}
                     />
@@ -1190,63 +1749,6 @@ const EditTallySheet = () => {
                 </div>
                 <div style={{ clear: 'both' }}></div>
             </form>
-            {/* <form className="  p-3 mb-5 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <div class="row">
-                        <div class="col">
-                            <h4 className="title fw-normal">Cari Produk</h4>
-                        </div>
-                        <div class="col-sm-3 me-5">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="inlineFormInputGroupUsername" placeholder="Type..."/>
-                            <div class="input-group-text">Search</div>
-                        </div>
-                        </div>
-                    </div>
-                <ProdukPesananTable />
-                </div>
-            <div class="row p-0">
-                <div class="col ms-5">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"/>
-                        <label class="form-check-label" for="flexCheckDefault">
-                            Harga Termasuk Pajak
-                        </label>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="row mb-3">
-                        <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>
-                        <div class="col-sm-6">
-                            <input type="email" class="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">Diskon</label>
-                        <div class="col-sm-6">
-                            <input type="email" class="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">PPN</label>
-                        <div class="col-sm-6">
-                            <input type="email" class="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">Total</label>
-                        <div class="col-sm-6">
-                            <input type="email" class="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                <button type="button" class="btn btn-success rounded m-1">Simpan</button>
-                <button type="button" class="btn btn-primary rounded m-1">Submit</button>
-                <button type="button" class="btn btn-warning rounded m-1">Cetak</button>
-            </div>
-            </form> */}
         </>
     )
 }

@@ -57,13 +57,11 @@ export const DetailTallySheet = () => {
                 const getData = res.data.data[0];
                 setGetTallySheet(getData)
                 setDetailTallySheet(getData.tally_sheet_details);
-                // let jumlahBaris = 0;
 
                 let arrData = [];
                 let huruf = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
                 if (data.length == 0) {
                     for (let i = 0; i < getData.tally_sheet_details.length; i++) {
-                        // console.log(getData.tally_sheet_details[i].boxes[indexBox].quantity)
 
                         let tempData = []
 
@@ -270,7 +268,6 @@ export const DetailTallySheet = () => {
             product_name: item.product_name,
             quantity: item.boxes_quantity.replace('.', ','),
             unit: item.boxes_unit,
-
             box:
                 <>
 
@@ -291,6 +288,7 @@ export const DetailTallySheet = () => {
                                         <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
                                         <div className="col-sm-3">
                                             <input
+                                            
                                                 value={detailTallySheet[indexPO].purchase_order.code}
                                                 type="Nama"
                                                 className="form-control"

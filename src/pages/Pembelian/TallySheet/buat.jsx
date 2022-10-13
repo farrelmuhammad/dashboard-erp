@@ -1402,13 +1402,13 @@ const BuatTallySheet = () => {
         setSelectedSupplier('');
         setSelectedCustomer('')
     }
-    const handleCheck = (event, indexRetur) => {
+    const handleCheck = (event, indexTransaksi) => {
         let tmpDataBaru = [];
 
         // perubahan data dan status ceked 
         if (sumber == 'Retur') {
             for (let i = 0; i < getDataRetur.length; i++) {
-                if (i == indexRetur) {
+                if (i == indexTransaksi) {
                     tmpDataBaru.push({
                         detail: getDataRetur[i].detail,
                         statusCek: !getDataRetur[i].statusCek
@@ -1423,7 +1423,7 @@ const BuatTallySheet = () => {
 
         else if (sumber == 'PO') {
             for (let i = 0; i < getDataProduct.length; i++) {
-                if (i == indexRetur) {
+                if (i == indexTransaksi) {
                     tmpDataBaru.push({
                         detail: getDataProduct[i].detail,
                         statusCek: !getDataProduct[i].statusCek
@@ -1438,7 +1438,7 @@ const BuatTallySheet = () => {
 
         else if (sumber == 'Faktur') {
             for (let i = 0; i < getDataFaktur.length; i++) {
-                if (i == indexRetur) {
+                if (i == indexTransaksi) {
                     tmpDataBaru.push({
                         detail: getDataFaktur[i].detail,
                         statusCek: !getDataFaktur[i].statusCek
@@ -1460,7 +1460,7 @@ const BuatTallySheet = () => {
         let arrStatus = []
 
         // jika ceked 
-        if (tmpDataBaru[indexRetur].statusCek) {
+        if (tmpDataBaru[indexTransaksi].statusCek) {
             updatedList = [...product, event.target.value.detail];
 
             // tambah data pas di checked ketika data masih 0
