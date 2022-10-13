@@ -330,7 +330,7 @@ const EditProduk = () => {
                         <select onChange={e => setGroup(e.target.value)} id="Typeselect" className="form-select">
                             <option>Pilih Grup</option>
                             <option value="Lokal" selected={group === "Lokal"}>Lokal</option>
-                            <option value="Import" selected={group === "Import"}>Import</option>
+                            <option value="Impor" selected={group === "Impor"}>Impor</option>
                             <option value="Meatshop" selected={group === "Meatshop"}>Meatshop</option>
                         </select>
                     </div>
