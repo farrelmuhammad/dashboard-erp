@@ -1,6 +1,6 @@
 stages:
     - build
-    - deploy
+    # - deploy
 
 image: node:lts
 
@@ -22,15 +22,15 @@ build job:
         paths:
             - build/
 
-deploy_preview:
-    stage: deploy
-    except:
-        - main
-    script:
-        - npm install --global vercel
-        - vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
-        - vercel build --token=$VERCEL_TOKEN
-        - vercel deploy --prebuilt  --token=$VERCEL_TOKEN
+# deploy_preview:
+#     stage: deploy
+#     except:
+#         - main
+#     script:
+#         - npm install --global vercel
+#         - vercel pull --yes --environment=preview --token=$VERCEL_TOKEN
+#         - vercel build --token=$VERCEL_TOKEN
+#         - vercel deploy --prebuilt  --token=$VERCEL_TOKEN
 
 # deploy_production:
 #     stage: deploy
