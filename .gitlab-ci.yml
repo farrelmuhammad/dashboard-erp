@@ -16,8 +16,8 @@ before_script:
 build job:
     stage: build
     script:
-        - yarn install
         - yarn cache clean
+        - yarn install
         - yarn build
     artifacts:
         paths:
