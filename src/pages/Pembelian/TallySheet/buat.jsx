@@ -2427,7 +2427,7 @@ const BuatTallySheet = () => {
                                 onClick={() => {
                                     console.log(sumber)
                                     if (sumber == "") {
-                                        Swal.fire("Gagal", "Mohon Pilih Sumber Dahulu..", "error");
+                                        Swal.fire("Gagal", "Mohon Pilih Transaksi Dahulu..", "error");
 
                                     }
                                     else if (sumber == "Faktur") {
