@@ -258,7 +258,7 @@ const EditTally = () => {
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
-    }, [query, getTallySheet])
+    }, [query, getTallySheet, customer])
 
     const columns = [
         {

@@ -213,7 +213,7 @@ const EditSuratJalan = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_tally_sheets?nama_alias=${query}`, {
+            const res = await axios.get(`${Url}/select_tally_sheets?nama_alias=${query}&id_pelanggan=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -223,7 +223,7 @@ const EditSuratJalan = () => {
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
-    }, [query])
+    }, [query, customer])
 
     // Column for modal input product
     const columnsModal = [
@@ -234,15 +234,17 @@ const EditSuratJalan = () => {
         },
         {
             title: 'Pelanggan',
-            dataIndex: 'customer_id',
+            dataIndex: 'customer',
             width: '15%',
             align: 'center',
+            render: (customer) => customer.name
         },
         {
             title: 'Gudang',
-            dataIndex: 'warehouse_id',
+            dataIndex: 'warehouse',
             width: '15%',
             align: 'center',
+            render: (warehouse) => warehouse.name
         },
         {
             title: 'actions',
@@ -606,7 +608,7 @@ const EditSuratJalan = () => {
 
             <PageHeader
                 ghost={false}
-                title="Daftar Pesanan"
+                title="Daftar Tally Sheet"
                 extra={[
                     <Button
                         type="primary"
@@ -628,6 +630,7 @@ const EditSuratJalan = () => {
                         //     </Button>,
                         // ]}
                         footer={null}
+                        width={600}
                     >
                         <div className="text-title text-start">
                             <div className="row">
