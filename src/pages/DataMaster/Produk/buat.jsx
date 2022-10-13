@@ -292,7 +292,7 @@ const BuatProduk = () => {
             <select onChange={e => setGroup(e.target.value)} id="Typeselect" className="form-select">
               <option>Pilih Grup</option>
               <option value="Lokal">Lokal</option>
-              <option value="Import">Import</option>
+              <option value="Impor">Impor</option>
               <option value="Meatshop">Meatshop</option>
             </select>
           </div>

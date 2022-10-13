@@ -6,11 +6,8 @@
   "homepage": "bma-dev.edwinconsultants.com/",
   "scripts": {
     "start": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "coverage": "vitest run --coverage"
+    "build": "NODE_OPTIONS=--max-old-space-size=8192 vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@ant-design/icons": "^4.7.0",

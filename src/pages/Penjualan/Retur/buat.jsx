@@ -290,26 +290,32 @@ const BuatRetur = () => {
 
                 if (i === index) {
                     tmp[i] = value;
-                    if (value == 'percent') {
-                        hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                        rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                    }
-                    else if (value == 'nominal') {
 
-                        hasilDiskon += Number(jumlahDiskon[i]);
-                        rowDiscount = Number(jumlahDiskon[i]);
-                    }
+                    hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    // if (value == 'percent') {
+                    //     hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    //     rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    // }
+                    // else if (value == 'nominal') {
+
+                    //     hasilDiskon += Number(jumlahDiskon[i]);
+                    //     rowDiscount = Number(jumlahDiskon[i]);
+                    // }
                 }
                 else {
                     tmp[i] = jumlahDiskon[i];
-                    if (pilihanDiskon[i] == 'percent') {
-                        hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                        rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                    }
-                    else if (pilihanDiskon[i] == 'nominal') {
-                        hasilDiskon += Number(jumlahDiskon[i]);
-                        rowDiscount = Number(jumlahDiskon[i]);
-                    }
+
+                    hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    // if (pilihanDiskon[i] == 'percent') {
+                    //     hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    //     rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    // }
+                    // else if (pilihanDiskon[i] == 'nominal') {
+                    //     hasilDiskon += Number(jumlahDiskon[i]);
+                    //     rowDiscount = Number(jumlahDiskon[i]);
+                    // }
                 }
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 subTotal += (totalPerProduk * 100) / (100 + faktur[i].ppn);
@@ -327,27 +333,33 @@ const BuatRetur = () => {
                 totalPerProduk = (Number(faktur[i].quantity) * Number(faktur[i].price));
                 if (i === index) {
                     tmp[i] = value;
-                    if (pilihanDiskon[i] == 'percent') {
-                        hasilDiskon += (Number(totalPerProduk) * Number(value) / 100);
-                        rowDiscount = (Number(totalPerProduk) * Number(value) / 100);
-                    }
-                    else if (pilihanDiskon[i] == 'nominal') {
 
-                        hasilDiskon += Number(value);
-                        rowDiscount = Number(value);
-                    }
+                    hasilDiskon += (Number(totalPerProduk) * Number(value) / 100);
+                    rowDiscount = (Number(totalPerProduk) * Number(value) / 100);
+                    // if (pilihanDiskon[i] == 'percent') {
+                    //     hasilDiskon += (Number(totalPerProduk) * Number(value) / 100);
+                    //     rowDiscount = (Number(totalPerProduk) * Number(value) / 100);
+                    // }
+                    // else if (pilihanDiskon[i] == 'nominal') {
+
+                    //     hasilDiskon += Number(value);
+                    //     rowDiscount = Number(value);
+                    // }
                 }
                 else {
                     tmp[i] = jumlahDiskon[i];
-                    if (pilihanDiskon[i] == 'percent') {
-                        hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                        rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                    }
-                    else if (pilihanDiskon[i] == 'nominal') {
 
-                        hasilDiskon += Number(jumlahDiskon[i]);
-                        rowDiscount = Number(jumlahDiskon[i]);
-                    }
+                    hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    // if (pilihanDiskon[i] == 'percent') {
+                    //     hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    //     rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    // }
+                    // else if (pilihanDiskon[i] == 'nominal') {
+
+                    //     hasilDiskon += Number(jumlahDiskon[i]);
+                    //     rowDiscount = Number(jumlahDiskon[i]);
+                    // }
                 }
 
                 totalDiscount += Number(rowDiscount);
@@ -451,24 +463,24 @@ const BuatRetur = () => {
             width: '15%',
             align: 'center',
         },
-        // {
-        //     title: 'Discount (Rp)',
-        //     dataIndex: 'fixed_discount',
-        //     width: '10%',
-        //     align: 'center',
-        // },
-        // {
-        //     title: 'Discount (%)',
-        //     dataIndex: 'discount_percentage',
-        //     width: '5%',
-        //     align: 'center',
-        // },
         {
-            title: 'Discount',
-            dataIndex: 'discount',
-            width: '20%',
+            title: 'Discount (Rp)',
+            dataIndex: 'fixed_discount',
+            width: '10%',
             align: 'center',
         },
+        {
+            title: 'Discount (%)',
+            dataIndex: 'discount_percentage',
+            width: '5%',
+            align: 'center',
+        },
+        // {
+        //     title: 'Discount',
+        //     dataIndex: 'discount',
+        //     width: '20%',
+        //     align: 'center',
+        // },
         {
             title: 'PPN',
             dataIndex: 'ppn',
@@ -483,29 +495,38 @@ const BuatRetur = () => {
             render:
                 (text, record, index) => {
                     let grandTotalAmount = 0;
-                    if (pilihanDiskon[index] == 'percent' || pilihanDiskon == 'percent') {
-                        // console.log("masuk percent")
-                        let total = (record.quantity * record.price);
-                        let getPercent = (total * jumlahDiskon[index]) / 100;
-                        let totalDiscount = total - getPercent;
-                        let getPpn = (totalDiscount * record.ppn) / 100;
-                        if (checked) {
-                            grandTotalAmount = tableToRupiah(totalDiscount, "Rp");
-                        } else {
-                            grandTotalAmount = tableToRupiah(totalDiscount + getPpn, "Rp");
-                        }
-                    } else if (pilihanDiskon[index] == 'nominal') {
-                        // console.log("masuk nominal")
-                        let total = (record.quantity * record.price) - jumlahDiskon[index];
-                        let getPpn = (total * record.ppn) / 100;
-                        if (checked) {
-                            grandTotalAmount = tableToRupiah(total, "Rp");
-                        } else {
-                            grandTotalAmount = tableToRupiah(total + getPpn, "Rp");
-                        }
+                    let total = (record.quantity * record.price);
+                    let getPercent = (total * record.discount_percentage) / 100;
+                    let totalDiscount = total - getPercent;
+                    let getPpn = (totalDiscount * record.ppn) / 100;
+                    if (checked) {
+                        grandTotalAmount = tableToRupiah(totalDiscount, "Rp");
                     } else {
-                        grandTotalAmount = tableToRupiah(record.quantity * Number(record.price), "Rp");
+                        grandTotalAmount = tableToRupiah(totalDiscount + getPpn, "Rp");
                     }
+                    // if (pilihanDiskon[index] == 'percent' || pilihanDiskon == 'percent') {
+                    //     // console.log("masuk percent")
+                    //     let total = (record.quantity * record.price);
+                    //     let getPercent = (total * record.discount_percentage[index]) / 100;
+                    //     let totalDiscount = total - getPercent;
+                    //     let getPpn = (totalDiscount * record.ppn) / 100;
+                    //     if (checked) {
+                    //         grandTotalAmount = tableToRupiah(totalDiscount, "Rp");
+                    //     } else {
+                    //         grandTotalAmount = tableToRupiah(totalDiscount + getPpn, "Rp");
+                    //     }
+                    // } else if (pilihanDiskon[index] == 'nominal') {
+                    //     // console.log("masuk nominal")
+                    //     let total = (record.quantity * record.price) - record.discount_percentage[index];
+                    //     let getPpn = (total * record.ppn) / 100;
+                    //     if (checked) {
+                    //         grandTotalAmount = tableToRupiah(total, "Rp");
+                    //     } else {
+                    //         grandTotalAmount = tableToRupiah(total + getPpn, "Rp");
+                    //     }
+                    // } else {
+                    //     grandTotalAmount = tableToRupiah(record.quantity * Number(record.price), "Rp");
+                    // }
                     return {
                         props: {
                             style: { background: "#f5f5f5" }
@@ -522,40 +543,40 @@ const BuatRetur = () => {
             quantity: item.quantity,
             unit: item.unit,
             price: item.price,
-            discount: <>
-                <div class="input-group input-group-sm mb-3">
-                    <input
-                        style={{ width: "30px" }}
-                        type="text"
-                        class="form-control"
-                        aria-label="Small"
-                        onChange={(e) => ubahJumlahDiskon(e.target.value, i)}
-                        defaultValue={jumlahDiskon[i]}
-                        aria-describedby="inputGroup-sizing-sm"
-                        // value={item.discount_percentage}
-                    />
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px", height: "35px" }}>
-                            <select
-                                onChange={(e) => gantiPilihanDiskon(e.target.value, i)}
-                                id="grupSelect"
-                                className="form-select select-diskon"
-                                style={{ width: "70px" }}
-                            >
-                                {/* <option value="" >
-                                    Pilih
-                                </option> */}
-                                <option value="percent">
-                                    %
-                                </option>
-                                <option value="nominal">
-                                    Rp
-                                </option>
-                            </select>
-                        </span>
-                    </div>
-                </div>
-            </>,
+            // discount: <>
+            //     <div class="input-group input-group-sm mb-3">
+            //         <input
+            //             style={{ width: "30px" }}
+            //             type="text"
+            //             class="form-control"
+            //             aria-label="Small"
+            //             onChange={(e) => ubahJumlahDiskon(e.target.value, i)}
+            //             defaultValue={jumlahDiskon[i]}
+            //             aria-describedby="inputGroup-sizing-sm"
+            //             // value={item.discount_percentage}
+            //         />
+            //         <div class="input-group-prepend">
+            //             <span class="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px", height: "35px" }}>
+            //                 <select
+            //                     onChange={(e) => gantiPilihanDiskon(e.target.value, i)}
+            //                     id="grupSelect"
+            //                     className="form-select select-diskon"
+            //                     style={{ width: "70px" }}
+            //                 >
+            //                     {/* <option value="" >
+            //                         Pilih
+            //                     </option> */}
+            //                     <option value="percent">
+            //                         %
+            //                     </option>
+            //                     <option value="nominal">
+            //                         Rp
+            //                     </option>
+            //                 </select>
+            //             </span>
+            //         </div>
+            //     </div>
+            // </>,
             // discount: <>
             //     <Input.Group compact>
             //         <Select defaultValue="percent" onChange={(e) => gantiPilihanDiskon(e.target.value, i)}>
@@ -572,8 +593,8 @@ const BuatRetur = () => {
             //         />
             //     </Input.Group>
             // </>,
-            // discount_percentage: item.discount_percentage,
-            // fixed_discount: item.fixed_discount,
+            discount_percentage: item.discount_percentage,
+            fixed_discount: item.fixed_discount,
             ppn: item.ppn
         })
         )]
@@ -619,14 +640,8 @@ const BuatRetur = () => {
                 total += (Number(values.quantity) * Number(values.price));
                 totalPerProduk = (Number(values.quantity) * Number(values.price));
 
-                if (pilihanDiskon[i] == 'percent') {
-                    hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                    rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                }
-                else if (pilihanDiskon[i] == 'nominal') {
-                    hasilDiskon += Number(jumlahDiskon[i]);
-                    rowDiscount = Number(jumlahDiskon[i]);
-                }
+                hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
 
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 // subTotal   += (subTotalDiscount * 100) / (100 + values.ppn);
@@ -642,17 +657,16 @@ const BuatRetur = () => {
                 total += (Number(values.quantity) * Number(values.price));
                 totalPerProduk = (Number(values.quantity) * Number(values.price));
 
-                if (pilihanDiskon[i] == 'percent') {
-                    hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                    rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                }
-                else if (pilihanDiskon[i] == 'nominal') {
+                // hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage[i]) / 100);
+                // rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage[i]) / 100);
 
-                    hasilDiskon += Number(jumlahDiskon[i]);
-                    rowDiscount = Number(jumlahDiskon[i]);
-                }
-                totalDiscount += ((totalPerProduk * jumlahDiskon[i]) / 100);
-                subTotal = total - (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                // totalDiscount += ((totalPerProduk * values.discount_percentage[i]) / 100);
+                // subTotal = total - (Number(totalPerProduk) * Number(values.discount_percentage[i]) / 100);
+                hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+
+                totalDiscount += ((totalPerProduk * values.discount_percentage) / 100);
+                subTotal = total - (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 totalPpn += (subTotalDiscount * values.ppn) / 100;
                 grandTotal = total - totalDiscount + Number(totalPpn);
@@ -680,15 +694,9 @@ const BuatRetur = () => {
                 total += (Number(values.quantity) * Number(values.price));
                 totalPerProduk = (Number(values.quantity) * Number(values.price));
 
-                if (pilihanDiskon[i] == 'percent') {
-                    hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                    rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                }
-                else if (pilihanDiskon[i] == 'nominal') {
+                hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
 
-                    hasilDiskon += Number(jumlahDiskon[i]);
-                    rowDiscount = Number(jumlahDiskon[i]);
-                }
                 totalDiscount += ((rowDiscount * 100) / (100 + Number(values.ppn)));
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 subTotal += (subTotalDiscount * 100) / (100 + Number(values.ppn));
@@ -703,17 +711,11 @@ const BuatRetur = () => {
                 total += (Number(values.quantity) * Number(values.price));
                 totalPerProduk = (Number(values.quantity) * Number(values.price));
 
-                if (pilihanDiskon[i] == 'percent') {
-                    hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                    rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                }
-                else if (pilihanDiskon[i] == 'nominal') {
+                hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
 
-                    hasilDiskon += Number(jumlahDiskon[i]);
-                    rowDiscount = Number(jumlahDiskon[i]);
-                }
                 totalDiscount += Number(rowDiscount);
-                subTotal = total - (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                subTotal = total - (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 totalPpn += (subTotalDiscount * Number(values.ppn)) / 100;
                 grandTotal = total - totalDiscount + Number(totalPpn);
