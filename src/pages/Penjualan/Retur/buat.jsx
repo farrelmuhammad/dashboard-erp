@@ -136,9 +136,9 @@ const BuatRetur = () => {
         }).then((res) => res.json());
     };
 
-    useEffect(() => {
-        getNewCodeSales()
-    })
+    // useEffect(() => {
+    //     getNewCodeSales()
+    // })
 
     useEffect(() => {
         const getProduct = async () => {
@@ -468,9 +468,6 @@ const BuatRetur = () => {
             dataIndex: 'discount',
             width: '20%',
             align: 'center',
-            render: (text, record, index) => {
-                return
-            }
         },
         {
             title: 'PPN',
@@ -535,6 +532,7 @@ const BuatRetur = () => {
                         onChange={(e) => ubahJumlahDiskon(e.target.value, i)}
                         defaultValue={jumlahDiskon[i]}
                         aria-describedby="inputGroup-sizing-sm"
+                        // value={item.discount_percentage}
                     />
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px", height: "35px" }}>
@@ -558,11 +556,34 @@ const BuatRetur = () => {
                     </div>
                 </div>
             </>,
-            discount_percentage: item.discount_percentage,
-            fixed_discount: item.fixed_discount,
+            // discount: <>
+            //     <Input.Group compact>
+            //         <Select defaultValue="percent" onChange={(e) => gantiPilihanDiskon(e.target.value, i)}>
+            //             <Option value="percent">%</Option>
+            //             <Option value="nominal">Rp</Option>
+            //         </Select>
+            //         <Input
+            //             style={{
+            //                 width: '50%',
+            //             }}
+            //             onChange={(e) => ubahJumlahDiskon(e.target.value, i)}
+            //             defaultValue={jumlahDiskon[i]}
+            //         // disabled
+            //         />
+            //     </Input.Group>
+            // </>,
+            // discount_percentage: item.discount_percentage,
+            // fixed_discount: item.fixed_discount,
             ppn: item.ppn
         })
         )]
+
+    const [value, setValue] = useState(1);
+
+    const onChange = (e) => {
+        console.log('radio checked', e.target.value);
+        setValue(e.target.value);
+    };
 
     useEffect(() => {
         setGrandTotal(Number(subTotal) - Number(grandTotalDiscount) + Number(totalPpn));
@@ -603,7 +624,6 @@ const BuatRetur = () => {
                     rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
                 }
                 else if (pilihanDiskon[i] == 'nominal') {
-
                     hasilDiskon += Number(jumlahDiskon[i]);
                     rowDiscount = Number(jumlahDiskon[i]);
                 }
@@ -644,6 +664,67 @@ const BuatRetur = () => {
             }
         })
     }
+
+    useEffect(() => {
+        let totalPerProduk = 0;
+        let grandTotal = 0;
+        let total = 0;
+        let hasilDiskon = 0;
+        let subTotal = 0;
+        let totalPpn = 0;
+        let rowDiscount = 0;
+        let subTotalDiscount = 0;
+        let totalDiscount = 0;
+        faktur.map((values, i) => {
+            if (checked) {
+                total += (Number(values.quantity) * Number(values.price));
+                totalPerProduk = (Number(values.quantity) * Number(values.price));
+
+                if (pilihanDiskon[i] == 'percent') {
+                    hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                }
+                else if (pilihanDiskon[i] == 'nominal') {
+
+                    hasilDiskon += Number(jumlahDiskon[i]);
+                    rowDiscount = Number(jumlahDiskon[i]);
+                }
+                totalDiscount += ((rowDiscount * 100) / (100 + Number(values.ppn)));
+                subTotalDiscount = totalPerProduk - rowDiscount;
+                subTotal += (subTotalDiscount * 100) / (100 + Number(values.ppn));
+                totalPpn = (subTotal * Number(values.ppn)) / 100;
+                grandTotal = subTotal - hasilDiskon + Number(totalPpn);
+
+                setSubTotal(subTotal)
+                setGrandTotalDiscount(totalDiscount);
+                setTotalPpn(totalPpn)
+                setGrandTotal(grandTotal);
+            } else {
+                total += (Number(values.quantity) * Number(values.price));
+                totalPerProduk = (Number(values.quantity) * Number(values.price));
+
+                if (pilihanDiskon[i] == 'percent') {
+                    hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                }
+                else if (pilihanDiskon[i] == 'nominal') {
+
+                    hasilDiskon += Number(jumlahDiskon[i]);
+                    rowDiscount = Number(jumlahDiskon[i]);
+                }
+                totalDiscount += Number(rowDiscount);
+                subTotal = total - (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                subTotalDiscount = totalPerProduk - rowDiscount;
+                totalPpn += (subTotalDiscount * Number(values.ppn)) / 100;
+                grandTotal = total - totalDiscount + Number(totalPpn);
+
+                setSubTotal(total)
+                setGrandTotalDiscount(totalDiscount);
+                setTotalPpn(totalPpn)
+                setGrandTotal(grandTotal);
+            }
+        })
+    }, [jumlahDiskon]);
 
     const components = {
         body: {
@@ -726,6 +807,14 @@ const BuatRetur = () => {
             }
         }
         setFaktur(updatedList);
+        let tmp = [];
+        let tmpJumlah = [];
+        for (let i = 0; i < updatedList.length; i++) {
+            tmp[i] = 'percent';
+            tmpJumlah[i] = 0;
+        }
+        setPilihanDiskon(tmp);
+        setJumlahDiskon(tmpJumlah)
     };
 
 
@@ -891,7 +980,7 @@ const BuatRetur = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Pesanan</label>
                             <div className="col-sm-7">
                                 <input
-                                    value={getCode}
+                                    value="Otomatis"
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
