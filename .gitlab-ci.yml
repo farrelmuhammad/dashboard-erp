@@ -21,7 +21,7 @@ build job:
         - yarn build
     artifacts:
         paths:
-            - build/
+            - dist/
 
 # deploy_preview:
 #     stage: deploy
