@@ -181,7 +181,7 @@ const TallyPembelianTable = () => {
 
   const getTallySheet = async (params = {}) => {
     setIsLoading(true);
-    await axios.get(`${Url}/tally_sheet_ins`, {
+    await axios.get(`${Url}/tally_sheets`, {
       headers: {
         'Accept': 'application/json',
         'Authorization': `Bearer ${auth.token}`
