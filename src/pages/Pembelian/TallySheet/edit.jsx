@@ -55,7 +55,7 @@ const EditTallySheet = () => {
     const [box, setBox] = useState([])
     const [totalTallySheet, setTotalTallySheet] = useState([])
     const [quantityPO, setQuantityPO] = useState()
-    const [catatan, setCatatan] = useState()
+    const [catatan, setCatatan] = useState('')
     const [date, setDate] = useState()
 
     const [modalListImpor, setModalListImpor] = useState(false);
