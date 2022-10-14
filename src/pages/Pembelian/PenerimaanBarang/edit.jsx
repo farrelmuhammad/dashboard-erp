@@ -86,6 +86,7 @@ const EditPenerimaanBarang = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
+            console.log(res.data.data)
             let tmp = []
             for (let i = 0; i < res.data.data.length; i++) {
                 for (let x = 0; x < dataTS.length; x++) {
@@ -115,7 +116,7 @@ const EditPenerimaanBarang = () => {
 
     const handleChangeSupplier = (value) => {
         setSupplierId(value.id);
-        setProduct([])
+        setDataTS([])
         setSupplierName(value);
     };
     // load options using API call
@@ -130,7 +131,7 @@ const EditPenerimaanBarang = () => {
 
     const handleChangeCustomer = (value) => {
         // setGrup(value._group)
-        setProduct([])
+        setDataTS([])
         setCustomerName(value);
         setCustomerId(value.id);
     };
@@ -304,9 +305,6 @@ const EditPenerimaanBarang = () => {
     const handleCheck = (event, index) => {
         // console.log(event)
         var updatedList = [...dataTS];
-        let arrData = [];
-        let panjang;
-        let dataSumber;
         let tmpDataBaru = []
         const value = event.target.value.detail;
         let dataTally = value.tally_sheet_details
@@ -369,12 +367,10 @@ const EditPenerimaanBarang = () => {
             }
             updatedList = tmp;
         } else {
-            console.log(updatedList)
-            console.log(value)
             let jumlah = 0
             for (let i = 0; i < updatedList.length; i++) {
                 if (updatedList[i].code == value.code) {
-                    jumlah +=1
+                    jumlah += 1
                 }
             }
             for (let i = 0; i < updatedList.length; i++) {
@@ -391,11 +387,11 @@ const EditPenerimaanBarang = () => {
     const handleSubmit = async (e) => {
         console.log(dataTS)
         const formData = new URLSearchParams();
-        formData.append("tanggal", dataPenerimaan.date);
+        formData.append("tanggal", date);
         formData.append("grup", grup);
         formData.append("pemasok", supplierId);
-        formData.append("catatan", dataPenerimaan.notes);
-        formData.append("referensi", dataPenerimaan.reference);
+        formData.append("catatan", catatan);
+        // formData.append("referensi", dataPenerimaan.reference);
         formData.append("gudang", dataPenerimaan.warehouse_id);
         formData.append("id_tally_sheet[]", dataTS[0].id);
         formData.append("status", "Submitted");
@@ -438,10 +434,10 @@ const EditPenerimaanBarang = () => {
 
     const handleDraft = async () => {
         const formData = new URLSearchParams();
-        formData.append("tanggal", dataPenerimaan.date);
+        formData.append("tanggal", date);
         formData.append("grup", grup);
         formData.append("pemasok", supplierId);
-        formData.append("catatan", dataPenerimaan.notes);
+        formData.append("catatan", catatan);
 
         // formData.append("alamat", "30");
         formData.append("gudang", dataPenerimaan.warehouse_id);
@@ -622,7 +618,7 @@ const EditPenerimaanBarang = () => {
                                                 sumber == 'Retur' ?
                                                     <Table
                                                         columns={columnsModal}
-                                                        dataSource={getDataProduct}
+                                                        dataSource={getDataRetur}
                                                         scroll={{
                                                             y: 250,
                                                         }}
@@ -649,9 +645,18 @@ const EditPenerimaanBarang = () => {
                         columns={defaultColumns}
                     />
                 </div> <div class="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
-                    <button type="button" width="100px" class="btn btn-success rounded m-1" onClick={() => handleDraft()}>Simpan</button>
-                    <button type="button" width="100px" class="btn btn-primary rounded m-1" onClick={() => handleSubmit()}>Submit</button>
-                    <button type="button" width="100px" class="btn btn-warning rounded m-1" onClick={() => handleDraft()}>Cetak</button>
+                    {
+                        status == 'Submitted' ?
+                            <button type="button" width="100px" class="btn btn-primary rounded m-1" onClick={() => handleSubmit()}>Update</button> :
+                            <>
+                                <button type="button" width="100px" class="btn btn-success rounded m-1" onClick={() => handleDraft()}>Simpan</button>
+                                {/* <button type="button" width="100px" class="btn btn-warning rounded m-1" onClick={() => handleDraft()}>Cetak</button> */}
+                                <button type="button" width="100px" class="btn btn-primary rounded m-1" onClick={() => handleSubmit()}>Submit</button>
+                            </>
+
+
+                    }
+
                 </div>
                 <div style={{ clear: 'both' }}></div>
             </form>

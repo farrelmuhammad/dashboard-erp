@@ -15,6 +15,7 @@ import Search from 'antd/lib/transfer/search';
 import Spreadsheet from 'react-spreadsheet';
 import { useSelector } from 'react-redux';
 import { PageHeader } from 'antd';
+import { SettingsSuggestSharp } from '@mui/icons-material';
 
 const BuatPenerimaanBarang = () => {
     const auth = useSelector(state => state.auth);
@@ -36,7 +37,6 @@ const BuatPenerimaanBarang = () => {
     const [getDataRetur, setGetDataRetur] = useState('');
     const [getDataDetailSO, setGetDataDetailSO] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [sumber, setSumber] = useState('')
 
     const [subTotal, setSubTotal] = useState("");
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
@@ -59,33 +59,12 @@ const BuatPenerimaanBarang = () => {
     const [address, setAddress] = useState()
     const [dataAddress, setDataAddress] = useState([])
     const [gudang, setGudang] = useState()
+    const [sumber, setSumber] = useState('')
+    const [customerName, setCustomerName] = useState()
+    const [supplierName, setSupplierName] = useState()
+    const [grup, setGrup] = useState()
 
-    function hapusIndexProduct(index1, index2) {
-        console.log(index1)
-        setLoadingTable(true);
-        for (let x = 0; x < productTampil.length; x++) {
-            console.log(productTampil[x].tally_sheet_details.length)
-            for (let y = 0; y < productTampil[x].tally_sheet_details.length; y++) {
-                if (x == index1 && y == index2) {
-                    if (productTampil[x].tally_sheet_details.length == 1) {
-                        console.log("ini ilang semua si")
-                        productTampil.splice(x, 1);
-                    }
-                    else {
-                        productTampil[x].tally_sheet_details.splice(y, 1);
-                    }
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil',
-                        text: 'Data berhasil dihapus',
-                    }).then(() => setLoadingTable(false));
-                }
-            }
 
-        }
-        console.log(product)
-
-    }
     const expandedRowRender = (record) => {
         const columns = [
             {
@@ -100,6 +79,9 @@ const BuatPenerimaanBarang = () => {
                 width: '10%',
                 align: 'center',
                 editable: true,
+                render : (text) => {
+                    return <>{text.replace('.', ',')}</>
+                }
             },
             {
                 title: 'Stn',
@@ -119,7 +101,7 @@ const BuatPenerimaanBarang = () => {
 
             ];
 
-      
+
         return <Table
             style={{ display: loadingTable ? "none" : 'block' }}
             columns={columns}
@@ -173,6 +155,7 @@ const BuatPenerimaanBarang = () => {
         setSupplierId(value.id);
         setProduct([])
         setSelectedSupplier(value);
+        setGrup(value._group)
     };
     // load options using API call
     const loadOptionsSupplier = (inputValue) => {
@@ -227,9 +210,17 @@ const BuatPenerimaanBarang = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data.data);
+            let tmp = []
+            for (let i = 0; i < res.data.data.length; i++) {
+                tmp.push({
+                    detail: res.data.data[i],
+                    statusCek: false
+                });
+            }
+            setGetDataProduct(tmp)
+            // setGetDataProduct(res.data.data);
             setGudang(res.data.warehouse_id)
-            setGetDataDetailSO(res.data.map(d => d.sales_order_details))
+            // setGetDataDetailSO(res.data.map(d => d.sales_order_details))
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -243,9 +234,17 @@ const BuatPenerimaanBarang = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataRetur(res.data.data);
+            let tmp = []
+            for (let i = 0; i < res.data.data.length; i++) {
+                tmp.push({
+                    detail: res.data.data[i],
+                    statusCek: false
+                });
+            }
+            setGetDataRetur(tmp)
+            // setGetDataRetur(res.data.data);
             setGudang(res.data.warehouse_id)
-         
+
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -256,30 +255,44 @@ const BuatPenerimaanBarang = () => {
         {
             title: 'No. Transaksi',
             width: '20%',
-            dataIndex: 'code',
+            render: (_, record) => {
+                return <>{record.detail.code}</>
+            }
         },
         {
             title: sumber == 'Retur' ? 'Customer' : 'Supplier',
-            dataIndex: sumber == 'Retur' ? 'customer_name' : 'supplier_name',
             width: '15%',
             align: 'center',
+            render: (_, record) => {
+                if (sumber == 'Retur') {
+                    return <>{record.detail.customer_name}</>
+
+                }
+                else {
+                    return <>{record.detail.supplier_name}</>
+
+                }
+            }
         },
         {
             title: 'Gudang',
-            dataIndex: 'warehouse_name',
             width: '30%',
             align: 'center',
+            render: (_, record) => {
+                return <>{record.detail.warehouse_name}</>
+            }
         },
         {
             title: 'actions',
             dataIndex: 'address',
             width: '8%',
             align: 'center',
-            render: (_, record) => (
+            render: (_, record, index) => (
                 <>
                     <Checkbox
                         value={record}
-                        onChange={handleCheck}
+                        checked={record.statusCek}
+                        onChange={(e) => handleCheck(e, index)}
                     />
                 </>
             )
@@ -288,23 +301,63 @@ const BuatPenerimaanBarang = () => {
 
 
 
-    const handleCheck = (event) => {
+    const handleCheck = (event, index) => {
+
         var updatedList = [...product];
+        let tmpDataBaru = []
+        const value = event.target.value.detail;
+        let dataTally = value.tally_sheet_details
+
+
+        if (sumber == 'Retur') {
+            for (let i = 0; i < getDataRetur.length; i++) {
+                if (i == index) {
+                    tmpDataBaru.push({
+                        detail: getDataRetur[i].detail,
+                        statusCek: !getDataRetur[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataRetur[i])
+                }
+            }
+            setGetDataRetur(tmpDataBaru)
+
+        }
+
+        else if (sumber == 'PO') {
+            for (let i = 0; i < getDataProduct.length; i++) {
+                if (i == index) {
+                    tmpDataBaru.push({
+                        detail: getDataProduct[i].detail,
+                        statusCek: !getDataProduct[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataProduct[i])
+                }
+            }
+            setGetDataProduct(tmpDataBaru)
+        }
+
         if (event.target.checked) {
-            updatedList = [...product, event.target.value];
+            updatedList = [...product, value];
         } else {
-            for (let i = 0; i < product.length; i++) {
-                if (updatedList[i] == event.target.value) {
-                    updatedList.splice(i, 1);
+            let jumlah = 0
+            for (let i = 0; i < updatedList.length; i++) {
+                if (updatedList[i].code == value.code) {
+                    jumlah +=1
+                }
+            }
+            for (let i = 0; i < updatedList.length; i++) {
+                if (updatedList[i].code == value.code) {
+                    updatedList.splice(i, jumlah);
                 }
             }
 
         }
         setProduct(updatedList);
         setProductTampil(updatedList)
-        setGetDataDetailSO(updatedList.map(d => d.sales_order_details))
-        console.log(updatedList.map(d => d.sales_order_details));
-        console.log(updatedList);
     };
 
     const getNewCodeTally = async () => {
@@ -327,26 +380,21 @@ const BuatPenerimaanBarang = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData();
+        // console.log(product[0])
         formData.append("tanggal", date);
         if (sumber == 'PO') {
-            formData.append("grup", productTampil[0].supplier._group);
+            formData.append("grup", grup);
             formData.append("pemasok", supplierId);
         }
-        else{
+        else {
             formData.append("pelanggan", customerId);
         }
-    
-        formData.append("referensi", description);
 
-        // formData.append("gudang", gudang);
+        formData.append("catatan", description);
+
 
         for (let x = 0; x < productTampil.length; x++) {
             formData.append("id_tally_sheet[]", productTampil[x].id);
-            // console.log(productTampil[x].id)
-            // for (let y = 0; y < productTampil[x].tally_sheet_details.length; y++) {
-            //     formData.append("id_pesanan_penjualan[]", product[x].tally_sheet_details[y].purchase_order.id)
-            //     formData.append("kuantitas_produk_box[]", product[x].tally_sheet_details[y].boxes_quantity);
-            // }
         }
         formData.append("status", "Submitted");
         axios({
@@ -391,28 +439,19 @@ const BuatPenerimaanBarang = () => {
         const formData = new FormData();
         formData.append("tanggal", date);
         if (sumber == 'PO') {
-            formData.append("grup", productTampil[0].supplier._group);
+            formData.append("grup", grup);
             formData.append("pemasok", supplierId);
         }
-        else{
+        else {
             formData.append("pelanggan", customerId);
         }
-        // else if(grup=='Retur'){
-        //     formData.append("grup", productTampil[0].customer._group);
-
-        // }
-        // formData.append("alamat", address);
-        formData.append("referensi", description);
+     
+        formData.append("catatan", description);
 
         for (let x = 0; x < productTampil.length; x++) {
             formData.append("id_tally_sheet[]", productTampil[x].id);
-            // for (let y = 0; y < productTampil[x].tally_sheet_details.length; y++) {
-            //     formData.append("id_pesanan_penjualan[]", productTampil[x].tally_sheet_details[y].purchase_order.id)
-            //     formData.append("kuantitas_produk_box[]", productTampil[x].tally_sheet_details[y].boxes_quantity);
-            // }
         }
 
-        // userData.append("catatan", description);
         formData.append("status", "Draft");
 
 

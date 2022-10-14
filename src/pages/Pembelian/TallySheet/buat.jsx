@@ -1357,7 +1357,7 @@ const BuatTallySheet = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-
+ 
             let tmp = []
             for (let i = 0; i < res.data.data.length; i++) {
                 tmp.push({
@@ -1975,7 +1975,7 @@ const BuatTallySheet = () => {
     const columnDataRetur =
         [...getDataRetur.map((item, i) => ({
             code: item.detail.code,
-            nama: item.detail.customer_name,
+            nama: item.detail.customer.name,
             notes: item.detail.notes,
             action:
                 <>
@@ -1993,7 +1993,7 @@ const BuatTallySheet = () => {
     const columnDataPO =
         [...getDataProduct.map((item, i) => ({
             code: item.detail.code,
-            nama: item.detail.supplier_name,
+            nama: item.detail.supplier.name,
             notes: item.detail.notes,
             action:
                 <>
@@ -2011,7 +2011,7 @@ const BuatTallySheet = () => {
     const columnDataFaktur =
         [...getDataFaktur.map((item, i) => ({
             code: item.detail.code,
-            nama: item.detail.supplier_name,
+            nama: item.detail.supplier.name,
             notes: item.detail.notes,
             action:
                 <>

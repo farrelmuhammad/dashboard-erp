@@ -108,6 +108,7 @@ const BuatTally = () => {
     const navigate = useNavigate();
 
     const [getDataProduct, setGetDataProduct] = useState('');
+    const [getDataRetur, setGetDataRetur] = useState('');
     const [getDataDetailSO, setGetDataDetailSO] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -118,7 +119,7 @@ const BuatTally = () => {
     const [checked, setChecked] = useState("");
     const [count, setCount] = useState(0);
 
-    const [selectedValue, setSelectedCustomer] = useState(null);
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [selectedValue2, setSelectedWarehouse] = useState(null);
     const [selectedValue3, setSelectedProduct] = useState([]);
     const [modal2Visible, setModal2Visible] = useState(false);
@@ -138,14 +139,30 @@ const BuatTally = () => {
     const [kuantitasBox, setKuantitasBox] = useState([]);
     const [idxPesanan, setIdxPesanan] = useState(0);
     const [statusSO, setStatusSO] = useState([]);
+    const [sumber, setSumber] = useState('')
+    const [supplier, setSupplier] = useState('')
+    const [selectedSupplier, setSelectedSupplier] = useState()
+    const [grup, setGrup] = useState()
 
+
+    // menghitung total tally sheet 
     useEffect(() => {
         let arrTotal = [];
         let total = [];
 
         for (let x = 0; x < product.length; x++) {
             total = [];
-            for (let i = 0; i < product[x].sales_order_details.length; i++) {
+            // pengecekan transaksi 
+            let dataSumber = [];
+            if (sumber == 'Retur') {
+                dataSumber = product[x].purchase_return_details;
+            }
+            else if (sumber == 'SO') {
+                dataSumber = product[x].sales_order_details;
+            }
+
+
+            for (let i = 0; i < dataSumber.length; i++) {
                 total[i] = 0;
                 for (let a = 1; a < data[x][i].length; a++) {
                     for (let b = 1; b < data[x][i][a].length; b++) {
@@ -158,26 +175,94 @@ const BuatTally = () => {
             arrTotal[x] = total;
         }
         setTotalTallySheet(arrTotal);
-
-        // let arrStatus = [];
-        // for (let x = 0; x < product.length; x++) {
-        //     let stts = [];
-        //     for (let i = 0; i < product[x].sales_order_details[i].length; i++) {
-        //         let qtySO = product[x].sales_order_details[i].quantity;
-        //         let qtySebelumnya = product[x].sales_order_details[i].tally_sheets_qty;
-        //         console.log(qtySebelumnya)
-        //         if (Number(arrTotal[x][i]) + Number(qtySebelumnya) >= qtySO) {
-        //             stts.push('Done')
-        //         }
-        //         else if (Number(arrTotal[x][i]) + Number(qtySebelumnya) < qtySO) {
-        //             stts.push('Next Delivery')
-        //         }
-        //     }
-        //     arrStatus.push(stts);
-        // }
-        // setStatusSO(arrStatus)
     }, [data]);
 
+    // handle change supplier dan customer 
+    const handleChangeSupplier = (value) => {
+        setGrup(value._group)
+        setProduct([])
+        setSelectedSupplier(value);
+        setSupplier(value.id);
+    };
+    const loadOptionsSupplier = (inputValue) => {
+        return axios.get(`${Url}/tally_sheets_available_suppliers?nama=${inputValue}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.data);
+    };
+
+    const handleChangeCustomer = (value) => {
+        setSelectedCustomer(value);
+        setProduct([])
+        setCustomer(value.id);
+    };
+    const loadOptionsCustomer = (inputValue) => {
+        return fetch(`${Url}/select_customers?limit=10&nama=${inputValue}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.json());
+    };
+
+    const handleChangeWarehouse = (value) => {
+        setSelectedWarehouse(value);
+        setWarehouse(value.id);
+    };
+    const loadOptionsWarehouse = (inputValue) => {
+        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.json());
+    };
+
+    const handleChangeProduct = (value, record, idx) => {
+        // console.log(selectedValue3)
+        let idKey = [];
+        let key = [];
+        let store = [];
+        let store2 = [];
+        console.log(value);
+
+        for (let x = 0; x < data.length; x++) {
+            if (x == record) {
+                for (let y = 0; y < data[x].length; y++) {
+                    if (y == idx) {
+                        idKey.push(value.id)
+                        store.push(value)
+                    } else {
+                        idKey.push(productSelect[x][y])
+                        store.push(selectedValue3[x][y])
+                    }
+                }
+                key.push(idKey)
+                store2.push(store)
+            } else {
+                key.push(productSelect[x])
+                store2.push(selectedValue3[x])
+            }
+        }
+        setSelectedProduct(store2);
+        setProductSelect(key);
+        console.log(store2)
+    };
+    const loadOptionsProduct = (inputValue) => {
+        // console.log(inputValue)
+        // console.log(namaAlias)
+        return fetch(`${Url}/select_products?limit=10&nama=${inputValue}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) =>{
+            console.log(res.json())
+            res.json()
+        } );
+    };
 
     const valueRenderer = (cell) => cell.value;
 
@@ -386,12 +471,6 @@ const BuatTally = () => {
         let arrStatus = []
         let qtySO = product[idxPesanan].sales_order_details[i].quantity;
         let qtySebelumnya = product[idxPesanan].sales_order_details[i].tally_sheets_qty;
-
-        // for (let x = 0; x < product.length; x++) {
-        //     for (let i = 0; i < product[x].sales_order_details.length; i++) {
-
-        //     }
-        // }
 
         for (let x = 0; x < product.length; x++) {
             tmp = [];
@@ -728,8 +807,6 @@ const BuatTally = () => {
     }
 
     function klikTampilSheet(indexProduct, indexPO) {
-        console.log(indexProduct)
-        // setQtyPesanan(product[indexProduct].sales_order_details[indexPO].quantity)
         setIndexPO(indexPO);
         setIdxPesanan(indexProduct);
         setProductPO(product[indexProduct].sales_order_details);
@@ -790,7 +867,7 @@ const BuatTally = () => {
             },
         ];
 
-        const dataPurchase =
+        const dataSO =
             [...product[record.key].sales_order_details.map((item, i) => ({
                 // product_alias_name: item.product_alias_name,
                 // key: [record.key]
@@ -859,7 +936,144 @@ const BuatTally = () => {
                                             <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
                                             <div className="col-sm-3">
                                                 <input
-                                                    value={selectedValue3[idxPesanan][indexPO] == ""? "" : selectedValue3[idxPesanan][indexPO].name}
+                                                    value={selectedValue3[idxPesanan][indexPO] == "" ? "" : selectedValue3[idxPesanan][indexPO].name}
+                                                    type="Nama"
+                                                    className="form-control"
+                                                    id="inputNama3"
+                                                    disabled
+                                                />
+
+                                            </div>
+                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
+                                            <div className="col-sm-3">
+                                                <input
+                                                    value={totalTallySheet[idxPesanan][indexPO]}
+                                                    type="Nama"
+                                                    className="form-control"
+                                                    id="inputNama3"
+                                                    disabled
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="w-10" style={{ overflowY: "scroll", height: "300px", display: loadingSpreedSheet ? "none" : 'block' }}>
+                                        <ReactDataSheet
+                                            data={data[idxPesanan][indexPO]}
+                                            valueRenderer={valueRenderer}
+                                            onCellsChanged={onCellsChanged}
+                                            onContextMenu={onContextMenu}
+                                        />
+                                    </div>
+                                    <div className='mt-2 d-flex'>
+                                        <Button
+                                            size='small'
+                                            type="primary"
+                                            icon={<PlusOutlined />}
+                                            onClick={() => klikTambahBaris()}
+                                        />
+                                        <Button
+                                            className='ms-2'
+                                            size='small'
+                                            type="danger"
+                                            icon={<MinusOutlined />}
+                                            onClick={() => klikHapusBaris()}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </Modal>
+                    </>,
+                status: statusSO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusSO[record.key][i] === 'Next Delivery' ? <Tag color="orange">{statusSO[record.key][i]}</Tag> : statusSO[record.key][i] === 'Done' ? <Tag color="green">{statusSO[record.key][i]}</Tag> : null,
+                action:
+                    <Space size="middle">
+                        <Button
+                            size='small'
+                            type="danger"
+                            icon={<DeleteOutlined />}
+                            onClick={() => hapusIndexProduct(i, record.key)}
+                        />
+                        <Button
+                            size='small'
+                            type="primary"
+                            icon={<PlusOutlined />}
+                            onClick={() => tambahIndexProduct(i, record.key)}
+                        />
+                    </Space>,
+            }))
+
+            ];
+
+        const dataReturn =
+            [...product[record.key].purchase_return_details.map((item, i) => ({
+                // product_alias_name: item.product_alias_name,
+                // key: [record.key]
+                product_alias_name: item.product_alias_name,
+                product_name: <>
+                    <AsyncSelect
+                        placeholder="Pilih Produk..."
+                        cacheOptions
+                        defaultOptions
+                        value={selectedValue3[record.key][i]}
+                        getOptionLabel={(e) => e.name}
+                        getOptionValue={(e) => e.id}
+                        loadOptions={loadOptionsProduct}
+                        onChange={(value) => handleChangeProduct(value, record.key, i)}
+                    />
+                </>,
+                quantity: quantity[record.key][i],
+                unit: item.unit,
+                box:
+                    <>
+                        <a onClick={() => klikTampilSheet(record.key, i)}>
+                            {totalBox[record.key][i]}
+                        </a>
+                        <Modal
+                            centered
+                            visible={modal2Visible2}
+                            onCancel={() => setModal2Visible2(false)}
+                            width={1000}
+                            footer={[
+                                <Button
+                                    key="submit"
+                                    type="primary"
+                                    style={{ background: "green", borderColor: "white" }}
+                                    onClick={() => simpanTallySheet(indexPO)}
+                                >
+                                    Simpan
+                                </Button>,
+                            ]}
+                        >
+                            <div className="text-title text-start">
+                                <div className="row">
+                                    <div className="col">
+                                        <div className="row">
+                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
+                                            <div className="col-sm-3">
+                                                <input
+                                                    value={product[idxPesanan].code}
+                                                    type="Nama"
+                                                    className="form-control"
+                                                    id="inputNama3"
+                                                    disabled
+                                                />
+                                            </div>
+                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
+                                            <div className="col-sm-3">
+                                                <input
+                                                    value={qtyPesanan[idxPesanan][indexPO]}
+                                                    type="Nama"
+                                                    className="form-control"
+                                                    id="inputNama3"
+                                                    disabled
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="row mb-1 mt-2">
+                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
+                                            <div className="col-sm-3">
+                                                <input
+                                                    value={selectedValue3[idxPesanan][indexPO] == "" ? "" : selectedValue3[idxPesanan][indexPO].name}
                                                     type="Nama"
                                                     className="form-control"
                                                     id="inputNama3"
@@ -931,14 +1145,28 @@ const BuatTally = () => {
         //     return <LoadingOutlined/>
         // }
         // else{
-        return <Table
-            style={{ display: loadingTable ? "none" : 'block' }}
-            columns={columns}
-            dataSource={dataPurchase}
-            pagination={false}
-            isLoading={true}
-            rowClassName={() => 'editable-row'}
-        />;
+        if (sumber == 'SO') {
+            return <Table
+                style={{ display: loadingTable ? "none" : 'block' }}
+                columns={columns}
+                dataSource={dataSO}
+                pagination={false}
+                isLoading={true}
+                rowClassName={() => 'editable-row'}
+            />
+        }
+        else {
+            return <Table
+                style={{ display: loadingTable ? "none" : 'block' }}
+                columns={columns}
+                dataSource={dataReturn}
+                pagination={false}
+                isLoading={true}
+                rowClassName={() => 'editable-row'}
+            />;
+        }
+
+
         // }
 
     };
@@ -963,85 +1191,51 @@ const BuatTally = () => {
 
         ]
 
-    const handleChangeCustomer = (value) => {
-        setSelectedCustomer(value);
-        setCustomer(value.id);
-    };
-    // load options using API call
-    const loadOptionsCustomer = (inputValue) => {
-        return fetch(`${Url}/select_customers?limit=10&nama=${inputValue}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        }).then((res) => res.json());
-    };
 
-    const handleChangeWarehouse = (value) => {
-        setSelectedWarehouse(value);
-        setWarehouse(value.id);
-    };
-    // load options using API call
-    const loadOptionsWarehouse = (inputValue) => {
-        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        }).then((res) => res.json());
-    };
 
-    const handleChangeProduct = (value, record, idx) => {
-        // console.log(selectedValue3)
-        let idKey = [];
-        let key = [];
-        let store = [];
-        let store2 = [];
-        console.log(value);
 
-        for (let x = 0; x < data.length; x++) {
-            if (x == record) {
-                for (let y = 0; y < data[x].length; y++) {
-                    if (y == idx) {
-                        idKey.push(value.id)
-                        store.push(value)
-                    } else {
-                        idKey.push(productSelect[x][y])
-                        store.push(selectedValue3[x][y])
-                    }
-                }
-                key.push(idKey)
-                store2.push(store)
-            } else {
-                key.push(productSelect[x])
-                store2.push(selectedValue3[x])
-            }
-        }
-        setSelectedProduct(store2);
-        setProductSelect(key);
-        console.log(store2)
-    };
-
-    // load options using API call
-    const loadOptionsProduct = (inputValue) => {
-        return fetch(`${Url}/select_products?limit=10&nama=${inputValue}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        }).then((res) => res.json());
-    };
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_sales_orders?kode=${query}&id_pelanggan=${customer}&status=Submitted`, {
+            const res = await axios.get(`${Url}/tally_sheets_available_purchase_returns?kode=${query}&id_pemasok=${supplier}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
-            setGetDataDetailSO(res.data.map(d => d.sales_order_details))
+            let tmp = []
+            for (let i = 0; i < res.data.length; i++) {
+                tmp.push({
+                    detail: res.data[i],
+                    statusCek: false
+                });
+            }
+            setGetDataRetur(tmp);
+            // setGetDataDetailSO(res.data.map(d => d.sales_order_details))
+            // console.log(res.data.map(d => d.sales_order_details))
+        };
+
+        if (query.length === 0 || query.length > 2) getProduct();
+    }, [query, supplier])
+
+    useEffect(() => {
+        const getProduct = async () => {
+            const res = await axios.get(`${Url}/tally_sheets_available_sales_orders?kode=${query}&id_pelanggan=${customer}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${auth.token}`
+                }
+            })
+            let tmp = []
+            for (let i = 0; i < res.data.length; i++) {
+                tmp.push({
+                    detail: res.data[i],
+                    statusCek: false
+                });
+            }
+            console.log(tmp)
+            setGetDataProduct(tmp);
+            // setGetDataDetailSO(res.data.map(d => d.sales_order_details))
             // console.log(res.data.map(d => d.sales_order_details))
         };
 
@@ -1054,37 +1248,52 @@ const BuatTally = () => {
             title: 'No. Transaksi',
             width: '20%',
             dataIndex: 'code',
+            render: (_, record) => {
+                return <>{record.detail.code}</>
+            }
         },
         {
-            title: 'Pelanggan',
+            title: sumber == 'SO' ? 'Pelanggan' : 'Supplier',
             dataIndex: 'customer',
             width: '15%',
             align: 'center',
-            render: (customer) => customer.name
+            render: (_, record) => {
+                if (sumber == 'SO') {
+                    return <>{record.detail.customer.name}</>
+
+                }
+                else {
+                    return <>{record.detail.supplier.name}</>
+                }
+            }
         },
         {
             title: 'Catatan',
             dataIndex: 'notes',
             width: '30%',
             align: 'center',
+            render: (_, record) => {
+                return <>{record.detail.notes}</>
+            }
         },
         {
             title: 'actions',
             // dataIndex: 'address',
             width: '8%',
             align: 'center',
-            render: (_, record) => (
+            render: (_, record, index) => (
                 <>
                     <Checkbox
                         value={record}
-                        onChange={handleCheck}
+                        checked={record.statusCek}
+                        onChange={(e) => handleCheck(e, index)}
                     />
                 </>
             )
         },
     ];
 
-    const handleCheck = (event) => {
+    const handleCheck = (event, index) => {
         var updatedList = [...product];
         let arrData = [];
         let arrBox = [];
@@ -1092,9 +1301,44 @@ const BuatTally = () => {
         let arrKuantitas = [];
         let arrStatus = [];
         let arrQtyPesanan = [];
+        let tmpDataBaru = [];
 
-        if (event.target.checked) {
-            updatedList = [...product, event.target.value];
+
+        // perubahan data dan status ceked 
+        if (sumber == 'Retur') {
+            for (let i = 0; i < getDataRetur.length; i++) {
+                if (i == index) {
+                    tmpDataBaru.push({
+                        detail: getDataRetur[i].detail,
+                        statusCek: !getDataRetur[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataRetur[i])
+                }
+            }
+            setGetDataRetur(tmpDataBaru)
+        }
+
+        else if (sumber == 'SO') {
+            for (let i = 0; i < getDataProduct.length; i++) {
+                if (i == index) {
+                    tmpDataBaru.push({
+                        detail: getDataProduct[i].detail,
+                        statusCek: !getDataProduct[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataProduct[i])
+                }
+            }
+            setGetDataProduct(tmpDataBaru)
+        }
+
+
+        if (tmpDataBaru[index].statusCek) {
+            updatedList = [...product, event.target.value.detail];
+
 
             // tambah data pas di checked 
             let idValues = [];
@@ -1113,7 +1357,16 @@ const BuatTally = () => {
                     let values = [];
                     let id = [];
 
-                    for (let x = 0; x < updatedList[i].sales_order_details.length; x++) {
+                    // pengecekan transaksi 
+                    let dataSumber = [];
+                    if (sumber == 'Retur') {
+                        dataSumber = updatedList[i].purchase_return_details;
+                    }
+                    else if (sumber == 'SO') {
+                        dataSumber = updatedList[i].sales_order_details;
+                    }
+
+                    for (let x = 0; x < dataSumber.length; x++) {
                         tempData.push([
                             [
                                 { readOnly: true, value: "" },
@@ -1259,10 +1512,10 @@ const BuatTally = () => {
                                 { value: '' },
                             ]
                         ]);
-                        if (updatedList[i].sales_order_details[x].tally_sheets_qty >= updatedList[i].sales_order_details[x].quantity) {
+                        if (dataSumber[x].tally_sheets_qty >= dataSumber[x].quantity) {
                             stts.push('Done')
                         }
-                        else if (updatedList[i].sales_order_details[x].tally_sheets_qty < updatedList[i].sales_order_details[x].quantity) {
+                        else if (dataSumber[x].tally_sheets_qty < dataSumber[x].quantity) {
                             stts.push('Next Delivery')
                         }
                         tempKuantitas.push(0);
@@ -1270,17 +1523,15 @@ const BuatTally = () => {
                         tempBox.push(0);
                         values.push("")
                         id.push("")
-                        qtyPesanan.push(updatedList[i].sales_order_details[x].quantity)
+                        qtyPesanan.push(dataSumber[x].quantity)
                     }
                     arrStatus.push(stts);
-                    // console.log(arrStatus);
                     arrData.push(tempData);
                     arrKuantitas[i] = tempKuantitas;
                     arrqty[i] = qty;
                     arrBox[i] = tempBox;
                     idValues.push(values)
                     arrQtyPesanan.push(qtyPesanan)
-                    // console.log(idValues);
                     valuesId.push(id)
                 }
             }
@@ -1291,13 +1542,23 @@ const BuatTally = () => {
                     let tempId = [];
                     let tempStatus = [];
                     let tempQtyPesanan = [];
+                    // pengecekan transaksi 
+                    let dataSumber = [];
+                    if (sumber == 'Retur') {
+                        dataSumber = updatedList[i].purchase_return_details;
+                    }
+                    else if (sumber == 'SO') {
+                        dataSumber = updatedList[i].sales_order_details;
+                    }
+
+
                     if (i == updatedList.length - 1) {
-                        for (let x = 0; x < updatedList[i].sales_order_details.length; x++) {
+                        for (let x = 0; x < dataSumber.length; x++) {
                             tempKuantitas.push(0);
                             tempValues.push("");
                             tempId.push("");
                             tempStatus.push("");
-                            tempQtyPesanan.push(updatedList[i].sales_order_details[x].quantity)
+                            tempQtyPesanan.push(dataSumber[x].quantity)
                         }
                         arrKuantitas[i] = tempKuantitas;
                         idValues.push(tempValues)
@@ -1319,8 +1580,17 @@ const BuatTally = () => {
                     let tempBox = [];
                     let tempStts = [];
                     let tempQty = [];
+                    // pengecekan transaksi 
+                    let dataSumber = [];
+                    if (sumber == 'Retur') {
+                        dataSumber = updatedList[i].purchase_return_details;
+                    }
+                    else if (sumber == 'SO') {
+                        dataSumber = updatedList[i].sales_order_details;
+                    }
+
                     if (i == updatedList.length - 1) {
-                        for (let x = 0; x < updatedList[i].sales_order_details.length; x++) {
+                        for (let x = 0; x < dataSumber.length; x++) {
                             qty.push(0);
                             tempBox.push(0);
                             tempStts.push("");
@@ -1338,8 +1608,16 @@ const BuatTally = () => {
 
                 for (let i = 0; i < updatedList.length; i++) {
                     let tempData = [];
+                    // pengecekan transaksi 
+                    let dataSumber = [];
+                    if (sumber == 'Retur') {
+                        dataSumber = updatedList[i].purchase_return_details;
+                    }
+                    else if (sumber == 'SO') {
+                        dataSumber = updatedList[i].sales_order_details;
+                    }
                     if (i == updatedList.length - 1) {
-                        for (let x = 0; x < updatedList[i].sales_order_details.length; x++) {
+                        for (let x = 0; x < dataSumber.length; x++) {
                             tempData[x] = [
                                 [
                                     { readOnly: true, value: "" },
@@ -1508,12 +1786,12 @@ const BuatTally = () => {
             console.log(arrQtyPesanan);
         }
         else {
+            console.log(updatedList)
+            console.log(event.target.value.detail)
 
-            console.log(data);
-            console.log(data.length)
-            console.log("proses")
             for (let i = 0; i < updatedList.length; i++) {
-                if (updatedList[i] == event.target.value) {
+
+                if (updatedList[i] == event.target.value.detail) {
                     updatedList.splice(i, 1);
                     kuantitasBox.splice(i, 1);
                     data.splice(i, 1);
@@ -1521,35 +1799,18 @@ const BuatTally = () => {
                     quantity.splice(i, 1);
                     statusSO.splice(i, 1);
                     qtyPesanan.splice(i, 1);
+                    console.log("test")
+
                 }
             }
-
-            console.log(statusSO);
-            console.log(data.length)
-            setIdxPesanan(0)
             console.log(updatedList)
-            setGetDataDetailSO(updatedList.map(d => d.sales_order_details))
+            setIdxPesanan(0)
+            // setGetDataDetailSO(updatedList.map(d => d.sales_order_details))
 
         }
+        console.log(updatedList)
         setProduct(updatedList);
     };
-
-    // const getNewCodeTally = async () => {
-    //     await axios.get(`${Url}/get_new_tally_sheet_code/sales_orders?tanggal=${date}`, {
-    //         headers: {
-    //             Accept: "application/json",
-    //             Authorization: `Bearer ${auth.token}`,
-    //         },
-    //     })
-    //         .then((res) => {
-    //             setGetCode(res.data.data);
-    //             console.log(res.data.data)
-    //         })
-    //         .catch((err) => {
-    //             // Jika Gagal
-    //             console.log(err);
-    //         });
-    // }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -1687,6 +1948,13 @@ const BuatTally = () => {
             });
     };
 
+    function klikUbahSumber(value) {
+        setSumber(value);
+        setProduct([])
+        setSelectedSupplier('');
+        setSelectedCustomer('')
+    }
+
     return (
         <>
             <PageHeader
@@ -1698,7 +1966,7 @@ const BuatTally = () => {
                     <div className="col">
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
-                            <div className="col-sm-4">
+                            <div className="col-sm-7">
                                 <input
                                     id="startDate"
                                     className="form-control"
@@ -1720,6 +1988,57 @@ const BuatTally = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pilih Transaksi</label>
+                            <div className="col-sm-7">
+                                <select
+                                    onChange={(e) => klikUbahSumber(e.target.value)}
+                                    id="grupSelect"
+                                    className="form-select"
+                                >
+                                    <option value="">Pilih Transaksi</option>
+                                    <option value="SO">
+                                        Penjualan
+                                    </option>
+                                    <option value="Retur" >
+                                        Retur Pembelian
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="row mb-3" style={{ display: sumber == 'SO' ? 'none' : 'flex' }}>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
+                            <div className="col-sm-7">
+
+                                <AsyncSelect
+                                    placeholder="Pilih Supplier..."
+                                    cacheOptions
+                                    defaultOptions
+                                    value={selectedSupplier}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsSupplier}
+                                    onChange={handleChangeSupplier}
+                                />
+
+                            </div>
+                        </div>
+                        <div className="row mb-3" style={{ display: sumber == 'Retur' ? 'none' : 'flex' }}>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pelanggan</label>
+                            <div className="col-sm-7">
+                                <AsyncSelect
+                                    placeholder="Pilih Pelanggan..."
+                                    cacheOptions
+                                    defaultOptions
+                                    value={selectedCustomer}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsCustomer}
+                                    onChange={handleChangeCustomer}
+                                />
+                            </div>
+                        </div>
+
+                        {/* <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pelanggan</label>
                             <div className="col-sm-7">
                                 <AsyncSelect
@@ -1733,7 +2052,7 @@ const BuatTally = () => {
                                     onChange={handleChangeCustomer}
                                 />
                             </div>
-                        </div>
+                        </div> */}
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang</label>
                             <div className="col-sm-7">
@@ -1773,7 +2092,14 @@ const BuatTally = () => {
                     <Button
                         type="primary"
                         icon={<PlusOutlined />}
-                        onClick={() => setModal2Visible(true)}
+                        onClick={() => {
+                            if (sumber == '') {
+                                Swal.fire("Gagal", "Mohon Pilih Transaksi Dahulu..", "error");
+                            }
+                            else {
+                                setModal2Visible(true)
+                            }
+                        }}
                     />,
                     <Modal
                         title="Tambah Produk"
@@ -1794,16 +2120,29 @@ const BuatTally = () => {
                                         onChange={(e) => setQuery(e.target.value.toLowerCase())}
                                     />
                                 </div>
-                                <Table
-                                    columns={columnsModal}
-                                    dataSource={getDataProduct}
-                                    scroll={{
-                                        y: 250,
-                                    }}
-                                    pagination={false}
-                                    loading={isLoading}
-                                    size="middle"
-                                />
+                                {
+                                    sumber == 'SO' ?
+                                        <Table
+                                            columns={columnsModal}
+                                            dataSource={getDataProduct}
+                                            scroll={{
+                                                y: 250,
+                                            }}
+                                            pagination={false}
+                                            loading={isLoading}
+                                            size="middle"
+                                        /> : <Table
+                                            columns={columnsModal}
+                                            dataSource={getDataRetur}
+                                            scroll={{
+                                                y: 250,
+                                            }}
+                                            pagination={false}
+                                            loading={isLoading}
+                                            size="middle"
+                                        />
+                                }
+
                             </div>
                         </div>
                     </Modal>,
