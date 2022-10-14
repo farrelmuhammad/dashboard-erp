@@ -9,6 +9,8 @@ import { Button, Modal, Checkbox, Space, Table, Tag } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import Search from 'antd/lib/transfer/search';
 import Swal from 'sweetalert2';
+import AsyncSelect from "react-select/async";
+
 import { PageHeader } from 'antd';
 
 const EditPenerimaanBarang = () => {
@@ -18,31 +20,57 @@ const EditPenerimaanBarang = () => {
     const [modal2Visible, setModal2Visible] = useState(false);
     const [query, setQuery] = useState("");
     const [getDataProduct, setGetDataProduct] = useState('');
+    const [getDataRetur, setGetDataRetur] = useState('');
     const [getDataDetailSO, setGetDataDetailSO] = useState('');
     const [status, setStatus] = useState()
     const [isLoading, setIsLoading] = useState(false);
     const [product, setProduct] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const { id } = useParams();
     const [dataPenerimaan, setDataPenerimaan] = useState([])
     const [dataTS, setDataTS] = useState([]);
     const [supplierName, setSupplierName] = useState()
+    const [customerName, setCustomerName] = useState()
     const [productTampil, setProductTampil] = useState([])
     const [supplierId, setSupplierId] = useState()
+    const [customerId, setCustomerId] = useState()
     const [loadingTable, setLoadingTable] = useState(false);
     // const [address, setAddress] = useState();
     const [addressId, setAddressId] = useState();
     const [grup, setGrup] = useState();
+    const [gudang, setGudang] = useState();
+    const [sumber, setSumber] = useState('');
+    const [date, setDate] = useState();
+    const [catatan, setCatatan] = useState();
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_tally_sheet_ins?kode=${query}&status=Submitted&id_pemasok=${supplierId}`, {
+            const res = await axios.get(`${Url}/select_tally_sheet_ins?include_goods_receipt_tally_sheets=${id}&kode=${query}&status=Submitted&id_pemasok=${supplierId}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
+            let tmp = []
+            for (let i = 0; i < res.data.length; i++) {
+                for (let x = 0; x < dataTS.length; x++) {
+                    if (res.data[i].code == dataTS[x].code) {
+                        tmp.push({
+                            detail: res.data[i],
+                            statusCek: true
+                        });
+                    }
+                    else {
+                        tmp.push({
+                            detail: res.data[i],
+                            statusCek: false
+                        });
+                    }
+                }
+
+            }
+
+            setGetDataProduct(tmp);
             setGetDataDetailSO(res.data.map(d => d.sales_order_details))
             // console.log(res.data.map(d => d.sales_order_details))
         };
@@ -50,34 +78,115 @@ const EditPenerimaanBarang = () => {
         if (query.length === 0 || query.length > 2) getProduct();
     }, [query, supplierId])
 
+    useEffect(() => {
+        const getProduct = async () => {
+            const res = await axios.get(`${Url}/goods_receipts_available_tally_sheets?include_goods_receipt_tally_sheets=${id}&kode=${query}&id_pelanggan=${customerId}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${auth.token}`
+                }
+            })
+            let tmp = []
+            for (let i = 0; i < res.data.data.length; i++) {
+                for (let x = 0; x < dataTS.length; x++) {
+
+                    if (res.data.data[i].code == dataTS[x].code) {
+                        tmp.push({
+                            detail: res.data.data[i],
+                            statusCek: true
+                        });
+                    }
+                    else {
+                        tmp.push({
+                            detail: res.data.data[i],
+                            statusCek: false
+                        });
+                    }
+
+                }
+            }
+            setGetDataRetur(tmp);
+            setGudang(res.data.warehouse_id)
+
+        };
+
+        if (query.length === 0 || query.length > 2) getProduct();
+    }, [query, customerId])
+
+    const handleChangeSupplier = (value) => {
+        setSupplierId(value.id);
+        setProduct([])
+        setSupplierName(value);
+    };
+    // load options using API call
+    const loadOptionsSupplier = (inputValue) => {
+        return axios.get(`${Url}/goods_receipts_available_suppliers?nama=${inputValue}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.data.data);
+    };
+
+    const handleChangeCustomer = (value) => {
+        // setGrup(value._group)
+        setProduct([])
+        setCustomerName(value);
+        setCustomerId(value.id);
+    };
+    // load options using API call
+    const loadOptionsCustomer = (inputValue) => {
+        return axios.get(`${Url}/goods_receipts_available_customers?nama=${inputValue}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.data.data);
+    };
+
+
     const columnsModal = [
         {
             title: 'No. Transaksi',
             width: '20%',
-            dataIndex: 'code',
+            render: (_, record) => {
+                return <>{record.detail.code}</>
+            }
         },
         {
-            title: 'Supplier',
-            dataIndex: 'supplier_name',
+            title: sumber == 'Retur' ? 'Customer' : 'Supplier',
             width: '15%',
             align: 'center',
+            render: (_, record) => {
+                if (sumber == 'Retur') {
+                    return <>{record.detail.customer_name}</>
+
+                }
+                else {
+                    return <>{record.detail.supplier_name}</>
+
+                }
+            }
         },
         {
             title: 'Gudang',
-            dataIndex: 'notes',
             width: '30%',
             align: 'center',
+            render: (_, record) => {
+                return <>{record.detail.warehouse_name}</>
+            }
         },
         {
             title: 'actions',
             dataIndex: 'address',
             width: '8%',
             align: 'center',
-            render: (_, record) => (
+            render: (_, record, index) => (
                 <>
                     <Checkbox
                         value={record}
-                        onChange={handleCheck}
+                        checked={record.statusCek}
+                        onChange={(e) => handleCheck(e, index)}
                     />
                 </>
             )
@@ -97,13 +206,22 @@ const EditPenerimaanBarang = () => {
             .then((res) => {
                 const getData = res.data.data[0];
                 setDataPenerimaan(getData);
-                // setAddress(getData.address.address)
-                // setAddressId(getData.address.id)
+                setDate(getData.date);
                 setStatus(getData.status)
-                console.log(getData);
-                setSupplierName(getData.supplier.name);
-                setGrup(getData.supplier._group);
-                setSupplierId(getData.supplier.id);
+                setCatatan(getData.notes)
+                if (getData.customer_id != null) {
+                    setSumber('Retur')
+                    console.log('Retur')
+                    setCustomerName(getData.customer_name);
+                    setCustomerId(getData.customer_id);
+                }
+                else if (getData.supplier_id != null) {
+                    console.log('Pembelian')
+                    setSumber('Pembelian')
+                    setSupplierName(getData.supplier_name);
+                    setGrup(getData.supplier._group);
+                    setSupplierId(getData.supplier_id);
+                }
                 let tmp = [];
                 let data = getData.goods_receipt_details;
                 for (let i = 0; i < data.length; i++) {
@@ -114,7 +232,8 @@ const EditPenerimaanBarang = () => {
                         code: data[i].tally_sheet_code,
                         id: data[i].tally_sheet_id,
                         unit: data[i].unit,
-                        key: i
+                        key: i,
+                        statusCek: true
                     })
 
                 }
@@ -127,21 +246,21 @@ const EditPenerimaanBarang = () => {
             });
     }
 
-    function hapusIndexProduct(index) {
-        console.log(index)
-        setLoadingTable(true);
-        // for (let x = 0; x < dataTS.length; x++) {
-        dataTS.splice(index, 1);
+    // function hapusIndexProduct(index) {
+    //     console.log(index)
+    //     setLoadingTable(true);
+    //     // for (let x = 0; x < dataTS.length; x++) {
+    //     dataTS.splice(index, 1);
 
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil',
-            text: 'Data berhasil dihapus',
-        }).then(() => setLoadingTable(false));
-        // }
-        console.log(dataTS)
+    //     Swal.fire({
+    //         icon: 'success',
+    //         title: 'Berhasil',
+    //         text: 'Data berhasil dihapus',
+    //     }).then(() => setLoadingTable(false));
+    //     // }
+    //     console.log(dataTS)
 
-    }
+    // }
 
     const defaultColumns = [
         {
@@ -160,10 +279,6 @@ const EditPenerimaanBarang = () => {
             title: 'Stn',
             dataIndex: 'unit',
         },
-        // {
-        //     title: 'Action',
-        //     dataIndex: 'action',
-        // },
 
     ];
 
@@ -186,13 +301,53 @@ const EditPenerimaanBarang = () => {
             }))
         ]
 
-    const handleCheck = (event) => {
+    const handleCheck = (event, index) => {
         // console.log(event)
         var updatedList = [...dataTS];
-        if (event.target.checked) {
-            let data = event.target.value;
-            let dataTally = data.tally_sheet_details
-            console.log(data);
+        let arrData = [];
+        let panjang;
+        let dataSumber;
+        let tmpDataBaru = []
+        const value = event.target.value.detail;
+        let dataTally = value.tally_sheet_details
+
+
+        if (sumber == 'Retur') {
+            for (let i = 0; i < getDataRetur.length; i++) {
+                if (i == index) {
+                    tmpDataBaru.push({
+                        detail: getDataRetur[i].detail,
+                        statusCek: !getDataRetur[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataRetur[i])
+                }
+            }
+            setGetDataRetur(tmpDataBaru)
+            // dataSumber = value.sales_return_details;
+            // panjang = value.sales_return_details.length;
+
+        }
+
+        else if (sumber == 'Pembelian') {
+            for (let i = 0; i < getDataProduct.length; i++) {
+                if (i == index) {
+                    tmpDataBaru.push({
+                        detail: getDataProduct[i].detail,
+                        statusCek: !getDataProduct[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataProduct[i])
+                }
+            }
+            setGetDataProduct(tmpDataBaru)
+            // panjang = value.purchase_order_details.length;
+            // dataSumber = value.purchase_order_details;
+        }
+
+        if (tmpDataBaru[index].statusCek) {
             let tmp = []
             for (let i = 0; i <= dataTS.length; i++) {
                 if (i == dataTS.length) {
@@ -201,8 +356,8 @@ const EditPenerimaanBarang = () => {
                             quantity: dataTally[x].boxes_quantity,
                             product_id: dataTally[x].product_id,
                             product_name: dataTally[x].product_name,
-                            code: data.code,
-                            id: data.id,
+                            code: value.code,
+                            id: value.id,
                             unit: dataTally[x].boxes_unit,
                             key: i
                         })
@@ -214,18 +369,23 @@ const EditPenerimaanBarang = () => {
             }
             updatedList = tmp;
         } else {
-            for (let i = 0; i < dataTS.length; i++) {
-                if (updatedList[i] == event.target.value) {
-                    updatedList.splice(i, 1);
+            console.log(updatedList)
+            console.log(value)
+            let jumlah = 0
+            for (let i = 0; i < updatedList.length; i++) {
+                if (updatedList[i].code == value.code) {
+                    jumlah +=1
+                }
+            }
+            for (let i = 0; i < updatedList.length; i++) {
+                if (updatedList[i].code == value.code) {
+                    updatedList.splice(i, jumlah);
                 }
             }
 
+
         }
         setDataTS(updatedList);
-        // setProductTampil(updatedList)
-        // setGetDataDetailSO(updatedList.map(d => d.sales_order_details))
-        // console.log(updatedList.map(d => d.sales_order_details));
-        // console.log(updatedList);
     };
 
     const handleSubmit = async (e) => {
@@ -236,23 +396,8 @@ const EditPenerimaanBarang = () => {
         formData.append("pemasok", supplierId);
         formData.append("catatan", dataPenerimaan.notes);
         formData.append("referensi", dataPenerimaan.reference);
-        // formData.append("alamat", addressId);
         formData.append("gudang", dataPenerimaan.warehouse_id);
-
-        // for (let x = 0; x < dataTS.length; x++) {
-            formData.append("id_tally_sheet[]", dataTS[0].id);
-        // }
-        // console.log(dataTS)
-
-        // for (let x = 0; x < productTampil.length; x++) {
-        //     formData.append("id_tally_sheet[]", productTampil[x].id);
-        //     for (let y = 0; y < productTampil[x].tally_sheet_details.length; y++) {
-        //         formData.append("id_pesanan_penjualan[]", productTampil[x].tally_sheet_details[y].purchase_order.id)
-        //         formData.append("kuantitas_produk_box[]", productTampil[x].tally_sheet_details[y].boxes_quantity);
-        //     }
-        // }
-
-
+        formData.append("id_tally_sheet[]", dataTS[0].id);
         formData.append("status", "Submitted");
 
         axios({
@@ -297,12 +442,12 @@ const EditPenerimaanBarang = () => {
         formData.append("grup", grup);
         formData.append("pemasok", supplierId);
         formData.append("catatan", dataPenerimaan.notes);
-        
+
         // formData.append("alamat", "30");
         formData.append("gudang", dataPenerimaan.warehouse_id);
 
         // for (let x = 0; x < dataTS.length; x++) {
-            formData.append("id_tally_sheet[]", dataTS[0].id);
+        formData.append("id_tally_sheet[]", dataTS[0].id);
         // }
         formData.append("status", "Draft");
 
@@ -343,6 +488,9 @@ const EditPenerimaanBarang = () => {
             });
     };
 
+    if (loading) {
+        return <div></div>
+    }
     return (
         <>
             <form className="shadow-lg p-3 mb-5 bg-body rounded">
@@ -351,7 +499,7 @@ const EditPenerimaanBarang = () => {
                         ghost={false}
                         onBack={() => window.history.back()}
                         title="Edit Penerimaan Barang">
-                     </PageHeader>
+                    </PageHeader>
                     {/* <h3 className="title fw-bold">Buat Penerimaan Barang</h3> */}
                 </div>
                 <div class="row">
@@ -359,7 +507,7 @@ const EditPenerimaanBarang = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
                             <div className="col-sm-7">
-                                <input disabled="true" value={dataPenerimaan.date} id="startDate" className="form-control" type="date" />
+                                <input value={date} onChange={(e) => setDate(e.target.value)} id="startDate" className="form-control" type="date" />
                             </div>
                         </div>
                         <div className="row mb-3">
@@ -369,23 +517,50 @@ const EditPenerimaanBarang = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pilih Transaksi</label>
                             <div className="col-sm-7">
-                                <input disabled="true" value={supplierName} type="Nama" className="form-control" id="inputNama3" />
+                                <input disabled="true" value={sumber == 'Retur' ? 'Retur Penjualan' : 'Pesanan Pembelian'} type="Nama" className="form-control" id="inputNama3" />
                             </div>
                         </div>
-                        {/* <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Alamat</label>
+                        <div className="row mb-3" style={{ display: sumber == 'Retur' ? 'none' : 'flex' }}>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                             <div className="col-sm-7">
-                                <input disabled="true" value={address} type="Nama" className="form-control" id="inputNama3" />
+                                <AsyncSelect
+                                    placeholder="Pilih Supplier..."
+                                    cacheOptions
+                                    defaultOptions
+                                    defaultInputValue={supplierName}
+                                    value={supplierName}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsSupplier}
+                                    onChange={handleChangeSupplier}
+                                />
                             </div>
-                        </div> */}
+                        </div>
+                        <div className="row mb-3" style={{ display: sumber == 'Retur' ? 'flex' : 'none' }}>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
+                            <div className="col-sm-7">
+                                <AsyncSelect
+                                    placeholder="Pilih Customer..."
+                                    cacheOptions
+                                    defaultOptions
+                                    defaultInputValue={customerName}
+                                    value={customerName}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsCustomer}
+                                    onChange={handleChangeCustomer}
+                                />
+                            </div>
+                        </div>
+
                     </div>
                     <div class="col">
                         <label htmlFor="inputPassword3" className="col-sm-2 pt-0 col-form-label">Catatan</label>
                         <div className="row mb-3">
                             <div className="col-sm-10">
-                                <textarea disabled="true" value={dataPenerimaan.notes} className="form-control" id="form4Example3" rows="4" />
+                                <textarea value={catatan} onChange={(e) => setCatatan(e.target.value)} className="form-control" id="form4Example3" rows="4" />
                             </div>
                         </div>
                         <div className="row mb-3">
@@ -407,7 +582,11 @@ const EditPenerimaanBarang = () => {
                             <Button
                                 type="primary"
                                 icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
+                                onClick={() => {
+
+                                    setModal2Visible(true)
+
+                                }}
                             />
                             <Modal
                                 title="Tambah Produk"
@@ -428,16 +607,34 @@ const EditPenerimaanBarang = () => {
                                                 onChange={(e) => setQuery(e.target.value.toLowerCase())}
                                             />
                                         </div>
-                                        <Table
-                                            columns={columnsModal}
-                                            dataSource={getDataProduct}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
+                                        {
+                                            sumber == 'Pembelian' ?
+                                                <Table
+                                                    columns={columnsModal}
+                                                    dataSource={getDataProduct}
+                                                    scroll={{
+                                                        y: 250,
+                                                    }}
+                                                    pagination={false}
+                                                    loading={isLoading}
+                                                    size="middle"
+                                                /> :
+                                                sumber == 'Retur' ?
+                                                    <Table
+                                                        columns={columnsModal}
+                                                        dataSource={getDataProduct}
+                                                        scroll={{
+                                                            y: 250,
+                                                        }}
+                                                        pagination={false}
+                                                        loading={isLoading}
+                                                        size="middle"
+                                                    /> : null
+
+                                        }
+
+
+
                                     </div>
                                 </div>
                             </Modal>
@@ -451,12 +648,12 @@ const EditPenerimaanBarang = () => {
                         isLoading={true}
                         columns={defaultColumns}
                     />
-                </div> <div class="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right', position:'relative'}}>
+                </div> <div class="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button type="button" width="100px" class="btn btn-success rounded m-1" onClick={() => handleDraft()}>Simpan</button>
                     <button type="button" width="100px" class="btn btn-primary rounded m-1" onClick={() => handleSubmit()}>Submit</button>
                     <button type="button" width="100px" class="btn btn-warning rounded m-1" onClick={() => handleDraft()}>Cetak</button>
                 </div>
-                <div style={{clear:'both'}}></div>
+                <div style={{ clear: 'both' }}></div>
             </form>
 
         </>

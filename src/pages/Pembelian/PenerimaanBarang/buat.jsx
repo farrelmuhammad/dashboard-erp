@@ -16,87 +16,6 @@ import Spreadsheet from 'react-spreadsheet';
 import { useSelector } from 'react-redux';
 import { PageHeader } from 'antd';
 
-
-// const EditableContext = createContext(null);
-
-// const EditableRow = ({ index, ...props }) => {
-//     const [form] = Form.useForm();
-//     return (
-//         <Form form={form} component={false}>
-//             <EditableContext.Provider value={form}>
-//                 <tr {...props} />
-//             </EditableContext.Provider>
-//         </Form>
-//     );
-// };
-
-// const EditableCell = ({
-//     title,
-//     editable,
-//     children,
-//     dataIndex,
-//     record,
-//     handleSave,
-//     ...restProps
-// }) => {
-//     const [editing, setEditing] = useState(false);
-//     const inputRef = useRef(null);
-//     const form = useContext(EditableContext);
-//     useEffect(() => {
-//         if (editing) {
-//             inputRef.current.focus();
-//         }
-//     }, [editing]);
-
-//     const toggleEdit = () => {
-//         setEditing(!editing);
-//         form.setFieldsValue({
-//             [dataIndex]: record[dataIndex],
-//         });
-//     };
-
-//     const save = async () => {
-//         try {
-//             const values = await form.validateFields();
-//             toggleEdit();
-//             handleSave({ ...record, ...values });
-//         } catch (errInfo) {
-//             console.log('Save failed:', errInfo);
-//         }
-//     };
-
-//     let childNode = children;
-
-//     if (editable) {
-//         childNode = editing ? (
-//             <Form.Item
-//                 style={{
-//                     margin: 0,
-//                 }}
-//                 name={dataIndex}
-//                 rules={[
-//                     {
-//                         required: true,
-//                         message: `${title} is required.`,
-//                     },
-//                 ]}
-//             >
-//                 {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-//                 <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
-//             </Form.Item>
-//         ) : (
-//             <div
-//                 className="editable-cell-value-wrap"
-//                 onClick={toggleEdit}
-//             >
-//                 {children}
-//             </div>
-//         );
-//     }
-
-//     return <td {...restProps}>{childNode}</td>;
-// };
-
 const BuatPenerimaanBarang = () => {
     const auth = useSelector(state => state.auth);
     const [date, setDate] = useState(null);
@@ -189,39 +108,18 @@ const BuatPenerimaanBarang = () => {
                 width: '10%',
                 key: 'name',
             },
-            // {
-            //     title: 'Action',
-            //     dataIndex: 'action',
-            //     align: 'center',
-            //     width: '10%',
-            //     key: 'operation',
-
-            // },
         ];
 
         const dataPurchase =
             [...productTampil[record.key].tally_sheet_details.map((item, i) => ({
-
                 product_name: item.product_name,
                 quantity: item.boxes_quantity,
                 unit: item.boxes_unit,
-                // action:
-                //     <Space size="middle">
-                //         <Button
-                //             size='small'
-                //             type="danger"
-                //             icon={<DeleteOutlined />}
-                //             onClick={() => { hapusIndexProduct(record.key, i) }}
-                //         />
-                //     </Space>,
             }))
 
             ];
 
-        // if(loadingTable){
-        //     return <LoadingOutlined/>
-        // }
-        // else{
+      
         return <Table
             style={{ display: loadingTable ? "none" : 'block' }}
             columns={columns}
@@ -230,10 +128,8 @@ const BuatPenerimaanBarang = () => {
             isLoading={true}
             rowClassName={() => 'editable-row'}
         />;
-        // }
 
     };
-    // 
 
     const defaultColumns = [
         {
@@ -304,19 +200,6 @@ const BuatPenerimaanBarang = () => {
         }).then((res) => res.data.data);
     };
 
-    // const handleChangeWarehouse = (value) => {
-    //     setSelectedWarehouse(value);
-    //     setWarehouse(value.id);
-    // };
-    // // load options using API call
-    // const loadOptionsWarehouse = (inputValue) => {
-    //     return fetch(`${Url}/select_supplier_addresses?nama=${inputValue}&id_pemasok=${supplierId}`, {
-    //         headers: {
-    //             Accept: "application/json",
-    //             Authorization: `Bearer ${auth.token}`,
-    //         },
-    //     }).then((res) =>  res.json());
-    // };
 
     const handleChangeProduct = (value) => {
         setSelectedProduct(value);
@@ -347,7 +230,6 @@ const BuatPenerimaanBarang = () => {
             setGetDataProduct(res.data.data);
             setGudang(res.data.warehouse_id)
             setGetDataDetailSO(res.data.map(d => d.sales_order_details))
-            // console.log(res.data.map(d => d.sales_order_details))
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -363,8 +245,7 @@ const BuatPenerimaanBarang = () => {
             })
             setGetDataRetur(res.data.data);
             setGudang(res.data.warehouse_id)
-            // setGetDataDetailSO(res.data.map(d => d.sales_order_details))
-            // console.log(res.data.map(d => d.sales_order_details))
+         
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -663,21 +544,6 @@ const BuatPenerimaanBarang = () => {
                                 />
                             </div>
                         </div>
-                        {/* <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Alamat</label>
-                            <div className="col-sm-7">
-                                <Select
-                                    placeholder="Pilih Alamat..."
-                                    className="basic-single"
-                                    classNamePrefix="select"
-                                    isLoading={isLoading}
-                                    isClearable={true}
-                                    isSearchable={true}
-                                    options={dataAddress}
-                                    onChange={(e) => setAddress(e.value)}
-                                />
-                            </div>
-                        </div> */}
                     </div>
                     <div className="col">
                         <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Catatan</label>
