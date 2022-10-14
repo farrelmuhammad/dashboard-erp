@@ -88,6 +88,11 @@ import CreateGoodsRequest from './pages/Inventory/GoodsRequest/create'
 import EditGoodsRequest from './pages/Inventory/GoodsRequest/edit'
 import DetailGoodsRequest from './pages/Inventory/GoodsRequest/detail'
 
+import TallyTransfer from './pages/Inventory/TallyTransfer'
+import CreateTallyTransfer from './pages/Inventory/TallyTransfer/create'
+import EditTallyTransfer from './pages/Inventory/TallyTransfer/edit'
+import DetailTallyTransfer from './pages/Inventory/TallyTransfer/detail'
+
 import GoodsTransfer from './pages/Inventory/GoodsTransfer'
 import CreateGoodsTransfer from './pages/Inventory/GoodsTransfer/create'
 import EditGoodsTransfer from './pages/Inventory/GoodsTransfer/edit'
@@ -306,6 +311,11 @@ const RouteApp = () => {
         <Route path="/goodsrequest/edit/:id" exact element={<EditGoodsRequest />} />
         <Route path="/goodsrequest/detail" exact element={<DetailGoodsRequest />} />
 
+        <Route path="/tallytransfer" exact element={<TallyTransfer />} />
+        <Route path="/tallytransfer/create" exact element={<CreateTallyTransfer />} />
+        <Route path="/tallytransfer/edit/:id" exact element={<EditTallyTransfer />} />
+        <Route path="/tallytransfer/detail" exact element={<DetailTallyTransfer />} />
+
         <Route path="/goodstransfer" exact element={<GoodsTransfer />} />
         <Route path="/goodstransfer/create" exact element={<CreateGoodsTransfer />} />
         <Route path="/goodstransfer/edit/:id" exact element={<EditGoodsTransfer />} />
@@ -506,6 +516,11 @@ const RouteApp = () => {
         <Route path="/goodsrequest/create" exact element={<CreateGoodsRequest />} />
         <Route path="/goodsrequest/edit/:id" exact element={<EditGoodsRequest />} />
         <Route path="/goodsrequest/detail" exact element={<DetailGoodsRequest />} />
+
+        <Route path="/tallytransfer" exact element={<TallyTransfer />} />
+        <Route path="/tallytransfer/create" exact element={<CreateTallyTransfer />} />
+        <Route path="/tallytransfer/edit/:id" exact element={<EditTallyTransfer />} />
+        <Route path="/tallytransfer/detail" exact element={<DetailTallyTransfer />} />
 
         <Route path="/goodstransfer" exact element={<GoodsTransfer />} />
         <Route path="/goodstransfer/create" exact element={<CreateGoodsTransfer />} />

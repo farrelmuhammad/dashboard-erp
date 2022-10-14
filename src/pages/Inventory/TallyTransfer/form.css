@@ -1,0 +1,20 @@
+.form-input {
+    /* display: flex; */
+    width: 100%;
+    margin-top: 2rem;
+}
+
+.data-grid-container .data-grid{    
+    width: 100%!important;
+    margin-top: 20px;
+}
+.data-grid-container .data-grid .cell .value-viewer{
+    
+    text-align: center;
+}
+
+.data-grid-container .data-grid .cell > input  {
+    width: 100%!important;
+    height: 100%!important;
+}
+
