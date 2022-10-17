@@ -220,12 +220,12 @@ const PelunasanTable = () => {
     });
 
     useEffect(() => {
-        getDeliveryNotes()
+        getPelunasan()
     }, [])
 
-    const getDeliveryNotes = async (params = {}) => {
+    const getPelunasan = async (params = {}) => {
         setIsLoading(true);
-        await axios.get(`${Url}/delivery_notes`, {
+        await axios.get(`${Url}/sales_invoice_payments`, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${auth.token}`

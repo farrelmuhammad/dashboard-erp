@@ -102,7 +102,7 @@ const BuatPelunasan = () => {
     const [description, setDescription] = useState('');
     const [status, setStatus] = useState("");
     const [customer, setCustomer] = useState("");
-    const [COA, setCOA] = useState("");
+    const [chartOfAcc, setChartOfAcc] = useState("");
     const [product, setProduct] = useState([]);
     const [query, setQuery] = useState("");
     const [getCode, setGetCode] = useState('');
@@ -112,6 +112,7 @@ const BuatPelunasan = () => {
     const [getDataProduct, setGetDataProduct] = useState();
     const [isLoading, setIsLoading] = useState(false);
 
+    const [sisaUang, setSisaUang] = useState("");
     const [subTotal, setSubTotal] = useState("");
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
     const [totalPpn, setTotalPpn] = useState("");
@@ -138,7 +139,7 @@ const BuatPelunasan = () => {
 
     const handleChangeCOA = (value) => {
         setSelectedCOA(value);
-        setCOA(value.id);
+        setChartOfAcc(value.id);
     };
     // load options using API call
     const loadOptionsCOA = (inputValue) => {
@@ -150,23 +151,24 @@ const BuatPelunasan = () => {
         }).then((res) => res.json());
     };
 
-    useEffect(() => {
-        getNewCodeSales()
-    })
+    // useEffect(() => {
+    //     getNewCodeSales()
+    // })
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_sales_invoices?nama_alias=${query}`, {
+            const res = await axios.get(`${Url}/select_sales_invoices?nama_alias=${query}&penerima=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
             setGetDataProduct(res.data);
+            // console.log(res.data);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
-    }, [query])
+    }, [query, customer])
 
     // Column for modal input product
     const columnsModal = [
@@ -177,8 +179,9 @@ const BuatPelunasan = () => {
         },
         {
             title: 'Pelanggan',
-            dataIndex: 'customer_id',
+            dataIndex: 'recipient',
             align: 'center',
+            render: (recipient) => recipient.name
         },
         {
             title: 'Total',
@@ -220,11 +223,12 @@ const BuatPelunasan = () => {
             dataIndex: 'sisa',
             width: '25%',
             align: 'center',
-            // render: (record) => (
-            //     <>
-            //         <a>0</a>
-            //     </>
-            // )
+            render: (text, record, index) => {
+                let sisa = 0;
+                sisa = (record.total - record.pays);
+
+                return sisa || 0
+            }
         },
         {
             title: 'Dibayarkan',
@@ -256,66 +260,37 @@ const BuatPelunasan = () => {
         const item = newData[index];
         newData.splice(index, 1, { ...item, ...row });
         setProduct(newData);
-        let check_checked = checked;
-        calculate(product, check_checked);
+        // let check_checked = checked;
+        calculate(product);
     };
 
-    const calculateInvoice = (product) => {
-        let total = 0;
-        let pay = 0;
+    // const calculateInvoice = (product) => {
+    //     let total = 0;
+    //     let pay = 0;
+    //     let sisa = 0;
+    //     product.map((values) => {
+    //         total = values.pays - values.total;
+
+    //     })
+    // }
+
+    const calculate = (product) => {
         let sisa = 0;
-        product.map((values) => {
-            total = values.pays - values.total;
+        product.map((values, i) => {
+            sisa = (values.total - values.pays);
 
+            setSisaUang(sisa)
         })
     }
 
-    const calculate = (product, check_checked) => {
-        let subTotal = 0;
-        let totalDiscount = 0;
-        let totalNominalDiscount = 0;
-        let grandTotalDiscount = 0;
-        let getPpnDiscount = 0;
-        let allTotalDiscount = 0;
-        let totalPpn = 0;
-        let grandTotal = 0;
-        let getPpn = 0;
-        let total = 0;
-        product.map((values) => {
-            if (check_checked) {
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
+    useEffect(() => {
+        let sisa = 0;
+        product.map((values, i) => {
+            sisa = (values.total - values.pays);
 
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                subTotal += ((total - getPpnDiscount) * 100) / (100 + values.ppn);
-                allTotalDiscount += total - getPpnDiscount;
-                totalPpn = allTotalDiscount - subTotal;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
-                setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
-                setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
-            } else {
-                subTotal += (values.quantity * values.price);
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
-
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                allTotalDiscount = total - getPpnDiscount;
-                getPpn = (allTotalDiscount * values.ppn) / 100;
-                totalPpn += getPpn;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
-                setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
-                setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
-            }
+            setSisaUang(sisa)
         })
-    }
+    }, [])
 
     const components = {
         body: {
@@ -350,81 +325,58 @@ const BuatPelunasan = () => {
         setProduct(updatedList);
     };
 
-
-    const getNewCodeSales = async () => {
-        await axios.get(`${Url}/get_new_sales_invoice_payment_code?tanggal=${date}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then((res) => {
-                setGetCode(res.data.data);
-            })
-            .catch((err) => {
-                // Jika Gagal
-                console.log(err);
-            });
-    }
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         const userData = new FormData();
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
-        userData.append("catatan", description);
+        userData.append("bagan_akun", chartOfAcc);
         userData.append("pelanggan", customer);
         userData.append("status", "Submitted");
         product.map((p) => {
             console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("harga[]", p.price);
-            userData.append("persentase_diskon[]", p.discount);
-            userData.append("diskon_tetap[]", p.nominal_disc);
-            userData.append("ppn[]", p.ppn);
+            userData.append("id_faktur_penjualan[]", p.id);
+            userData.append("terbayar[]", p.pays);
         });
-        userData.append("termasuk_pajak", checked);
 
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
+        for (var pair of userData.entries()) {
+            console.log(pair[0] + ', ' + pair[1]);
+        }
 
-        axios({
-            method: "post",
-            url: `${Url}/sales_invoice_payments`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/pesanan");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
-            });
+        // axios({
+        //     method: "post",
+        //     url: `${Url}/sales_invoice_payments`,
+        //     data: userData,
+        //     headers: {
+        //         Accept: "application/json",
+        //         Authorization: `Bearer ${auth.token}`,
+        //     },
+        // })
+        //     .then(function (response) {
+        //         //handle success
+        //         Swal.fire(
+        //             "Berhasil Ditambahkan",
+        //             ` Masuk dalam list`,
+        //             "success"
+        //         );
+        //         navigate("/pesanan");
+        //     })
+        //     .catch((err) => {
+        //         if (err.response) {
+        //             console.log("err.response ", err.response);
+        //             Swal.fire({
+        //                 icon: "error",
+        //                 title: "Oops...",
+        //                 text: err.response.data.error.nama,
+        //             });
+        //         } else if (err.request) {
+        //             console.log("err.request ", err.request);
+        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+        //         } else if (err.message) {
+        //             // do something other than the other two
+        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+        //         }
+        //     });
     };
 
     const handleDraft = async (e) => {
@@ -432,59 +384,53 @@ const BuatPelunasan = () => {
         const userData = new FormData();
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
-        userData.append("catatan", description);
+        userData.append("bagan_akun", chartOfAcc);
         userData.append("pelanggan", customer);
         userData.append("status", "Draft");
         product.map((p) => {
             console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("harga[]", p.price);
-            userData.append("persentase_diskon[]", p.discount);
-            userData.append("diskon_tetap[]", p.nominal_disc);
-            userData.append("ppn[]", p.ppn);
+            userData.append("id_faktur_penjualan[]", p.id);
+            userData.append("terbayar[]", p.pays);
         });
-        userData.append("termasuk_pajak", checked);
 
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
+        for (var pair of userData.entries()) {
+            console.log(pair[0] + ', ' + pair[1]);
+        }
 
-        axios({
-            method: "post",
-            url: `${Url}/sales_invoice_payments`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/pesanan");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
-            });
+        // axios({
+        //     method: "post",
+        //     url: `${Url}/sales_invoice_payments`,
+        //     data: userData,
+        //     headers: {
+        //         Accept: "application/json",
+        //         Authorization: `Bearer ${auth.token}`,
+        //     },
+        // })
+        //     .then(function (response) {
+        //         //handle success
+        //         Swal.fire(
+        //             "Berhasil Ditambahkan",
+        //             ` Masuk dalam list`,
+        //             "success"
+        //         );
+        //         navigate("/pesanan");
+        //     })
+        //     .catch((err) => {
+        //         if (err.response) {
+        //             console.log("err.response ", err.response);
+        //             Swal.fire({
+        //                 icon: "error",
+        //                 title: "Oops...",
+        //                 text: err.response.data.error.nama,
+        //             });
+        //         } else if (err.request) {
+        //             console.log("err.request ", err.request);
+        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+        //         } else if (err.message) {
+        //             // do something other than the other two
+        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+        //         }
+        //     });
     };
 
     const dataFaktur = [
@@ -492,13 +438,13 @@ const BuatPelunasan = () => {
             id: 1,
             code: 'BMA-001',
             total: 10000,
-            pays: 0
+            // pays: 0
         },
         {
             id: 2,
             code: 'BMA-002',
             total: 10000,
-            pays: 0
+            // pays: 0
         }
     ]
 
@@ -525,7 +471,7 @@ const BuatPelunasan = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Kwitansi</label>
                             <div className="col-sm-7">
                                 <input
-                                    value={getCode}
+                                    value="Otomatis"
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
@@ -557,6 +503,7 @@ const BuatPelunasan = () => {
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
+                                    onChange={(e) => setReferensi(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -564,7 +511,7 @@ const BuatPelunasan = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pembayaran</label>
                             <div className="col-sm-7">
                                 <AsyncSelect
-                                    placeholder="Dari COA"
+                                    placeholder="Pilih Pembayaran"
                                     cacheOptions
                                     defaultOptions
                                     value={selectedValue2}
@@ -637,20 +584,24 @@ const BuatPelunasan = () => {
                         rowClassName={() => 'editable-row'}
                         bordered
                         pagination={false}
-                        dataSource={dataFaktur}
+                        dataSource={product}
                         columns={columns}
                         onChange={(e) => setProduct(e.target.value)}
                         summary={(pageData) => {
+                            // let totalTotal = 0;
+                            // pageData.forEach(({ total }) => {
+                            //     totalTotal += total;
+                            // });
                             let totalTotal = 0;
-                            pageData.forEach(({ total }) => {
-                                totalTotal = total;
+                            pageData.forEach(({ pays }) => {
+                                totalTotal += pays;
                             });
                             return (
                                 <>
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={3}>Total yang dibayarkan</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <Text type="danger">{totalTotal}</Text>
+                                            <Text type="danger">{totalTotal || 0}</Text>
                                         </Table.Summary.Cell>
                                         {/* <Table.Summary.Cell index={2}>
                                             <Text>{totalRepayment}</Text>
