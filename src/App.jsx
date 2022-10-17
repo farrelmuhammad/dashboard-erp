@@ -156,6 +156,10 @@ function App() {
         <Link to="/goodsrequest" />
         Permintaan Barang
       </Menu.Item>
+      <Menu.Item key="50">
+        <Link to="/tallytransfer" />
+        Tally Transfer
+      </Menu.Item>
       <Menu.Item key="48">
         <Link to="/goodstransfer" />
         Transfer Barang

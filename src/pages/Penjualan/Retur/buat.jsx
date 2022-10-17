@@ -599,22 +599,24 @@ const BuatRetur = () => {
         })
         )]
 
-    const [value, setValue] = useState(1);
+    // const [value, setValue] = useState(1);
 
-    const onChange = (e) => {
-        console.log('radio checked', e.target.value);
-        setValue(e.target.value);
-    };
+    // const onChange = (e) => {
+    //     console.log('radio checked', e.target.value);
+    //     setValue(e.target.value);
+    // };
 
     useEffect(() => {
         setGrandTotal(Number(subTotal) - Number(grandTotalDiscount) + Number(totalPpn));
     }, [totalPpn]);
 
     const handleChange = () => {
+        // console.log(checked);
         setChecked(!checked);
         let check_checked = !checked;
         calculate(faktur, check_checked);
     };
+
     const handleSave = (row) => {
         const newData = [...faktur];
         const index = newData.findIndex((item) => row.product_alias_name === item.product_alias_name);
@@ -636,19 +638,29 @@ const BuatRetur = () => {
         let subTotalDiscount = 0;
         let totalDiscount = 0;
         faktur.map((values, i) => {
+            let jumlahDiskon = values.discount_percentage
+
             if (check_checked) {
                 total += (Number(values.quantity) * Number(values.price));
                 totalPerProduk = (Number(values.quantity) * Number(values.price));
 
-                hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
-                rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+
+                // // subTotal   += (subTotalDiscount * 100) / (100 + values.ppn);
+                // totalDiscount += ((rowDiscount * 100) / (100 + values.ppn));
+                // subTotalDiscount = totalPerProduk - rowDiscount;
+                // subTotal += (totalPerProduk * 100) / (100 + values.ppn);
+                // totalPpn += ((((totalPerProduk * 100) / (100 + values.ppn)) - (rowDiscount * 100) / (100 + values.ppn)) * values.ppn) / (100);
+                // grandTotal = subTotal - totalDiscount + Number(totalPpn);
 
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 // subTotal   += (subTotalDiscount * 100) / (100 + values.ppn);
-                subTotal += (totalPerProduk * 100) / (100 + values.ppn);
+                subTotal += (totalPerProduk * 100) / (100 + Number(values.ppn));
                 totalDiscount += ((rowDiscount * 100) / (100 + values.ppn));
-                totalPpn += ((((totalPerProduk * 100) / (100 + values.ppn)) - (rowDiscount * 100) / (100 + values.ppn)) * values.ppn) / (100);
-                grandTotal = subTotal - totalDiscount + Number(totalPpn);
+                // totalPpn += ((((totalPerProduk * 100) / (100 + values.ppn)) - (rowDiscount * 100) / (100 + values.ppn)) * values.ppn) / (100);
+                totalPpn = (subTotal * Number(values.ppn)) / 100;
+                grandTotal = subTotal - hasilDiskon + Number(totalPpn);
                 setSubTotal(subTotal)
                 setGrandTotalDiscount(totalDiscount);
                 setTotalPpn(totalPpn)
@@ -657,16 +669,12 @@ const BuatRetur = () => {
                 total += (Number(values.quantity) * Number(values.price));
                 totalPerProduk = (Number(values.quantity) * Number(values.price));
 
-                // hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage[i]) / 100);
-                // rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage[i]) / 100);
+                hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon) / 100);
+                rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon) / 100);
 
-                // totalDiscount += ((totalPerProduk * values.discount_percentage[i]) / 100);
-                // subTotal = total - (Number(totalPerProduk) * Number(values.discount_percentage[i]) / 100);
-                hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
-                rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
-
-                totalDiscount += ((totalPerProduk * values.discount_percentage) / 100);
-                subTotal = total - (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                // totalDiscount += Number(rowDiscount);
+                totalDiscount += ((totalPerProduk * jumlahDiskon) / 100);
+                subTotal = total - (Number(totalPerProduk) * Number(jumlahDiskon) / 100);
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 totalPpn += (subTotalDiscount * values.ppn) / 100;
                 grandTotal = total - totalDiscount + Number(totalPpn);
@@ -690,16 +698,23 @@ const BuatRetur = () => {
         let subTotalDiscount = 0;
         let totalDiscount = 0;
         faktur.map((values, i) => {
+            let jumlahDiskon = values.discount_percentage
             if (checked) {
                 total += (Number(values.quantity) * Number(values.price));
                 totalPerProduk = (Number(values.quantity) * Number(values.price));
 
-                hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
-                rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon) / 100);
+                rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon) / 100);
+
+                // totalDiscount += ((rowDiscount * 100) / (100 + Number(values.ppn)));
+                // subTotalDiscount = totalPerProduk - rowDiscount;
+                // subTotal += (totalPerProduk * 100) / (100 + Number(values.ppn));
+                // totalPpn = (subTotal * Number(values.ppn)) / 100;
+                // grandTotal = subTotal - hasilDiskon + Number(totalPpn);
 
                 totalDiscount += ((rowDiscount * 100) / (100 + Number(values.ppn)));
                 subTotalDiscount = totalPerProduk - rowDiscount;
-                subTotal += (subTotalDiscount * 100) / (100 + Number(values.ppn));
+                subTotal += (totalPerProduk * 100) / (100 + Number(values.ppn));
                 totalPpn = (subTotal * Number(values.ppn)) / 100;
                 grandTotal = subTotal - hasilDiskon + Number(totalPpn);
 
@@ -711,11 +726,11 @@ const BuatRetur = () => {
                 total += (Number(values.quantity) * Number(values.price));
                 totalPerProduk = (Number(values.quantity) * Number(values.price));
 
-                hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
-                rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon) / 100);
+                rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon) / 100);
 
                 totalDiscount += Number(rowDiscount);
-                subTotal = total - (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                subTotal = total - (Number(totalPerProduk) * Number(jumlahDiskon) / 100);
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 totalPpn += (subTotalDiscount * Number(values.ppn)) / 100;
                 grandTotal = total - totalDiscount + Number(totalPpn);
@@ -726,7 +741,7 @@ const BuatRetur = () => {
                 setGrandTotal(grandTotal);
             }
         })
-    }, [jumlahDiskon]);
+    }, [checked, totalPpn]);
 
     const components = {
         body: {

@@ -12,6 +12,7 @@ import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
+import { formatQuantity, formatRupiah } from '../../../utils/helper';
 
 const EditableContext = createContext(null);
 
@@ -207,11 +208,26 @@ const CreateProduction = () => {
             dataIndex: '',
             width: '5%',
             align: 'center',
-            render: (text, record, index) => index + 1,
+            render(text, record,index) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: <div>{index + 1}</div>
+                };
+            }
         },
         {
             title: 'Nama Produk',
             dataIndex: 'product_name',
+            render(text, record) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: <div>{text}</div>
+                };
+            }
         },
         {
             title: 'Qty',
@@ -219,12 +235,27 @@ const CreateProduction = () => {
             width: '30%',
             align: 'center',
             editable: true,
+            render(text, record) {
+                return {
+                    props: {
+                    },
+                    children: <div>{formatQuantity(text)}</div>
+                };
+            }
         },
         {
             title: 'Satuan',
             dataIndex: 'unit',
             width: '30%',
             align: 'center',
+            render(text, record) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: <div>{text}</div>
+                };
+            }
         },
     ];
     const handleSave = (row,type_production) => {
@@ -511,7 +542,7 @@ const CreateProduction = () => {
                 <div className="p-3 mb-3">
                     <div className="card" style={cardOutline}>
                         <div className="card-header bg-white">
-                            <h6 className="title fw-bold">Produk Input</h6>
+                            <h6 className="title fw-bold">Bahan Baku</h6>
                         </div>
                         <div className="card-body">
                             <div className="row">
@@ -542,7 +573,7 @@ const CreateProduction = () => {
                                             <div className="row">
                                                 <div className="col mb-3">
                                                     <Search
-                                                        placeholder="Cari Produk Input..."
+                                                        placeholder="Cari Bahan Baku..."
                                                         style={{
                                                             width: 400,
                                                         }}
@@ -579,7 +610,7 @@ const CreateProduction = () => {
                 <div className="p-3 mb-3">
                     <div className="card" style={cardOutline}>
                         <div className="card-header bg-white">
-                            <h6 className="title fw-bold">Produk Output</h6>
+                            <h6 className="title fw-bold">Hasil Produksi</h6>
                         </div>
                         <div className="card-body">
                             <div className="row">
@@ -610,7 +641,7 @@ const CreateProduction = () => {
                                             <div className="row">
                                                 <div className="col mb-3">
                                                     <Search
-                                                        placeholder="Cari Produk Output..."
+                                                        placeholder="Cari Hasil Produksi..."
                                                         style={{
                                                             width: 400,
                                                         }}
