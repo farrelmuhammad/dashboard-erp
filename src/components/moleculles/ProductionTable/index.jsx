@@ -236,7 +236,7 @@ const ProductionTable = () => {
                 <>
                     {record.status === 'publish' ? (
                         <Space size="middle">
-                        <Link to={`/goodsrequest/detail/${record.id}`}>
+                        <Link to={`/production/detail/${record.id}`}>
                             <Button
                                 size='small'
                                 type="primary"
@@ -246,14 +246,14 @@ const ProductionTable = () => {
                     </Space>
                     ) : (
                         <Space size="middle">
-                        <Link to={`/goodsrequest/detail/${record.id}`}>
+                        <Link to={`/production/detail/${record.id}`}>
                             <Button
                                 size='small'
                                 type="primary"
                                 icon={<InfoCircleOutlined />}
                             />
                         </Link>
-                        <Link to={`/goodsrequest/edit/${record.id}`}>
+                        <Link to={`/production/edit/${record.id}`}>
                             <Button
                                 size='small'
                                 type="success"

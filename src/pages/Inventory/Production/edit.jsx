@@ -443,7 +443,7 @@ const EditProduction = () => {
         // }
 
         axios({
-            method: "post",
+            method: "put",
             url: `${Url}/productions/${id}`,
             data: userData,
             headers: {
@@ -496,7 +496,7 @@ const EditProduction = () => {
         });
 
         axios({
-            method: "post",
+            method: "put",
             url: `${Url}/productions/${id}`,
             data: userData,
             headers: {

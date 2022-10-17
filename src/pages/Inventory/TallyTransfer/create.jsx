@@ -19,6 +19,7 @@ import { CreateOutlined } from '@material-ui/icons';
 import { update } from 'lodash';
 import { array } from 'yup';
 import { PageHeader } from 'antd';
+import { toTitleCase } from '../../../utils/helper';
 
 
 const EditableContext = createContext(null);
@@ -615,14 +616,14 @@ const CreateTallyTransfer = () => {
                 key: 'box',
 
             },
-            {
-                title: 'Status',
-                dataIndex: 'status',
-                align: 'center',
-                width: '10%',
-                key: 'status',
+            // {
+            //     title: 'Status',
+            //     dataIndex: 'status',
+            //     align: 'center',
+            //     width: '10%',
+            //     key: 'status',
 
-            },
+            // },
             {
                 title: 'Action',
                 dataIndex: 'action',
@@ -765,7 +766,7 @@ const CreateTallyTransfer = () => {
                                                         disabled
                                                     />
                                                 </div>
-                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
+                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Permintaan</label>
                                                 <div className="col-sm-3">
                                                     <input
                                                         value={quantityPO}
@@ -872,12 +873,17 @@ const CreateTallyTransfer = () => {
 
     const defaultColumns = [
         {
-            title: 'No. Pesanan',
+            title: 'No. Permintaan',
             dataIndex: 'code',
         },
         {
             title: 'Status',
             dataIndex: 'status',
+            render: (_, { status }) => (
+                <>
+                    {toTitleCase(status)}
+                </>
+            ),
         },
     ];
 
@@ -896,7 +902,7 @@ const CreateTallyTransfer = () => {
     };
     // load options using API call
     const loadOptionsWarehouse = (inputValue) => {
-        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}`, {
+        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}&tipe=internal`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -1410,12 +1416,12 @@ const CreateTallyTransfer = () => {
     // Column for modal input product
     const columnsModal = [
         {
-            title: 'No. Pesanan',
+            title: 'Tanggal',
             width: '20%',
             dataIndex: 'code',
         },
         {
-            title: 'Supplier',
+            title: 'No. Permintaan',
             dataIndex: 'nama',
             width: '15%',
             align: 'center',
@@ -1480,14 +1486,13 @@ const CreateTallyTransfer = () => {
         e.preventDefault();
         const tallySheetData = new FormData();
         tallySheetData.append("tanggal", date);
-        // tallySheetData.append("pemasok", supplier);
         tallySheetData.append("gudang", warehouse);
         tallySheetData.append("catatan", description);
         tallySheetData.append("status", "Submitted");
         if (sumber == 'PO') {
             product.map((p, pi) => {
                 p.goods_request_details.map((po, i) => {
-                    tallySheetData.append("id_pesanan_pembelian[]", p.id);
+                    tallySheetData.append("id_permintaan_barang[]", p.id);
                     tallySheetData.append("id_produk[]", po.product_id);
                     tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
                     tallySheetData.append("aksi[]", statusPO[pi][i]);
@@ -1510,7 +1515,7 @@ const CreateTallyTransfer = () => {
         }
         axios({
             method: "post",
-            url: `${Url}/tally_sheet_ins`,
+            url: `${Url}/tally_sheet_tf`,
             data: tallySheetData,
             headers: {
                 Accept: "application/json",
@@ -1524,7 +1529,7 @@ const CreateTallyTransfer = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/tallypembelian");
+                navigate("/tallytransfer");
             })
             .catch((err) => {
                 if (err.response) {
@@ -1554,7 +1559,7 @@ const CreateTallyTransfer = () => {
         if (sumber == 'PO') {
             product.map((p, pi) => {
                 p.goods_request_details.map((po, i) => {
-                    tallySheetData.append("id_pesanan_pembelian[]", p.id);
+                    tallySheetData.append("id_permintaan_barang[]", p.id);
                     tallySheetData.append("id_produk[]", po.product_id);
                     tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
                     tallySheetData.append("aksi[]", statusPO[pi][i]);
@@ -1579,7 +1584,7 @@ const CreateTallyTransfer = () => {
 
         axios({
             method: "post",
-            url: `${Url}/tally_sheet_ins`,
+            url: `${Url}/tally_sheet_tf`,
             data: tallySheetData,
             headers: {
                 Accept: "application/json",
@@ -1593,7 +1598,7 @@ const CreateTallyTransfer = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/tallypembelian");
+                navigate("/tallytransfer");
             })
             .catch((err) => {
                 if (err.response) {
@@ -1618,7 +1623,7 @@ const CreateTallyTransfer = () => {
             <PageHeader
                 ghost={false}
                 onBack={() => window.history.back()}
-                title="Buat Tally Sheet">
+                title="Buat Tally Transfer">
             </PageHeader>
             <form className="p-3 mb-3 bg-body rounded">
                 <div className="row">
@@ -1635,7 +1640,7 @@ const CreateTallyTransfer = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Pesanan</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Permintaan</label>
                             <div className="col-sm-7">
                                 <input
                                     value="Otomatis"
@@ -1681,7 +1686,7 @@ const CreateTallyTransfer = () => {
                 <div className="text-title text-start mb-4">
                     <div className="row">
                         <div className="col">
-                            <h4 className="title fw-normal">Daftar Produk</h4>
+                            <h4 className="title fw-normal">Daftar Permintaan</h4>
                         </div>
                         <div className="col text-end me-2">
                             <Button
@@ -1692,7 +1697,7 @@ const CreateTallyTransfer = () => {
                                 }}
                             />
                             <Modal
-                                title="Tambah Pesanan"
+                                title="Tambah Permintaan"
                                 centered
                                 visible={modalListLokal}
                                 onCancel={() => setModalListLokal(false)}
@@ -1703,7 +1708,7 @@ const CreateTallyTransfer = () => {
                                     <div className="row">
                                         <div className="col mb-3">
                                             <Search
-                                                placeholder="Cari Nomor Pesanan.."
+                                                placeholder="Cari Nomor Permintaan.."
                                                 style={{
                                                     width: 400,
                                                 }}
