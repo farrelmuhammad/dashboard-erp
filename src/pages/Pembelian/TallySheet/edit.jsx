@@ -27,7 +27,7 @@ const EditTallySheet = () => {
     const [loadingTable, setLoadingTable] = useState(false);
     const [delIndex, setDelIndex] = useState([]);
     const [data, setData] = useState([]);
-    const [sheetNoEdit, setsheetNoEdit] = useState([]);
+    const [sheetNoEdit, setSheetNoEdit] = useState([]);
     const [dataSheet, setDataSheet] = useState([]);
     const [loadingSpreedSheet, setLoadingSpreadSheet] = useState(false);
     const [totalBox, setTotalBox] = useState([]);
@@ -192,7 +192,7 @@ const EditTallySheet = () => {
                                     }
                                     else if (buatKolom < jumlahKolom && x <= jumlahBaris.toFixed()) {
                                         kolom.push(
-                                            { value: getData.tally_sheet_details[i].boxes[indexBox].quantity.replace('.', ','), readOnly: !statusEdit}
+                                            { value: getData.tally_sheet_details[i].boxes[indexBox].quantity.replace('.', ','), readOnly: !statusEdit }
                                         );
                                         kolomLama.push(
                                             { value: getData.tally_sheet_details[i].boxes[indexBox].quantity.replace('.', ','), readOnly: !statusEdit }
@@ -210,13 +210,14 @@ const EditTallySheet = () => {
                                     }
                                     else {
                                         kolom.push(
-                                            { 
+                                            {
                                                 value: '',
                                                 readOnly: !statusEdit
                                             },
                                         );
                                         kolomLama.push(
-                                            {   value: '',
+                                            {
+                                                value: '',
                                                 readOnly: !statusEdit
                                             },
                                         );
@@ -241,7 +242,7 @@ const EditTallySheet = () => {
                     setTotalTallySheet(tmpTally);
                     setData(arrData);
                     // console.log(arrData)
-                    setsheetNoEdit(arrDataLama)
+                    setSheetNoEdit(arrDataLama)
                     setQty(tmpQty);
                     setBox(tmpBox)
 
@@ -576,71 +577,71 @@ const EditTallySheet = () => {
         setProduct(tmp)
     };
 
+
     function hapusIndexProduct(index) {
         // console.log(index)
         let code = product[index].code;
         let status;
         setLoadingTable(true);
 
-        product.splice(index, 1);
-        data.splice(index, 1);
-        setIndexPO(0)
+       
 
         for (let x = 0; x < product.length; x++) {
             if (product[x].code == code) {
-                status = 'ada';
-            }
-        }
 
-        if (status != 'ada') {
-            // pengecekan centang 
-            if (sumber == 'Retur') {
-                let tmp = [];
-                for (let j = 0; j < getDataRetur.length; j++) {
-                    if (getDataRetur[j].detail.code == code) {
-                        tmp.push({
-                            detail: getDataRetur[j].detail,
-                            statusCek: false
-                        })
+                // pengecekan centang 
+                if (sumber == 'Retur') {
+                    let tmp = [];
+                    for (let j = 0; j < getDataRetur.length; j++) {
+                        if (getDataRetur[j].detail.code == code) {
+                            tmp.push({
+                                detail: getDataRetur[j].detail,
+                                statusCek: false
+                            })
+                        }
+                        else {
+                            tmp.push(getDataRetur[j])
+                        }
                     }
-                    else {
-                        tmp.push(getDataRetur[j])
-                    }
-                }
-                setGetDataRetur(tmp)
+                    setGetDataRetur(tmp)
 
-            }
-            else if (sumber == 'PO') {
-                // hapus cek 
-                let tmp = [];
-                for (let j = 0; j < getDataProduct.length; j++) {
-                    if (getDataProduct[j].detail.code == code) {
-                        tmp.push({
-                            detail: getDataProduct[j].detail,
-                            statusCek: false
-                        })
-                    }
-                    else {
-                        tmp.push(getDataProduct[j])
-                    }
                 }
-                setGetDataProduct(tmp)
-            }
-            else if (sumber == 'Faktur') {
-                let tmp = [];
-                for (let j = 0; j < getDataFaktur.length; j++) {
-                    if (getDataFaktur[j].detail.code == code) {
-                        tmp.push({
-                            detail: getDataFaktur[j].detail,
-                            statusCek: false
-                        })
+                else if (sumber == 'PO') {
+                    // hapus cek 
+                    let tmp = [];
+                    for (let j = 0; j < getDataProduct.length; j++) {
+                        if (getDataProduct[j].detail.code == code) {
+                            tmp.push({
+                                detail: getDataProduct[j].detail,
+                                statusCek: false
+                            })
+                        }
+                        else {
+                            tmp.push(getDataProduct[j])
+                        }
                     }
-                    else {
-                        tmp.push(getDataFaktur[j])
-                    }
+                    setGetDataProduct(tmp)
                 }
-                setGetDataFaktur(tmp)
+                else if (sumber == 'Faktur') {
+                    let tmp = [];
+                    for (let j = 0; j < getDataFaktur.length; j++) {
+                        if (getDataFaktur[j].detail.code == code) {
+                            tmp.push({
+                                detail: getDataFaktur[j].detail,
+                                statusCek: false
+                            })
+                        }
+                        else {
+                            tmp.push(getDataFaktur[j])
+                        }
+                    }
+                    setGetDataFaktur(tmp)
 
+                }
+
+                product.splice(index, 1);
+                data.splice(index, 1);
+                setIndexPO(0)
             }
         }
 
@@ -1108,10 +1109,8 @@ const EditTallySheet = () => {
                 }
                 else {
                     for (let j = 0; j < productNoEdit.length; j++) {
-                        // console.log(productNoEdit)
                         if (value.code == productNoEdit[j].code) {
                             arrData.push(sheetNoEdit[j])
-                            // console.log(sheetNoEdit[j])
                         }
                         else {
                             arrData[i] = [
@@ -1481,7 +1480,7 @@ const EditTallySheet = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Pesanan</label>
                             <div className="col-sm-7">
-                                <input disabled="true" value={getTallySheet.code}  type="Nama" className="form-control" id="inputNama3" />
+                                <input disabled="true" value={getTallySheet.code} type="Nama" className="form-control" id="inputNama3" />
                             </div>
                         </div>
                         <div className="row mb-3">
@@ -1561,7 +1560,7 @@ const EditTallySheet = () => {
                         <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Catatan</label>
                         <div className="row mb-3">
                             <div className="col-sm-10">
-                                <textarea defaultValue={catatan}  onChange={(e) => setCatatan(e.target.value)}  className="form-control" id="form4Example3" rows="4" />
+                                <textarea defaultValue={catatan} onChange={(e) => setCatatan(e.target.value)} className="form-control" id="form4Example3" rows="4" />
                             </div>
                         </div>
                         <div className="row mb-3">

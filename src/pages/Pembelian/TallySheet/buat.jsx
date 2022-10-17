@@ -398,8 +398,18 @@ const BuatTallySheet = () => {
         let hasilData = [];
         let tmpData = [];
         for (let x = 0; x < product.length; x++) {
+            if (sumber == 'Retur') {
+                dataProduk = product[x].sales_return_details;
+            }
+            else if (sumber == 'PO') {
+                dataProduk = product[x].purchase_order_details;
+            }
+            else if (sumber == 'Faktur') {
+                dataProduk = product[x].purchase_invoice_details;
+            }
+
             if (x === idxPesanan) {
-                for (let i = 0; i < product[x].purchase_order_details.length; i++) {
+                for (let i = 0; i < dataProduk.length; i++) {
                     if (i === indexPO) {
                         let pushData = [];
                         let defaultData = [
@@ -437,8 +447,19 @@ const BuatTallySheet = () => {
         let hasilData = [];
         let tmpData = [];
         for (let x = 0; x < product.length; x++) {
+            if (sumber == 'Retur') {
+                dataProduk = product[x].sales_return_details;
+            }
+            else if (sumber == 'PO') {
+                dataProduk = product[x].purchase_order_details;
+            }
+            else if (sumber == 'Faktur') {
+                dataProduk = product[x].purchase_invoice_details;
+            }
+
+
             if (x === idxPesanan) {
-                for (let i = 0; i < product[x].purchase_order_details.length; i++) {
+                for (let i = 0; i < dataProduk.length; i++) {
 
                     if (i === indexPO) {
                         if (data[x][i].length - 2 > 0) {
@@ -722,9 +743,20 @@ const BuatTallySheet = () => {
                     let arrStatus = []
                     for (let x = 0; x < product.length; x++) {
                         let status = []
+                        if (sumber == 'Retur') {
+                            dataProduk = product[x].sales_return_details;
+                        }
+                        else if (sumber == 'PO') {
+                            dataProduk = product[x].purchase_order_details;
+                        }
+                        else if (sumber == 'Faktur') {
+                            dataProduk = product[x].purchase_invoice_details;
+                        }
+
+                        
 
                         if (x == baris) {
-                            for (let y = 0; y < product[x].purchase_order_details.length; y++) {
+                            for (let y = 0; y < dataProduk.length; y++) {
                                 if (y == kolom) {
                                     status.push('Done')
                                 }
@@ -749,8 +781,18 @@ const BuatTallySheet = () => {
         function forceNexDeliveryProduct(baris, kolom) {
             // console.log(quantity[baris][kolom])
             // console.log(product[baris].purchase_order_details[kolom].tally_sheets_qty)
-            let jumlahNow = Number(quantity[baris][kolom]) + Number(product[baris].purchase_order_details[kolom].tally_sheets_qty);
-            if (jumlahNow >= product[baris].purchase_order_details[kolom].quantity) {
+            if (sumber == 'Retur') {
+                dataProduk = product[baris].sales_return_details[kolom];
+            }
+            else if (sumber == 'PO') {
+                dataProduk = product[baris].purchase_order_details[kolom];
+            }
+            else if (sumber == 'Faktur') {
+                dataProduk = product[baris].purchase_invoice_details[kolom];
+            }
+
+            let jumlahNow = Number(quantity[baris][kolom]) + Number(dataProduk.tally_sheets_qty);
+            if (jumlahNow >= dataProduk.quantity) {
                 Swal.fire(
                     "Tidak bisa mengubah status",
                     `Jumlah ini sudah melebihi jumlah pesanan`,
@@ -771,9 +813,18 @@ const BuatTallySheet = () => {
                         let arrStatus = []
                         for (let x = 0; x < product.length; x++) {
                             let status = []
+                            if (sumber == 'Retur') {
+                                dataProduk = product[x].sales_return_details;
+                            }
+                            else if (sumber == 'PO') {
+                                dataProduk = product[x].purchase_order_details;
+                            }
+                            else if (sumber == 'Faktur') {
+                                dataProduk = product[x].purchase_invoice_details;
+                            }
 
                             if (x == baris) {
-                                for (let y = 0; y < product[x].purchase_order_details.length; y++) {
+                                for (let y = 0; y < dataProduk.length; y++) {
                                     if (y == kolom) {
                                         status.push('Next delivery')
                                     }
@@ -1916,7 +1967,7 @@ const BuatTallySheet = () => {
             setTotalBox(arrBox);
             setStatusPO(arrStatus);
             setQuantity(arrqty);
-            setGetDataDetailPO(updatedList.map(d => d.purchase_order_details))
+            // setGetDataDetailPO(updatedList.map(d => d.purchase_order_details))
 
         }
         else {
@@ -1931,7 +1982,7 @@ const BuatTallySheet = () => {
                 }
             }
             setIdxPesanan(0)
-            setGetDataDetailPO(updatedList.map(d => d.purchase_order_details))
+            // setGetDataDetailPO(updatedList.map(d => d.purchase_order_details))
 
         }
         setProduct(updatedList);

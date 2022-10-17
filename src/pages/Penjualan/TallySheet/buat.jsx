@@ -226,7 +226,7 @@ const BuatTally = () => {
         let key = [];
         let store = [];
         let store2 = [];
-        console.log(value);
+        // console.log(value);
 
         for (let x = 0; x < data.length; x++) {
             if (x == record) {
@@ -248,7 +248,7 @@ const BuatTally = () => {
         }
         setSelectedProduct(store2);
         setProductSelect(key);
-        console.log(store2)
+        // console.log(store2)
     };
     const loadOptionsProduct = (inputValue, alias) => {
         // console.log(inputValue)
@@ -416,8 +416,8 @@ const BuatTally = () => {
         cell.readOnly ? e.preventDefault() : null;
 
     function klikTambahBaris() {
-        console.log(indexPO)
-        console.log(data)
+        // console.log(indexPO)
+        // console.log(data)
         let hasilData = [];
         let tmpData = [];
         for (let x = 0; x < product.length; x++) {
@@ -460,8 +460,9 @@ const BuatTally = () => {
                 tmpData.push(data[x]);
             }
         }
-        console.log(tmpData);
+        // console.log(tmpData);
         setData(tmpData);
+        // console.log(tmpData)
     }
 
     function klikHapusBaris() {
@@ -494,7 +495,7 @@ const BuatTally = () => {
                 tmpData.push(data[x]);
             }
         }
-        console.log(tmpData);
+        // console.log(tmpData);
         setData(tmpData);
     }
 
@@ -555,7 +556,7 @@ const BuatTally = () => {
                 arrStatus.push(statusSO[x]);
             }
         }
-        console.log(arrStatus)
+        // console.log(arrStatus)
         setQuantity(arrtmp);
         setStatusSO(arrStatus);
         setModal2Visible2(false)
@@ -610,6 +611,8 @@ const BuatTally = () => {
             }
         }
 
+        // console.log('cek')
+
         let tmp = [];
         let qty = [];
         let box = [];
@@ -642,8 +645,8 @@ const BuatTally = () => {
             if (x == idx) {
                 for (let y = 0; y <= dataSumber.length; y++) {
                     if (y == i + 1) {
-                        console.log(qtyPesanan[x][i]);
-                        console.log(quantity[x][i]);
+                        // console.log(qtyPesanan[x][i]);
+                        // console.log(quantity[x][i]);
                         qtyStore.push(0)
                         boxStore.push(0)
                         idStore.push("")
@@ -831,32 +834,64 @@ const BuatTally = () => {
                 value.push(valueStore)
                 status.push(statusStore)
                 qtyBox_tmp.push(temp_qtyBox)
-                tmp.push({
-                    code: product[x].code,
-                    created_at: product[x].created_at,
-                    customer: product[x].customer,
-                    customer_id: product[x].customer_id,
-                    date: product[x].date,
-                    discount: product[x].discount,
-                    done_at: product[x].done_at,
-                    done_by: product[x].done_by,
-                    drafted_by: product[x].drafted_by,
-                    id: product[x].id,
-                    last_edited_at: product[x].last_edited_at,
-                    last_edited_by: product[x].last_edited_by,
-                    notes: product[x].notes,
-                    ppn: product[x].ppn,
-                    reference: product[x].reference,
-                    sales_order_details: arr,
-                    status: product[x].status,
-                    submitted_at: product[x].submitted_at,
-                    submitted_by: product[x].submitted_by,
-                    subtotal: product[x].subtotal,
-                    tax_included: product[x].tax_included,
-                    total: product[x].total,
-                    updated_at: product[x].updated_at,
-                })
-            } else {
+                console.log(product)
+                if (sumber == 'SO') {
+                    tmp.push({
+                        code: product[x].code,
+                        created_at: product[x].created_at,
+                        customer: product[x].customer,
+                        customer_id: product[x].customer_id,
+                        date: product[x].date,
+                        discount: product[x].discount,
+                        done_at: product[x].done_at,
+                        done_by: product[x].done_by,
+                        drafted_by: product[x].drafted_by,
+                        id: product[x].id,
+                        last_edited_at: product[x].last_edited_at,
+                        last_edited_by: product[x].last_edited_by,
+                        notes: product[x].notes,
+                        ppn: product[x].ppn,
+                        reference: product[x].reference,
+                        sales_order_details: arr,
+                        status: product[x].status,
+                        submitted_at: product[x].submitted_at,
+                        submitted_by: product[x].submitted_by,
+                        subtotal: product[x].subtotal,
+                        tax_included: product[x].tax_included,
+                        total: product[x].total,
+                        updated_at: product[x].updated_at,
+                    })
+                }
+                else{
+                    tmp.push({
+                        code: product[x].code,
+                        created_at: product[x].created_at,
+                        customer: product[x].customer,
+                        customer_id: product[x].customer_id,
+                        date: product[x].date,
+                        discount: product[x].discount,
+                        done_at: product[x].done_at,
+                        done_by: product[x].done_by,
+                        drafted_by: product[x].drafted_by,
+                        id: product[x].id,
+                        last_edited_at: product[x].last_edited_at,
+                        last_edited_by: product[x].last_edited_by,
+                        notes: product[x].notes,
+                        ppn: product[x].ppn,
+                        reference: product[x].reference,
+                        purchase_return_details: arr,
+                        status: product[x].status,
+                        submitted_at: product[x].submitted_at,
+                        submitted_by: product[x].submitted_by,
+                        subtotal: product[x].subtotal,
+                        tax_included: product[x].tax_included,
+                        total: product[x].total,
+                        updated_at: product[x].updated_at,
+                    })
+                }
+
+            }
+            else {
                 tmp.push(product[x])
                 qty.push(quantity[x])
                 box.push(totalBox[x])
@@ -868,6 +903,7 @@ const BuatTally = () => {
                 qtyBox_tmp.push(kuantitasBox[x])
             }
         }
+        console.log(tmp)
         setQuantity(qty)
         setTotalBox(box)
         setData(temp)
@@ -875,8 +911,8 @@ const BuatTally = () => {
         setProductSelect(id)
         setStatusSO(status)
         setKuantitasBox(qtyBox_tmp)
-        console.log(qtyBox_tmp);
-        console.log(statusSO);
+        // console.log(qtyBox_tmp);
+        // console.log(statusSO);
         setQtyPesanan(qtyPes)
         setProduct(tmp)
         Swal.fire({
@@ -1093,6 +1129,7 @@ const BuatTally = () => {
                 ];
         }
         else {
+            // console.log(product)
             dataTampil =
                 [...product[record.key].purchase_return_details.map((item, i) => ({
                     // product_alias_name: item.product_alias_name,
@@ -1229,6 +1266,8 @@ const BuatTally = () => {
                 }))
 
                 ];
+
+            // console.log(dataTampil)
         }
 
 
@@ -1320,7 +1359,7 @@ const BuatTally = () => {
                     statusCek: false
                 });
             }
-            console.log(tmp)
+            // console.log(tmp)
             setGetDataProduct(tmp);
             // setGetDataDetailSO(res.data.map(d => d.sales_order_details))
             // console.log(res.data.map(d => d.sales_order_details))
@@ -1870,11 +1909,11 @@ const BuatTally = () => {
             setGetDataDetailSO(updatedList.map(d => d.sales_order_details))
             setSelectedProduct(idValues)
             setProductSelect(valuesId)
-            console.log(arrQtyPesanan);
+            // console.log(arrQtyPesanan);
         }
         else {
-            console.log(updatedList)
-            console.log(event.target.value.detail)
+            // console.log(updatedList)
+            // console.log(event.target.value.detail)
 
             for (let i = 0; i < updatedList.length; i++) {
 
@@ -1886,16 +1925,16 @@ const BuatTally = () => {
                     quantity.splice(i, 1);
                     statusSO.splice(i, 1);
                     qtyPesanan.splice(i, 1);
-                    console.log("test")
+                    // console.log("test")
 
                 }
             }
-            console.log(updatedList)
+            // console.log(updatedList)
             setIdxPesanan(0)
             // setGetDataDetailSO(updatedList.map(d => d.sales_order_details))
 
         }
-        console.log(updatedList)
+        // console.log(updatedList)
         setProduct(updatedList);
     };
 
@@ -1998,7 +2037,6 @@ const BuatTally = () => {
                     userData.append("aksi[]", statusSO[pi][i]);
                     userData.append("jumlah_box[]", totalBox[pi][i]);
                     userData.append("satuan_box[]", po.unit);
-                    // userData.append("kuantitas_product_box[]", totalTallySheet[pi][i]);
                 })
             }
             else {
@@ -2009,11 +2047,13 @@ const BuatTally = () => {
                     userData.append("aksi[]", statusSO[pi][i]);
                     userData.append("jumlah_box[]", totalBox[pi][i]);
                     userData.append("satuan_box[]", po.unit);
-                    // userData.append("kuantitas_product_box[]", totalTallySheet[pi][i]);
+                    // userData.append("kuantitas_produk_box" + "[" + pi + "]" + "[" + i + "]", totalTallySheet[pi][i]);
                 })
             }
 
         });
+
+        
         let key = 0;
         for (let idx = 0; idx < kuantitasBox.length; idx++) {
             for (let x = 0; x < kuantitasBox[idx].length; x++) {
