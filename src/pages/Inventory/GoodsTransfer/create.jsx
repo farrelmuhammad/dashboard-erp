@@ -173,7 +173,7 @@ const CreateGoodsRequest = () => {
 
     // load options tally sheet using API call
     const loadOptionsTallySheet = (inputValue) => {
-        return fetch(`${Url}/select_tally_sheets?limit=10&code=${inputValue}`, {
+        return fetch(`${Url}/select_tally_sheet_tf?limit=10&kode=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
