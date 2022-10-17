@@ -1,7 +1,7 @@
 import './form.css'
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
@@ -102,16 +102,20 @@ const EditPelunasan = () => {
     const [description, setDescription] = useState('');
     const [status, setStatus] = useState("");
     const [customer, setCustomer] = useState("");
+    const [customerName, setCustomerName] = useState("");
     const [COA, setCOA] = useState("");
+    const [COAName, setCOAName] = useState("");
     const [product, setProduct] = useState([]);
     const [query, setQuery] = useState("");
     const [getCode, setGetCode] = useState('');
     const navigate = useNavigate();
     const auth = useSelector(state => state.auth);
+    const { id } = useParams();
 
     const [getDataProduct, setGetDataProduct] = useState();
     const [isLoading, setIsLoading] = useState(false);
 
+    const [sisaUang, setSisaUang] = useState("");
     const [subTotal, setSubTotal] = useState("");
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
     const [totalPpn, setTotalPpn] = useState("");
@@ -151,22 +155,41 @@ const EditPelunasan = () => {
     };
 
     useEffect(() => {
-        getNewCodeSales()
-    })
-
-    useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_sales_invoices?nama_alias=${query}`, {
+            const res = await axios.get(`${Url}/select_sales_invoices?nama_alias=${query}&penerima=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
             setGetDataProduct(res.data);
+            // console.log(res.data);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
-    }, [query])
+    }, [query, customer])
+
+    useEffect(() => {
+        getPelunasan();
+    }, [])
+
+    const getPelunasan = async () => {
+        await axios.get(`${Url}/sales_invoice_payments?id=${id}`, {
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${auth.token}`
+            }
+        })
+            .then((res) => {
+                const getData = res.data.data[0]
+                setGetCode(getData.code)
+                setDate(getData.date)
+                // setDescription(getData.notes)
+                setCustomer(getData.recipient.id)
+                setCustomerName(getData.recipient.name)
+                console.log(res.data.data);
+            })
+    }
 
     // Column for modal input product
     const columnsModal = [
@@ -177,8 +200,9 @@ const EditPelunasan = () => {
         },
         {
             title: 'Pelanggan',
-            dataIndex: 'customer_id',
+            dataIndex: 'recipient',
             align: 'center',
+            render: (recipient) => recipient.name
         },
         {
             title: 'Total',
@@ -220,11 +244,12 @@ const EditPelunasan = () => {
             dataIndex: 'sisa',
             width: '25%',
             align: 'center',
-            // render: (record) => (
-            //     <>
-            //         <a>0</a>
-            //     </>
-            // )
+            render: (text, record, index) => {
+                let sisa = 0;
+                sisa = (record.total - record.pays);
+
+                return sisa
+            }
         },
         {
             title: 'Dibayarkan',
@@ -256,66 +281,27 @@ const EditPelunasan = () => {
         const item = newData[index];
         newData.splice(index, 1, { ...item, ...row });
         setProduct(newData);
-        let check_checked = checked;
-        calculate(product, check_checked);
+        // let check_checked = checked;
+        calculate(product);
     };
 
-    const calculateInvoice = (product) => {
-        let total = 0;
-        let pay = 0;
+    const calculate = (product) => {
         let sisa = 0;
-        product.map((values) => {
-            total = values.pays - values.total;
+        product.map((values, i) => {
+            sisa = (values.total - values.pays);
 
+            setSisaUang(sisa)
         })
     }
 
-    const calculate = (product, check_checked) => {
-        let subTotal = 0;
-        let totalDiscount = 0;
-        let totalNominalDiscount = 0;
-        let grandTotalDiscount = 0;
-        let getPpnDiscount = 0;
-        let allTotalDiscount = 0;
-        let totalPpn = 0;
-        let grandTotal = 0;
-        let getPpn = 0;
-        let total = 0;
-        product.map((values) => {
-            if (check_checked) {
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
+    useEffect(() => {
+        let sisa = 0;
+        product.map((values, i) => {
+            sisa = (values.total - values.pays);
 
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                subTotal += ((total - getPpnDiscount) * 100) / (100 + values.ppn);
-                allTotalDiscount += total - getPpnDiscount;
-                totalPpn = allTotalDiscount - subTotal;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
-                setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
-                setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
-            } else {
-                subTotal += (values.quantity * values.price);
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
-
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                allTotalDiscount = total - getPpnDiscount;
-                getPpn = (allTotalDiscount * values.ppn) / 100;
-                totalPpn += getPpn;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
-                setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
-                setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
-            }
+            setSisaUang(sisa)
         })
-    }
+    }, [])
 
     const components = {
         body: {
@@ -349,23 +335,6 @@ const EditPelunasan = () => {
         }
         setProduct(updatedList);
     };
-
-
-    const getNewCodeSales = async () => {
-        await axios.get(`${Url}/get_new_sales_invoice_payment_code?tanggal=${date}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then((res) => {
-                setGetCode(res.data.data);
-            })
-            .catch((err) => {
-                // Jika Gagal
-                console.log(err);
-            });
-    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -565,7 +534,7 @@ const EditPelunasan = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pembayaran</label>
                             <div className="col-sm-7">
                                 <AsyncSelect
-                                    placeholder="Dari COA"
+                                    placeholder="Pilih Pembayaran"
                                     cacheOptions
                                     defaultOptions
                                     value={selectedValue2}
@@ -574,6 +543,12 @@ const EditPelunasan = () => {
                                     loadOptions={loadOptionsCOA}
                                     onChange={handleChangeCOA}
                                 />
+                            </div>
+                        </div>
+                        <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
+                            <div className="col-sm-4 p-2">
+                                {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
                             </div>
                         </div>
                     </div>
@@ -638,13 +613,17 @@ const EditPelunasan = () => {
                         rowClassName={() => 'editable-row'}
                         bordered
                         pagination={false}
-                        dataSource={dataFaktur}
+                        dataSource={product}
                         columns={columns}
                         onChange={(e) => setProduct(e.target.value)}
                         summary={(pageData) => {
                             let totalTotal = 0;
-                            pageData.forEach(({ total }) => {
-                                totalTotal = total;
+                            // pageData.forEach(({ total }) => {
+                            //     totalTotal = total;
+                            // });
+                            // let totalTotal = 0;
+                            pageData.forEach(({ pays }) => {
+                                totalTotal += pays;
                             });
                             return (
                                 <>
