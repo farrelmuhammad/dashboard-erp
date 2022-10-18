@@ -89,7 +89,7 @@ export const DetailTally = () => {
                                     }
                                     else if (y <= getData.tally_sheet_details[i].boxes.length && x == 1) {
                                         kolom.push(
-                                            { value: getData.tally_sheet_details[i].boxes[y - 1].quantity.replace('.', ','), readOnly: true }
+                                            { value: Number(getData.tally_sheet_details[i].boxes[y - 1].quantity).toFixed(2).replace('.', ','), readOnly: true }
                                         );
                                     }
                                     else {
@@ -232,7 +232,7 @@ export const DetailTally = () => {
             code: item.sales_order.code,
             product_alias_name: item.product_alias_name,
             product_name: item.product_name,
-            quantity: item.boxes_quantity.replace('.', ','),
+            quantity: Number(item.boxes_quantity).toFixed(2).replace('.', ','),
             unit: item.boxes_unit,
 
             box:
@@ -265,7 +265,7 @@ export const DetailTally = () => {
                                         <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
                                         <div className="col-sm-3">
                                             <input
-                                                value={quantityPO.replace('.', ',')}
+                                                value={Number(quantityPO)}
                                                 type="Nama"
                                                 className="form-control"
                                                 id="inputNama3"
@@ -289,7 +289,7 @@ export const DetailTally = () => {
                                         <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
                                         <div className="col-sm-3">
                                             <input
-                                                value={detailTallySheet[indexPO].boxes_quantity.replace('.', ',')}
+                                                value={Number(detailTallySheet[indexPO].boxes_quantity).toFixed(2).replace('.', ',')}
                                                 type="Nama"
                                                 className="form-control"
                                                 id="inputNama3"
@@ -401,7 +401,7 @@ export const DetailTally = () => {
                   <div className='mt-4 mb-1 col d-flex justify-content-center '  style={{ fontSize: "12px", width:"100%" }}>
                       <div className='col-6'>
                           <div className="d-flex flex-row">
-                              <label className='col-6'>Pelanggan</label>
+                              <label className='col-6'>KEPADA</label>
                               <div className='col-6'> : {getTallySheet.customer.name}</div>
                           </div>
                           <div className="d-flex flex-row">
@@ -490,7 +490,7 @@ export const DetailTally = () => {
                                     detailTallySheet.map((item, i) => (
                                         <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
                                             <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto", verticalAlign:"top"}} className='border-isi text-center'><b> {i + 1} </b></td>
-                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-start'><b> {item.product_name} </b> 
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-start'><b> {item.product_alias_name} </b> 
                                             <ReactDataSheet
                                                     data={data[i]}
                                                     valueRenderer={valueRenderer}
@@ -498,7 +498,7 @@ export const DetailTally = () => {
                                                     style={{border: '1px black', bottom:"0px", marginBottom:"0", fontColor:'black', backgroundColor:'white', borderInlineColor:'black'}}
                                                 />
                                              </td>
-                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto", marginBottom:"0", verticalAlign:"bottom"}} className='border-isi text-center'>{Number(item.boxes_quantity).toFixed(2)}</td>
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto", marginBottom:"0", verticalAlign:"bottom"}} className='border-isi text-center'>{Number(item.boxes_quantity).toFixed(2).replace('.' , ',')}</td>
                                             <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto", verticalAlign:"bottom"}} className='border-isi text-center'>{item.boxes_unit}  <br/> </td>
                                            
                                         </tr>

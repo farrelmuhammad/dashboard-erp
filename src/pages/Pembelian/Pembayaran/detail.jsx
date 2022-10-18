@@ -413,8 +413,8 @@ const DetailPembayaranPembelian = () => {
                                 {/* <div>:</div> */}
                                 <div width="100%">{
                                   mataUang === 'Rp' ?
-                                  < CurrencyFormat  disabled className=' text-end editable-input edit-disabled' style={{fontWeight:'bold' ,width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalP).toFixed(2).replace('.' , ',')} key="diskon" /> :
-                                  < CurrencyFormat  disabled className=' text-end editable-input  edit-disabled' style={{fontWeight:'bold', width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalP).toLocaleString('id')} key="diskon" />                    
+                                  < CurrencyFormat  disabled className=' text-end editable-input edit-disabled' style={{fontWeight:'bold' ,width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.paid).toFixed(2).replace('.' , ',')} key="diskon" /> :
+                                  < CurrencyFormat  disabled className=' text-end editable-input  edit-disabled' style={{fontWeight:'bold', width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.paid).toLocaleString('id')} key="diskon" />                    
                                }  </div>
                                 <div>
                                 </div>
@@ -425,7 +425,7 @@ const DetailPembayaranPembelian = () => {
 
 
             <div className="row" style={{ marginLeft:'5px', height:"80px", alignItems:"start", fontSize:'12px'}}> 
-            Terbilang: {Terbilang(totalP) +  mataUang} 
+            Terbilang: {Terbilang(dataHeader.paid) +  mataUang} 
               {/* <div className="col-2" style={{alignItems:"start", fontSize:"12px"}}>
               <b> Terbilang : {Terbilang(totalP) +  mataUang} </b>
                 </div> */}
@@ -537,7 +537,7 @@ const DetailPembayaranPembelian = () => {
                     </td>
                 </tr>
                 </tbody>
-                <tfoot style={{position:"fixed", marginTop:"500px"}}>
+                <tfoot style={{position:"fixed", marginTop:"400px"}}>
                         <tr>
                             <td>
                             

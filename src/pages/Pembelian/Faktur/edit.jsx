@@ -1472,7 +1472,14 @@ const EditFakturPembelian = () => {
 
         for (let y = 0; y < idTandaTerima.length; y++) {
 
-            formData.append("id_tanda_terima_barang[]", idTandaTerima[y]);
+            if (grup == "Lokal") {
+                formData.append("id_tanda_terima_barang[]", idTandaTerima[y]);
+
+            }
+            else if (grup == "Impor") {
+
+                formData.append("id_pesanan_pembelian[]", idTandaTerima[y]);
+            }
         }
         for (let x = 0; x < data.length; x++) {
 

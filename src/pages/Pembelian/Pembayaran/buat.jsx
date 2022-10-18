@@ -131,7 +131,7 @@ const BuatPembayaranPembelian = () => {
 
     function klikUbahTotal(index, value) {
         let tmp = []
-        let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+        let hasil = value.replace('.', '').replace(/[^0-9\.]+/g, "");
         // setting data baru 
         let hasilSisa = Number(product[index].sisaNoEdit);
 
