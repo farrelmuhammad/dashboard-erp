@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 import AsyncSelect from "react-select/async";
 import { PageHeader } from 'antd';
 import { number } from 'yup/lib/locale'
+import { getElementError } from '@testing-library/react'
 
 const EditTally = () => {
     const { id } = useParams();
@@ -33,11 +34,10 @@ const EditTally = () => {
     const [loadingTable, setLoadingTable] = useState(false);
     const [delIndex, setDelIndex] = useState([]);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
-    // const [selectedSupplier, setSelectedSupplier] = useState(null);
     const [selectedValue2, setSelectedWarehouse] = useState(null);
-    const [selectedValue3, setSelectedProduct] = useState([]);
+    const [selectedProduct, setSelectedProduct] = useState([]);
+    const [selectedProductNoEdit, setSelectedProductNoEdit] = useState([]);
     const [data, setData] = useState([]);
-    const [dataSheet, setDataSheet] = useState([]);
     const [loadingSpreedSheet, setLoadingSpreadSheet] = useState(false);
     const [totalBox, setTotalBox] = useState([]);
     const [quantity, setQuantity] = useState([]);
@@ -58,7 +58,8 @@ const EditTally = () => {
     const [quantityPO, setQuantityPO] = useState()
     const [qtyPesanan, setQtyPesanan] = useState([])
     const [statusSO, setStatusSO] = useState([]);
-    const [productSelect, setProductSelect] = useState([]);
+    const [productId, setProductId] = useState([]);
+    const [productIdNoEdit, setProductIdNoEdit] = useState([]);
     const [sumber, setSumber] = useState()
     const [productSelectName, setProductSelectName] = useState([]);
 
@@ -90,17 +91,18 @@ const EditTally = () => {
                 }
                 setWarehouse(getData.warehouse.id)
                 setWarehouseName(getData.warehouse.name)
-                setProductSelect([dataTallySheet[0].product_id])
                 setProductSelectName(dataTallySheet[0].product_name)
-                console.log(getData);
                 setDetailTallySheet(dataTallySheet);
                 setStatus(getData.status);
+
                 let arrData = [];
                 let arrDataLama = [];
                 let tmpQty = []
                 let tmpBox = []
                 let tmpTally = []
                 let arrKuantitas = []
+                let tmpProductName = []
+                let tmpProductId = []
                 let kuantitas = [];
                 let tmp = []
                 let huruf = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
@@ -136,7 +138,7 @@ const EditTally = () => {
                             product_name: dataTallySheet[i].product_name,
                             action: dataTallySheet[i].action,
                             number_order_qty: number_order_qty,
-                            tally_sheets_qty: dataTallySheet[i].tally_sheets_qty,
+                            tally_sheets_qty: dataTallySheet[i].tally_sheets_qty + dataTallySheet[i].boxes_quantity,
                             key: "lama"
                         })
 
@@ -146,6 +148,8 @@ const EditTally = () => {
                         let indexBox = 0;
                         let statusEdit = getData.tally_sheet_details[i].editable;
 
+                        tmpProductId.push(dataTallySheet[i].product_id)
+                        tmpProductName.push(dataTallySheet[i].product_name)
                         tmpBox.push(dataTallySheet[i].number_of_boxes);
                         tmpTally.push(dataTallySheet[i].boxes_quantity)
                         for (let x = 0; x <= jumlahBaris.toFixed(); x++) {
@@ -223,6 +227,10 @@ const EditTally = () => {
                         arrData.push(tempData)
                         arrDataLama.push(tempDataLama)
                     }
+                    setSelectedProduct(tmpProductName)
+                    setSelectedProductNoEdit(tmpProductName)
+                    setProductId(tmpProductId)
+                    setProductIdNoEdit(tmpProductId)
                     setProduct(tmp)
                     setProductNoEdit(tmp)
                     setKuantitasBox(arrKuantitas);
@@ -288,25 +296,34 @@ const EditTally = () => {
     };
 
     const handleChangeProduct = (value, idx) => {
-        // console.log(selectedValue3)
-        let idKey = [];
-        let key = [];
-        let store = [];
-        let store2 = [];
-        console.log(value);
-
-        for (let x = 0; x < data.length; x++) {
-            if (x == idx) {
-                key.push(value.id)
-                store2.push(value)
-            } else {
-                key.push(productSelect[x])
-                store2.push(selectedValue3[x])
+        let status = ''
+        for (let i = 0; i < productId.length; i++) {
+            if (productId[i] == value.id) {
+                status = 'ada'
+                Swal.fire("Data Sudah Ada!", `${value.name} sudah ada di baris ${i + 1}`, "error");
             }
         }
-        setSelectedProduct(store2);
-        setProductSelect(key);
-        console.log(key)
+
+        // jika data belum dipilih sebelumnya 
+        if (status != 'ada') {
+            let idKey = [];
+            let key = [];
+            let store = [];
+            let store2 = [];
+
+            for (let x = 0; x < data.length; x++) {
+                if (x == idx) {
+                    key.push(value.id)
+                    store2.push(value)
+                } else {
+                    key.push(productId[x])
+                    store2.push(selectedProduct[x])
+                }
+            }
+            setSelectedProduct(store2);
+            setProductId(key);
+        }
+
     };
 
     // load options using API call
@@ -528,7 +545,6 @@ const EditTally = () => {
 
         let tmp = []
         for (let i = 0; i < product.length; i++) {
-
             if (i == indexSO) {
                 tmp.push({
                     id_produk: product[i].id_produk,
@@ -539,18 +555,41 @@ const EditTally = () => {
                     boxes_unit: product[i].boxes_unit,
                     product_alias_name: product[i].product_alias_name,
                     product_name: product[i].product_name,
-                    action: totTly[i] + product[i].tally_sheets_qty >= product[i].number_order_qty ? 'Done' : 'Next delivery',
+                    action: Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty) >= product[i].number_order_qty ? 'Done' : 'Next delivery',
                     number_order_qty: product[i].number_order_qty,
-                    tally_sheets_qty: product[i].tally_sheets_qty,
+                    tally_sheets_qty: product[i].key == 'lama' ? totTly[i].toString() : Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty),
                     key: product[i].key
                 })
             }
             else {
                 tmp.push(product[i])
             }
-
         }
-        setProduct(tmp)
+
+        // pengecekan status yang alias dan id nya sama 
+        let tmpAKhir = []
+        for (let i = 0; i < tmp.length; i++) {
+            if (tmp[i].id_pesanan_pembelian == tmp[indexSO].id_pesanan_pembelian && tmp[i].product_alias_name == tmp[indexSO].product_alias_name) {
+                tmpAKhir.push({
+                    id_produk: tmp[i].id_produk,
+                    id_pesanan_pembelian: tmp[i].id_pesanan_pembelian,
+                    code: tmp[i].code,
+                    boxes_quantity: tmp[i].boxes_quantity,
+                    number_of_boxes: tmp[i].number_of_boxes,
+                    boxes_unit: tmp[i].boxes_unit,
+                    product_alias_name: tmp[i].product_alias_name,
+                    product_name: tmp[i].product_name,
+                    action: tmp[indexSO].action,
+                    number_order_qty: tmp[i].number_order_qty,
+                    tally_sheets_qty: tmp[i].tally_sheets_qty,
+                    key: tmp[i].key
+                })
+            }
+            else {
+                tmpAKhir.push(tmp[i])
+            }
+        }
+        setProduct(tmpAKhir)
         console.log(sheetNoEdit)
 
     };
@@ -640,275 +679,312 @@ const EditTally = () => {
 
     function tambahIndexProduct(i, idx) {
         setLoadingTable(true);
-        const oldArray = product;
-        const newArray = product[i];
 
-        let arr = [];
+        if (product[i].action == 'Done') {
+            Swal.fire("Gagal!", `Jumlah sudah memenuhi pesanan`, "error");
 
-        for (let r = 0; r <= oldArray.length; r++) {
-            // data baru 
-            if (r == i + 1) {
-                arr.push(newArray)
-            } else if (r == oldArray.length) {
-                arr.push(oldArray[r - 1])
-            }
-            else {
-                arr.push(oldArray[r])
-            }
         }
-
-        console.log(arr);
-
-        // let tmp = [];
-        // let qty = [];
-        // let box = [];
-        // let qtyBox = [];
-        // let temp = [];
-        // let id = [];
-        // let value = [];
-        // let qtyPes = [];
-        // let status = [];
-        // let qtyBox_tmp = [];
-        let qtyStore = [];
-        let boxStore = [];
-        let tempData = [];
-        let idStore = [];
-        let valueStore = [];
-        let statusStore = [];
-        let temp_qtyBox = [];
-        let qtyPesStore = [];
-
-        for (let x = 0; x < arr.length; x++) {
-            
-            if (x == i + 1) {
-              
-                qtyStore.push(0)
-                boxStore.push(0)
-                idStore.push("")
-                valueStore.push("")
-                temp_qtyBox.push(0)
-                if (quantity[x] + arr[x].tally_sheets_qty >= arr[x].boxes_quantity) {
-                    statusStore.push('Done')
+        else {
+            // data baris baru 
+            let arr = [];
+            for (let r = 0; r <= product.length; r++) {
+                if (r == i + 1) {
+                    arr.push({
+                        action: product[i].action,
+                        boxes_quantity: 0,
+                        boxes_unit: product[i].boxes_unit,
+                        code: product[i].code,
+                        id_pesanan_pembelian: product[i].id_pesanan_pembelian,
+                        id_produk: product[i].id_produk,
+                        key: "baru",
+                        number_of_boxes: 0,
+                        number_order_qty: product[i].number_order_qty,
+                        product_alias_name: product[i].product_alias_name,
+                        product_name: product[i].product_name,
+                        tally_sheets_qty: product[i].tally_sheets_qty
+                    })
+                } else if (r == product.length) {
+                    arr.push(product[r - 1])
                 }
-                else if (quantity[x] + arr[x].tally_sheets_qty < arr[x].boxes_quantity) {
-                    statusStore.push('Next Delivery')
+                else {
+                    arr.push(product[r])
                 }
-                qtyPesStore.push(qtyPesanan[x] - quantity[x])
-                tempData.push([
-                    [
-                        { readOnly: true, value: "" },
-                        { value: "A", readOnly: true },
-                        { value: "B", readOnly: true },
-                        { value: "C", readOnly: true },
-                        { value: "D", readOnly: true },
-                        { value: "E", readOnly: true },
-                        { value: "F", readOnly: true },
-                        { value: "G", readOnly: true },
-                        { value: "H", readOnly: true },
-                        { value: "I", readOnly: true },
-                        { value: "J", readOnly: true },
-                    ],
-                    [
-                        { readOnly: true, value: 1 },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                    ],
-                    [
-                        { readOnly: true, value: 2 },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                    ],
-                    [
-                        { readOnly: true, value: 3 },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                    ],
-                    [
-                        { readOnly: true, value: 4 },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                    ],
-                    [
-                        { readOnly: true, value: 5 },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                    ],
-                    [
-                        { readOnly: true, value: 6 },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                    ],
-                    [
-                        { readOnly: true, value: 7 },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                    ],
-                    [
-                        { readOnly: true, value: 8 },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                    ],
-                    [
-                        { readOnly: true, value: 9 },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                    ],
-                    [
-                        { readOnly: true, value: 10 },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                        { value: '' },
-                    ]
-                ]);
             }
-            // data yang terakhir 
-            else if (x == oldArray.length) {
-                qtyStore.push(quantity[x - 1])
-                boxStore.push(totalBox[x - 1])
-                tempData.push(data[x - 1])
-                console.log(data[x][y-1])
-                valueStore.push(selectedValue3[x - 1])
-                idStore.push(productSelect[x - 1])
-                statusStore.push(statusSO[x - 1])
-                qtyPesStore.push(qtyPesanan[x - 1])
-                temp_qtyBox.push(kuantitasBox[x - 1])
+
+
+            // product name 
+            let tmpProductName = []
+            for (let x = 0; x < arr.length; x++) {
+                if (x == i + 1) {
+                    tmpProductName.push('')
+                }
+                else if (x == arr.length) {
+                    tmpProductName.push(selectedProduct[x - 1])
+                }
+                else {
+                    tmpProductName.push(selectedProduct[x])
+                }
             }
-            // data lainnya 
-            else {
-                qtyStore.push(quantity[x])
-                boxStore.push(totalBox[x])
-                qtyPesStore.push(qtyPesanan[x])
-                tempData.push(data[x])
-                console.log(data[x])
-                valueStore.push(selectedValue3[x])
-                idStore.push(productSelect[x])
-                statusStore.push(statusSO[x])
-                temp_qtyBox.push(kuantitasBox[x])
+
+            console.log(tmpProductName)
+            setSelectedProduct(tmpProductName)
+            // let tmp = [];
+            // let qty = [];
+            // let box = [];
+            // let qtyBox = [];
+            // let temp = [];
+            // let id = [];
+            // let value = [];
+            // let qtyPes = [];
+            // let status = [];
+            // let qtyBox_tmp = [];
+            let qtyStore = [];
+            let boxStore = [];
+            let tempData = [];
+            let idStore = [];
+            let valueStore = [];
+            let statusStore = [];
+            let temp_qtyBox = [];
+            let qtyPesStore = [];
+
+            for (let x = 0; x < arr.length; x++) {
+
+                if (x == i + 1) {
+
+                    qtyStore.push(0)
+                    boxStore.push(0)
+                    idStore.push("")
+                    valueStore.push("")
+                    temp_qtyBox.push(0)
+                    if (quantity[x] + arr[x].tally_sheets_qty >= arr[x].boxes_quantity) {
+                        statusStore.push('Done')
+                    }
+                    else if (quantity[x] + arr[x].tally_sheets_qty < arr[x].boxes_quantity) {
+                        statusStore.push('Next Delivery')
+                    }
+                    qtyPesStore.push(qtyPesanan[x] - quantity[x])
+                    tempData.push([
+                        [
+                            { readOnly: true, value: "" },
+                            { value: "A", readOnly: true },
+                            { value: "B", readOnly: true },
+                            { value: "C", readOnly: true },
+                            { value: "D", readOnly: true },
+                            { value: "E", readOnly: true },
+                            { value: "F", readOnly: true },
+                            { value: "G", readOnly: true },
+                            { value: "H", readOnly: true },
+                            { value: "I", readOnly: true },
+                            { value: "J", readOnly: true },
+                        ],
+                        [
+                            { readOnly: true, value: 1 },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                        ],
+                        [
+                            { readOnly: true, value: 2 },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                        ],
+                        [
+                            { readOnly: true, value: 3 },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                        ],
+                        [
+                            { readOnly: true, value: 4 },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                        ],
+                        [
+                            { readOnly: true, value: 5 },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                        ],
+                        [
+                            { readOnly: true, value: 6 },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                        ],
+                        [
+                            { readOnly: true, value: 7 },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                        ],
+                        [
+                            { readOnly: true, value: 8 },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                        ],
+                        [
+                            { readOnly: true, value: 9 },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                        ],
+                        [
+                            { readOnly: true, value: 10 },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                            { value: '' },
+                        ]
+                    ]);
+                }
+                // data yang terakhir 
+                else if (x == product.length) {
+                    qtyStore.push(quantity[x - 1])
+                    boxStore.push(totalBox[x - 1])
+                    tempData.push(data[x - 1])
+                    console.log(data[x][y - 1])
+                    valueStore.push(selectedProduct[x - 1])
+                    idStore.push(productId[x - 1])
+                    statusStore.push(statusSO[x - 1])
+                    qtyPesStore.push(qtyPesanan[x - 1])
+                    temp_qtyBox.push(kuantitasBox[x - 1])
+                }
+                // data lainnya 
+                else {
+                    qtyStore.push(quantity[x])
+                    boxStore.push(totalBox[x])
+                    qtyPesStore.push(qtyPesanan[x])
+                    tempData.push(data[x])
+                    console.log(data[x])
+                    valueStore.push(selectedProduct[x])
+                    idStore.push(productId[x])
+                    statusStore.push(statusSO[x])
+                    temp_qtyBox.push(kuantitasBox[x])
+                }
             }
+            // qty.push(qtyStore)
+            // box.push(boxStore)
+            // temp.push(tempData)
+            // qtyPes.push(qtyPesStore)
+            // id.push(idStore)
+            // value.push(valueStore)
+            // status.push(statusStore)
+            // qtyBox_tmp.push(temp_qtyBox)
+            // tmp.push(arr)
+
+            console.log(tempData)
+            // console.log()
+            setQuantity(qtyStore)
+            setTotalBox(boxStore)
+            setData(tempData)
+            setSelectedProduct(valueStore)
+            setStatusSO(statusStore)
+            setKuantitasBox(temp_qtyBox)
+            setQtyPesanan(qtyPesStore)
+            setProduct(arr)
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: 'Data berhasil ditambah',
+            }).then(() => setLoadingTable(false));
         }
-        // qty.push(qtyStore)
-        // box.push(boxStore)
-        // temp.push(tempData)
-        // qtyPes.push(qtyPesStore)
-        // id.push(idStore)
-        // value.push(valueStore)
-        // status.push(statusStore)
-        // qtyBox_tmp.push(temp_qtyBox)
-        // tmp.push(arr)
-     
-        console.log(tempData)
-        // console.log()
-        setQuantity(qtyStore)
-        setTotalBox(boxStore)
-        setData(tempData)
-        setSelectedProduct(valueStore)
-        setStatusSO(statusStore)
-        setKuantitasBox(temp_qtyBox)
-        setQtyPesanan(qtyPesStore)
-        setProduct(arr)
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil',
-            text: 'Data berhasil ditambah',
-        }).then(() => setLoadingTable(false));
     }
 
     const dataPurchase =
         [...product.map((item, i) => ({
             code: item.code,
             product_alias_name: item.product_alias_name,
-            product_name: <>
-                <AsyncSelect
-                    placeholder="Pilih Produk..."
-                    cacheOptions
-                    defaultOptions
-                    defaultInputValue={productSelectName}
-                    value={selectedValue3[i]}
-                    getOptionLabel={(e) => e.name}
-                    getOptionValue={(e) => e.id}
-                    loadOptions={(value) => loadOptionsProduct(value, item.product_alias_name)}
-                    onChange={(value) => handleChangeProduct(value, i)}
-                />
-            </>,
+            product_name:
+
+                sumber == 'Retur' ? selectedProduct[i] :
+                    <>
+                        <AsyncSelect
+                            placeholder="Pilih Produk..."
+                            cacheOptions
+                            defaultOptions
+                            id="produk"
+                            defaultInputValue={selectedProduct[i]}
+                            value={selectedProduct[i]}
+                            getOptionLabel={(e) => e.name}
+                            getOptionValue={(e) => e.id}
+                            loadOptions={(value) => loadOptionsProduct(value, item.product_alias_name)}
+                            onChange={(value) => handleChangeProduct(value, i)}
+                        />
+                    </>
+
+            ,
             quantity: Number(item.boxes_quantity).toFixed(2).toString().replace('.', ','),
             unit: item.boxes_unit,
             box:
@@ -949,6 +1025,7 @@ const EditTally = () => {
                                             />
 
                                         </div>
+
                                     </div>
                                     <div className="row mb-1 mt-2">
                                         <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
@@ -965,7 +1042,7 @@ const EditTally = () => {
                                         <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
                                         <div className="col-sm-3">
                                             <input
-                                                value={Number(product[indexSO].boxes_quantity).toFixed(2).toString().replace('.', ',')}
+                                                value={Number(product[indexSO].tally_sheets_qty).toFixed(2).toString().replace('.', ',')}
                                                 type="Nama"
                                                 className="form-control"
                                                 id="inputNama3"
@@ -995,12 +1072,15 @@ const EditTally = () => {
                     icon={<DeleteOutlined />}
                     onClick={() => { hapusIndexProduct(i) }}
                 />
-                <Button
-                    size='small'
-                    type="primary"
-                    icon={<PlusOutlined />}
-                    onClick={() => { tambahIndexProduct(i) }}
-                />
+                {
+                    sumber == 'SO' ? <Button
+                        size='small'
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => { tambahIndexProduct(i) }}
+                    /> : null
+                }
+
             </Space>
 
         }))
@@ -1101,26 +1181,25 @@ const EditTally = () => {
         if (tmpDataBaru[indexTransaksi].statusCek) {
 
             const panjang = dataSumber.length;
-            console.log(value)
-            // console.log('cekked')
 
             let tmp = [];
+            let tmpProductName = []
+            let tmpProductId = []
             for (let i = 0; i <= updatedList.length; i++) {
-
-
-                console.log(updatedList.length)
                 if (i == updatedList.length) {
                     for (let x = 0; x < dataSumber.length; x++) {
                         let qtyAwal = dataSumber[x].quantity;
                         let qtyAkhir = dataSumber[x].tally_sheets_qty;
 
                         for (let j = 0; j < productNoEdit.length; j++) {
-                            console.log(productNoEdit)
+                            // console.log(productNoEdit)
+                            // jika data lama yg dipilih
                             if (value.code == productNoEdit[j].code) {
-                                console.log('data lama')
                                 tmp.push(
                                     productNoEdit[j]
                                 )
+                                tmpProductName.push(selectedProductNoEdit)
+                                tmpProductId.push(productIdNoEdit)
                             }
                             else if (qtyAkhir < qtyAwal) {
                                 tmp.push({
@@ -1144,11 +1223,15 @@ const EditTally = () => {
 
                     }
                 }
-                else (
+                else {
                     tmp.push(product[i])
-                )
+                    tmpProductId.push(productId)
+                    tmpProductName.push(selectedProductNoEdit[i])
+                }
             }
             updatedList = tmp
+            setSelectedProduct(tmpProductName)
+            setProductId(tmpProductId)
 
             // setting data 
             for (let i = 0; i < updatedList.length; i++) {
@@ -1158,7 +1241,6 @@ const EditTally = () => {
                 else {
                     for (let j = 0; j < productNoEdit.length; j++) {
                         if (value.code == productNoEdit[j].code) {
-                            // console.log(sheetNoEdit)
                             arrData.push(sheetNoEdit[j])
                         }
                         else {
@@ -1319,20 +1401,40 @@ const EditTally = () => {
         }
         else {
             arrData = [...data]
+            let arrProduct = [...selectedProduct]
+            let arrProductId = [...productId]
+            let jumlah = 0
 
+            // menghitung baris yang no pesanannya sama 
             for (let i = 0; i < updatedList.length; i++) {
                 for (let x = 0; x < dataSumber.length; x++) {
-                    if (updatedList[i].id_pesanan_pembelian == value.id && updatedList[i].id_produk == dataSumber[x].product_id) {
-                        updatedList.splice(i, 1);
-                        arrData.splice(i, 1);
-                        setIndexSO(0)
+                    if (updatedList[i].id_pesanan_pembelian == value.id) {
+                        jumlah += 1;
                     }
                 }
             }
-            setProduct(updatedList);
-            setData(arrData)
-        }
-    };
+
+            // menghapus baris sesuai jumlah 
+            if (jumlah != 0) {
+                for (let i = 0; i < updatedList.length; i++) {
+                    for (let x = 0; x < dataSumber.length; x++) {
+                        if (updatedList[i].id_pesanan_pembelian == value.id) {
+                            updatedList.splice(i, jumlah);
+                            arrData.splice(i, jumlah);
+                            arrProduct.splice(i, jumlah)
+                            arrProductId.splice(i, jumlah)
+                            setIndexSO(0)
+                        }
+                    }
+                }
+                setSelectedProduct(arrProduct)
+                setProductId(arrProductId)
+                console.log(arrProduct)
+                setProduct(updatedList);
+                setData(arrData)
+            }
+        };
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -1343,7 +1445,7 @@ const EditTally = () => {
         tallySheetData.append("catatan", getTallySheet.notes);
         tallySheetData.append("status", "Submitted");
         product.map((p, pi) => {
-            tallySheetData.append("id_produk[]", productSelect[pi]);
+            tallySheetData.append("id_produk[]", productId[pi]);
             tallySheetData.append("jumlah_box[]", p.number_of_boxes);
             tallySheetData.append("satuan_box[]", p.boxes_unit);
             tallySheetData.append("kuantitas_box[]", p.boxes_quantity);
@@ -1400,23 +1502,37 @@ const EditTally = () => {
         e.preventDefault();
         const tallySheetData = new URLSearchParams();
         tallySheetData.append("tanggal", getTallySheet.date);
-        tallySheetData.append("pelanggan", getTallySheet.customer_id);
+        if (sumber == 'SO') {
+            tallySheetData.append("pelanggan", getTallySheet.customer_id);
+
+        }
+        if (sumber == 'Retur') {
+            tallySheetData.append("pemasok", getTallySheet.supplier_id);
+
+        }
         tallySheetData.append("gudang", getTallySheet.warehouse_id);
         tallySheetData.append("catatan", getTallySheet.notes);
         tallySheetData.append("status", "Draft");
         product.map((p, pi) => {
-            tallySheetData.append("id_produk[]", productSelect[pi]);
+            tallySheetData.append("id_produk[]", productId[pi]);
             tallySheetData.append("jumlah_box[]", p.number_of_boxes);
             tallySheetData.append("satuan_box[]", p.boxes_unit);
             tallySheetData.append("kuantitas_box[]", p.boxes_quantity);
             tallySheetData.append("aksi[]", p.action);
-            tallySheetData.append("id_pesanan_penjualan[]", p.id_pesanan_pembelian);
+            if (sumber == 'SO') {
+                tallySheetData.append("id_pesanan_penjualan[]", p.id_pesanan_pembelian);
+
+            }
+            else if (sumber == 'Retur') {
+                tallySheetData.append("id_retur_pembelian[]", p.id_pesanan_pembelian);
+
+            }
         });
 
         let key = 0;
         for (let idx = 0; idx < kuantitasBox.length; idx++) {
             for (let x = 0; x < kuantitasBox[idx].length; x++) {
-                tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + x + "]", kuantitasBox[idx][x])
+                tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + x + "]", kuantitasBox[idx][x].toString().replace(',', '.'))
             }
             key++;
         }
