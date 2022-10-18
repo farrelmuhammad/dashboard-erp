@@ -679,9 +679,9 @@ const EditTally = () => {
         let qtyPesStore = [];
 
         for (let x = 0; x < arr.length; x++) {
-            
+
             if (x == i + 1) {
-              
+
                 qtyStore.push(0)
                 boxStore.push(0)
                 idStore.push("")
@@ -845,7 +845,7 @@ const EditTally = () => {
                 qtyStore.push(quantity[x - 1])
                 boxStore.push(totalBox[x - 1])
                 tempData.push(data[x - 1])
-                console.log(data[x][y-1])
+                console.log(data[x][y - 1])
                 valueStore.push(selectedValue3[x - 1])
                 idStore.push(productSelect[x - 1])
                 statusStore.push(statusSO[x - 1])
@@ -874,7 +874,7 @@ const EditTally = () => {
         // status.push(statusStore)
         // qtyBox_tmp.push(temp_qtyBox)
         // tmp.push(arr)
-     
+
         console.log(tempData)
         // console.log()
         setQuantity(qtyStore)
@@ -1596,76 +1596,73 @@ const EditTally = () => {
                     </div>
                 </div>
             </PageHeader>
-            <form className="p-3 mb-5 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <div className="row">
-                        <div className="col">
-                            <h4 className="title fw-normal">Daftar Pesanan</h4>
-                        </div>
-                        <div className="col text-end me-2">
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
-                            />
-                            <Modal
-                                title="Tambah Pesanan"
-                                centered
-                                visible={modal2Visible}
-                                onCancel={() => setModal2Visible(false)}
-                                width={1000}
-                                footer={null}
-                            >
-                                <div className="text-title text-start">
-                                    <div className="row">
-                                        <div className="col mb-3">
-                                            <Search
-                                                placeholder="Cari Nomor Pesanan.."
-                                                style={{
-                                                    width: 400,
-                                                }}
-                                                onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                            />
-                                        </div>
-                                        {
-                                            sumber == 'SO' ?
-                                                <Table
-                                                    columns={columnsModal}
-                                                    dataSource={getDataProduct}
-                                                    scroll={{
-                                                        y: 250,
-                                                    }}
-                                                    pagination={false}
-                                                    loading={isLoading}
-                                                    size="middle"
-                                                /> : <Table
-                                                    columns={columnsModal}
-                                                    dataSource={getDataRetur}
-                                                    scroll={{
-                                                        y: 250,
-                                                    }}
-                                                    pagination={false}
-                                                    loading={isLoading}
-                                                    size="middle"
-                                                />
-                                        }
 
-                                    </div>
+            <PageHeader
+                ghost={false}
+                // title="Daftar Pesanan"
+                title={sumber == 'SO' ? "Daftar Pesanan" : "Daftar Surat Jalan"}
+                extra={[
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => setModal2Visible(true)}
+                    />,
+                    <Modal
+                        title="Tambah Pesanan"
+                        centered
+                        visible={modal2Visible}
+                        onCancel={() => setModal2Visible(false)}
+                        width={1000}
+                        footer={null}
+                    >
+                        <div className="text-title text-start">
+                            <div className="row">
+                                <div className="col mb-3">
+                                    <Search
+                                        placeholder="Cari Nomor Pesanan.."
+                                        style={{
+                                            width: 400,
+                                        }}
+                                        onChange={(e) => setQuery(e.target.value.toLowerCase())}
+                                    />
                                 </div>
-                            </Modal>
-                        </div>
-                    </div>
-                    <Table
-                        bordered
-                        pagination={false}
-                        dataSource={dataPurchase}
-                        // expandable={{ expandedRowRender }}
-                        // defaultExpandAllRows
-                        columns={columns}
-                        onChange={(e) => setProduct(e.target.value)}
-                    />
-                </div>
+                                {
+                                    sumber == 'SO' ?
+                                        <Table
+                                            columns={columnsModal}
+                                            dataSource={getDataProduct}
+                                            scroll={{
+                                                y: 250,
+                                            }}
+                                            pagination={false}
+                                            loading={isLoading}
+                                            size="middle"
+                                        /> : <Table
+                                            columns={columnsModal}
+                                            dataSource={getDataRetur}
+                                            scroll={{
+                                                y: 250,
+                                            }}
+                                            pagination={false}
+                                            loading={isLoading}
+                                            size="middle"
+                                        />
+                                }
 
+                            </div>
+                        </div>
+                    </Modal>
+                ]}
+            >
+                <Table
+                    bordered
+                    pagination={false}
+                    dataSource={dataPurchase}
+                    // expandable={{ expandedRowRender }}
+                    // defaultExpandAllRows
+                    columns={columns}
+                    onChange={(e) => setProduct(e.target.value)}
+                />
                 <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
 
                     {
@@ -1712,7 +1709,8 @@ const EditTally = () => {
                     </button>
                 </div>
                 <div style={{ clear: 'both' }}></div>
-            </form>
+            </PageHeader>
+            
             {/* <form className="  p-3 mb-5 bg-body rounded">
                 <div className="text-title text-start mb-4">
                     <div class="row">
