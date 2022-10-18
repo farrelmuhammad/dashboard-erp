@@ -555,7 +555,7 @@ const EditTally = () => {
                     boxes_unit: product[i].boxes_unit,
                     product_alias_name: product[i].product_alias_name,
                     product_name: product[i].product_name,
-                    action: Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty) >= product[i].number_order_qty ? 'Done' : 'Next delivery',
+                    action: product[i].key == 'lama' ? Number(totTly[i]) + Number(product[i].tally_sheets_qty) >= product[i].number_order_qty ? 'Done' : 'Next delivery' : Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty) >= product[i].number_order_qty ? 'Done' : 'Next delivery',
                     number_order_qty: product[i].number_order_qty,
                     tally_sheets_qty: product[i].key == 'lama' ? totTly[i].toString() : Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty),
                     key: product[i].key
@@ -914,7 +914,7 @@ const EditTally = () => {
                     qtyStore.push(quantity[x - 1])
                     boxStore.push(totalBox[x - 1])
                     tempData.push(data[x - 1])
-                    console.log(data[x][y - 1])
+                    // console.log(data[x][y - 1])
                     valueStore.push(selectedProduct[x - 1])
                     idStore.push(productId[x - 1])
                     statusStore.push(statusSO[x - 1])
@@ -944,7 +944,7 @@ const EditTally = () => {
             // qtyBox_tmp.push(temp_qtyBox)
             // tmp.push(arr)
 
-            console.log(tempData)
+            console.log(valueStore)
             // console.log()
             setQuantity(qtyStore)
             setTotalBox(boxStore)

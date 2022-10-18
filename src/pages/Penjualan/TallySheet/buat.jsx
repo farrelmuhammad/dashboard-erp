@@ -707,7 +707,7 @@ const BuatTally = () => {
                 statusSO.splice(idx, 1)
                 quantity.splice(idx, 1)
                 totalBox.splice(idx, 1)
-            }else{
+            } else {
                 dataSumber.splice(i, 1);
                 data[idx].splice(i, 1)
                 statusSO[idx].splice(i, 1)
@@ -1129,8 +1129,6 @@ const BuatTally = () => {
         if (sumber == 'SO') {
             dataTampil =
                 [...product[record.key].sales_order_details.map((item, i) => ({
-                    // product_alias_name: item.product_alias_name,
-                    // key: [record.key]
                     product_alias_name: item.product_alias_name,
                     product_name: <>
                         <AsyncSelect
@@ -1144,7 +1142,7 @@ const BuatTally = () => {
                             onChange={(value) => handleChangeProduct(value, record.key, i)}
                         />
                     </>,
-                    quantity: quantity[record.key][i],
+                    quantity: quantity[record.key][i].toString().replace('.', ','),
                     unit: item.unit,
                     box:
                         <>
@@ -1232,7 +1230,7 @@ const BuatTally = () => {
                                                 icon={<PlusOutlined />}
                                                 onClick={() => klikTambahBaris()}
                                             />
-                                             {
+                                            {
                                                 data[idxPesanan][indexPO].length - 2 > 0 ?
                                                     <Button
                                                         className='ms-2'
@@ -1251,7 +1249,7 @@ const BuatTally = () => {
                                                     />
                                             }
 
-                                          
+
                                         </div>
                                     </div>
                                 </div>
@@ -1266,16 +1264,12 @@ const BuatTally = () => {
                                 icon={<DeleteOutlined />}
                                 onClick={() => hapusIndexProduct(i, record.key)}
                             />
-                            {
-                                sumber == 'SO' ?
-                                    <Button
-                                        size='small'
-                                        type="primary"
-                                        icon={<PlusOutlined />}
-                                        onClick={() => tambahIndexProduct(i, record.key)}
-                                    /> : null
-                            }
-
+                            <Button
+                                size='small'
+                                type="primary"
+                                icon={<PlusOutlined />}
+                                onClick={() => tambahIndexProduct(i, record.key)}
+                            />
                         </Space>,
                 }))
 
@@ -1288,21 +1282,8 @@ const BuatTally = () => {
                     // product_alias_name: item.product_alias_name,
                     // key: [record.key]
                     product_alias_name: item.product_alias_name,
-                    product_name:
-                        sumber == 'Retur' ? item.product_name :
-                            <>
-                                <AsyncSelect
-                                    placeholder="Pilih Produk..."
-                                    cacheOptions
-                                    defaultOptions
-                                    value={selectedValue3[record.key][i]}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={(value) => loadOptionsProduct(value, item.product_alias_name)}
-                                    onChange={(value) => handleChangeProduct(value, record.key, i)}
-                                />
-                            </>,
-                    quantity: quantity[record.key][i],
+                    product_name: item.product_name,
+                    quantity: quantity[record.key][i].toString().replace('.', ','),
                     unit: item.unit,
                     box:
                         <>
@@ -1390,7 +1371,7 @@ const BuatTally = () => {
                                                 icon={<PlusOutlined />}
                                                 onClick={() => klikTambahBaris()}
                                             />
-                                             {
+                                            {
                                                 data[idxPesanan][indexPO].length - 2 > 0 ?
                                                     <Button
                                                         className='ms-2'
@@ -1423,12 +1404,6 @@ const BuatTally = () => {
                                 type="danger"
                                 icon={<DeleteOutlined />}
                                 onClick={() => hapusIndexProduct(i, record.key)}
-                            />
-                            <Button
-                                size='small'
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => tambahIndexProduct(i, record.key)}
                             />
                         </Space>,
                 }))
@@ -2129,7 +2104,7 @@ const BuatTally = () => {
                 p.purchase_return_details.map((po, i) => {
                     userData.append("pemasok", supplier);
                     userData.append("id_retur_pembelian[]", p.id);
-                    userData.append("id_produk[]", productSelect[pi][i]);
+                    userData.append("id_produk[]", po.product_id);
                     userData.append("aksi[]", statusSO[pi][i]);
                     userData.append("jumlah_box[]", totalBox[pi][i]);
                     userData.append("satuan_box[]", po.unit);
@@ -2142,7 +2117,7 @@ const BuatTally = () => {
         for (let idx = 0; idx < kuantitasBox.length; idx++) {
             for (let x = 0; x < kuantitasBox[idx].length; x++) {
                 for (let y = 0; y < kuantitasBox[idx][x].length; y++) {
-                    userData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + y + "]", kuantitasBox[idx][x][y])
+                    userData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + y + "]", kuantitasBox[idx][x][y].toString().replace(',', '.'))
                 }
                 key++;
             }
@@ -2211,7 +2186,7 @@ const BuatTally = () => {
                 p.purchase_return_details.map((po, i) => {
                     userData.append("pemasok", supplier);
                     userData.append("id_retur_pembelian[]", p.id);
-                    userData.append("id_produk[]", productSelect[pi][i]);
+                    userData.append("id_produk[]", po.product_id);
                     userData.append("aksi[]", statusSO[pi][i]);
                     userData.append("jumlah_box[]", totalBox[pi][i]);
                     userData.append("satuan_box[]", po.unit);
@@ -2226,7 +2201,7 @@ const BuatTally = () => {
         for (let idx = 0; idx < kuantitasBox.length; idx++) {
             for (let x = 0; x < kuantitasBox[idx].length; x++) {
                 for (let y = 0; y < kuantitasBox[idx][x].length; y++) {
-                    userData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + y + "]", kuantitasBox[idx][x][y])
+                    userData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + y + "]", kuantitasBox[idx][x][y].toString().replace(',', '.'))
                 }
                 key++;
             }
