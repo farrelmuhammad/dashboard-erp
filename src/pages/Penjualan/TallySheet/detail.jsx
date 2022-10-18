@@ -371,8 +371,212 @@ export const DetailTally = () => {
 
     return (
         <>
+         <div style={{ display: "none" , position:"absolute"}} >
+                <div ref={componentRef} className="p-4" >
 
-            <div style={{ display: "none", position: "absolute" }}>
+  <table>
+    <thead>
+      <tr>
+        <td>
+         
+          <div className="page-header-space"></div>
+          <div className="page-header">
+          <div className='d-flex' style={{position:"fixed", height:"100px", top:"0"}}>
+                      
+                      <div><img src={logo} width="60px"></img></div>
+                      <div className='ms-2' >
+                          <div className='header-cetak'><b> PT. BUMI MAESTROAYU</b></div>
+                          <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
+                          <div className='header-cetak'>JAKARTA SELATAN 12760</div>
+                          <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
+                      </div>
+                     
+        </div>
+        <br/>
+    <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold" }}>
+                      <div style={{ fontSize: "16px", textDecoration: "underline", textAlign:'center'}}>TALLY SHEET</div>
+                      <div style={{ fontSize: "10px", marginTop: "-5px" }}>NO. {getTallySheet.code}</div>
+                  </div>
+
+                  <div className='mt-4 mb-1 col d-flex justify-content-center '  style={{ fontSize: "12px", width:"100%" }}>
+                      <div className='col-6'>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>Pelanggan</label>
+                              <div className='col-6'> : {getTallySheet.customer.name}</div>
+                          </div>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>CATATAN </label>
+                          </div>
+                          {/* <div className="d-flex flex-row">
+                              <label className='col-6'>CATATAN : </label>
+                              
+                             
+                          </div> */}
+                    {/* <div className="mt-2 mb-2 d-flex flex-row justify-content-center">
+                    <textarea
+                                    className="col-6"
+                                    id="form4Example3"
+                                    rows="5"
+                                    cols="100"
+                                    value={getTallySheet.notes}
+                                    disabled
+                                    style={{resize:"none"}}
+                                />
+                    </div> */}
+                          
+                          
+                      </div>
+                      <div className='col-6'>
+                        <div className="d-flex flex-row">
+                                <label className='col-6'>TANGGAL</label>
+                                <div className='col-6'> : {getTallySheet.date}</div>
+                            </div>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>GUDANG</label>
+                              <div className='col-6'> : {getTallySheet.warehouse.name} </div>
+                          </div>
+                        
+                          
+                      </div>
+                      <div>
+                        
+                      </div>
+                  </div>
+
+                    <div className='mb-1 justify-content-start align-items-left d-flex flex-column' style={{ fontSize: "12px", width:"100%" }}>
+                  
+                    <div className="d-flex justify-content-center" style={{width:"100%", height:"100%"}}>
+                    <br/>
+                    <textarea
+                                    className="col-12"
+                                    id="form4Example3"
+                                    rows="3"
+                                    cols="100"
+                                    value={getTallySheet.notes}
+                                    disabled
+                                    style={{resize:"none"}}
+                                />
+                    </div>
+                    <br/>
+                  
+
+                  </div>
+
+                </div>
+        </td>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>
+       
+        
+          <div className="page" style={{lineHeight:"3"}}>
+           
+          <div className='d-flex mb-2' style={{width:"100%", height:"100%"}} >
+                       
+                        <table style={{ fontSize: "10px", width: "100%", pageBreakAfter:"auto", pageBreakInside:"avoid"}}>
+                            <tr className='text-center border' style={{ height: "40px", pageBreakInside:"avoid", pageBreakAfter:"auto" }}>
+                                <th width="50px" className='border' >No</th>
+                                <th width="300px" className='border'>Box</th>
+                                <th width="80px" className='border'>Qty</th>
+                                <th width="80px" className='border'>Stn</th>
+                               
+                            
+                            </tr>
+                            <tbody className="border mb-0">
+                                {
+                                    detailTallySheet.map((item, i) => (
+                                        <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto", verticalAlign:"top"}} className='border-isi text-center'><b> {i + 1} </b></td>
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-start'><b> {item.product_name} </b> 
+                                            <ReactDataSheet
+                                                    data={data[i]}
+                                                    valueRenderer={valueRenderer}
+                                                    onContextMenu={onContextMenu}
+                                                    style={{border: '1px black', bottom:"0px", marginBottom:"0", fontColor:'black', backgroundColor:'white', borderInlineColor:'black'}}
+                                                />
+                                             </td>
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto", marginBottom:"0", verticalAlign:"bottom"}} className='border-isi text-center'>{Number(item.boxes_quantity).toFixed(2)}</td>
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto", verticalAlign:"bottom"}} className='border-isi text-center'>{item.boxes_unit}  <br/> </td>
+                                           
+                                        </tr>
+
+                                    ))
+                                }
+                            </tbody>
+
+
+                        </table>
+                        <br/>
+                        <br/>
+                        <br/>
+                    </div>
+
+
+                    {/* <div className='d-flex mt-3 ps-4 pe-4'>
+                        <div style={{ width: "80%" }}>
+                        </div>
+                        <div style={{ width: "20%" }}>
+                            <div className='d-flex mt-4' style={{fontSize:"10px"}}>
+                                <label className='col-6'><b>Total</b></label>
+                                <div>:</div>
+                                <div className='ms-3'>{quantityTotal} <br/> </div>
+                                <div>
+                                    <br/>
+                                    <br/>
+                                </div>
+                            </div>
+                        </div>
+                    </div> */}
+                    </div>
+                    </td>
+                </tr>
+                </tbody>
+
+    <tfoot>
+      <tr>
+        <td>
+         
+          <div className="page-footer-space"></div>
+          <div className="page-footer" >
+          <div className='d-flex mt-1' style={{width:"100%", bottom:"0"}}>
+            <br/>
+            <br/>
+                        <br/>
+          <table style={{ fontSize: "10px", width: "100%", height:"100%"}} >
+                            {/* <tr className='text-end' style={{ height: "20px", width:"70%", alignItems:"right", marginRight:"0px", textAlign:"right"}}>
+                                <td width="35px" style={{alignItems:"right"}} ><b>Total : {quantityTotal} </b></td>
+                            </tr> */}
+                            <tr className='text-center border' style={{ height: "50px", width:"70%" }}>
+                                <th width="35px" className='border'>Dibuat Oleh,</th>
+                                <th width="35px" className='border'>Pengirim,</th>
+                                <th width="35px" className='border'>Disetujui Oleh,</th>
+                                <th width="35px" className='border'>Diterima Oleh,</th>
+                            </tr>
+                           
+                            <tr className='text-center border ' style={{ height: "80px" ,width:"70%"}}>
+                                     
+                                    <td width="35px" className='border'><b>_________________</b></td>
+                                    <td width="35px"className='border'><b>_________________</b></td>
+                                    <td width="35px"className='border'><b>_________________</b></td>
+                                    <td width="35px"className='border'><b>_________________</b></td>
+                                       
+                            </tr>
+                        </table>
+                        </div>
+                        </div>
+                        </td>
+                    </tr>
+                    </tfoot>
+
+                    </table>
+
+                    </div>
+                    </div>
+
+            {/* <div style={{ display: "none", position: "absolute" }}>
                 <div ref={componentRef} className="p-4" >
                     <div className='d-flex'>
                         <div><img src={logo} width="100px"></img></div>
@@ -452,7 +656,7 @@ export const DetailTally = () => {
 
 
                 </div>
-            </div>
+            </div> */}
 
             <PageHeader
                 ghost={false}

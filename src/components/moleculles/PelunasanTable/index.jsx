@@ -268,7 +268,7 @@ const PelunasanTable = () => {
             // sortDirections: ['descend', 'ascend'],
         },
         {
-            title: 'total',
+            title: 'Total',
             dataIndex: 'total',
             key: 'total',
             width: '15%',

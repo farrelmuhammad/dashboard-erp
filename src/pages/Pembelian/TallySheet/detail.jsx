@@ -294,7 +294,7 @@ export const DetailTallySheet = () => {
         [...detailTallySheet.map((item, i) => ({
             code: sumber=='PO' ? item.purchase_order.code : sumber=='Faktur' ? item.purchase_invoice.code : sumber=='Retur' ? item.sales_return.code : null,
             product_name: item.product_name,
-            quantity: item.boxes_quantity.replace('.', ','),
+            quantity: Number(item.boxes_quantity).toFixed(2).replace('.', ','),
             unit: item.boxes_unit,
             box:
                 <>
