@@ -447,7 +447,7 @@ const BuatFaktur = () => {
     const tableToRupiah = (angka, namaMataUang) => {
         return namaMataUang + ' ' + angka.toLocaleString('id');
     }
-    const [totalPerProduk, setTotalPerProduk] = useState([]);
+
     useEffect(() => {
         let totalPerProduk = 0;
         let grandTotal = 0;
@@ -526,7 +526,7 @@ const BuatFaktur = () => {
         },
         {
             title: 'Nama Produk Alias',
-            dataIndex: 'alias_name',
+            dataIndex: 'product_alias_name',
             render(text, record) {
                 return {
                     props: {
@@ -696,6 +696,12 @@ const BuatFaktur = () => {
         },
     ];
 
+    // const dataSuratJalan = [
+    //     ...product.delivery_note_details.map((item, i) => ({
+    //         product_alias_name: item.product_alias_name,
+    //     }))
+    // ]
+
     const handleChange = () => {
         setChecked(!checked);
         let check_checked = !checked;
@@ -802,6 +808,10 @@ const BuatFaktur = () => {
         var updatedList = [...product];
         if (event.target.checked) {
             updatedList = [...product, event.target.value];
+            console.log(updatedList);
+            for (let i = 0; i < updatedList.length; i++) {
+                
+            }
         } else {
             updatedList.splice(product.indexOf(event.target.value), 1);
         }
@@ -1107,78 +1117,73 @@ const BuatFaktur = () => {
 
             <PageHeader
                 ghost={false}
-                // title="Daftar Pesanan"
                 title={sumber == 'SO' ? "Daftar Pesanan" : "Daftar Surat Jalan"}
                 extra={[
                     <Button
                         type="primary"
                         icon={<PlusOutlined />}
-                        onClick={() => setModal2Visible(true)}
+                        onClick={() => {
+                            if (sumber == '') {
+                                Swal.fire("Gagal", "Mohon Pilih Transaksi Dahulu..", "error");
+                            }
+                            else {
+                                setModal2Visible(true)
+                            }
+                        }}
                     />,
                     <Modal
-                        title="Tambah Produk"
+                        title={sumber == 'SO' ? "Tambah Pesanan" : "Tambah Surat Jalan"}
                         centered
                         visible={modal2Visible}
                         onCancel={() => setModal2Visible(false)}
                         width={800}
-                        // footer={[
-                        //     <Button
-                        //         key="submit"
-                        //         type="primary"
-
-                        //     >
-                        //         Tambah
-                        //     </Button>,
-                        // ]}
                         footer={null}
                     >
                         <div className="text-title text-start">
                             <div className="row">
                                 <div className="col mb-3">
                                     <Search
-                                        placeholder="Cari Produk..."
+                                        placeholder={sumber == 'SO' ? "Cari Pesanan..." : "Cari Surat Jalan..."}
                                         style={{
                                             width: 400,
                                         }}
                                         onChange={(e) => setQuery(e.target.value.toLowerCase())}
                                     />
                                 </div>
-                                <Tabs
-                                    // onChange={onChange}
-                                    type="card"
-                                >
-                                    <Tabs.TabPane tab="Surat Jalan" key="1">
-                                        <Table
-                                            columns={columnsModal}
-                                            dataSource={getDataProduct}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
-                                    </Tabs.TabPane>
-                                    <Tabs.TabPane tab="Pesanan" key="2">
-                                        <Table
-                                            columns={columnsModal2}
-                                            dataSource={getDataProduct2}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
-                                    </Tabs.TabPane>
-                                </Tabs>
-
+                                {sumber == 'SO' ? <Table
+                                    columns={columnsModal2}
+                                    dataSource={getDataProduct2}
+                                    scroll={{
+                                        y: 250,
+                                    }}
+                                    pagination={false}
+                                    loading={isLoading}
+                                    size="middle"
+                                /> : <Table
+                                    columns={columnsModal}
+                                    dataSource={getDataProduct}
+                                    scroll={{
+                                        y: 250,
+                                    }}
+                                    pagination={false}
+                                    loading={isLoading}
+                                    size="middle"
+                                />
+                                }
                             </div>
                         </div>
                     </Modal>,
                 ]}
             >
-                <Table
+                {sumber == 'SO' ? <Table
+                    components={components}
+                    rowClassName={() => 'editable-row'}
+                    bordered
+                    pagination={false}
+                    dataSource={dataSuratJalan}
+                    columns={columns}
+                    onChange={(e) => setProduct(e.target.value)}
+                /> : <Table
                     components={components}
                     rowClassName={() => 'editable-row'}
                     bordered
@@ -1186,7 +1191,7 @@ const BuatFaktur = () => {
                     dataSource={product}
                     columns={columns}
                     onChange={(e) => setProduct(e.target.value)}
-                />
+                />}
                 <div className="row p-0 mt-3">
                     <div className="col ms-5">
                         <div className="form-check">

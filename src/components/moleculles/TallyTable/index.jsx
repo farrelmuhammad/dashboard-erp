@@ -134,7 +134,7 @@ const TallyTable = () => {
 
   const getTallySheet = async (params = {}) => {
     setIsLoading(true);
-    await axios.get(`${Url}/tally_sheets`, {
+    await axios.get(`${Url}/tally_sheets?tipe=Sales`, {
       headers: {
         'Accept': 'application/json',
         'Authorization': `Bearer ${auth.token}`
@@ -168,12 +168,12 @@ const TallyTable = () => {
       sortDirections: ['descend', 'ascend'],
     },
     {
-      title: 'Pemasok',
-      dataIndex: 'supplier',
+      title: 'Pelanggan',
+      dataIndex: 'customer',
       width: '15%',
-      key: 'supplier',
-      ...getColumnSearchProps('supplier'),
-      // render: (supplier) => supplier.name
+      key: 'customer',
+      ...getColumnSearchProps('customer'),
+      render: (supplier) => supplier.name
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
       // sortDirections: ['descend', 'ascend'],
     },
