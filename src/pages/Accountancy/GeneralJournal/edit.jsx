@@ -292,8 +292,8 @@ const EditGeneralJournal = () => {
                     // onChange={(e) => setProduct(e.target.value)}
                     />
                 </div>
-                <div class="d-flex flex-row-reverse bd-highlight me-3">
-                    <div class="p-2 bd-highlight">
+                <div className="d-flex flex-row-reverse bd-highlight me-3">
+                    <div className="p-2 bd-highlight">
                         <div className="col-sm-12">
                             <input
                                 // defaultValue={subTotal}
@@ -305,12 +305,12 @@ const EditGeneralJournal = () => {
                             />
                         </div>
                     </div>
-                    <div class="p-2 bd-highlight">
+                    <div className="p-2 bd-highlight">
                         <label for="colFormLabelSm" className="col-sm-12 col-form-label col-form-label-sm">Total Debit</label>
                     </div>
                 </div>
-                <div class="d-flex flex-row-reverse bd-highlight me-3">
-                    <div class="p-2 bd-highlight">
+                <div className="d-flex flex-row-reverse bd-highlight me-3">
+                    <div className="p-2 bd-highlight">
                         <div className="col-sm-12">
                             <input
                                 // defaultValue={subTotal}
@@ -322,7 +322,7 @@ const EditGeneralJournal = () => {
                             />
                         </div>
                     </div>
-                    <div class="p-2 bd-highlight">
+                    <div className="p-2 bd-highlight">
                         <label for="colFormLabelSm" className="col-sm-12 col-form-label col-form-label-sm">Total Credit</label>
                     </div>
                 </div>

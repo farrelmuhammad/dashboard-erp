@@ -526,7 +526,7 @@ const BuatFaktur = () => {
         },
         {
             title: 'Nama Produk Alias',
-            dataIndex: 'product_alias_name',
+            dataIndex: sumber == "SO" ? 'alias_name' : 'product_alias_name',
             render(text, record) {
                 return {
                     props: {
@@ -616,10 +616,10 @@ const BuatFaktur = () => {
             width: '20%',
             align: 'center',
             render: (text, record, index) => {
-                return <div class="input-group input-group-sm mb-3">
-                    <input style={{ width: "30px" }} type="text" class="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} defaultValue={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px", height: "35px" }}>
+                return <div className="input-group input-group-sm mb-3">
+                    <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} defaultValue={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px", height: "35px" }}>
                             <select
                                 onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
                                 id="grupSelect"
@@ -806,15 +806,51 @@ const BuatFaktur = () => {
     const handleCheck = (event) => {
         console.log(event.target.checked)
         var updatedList = [...product];
+        let tmpData = [];
         if (event.target.checked) {
             updatedList = [...product, event.target.value];
-            console.log(updatedList);
-            for (let i = 0; i < updatedList.length; i++) {
-                
+            if (sumber == "SO") {
+                for (let i = 0; i < updatedList.length; i++) {
+                    tmpData.push(
+                        {
+                            alias_name: updatedList[i].alias_name,
+                            quantity: updatedList[i].quantity,
+                            price: updatedList[i].price,
+                            discount_percentage: updatedList[i].discount_percentage,
+                            fixed_discount: updatedList[i].fixed_discount,
+                            subtotal: updatedList[i].subtotal,
+                            pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+                            unit: updatedList[i].unit,
+                            total: updatedList[i].total
+                        }
+                    )
+                }
+            } else if (sumber == "Surat") {
+                let tmpDataDetails = [];
+                for (let i = 0; i < updatedList.length; i++) {
+                    for (let j = 0; j < updatedList[i].delivery_note_details.length; j++) {
+                        tmpDataDetails.push(
+                            {
+                                product_alias_name: updatedList[i].product_alias_name,
+                                quantity: updatedList[i].quantity,
+                                price: updatedList[i].price,
+                                discount_percentage: updatedList[i].discount_percentage,
+                                fixed_discount: updatedList[i].fixed_discount,
+                                subtotal: updatedList[i].subtotal,
+                                pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+                                unit: updatedList[i].unit,
+                                total: updatedList[i].total
+                            }
+                        )
+                    }
+                    tmpData.push(tmpDataDetails)
+                }
             }
+            console.log(updatedList);
         } else {
             updatedList.splice(product.indexOf(event.target.value), 1);
         }
+        console.log(updatedList);
         setProduct(updatedList);
         console.log(updatedList);
         let tmp = [];
@@ -1180,7 +1216,7 @@ const BuatFaktur = () => {
                     rowClassName={() => 'editable-row'}
                     bordered
                     pagination={false}
-                    dataSource={dataSuratJalan}
+                    dataSource={product}
                     columns={columns}
                     onChange={(e) => setProduct(e.target.value)}
                 /> : <Table

@@ -122,23 +122,23 @@ export const DetailPesananPembelian = () => {
             align: 'center',
             // editable: true,
             render: (text, record, index) => {
-                return <div class="input-group input-group-sm mb-3">
+                return <div className="input-group input-group-sm mb-3">
 
                     {
 
 
                         dataPO[0].purchase_order_details[index].discount_percentage != 0 ?
                             <>
-                                <input style={{ width: "30px" }} readOnly type="text" class="form-control" aria-label="Small" defaultValue={dataPO[0].purchase_order_details[index].discount_percentage} aria-describedby="inputGroup-sizing-sm" />
-                                <div class="input-group-prepend">
-                                    <input style={{ width: "50px" }} readOnly type="text" class="form-control" aria-label="Small" defaultValue="%" aria-describedby="inputGroup-sizing-sm" />
+                                <input style={{ width: "30px" }} readOnly type="text" className="form-control" aria-label="Small" defaultValue={dataPO[0].purchase_order_details[index].discount_percentage} aria-describedby="inputGroup-sizing-sm" />
+                                <div className="input-group-prepend">
+                                    <input style={{ width: "50px" }} readOnly type="text" className="form-control" aria-label="Small" defaultValue="%" aria-describedby="inputGroup-sizing-sm" />
                                 </div>
                             </> :
                             <>
-                                <div class="input-group-prepend">
-                                    <input style={{ width: "50px" }} readOnly type="text" class="form-control" aria-label="Small" defaultValue={namaMataUang} aria-describedby="inputGroup-sizing-sm" />
+                                <div className="input-group-prepend">
+                                    <input style={{ width: "50px" }} readOnly type="text" className="form-control" aria-label="Small" defaultValue={namaMataUang} aria-describedby="inputGroup-sizing-sm" />
                                 </div>
-                                <input style={{ width: "30px" }} readOnly type="text" class="form-control" aria-label="Small" defaultValue={dataPO[0].purchase_order_details[index].discount_percentage} aria-describedby="inputGroup-sizing-sm" />
+                                <input style={{ width: "30px" }} readOnly type="text" className="form-control" aria-label="Small" defaultValue={dataPO[0].purchase_order_details[index].discount_percentage} aria-describedby="inputGroup-sizing-sm" />
                             </>
 
                     }
@@ -615,15 +615,15 @@ export const DetailPesananPembelian = () => {
                     {/* {
                         status == 'Cancelled' ? null :
                             <div className="col button-add text-end me-3">
-                                <button type="button" onClick={handlePrint} class="btn btn-warning rounded m-1">
+                                <button type="button" onClick={handlePrint} className="btn btn-warning rounded m-1">
                                     Cetak
                                 </button>
                             </div>
                     } */}
 
                 </div>
-                <div class="row">
-                    <div class="col">
+                <div className="row">
+                    <div className="col">
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
                             <div className="col-sm-7">
@@ -734,7 +734,7 @@ export const DetailPesananPembelian = () => {
                             </div>
                         </div>
                     </div>
-                    <div class="col">
+                    <div className="col">
                         <label htmlFor="inputPassword3" className="col-sm-6 col-form-label">Estimasi Diterima</label>
                         <div className="row mb-3">
                             <div className="d-flex col-sm-10">
@@ -781,8 +781,8 @@ export const DetailPesananPembelian = () => {
             </form>
             <form className="p-3 mb-5 bg-body rounded">
                 <div className="text-title text-start mb-4">
-                    <div class="row">
-                        <div class="col">
+                    <div className="row">
+                        <div className="col">
                             <h4 className="title fw-normal">Daftar Produk</h4>
                         </div>
                     </div>
@@ -797,31 +797,31 @@ export const DetailPesananPembelian = () => {
                         size="middle"
                     />
                 </div>
-                <div class="row p-0">
-                    <div class="col ms-5"></div>
-                    <div class="col">
-                        <div class="row mb-3">
-                            <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>
+                <div className="row p-0">
+                    <div className="col ms-5"></div>
+                    <div className="col">
+                        <div className="row mb-3">
+                            <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>
                             <div className="col-sm-6 form-control-sm" style={{borderWidth:"1px"}} >
                                 {convertToRupiah(subTotal)}
                             </div>
                         </div>
-                        <div class="row mb-3">
-                            <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">Diskon</label>
+                        <div className="row mb-3">
+                            <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Diskon</label>
                             <div className="col-sm-6">
                                 {convertToRupiah(diskon)}
                             </div>
                         </div>
-                        <div class="row mb-3" style={{ display: tampilPPN ? "flex" : "none" }}>
-                            <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">PPN</label>
+                        <div className="row mb-3" style={{ display: tampilPPN ? "flex" : "none" }}>
+                            <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">PPN</label>
                             <div className="col-sm-6">
                                 {convertToRupiah(PPN)}
                             </div>
 
                         </div>
-                        <div class="row mb-3">
-                            <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">Total</label>
-                            <div class="col-sm-6">
+                        <div className="row mb-3">
+                            <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Total</label>
+                            <div className="col-sm-6">
                                 {/* <input
                                     value={namaMataUang + ' ' + Number(total).toLocaleString('id')}
                                     readOnly="true"
@@ -836,7 +836,7 @@ export const DetailPesananPembelian = () => {
                                 <input
                                     disabled="true"
                                     type="number"
-                                    class="form-control form-control-sm"
+                                    className="form-control form-control-sm"
                                     id="colFormLabelSm"
                                     value={d.total}
                                 />

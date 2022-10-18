@@ -75,8 +75,8 @@ const ModalProdukTable = () => {
                     <h4 className="title fw-normal">Cari Produk</h4>
                 </div>
                 <div className="col">
-                    <form action="" class="search-form mb-2">
-                        <input type="text" class="form-control" name="search" id="search" placeholder="search" />
+                    <form action="" className="search-form mb-2">
+                        <input type="text" className="form-control" name="search" id="search" placeholder="search" />
                     </form>
                 </div>
                 <Table
