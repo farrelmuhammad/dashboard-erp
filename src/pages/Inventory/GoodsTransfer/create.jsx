@@ -163,7 +163,7 @@ const CreateGoodsRequest = () => {
 
     // load options warehouse using API call
     const loadOptionsWarehouse = (inputValue) => {
-        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}&tipe=internal`, {
+        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,

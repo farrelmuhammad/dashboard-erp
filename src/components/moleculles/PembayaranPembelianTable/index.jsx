@@ -10,6 +10,8 @@ import { Link } from 'react-router-dom';
 import AsyncSelect from "react-select/async";
 import ReactSelect from 'react-select';
 import { useSelector } from 'react-redux';
+import Item from 'antd/lib/list/Item';
+import CurrencyFormat from 'react-currency-format';
 
 const PembayaranPembelianTable = () => {
     const [searchText, setSearchText] = useState('');
@@ -245,7 +247,7 @@ const PembayaranPembelianTable = () => {
             title: 'Tanggal',
             dataIndex: 'date',
             key: 'date',
-            width: '10%',
+            width: '13%',
             ...getColumnSearchProps('date'),
         },
         {
@@ -263,9 +265,9 @@ const PembayaranPembelianTable = () => {
             key: 'customer_id',
             width: '20%',
             ...getColumnSearchProps('customer_id'),
-            render: (text, record, index) => (
-                <>{dataPembayaran[index].supplier.name}</>
-            )
+            // render: (text, record, index) => (
+            //     <>{dataPembayaran[index].supplier.name}</>
+            // )
 
         },
         {
@@ -274,6 +276,9 @@ const PembayaranPembelianTable = () => {
             key: 'total',
             width: '15%',
             ...getColumnSearchProps('total'),
+            // render: (text) => {
+            //     return Number(text).toFixed(2).replace('.', ',')
+            // }
         },
         {
             title: 'Status',
@@ -281,51 +286,92 @@ const PembayaranPembelianTable = () => {
             key: 'status',
             align: 'center',
             width: '15%',
-            render: (_, { status }) => (
-                <>
-                    {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
+            // render: (_, { status }) => (
+            //     <>
+            //         {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
 
-                </>
-            ),
+            //     </>
+            // ),
             ...getColumnSearchProps('status'),
         },
         {
             title: 'Actions',
             width: '20%',
+            dataIndex:'action',
             align: 'center',
-            render: (_, record) => (
-                <>
-                    <Space size="middle">
-                        <Link to={`/pembayaranpembelian/detail/${record.id}`}>
-                            <Button
-                                size='small'
-                                type="primary"
-                                icon={<InfoCircleOutlined />}
-                            />
-                        </Link>
-                        <Link to={`/pembayaranpembelian/edit/${record.id}`}>
-                            <Button
-                                size='small'
-                                type="success"
-                                icon={<EditOutlined />}
-                            />
-                        </Link>
-                        <Button
-                            size='small'
-                            type="danger"
-                            icon={<DeleteOutlined />}
-                            onClick={() => deletePembayaran(record.id, record.code)}
-                        />
-                    </Space>
-                </>
-            ),
+            // render: (_, record) => (
+            //     <>
+            //         <Space size="middle">
+            //             <Link to={`/pembayaranpembelian/detail/${record.id}`}>
+            //                 <Button
+            //                     size='small'
+            //                     type="primary"
+            //                     icon={<InfoCircleOutlined />}
+            //                 />
+            //             </Link>
+            //             <Link to={`/pembayaranpembelian/edit/${record.id}`}>
+            //                 <Button
+            //                     size='small'
+            //                     type="success"
+            //                     icon={<EditOutlined />}
+            //                 />
+            //             </Link>
+            //             <Button
+            //                 size='small'
+            //                 type="danger"
+            //                 icon={<DeleteOutlined />}
+            //                 onClick={() => deletePembayaran(record.id, record.code)}
+            //             />
+            //         </Space>
+            //     </>
+            // ),
         },
     ];
+
+const dataColumn = [
+    ...dataPembayaran.map((item, i) => ({
+        date: item.date,
+        code: item.code, 
+        customer_id: item.supplier.name,
+        total: item.currency_name == 'Rp' ? 
+        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" />
+         :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={item.currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />,
+        status:  <>
+        {item.status === 'Submitted' ? <Tag color="blue">{item.status}</Tag> : item.status === 'Draft' ? <Tag color="orange">{item.status}</Tag> : item.status === 'Done' ? <Tag color="green">{item.status}</Tag> : <Tag color="red">{item.status}</Tag>}
+    </>, 
+    action:   <>
+    <Space size="middle">
+        <Link to={`/pembayaranpembelian/detail/${item.id}`}>
+            <Button
+                size='small'
+                type="primary"
+                icon={<InfoCircleOutlined />}
+            />
+        </Link>
+        <Link to={`/pembayaranpembelian/edit/${item.id}`}>
+            <Button
+                size='small'
+                type="success"
+                icon={<EditOutlined />}
+            />
+        </Link>
+        <Button
+            size='small'
+            type="danger"
+            icon={<DeleteOutlined />}
+            onClick={() => deletePembayaran(item.id, item.code)}
+        />
+    </Space>
+</>,
+    })
+    )
+]
+
     return <Table
         loading={isLoading}
         columns={columns}
         pagination={{ pageSize: 5 }}
-        dataSource={dataPembayaran}
+        dataSource={dataColumn}
         scroll={{
             y: 240,
         }}

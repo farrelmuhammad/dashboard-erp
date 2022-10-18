@@ -7,6 +7,7 @@ import Url from '../../../Config';
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import CurrencyFormat from 'react-currency-format';
 
 const PesananPembelianTable = () => {
     const [searchText, setSearchText] = useState('');
@@ -273,7 +274,7 @@ const PesananPembelianTable = () => {
             title: 'Total',
             dataIndex: 'total',
             key: 'total',
-            width: '13%',
+            width: '18%',
             // render(text, record, index) {
             //     return {
             //       props: {
@@ -311,7 +312,10 @@ const PesananPembelianTable = () => {
             date: item.date,
             code: item.code,
             supplier_name: item.supplier_name,
-            total: item.supplier._group == 'Lokal' ? <div>{"Rp" + ' ' + Number(item.total).toLocaleString('id')}</div> : <div>{namaMataUang[i] + ' ' + Number(item.total).toLocaleString('id')}</div>,
+            total: item.supplier._group == 'Lokal' ? 
+            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" />
+             :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang[i] + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />,
+
             status:
                 <>
                     {item.status === 'Submitted' ? <Tag color="blue">{item.status}</Tag> : item.status === 'Draft' ? <Tag color="orange">{item.status}</Tag> : item.status === 'Done' ? <Tag color="green">{item.status}</Tag> : item.status === 'Cancelled' ? <Tag color="red">{item.status}</Tag> : item.status === 'Processed' ? <Tag color="purple">{item.status}</Tag> : null

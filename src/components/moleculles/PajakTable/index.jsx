@@ -155,12 +155,12 @@ const PajakTable = () => {
           ellipsis={
             ellipsis
               ? {
-                tooltip: text,
+                tooltip: toTitleCase(text),
               }
               : false
           }
         >
-          {text}
+          {toTitleCase(text)}
         </Text>
       )
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,

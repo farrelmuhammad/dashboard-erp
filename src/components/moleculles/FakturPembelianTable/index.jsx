@@ -8,6 +8,7 @@ import jsCookie from 'js-cookie'
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import CurrencyFormat from 'react-currency-format';
 
 const FakturPembelianTable = () => {
   const [searchText, setSearchText] = useState('');
@@ -183,8 +184,8 @@ const FakturPembelianTable = () => {
       dataIndex: 'supplier',
       width: '15%',
       key: 'supplier',
-      ...getColumnSearchProps('supplier_id'),
-      render: (recipient) => recipient.name,
+      ...getColumnSearchProps('supplier'),
+      //render: (recipient) => recipient.name,
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
       // sortDirections: ['descend', 'ascend'],
     },
@@ -192,18 +193,21 @@ const FakturPembelianTable = () => {
       title: 'Total',
       dataIndex: 'total',
       key: 'total',
-      width: '10%',
+      width: '15%',
+    //   render: (text) => {
+    //     return Number(text).toFixed(2).replace('.', ',')
+    // },
       ...getColumnSearchProps('total'),
     },
     {
       title: 'Tipe',
       dataIndex: 'type',
-      key: 'total',
-      width: '10%',
-      render:(_, record)=> (
-         record.supplier._group
-      ),
-      ...getColumnSearchProps('total'),
+      key: 'type',
+      width: '8%',
+      // render:(_, record)=> (
+      //    record.supplier._group
+      // ),
+      ...getColumnSearchProps('type'),
     },
     {
       title: 'Status',
@@ -211,51 +215,106 @@ const FakturPembelianTable = () => {
       key: 'status',
       align: 'center',
       width: '10%',
-      render: (_, { status }) => (
-        <>
-          {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
+      // render: (_, { status }) => (
+      //   <>
+      //     {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
 
-        </>
-      ),
+      //   </>
+      // ),
       ...getColumnSearchProps('status'),
     },
     {
       title: 'Actions',
+      dataIndex:'action',
       width: '10%',
       align: 'center',
-      render: (_, record) => (
-        <>
-          <Space size="middle">
-            <Link to={`/fakturpembelian/detail/${record.id}`}>
-              <Button
-                size='small'
-                type="primary"
-                icon={<InfoCircleOutlined />}
-              />
-            </Link>
-            <Link to={`/fakturpembelian/edit/${record.id}`}>
-              <Button
-                size='small'
-                type="success"
-                icon={<EditOutlined />}
-              />
-            </Link>
-            <Button
-              size='small'
-              type="danger"
-              icon={<DeleteOutlined />}
-              onClick={() => deletePurchaseFaktur(record.id, record.code)}
-            />
-          </Space>
-        </>
-      ),
+      // render: (_, record) => (
+      //   <>
+      //     <Space size="middle">
+      //       <Link to={`/fakturpembelian/detail/${record.id}`}>
+      //         <Button
+      //           size='small'
+      //           type="primary"
+      //           icon={<InfoCircleOutlined />}
+      //         />
+      //       </Link>
+      //       <Link to={`/fakturpembelian/edit/${record.id}`}>
+      //         <Button
+      //           size='small'
+      //           type="success"
+      //           icon={<EditOutlined />}
+      //         />
+      //       </Link>
+      //       <Button
+      //         size='small'
+      //         type="danger"
+      //         icon={<DeleteOutlined />}
+      //         onClick={() => deletePurchaseFaktur(record.id, record.code)}
+      //       />
+      //     </Space>
+      //   </>
+      // ),
     },
   ];
+
+  const dataColumn = [
+    ...getDataFaktur.map((item,i) => ({
+      date: item.date,
+      code: item.code,
+      supplier:item.supplier.name,
+      total: item.supplier._group == 'Lokal' ? 
+      < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" />
+       :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={item.purchase_invoice_details[0].currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />,
+
+      type:item.supplier._group,
+      status:  <>
+      {item.status === 'Submitted' ? <Tag color="blue">{item.status}</Tag> : item.status === 'Draft' ? <Tag color="orange">{item.status}</Tag> : item.status === 'Done' ? <Tag color="green">{item.status}</Tag> : item.status === 'Cancelled' ? <Tag color="red">{item.status}</Tag> : item.status === 'Processed' ? <Tag color="purple">{item.status}</Tag> : null
+      }
+  </>,  
+      action:
+      <>
+          <Space size="middle">
+              {item.can['read-purchase_invoice'] ? (
+                  <Link to={`/fakturpembelian/detail/${item.id}`}>
+                      <Button
+                          size='small'
+                          type="primary"
+                          icon={<InfoCircleOutlined />}
+                      />
+                  </Link>
+              ) : null}
+              {
+                  item.can['update-purchase_invoice'] ? (
+                      <Link to={`/fakturpembelian/edit/${item.id}`}>
+                          <Button
+                              size='small'
+                              type="success"
+                              icon={<EditOutlined />}
+                          />
+                      </Link>
+                  ) : null
+              }
+              {
+                  item.can['delete-purchase_invoice'] ? (
+                          <Button
+                              size='small'
+                              type="danger"
+                              icon={<DeleteOutlined />}
+                              onClick={() => deletePurchaseFaktur(item.id, item.code)}
+                          />
+                  ) : null
+              }
+     
+          </Space>
+      </>
+
+    }) )
+  ]
   return <Table
     loading={isLoading}
     columns={columns}
     pagination={{ pageSize: 5 }}
-    dataSource={getDataFaktur}
+    dataSource={dataColumn}
     // scroll={{
     //   y: 240,
     // }}

@@ -205,10 +205,6 @@ const CreateAdjustment = () => {
             dataIndex: 'qty_before',
             width: '30%',
             align: 'center',
-            render: (text) => {
-                return text.toLocaleString('id');
-
-            }
         },
         {
             title: 'Qty saat ini',
@@ -216,10 +212,6 @@ const CreateAdjustment = () => {
             width: '30%',
             align: 'center',
             editable: true,
-            render: (text) => {
-                return text.toLocaleString('id');
-
-            }
         },
     ];
     const checkWarehouse = () => {
