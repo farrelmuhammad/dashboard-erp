@@ -10,6 +10,8 @@ import { Link } from 'react-router-dom';
 import AsyncSelect from "react-select/async";
 import ReactSelect from 'react-select';
 import { useSelector } from 'react-redux';
+import CurrencyFormat from 'react-currency-format';
+
 
 const ReturTable = () => {
     const [searchText, setSearchText] = useState('');
@@ -271,8 +273,13 @@ const ReturTable = () => {
             title: 'Total',
             dataIndex: 'total',
             key: 'total',
-            width: '15%',
+            width: '13%',
             ...getColumnSearchProps('total'),
+            render(text, record) {
+                return <div>{
+                  <CurrencyFormat className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp. '} value={Number(text).toFixed(2).replace('.' , ',')} />
+                  }</div>
+            }
         },
         {
             title: 'Status',

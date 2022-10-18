@@ -558,7 +558,7 @@ export const DetailTallySheet = () => {
                         </div> */}
                     </div>
                     <div className="col button-add text-end me-3">
-                        <button type="button" onClick={handlePrint} class="btn btn-warning rounded m-1">
+                        <button type="button" onClick={handlePrint} className="btn btn-warning rounded m-1">
                             Cetak
                         </button>
                     </div>
@@ -566,8 +566,8 @@ export const DetailTallySheet = () => {
                 {/* <div className="text-title text-start mb-4">
                     <h3 className="title fw-bold">Detail Pesanan</h3>
                 </div> */}
-                <div class="row">
-                    <div class="col">
+                <div className="row">
+                    <div className="col">
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
                             <div className="col-sm-7">
@@ -594,7 +594,7 @@ export const DetailTallySheet = () => {
                             </div>
                         </div>
                     </div>
-                    <div class="col">
+                    <div className="col">
                         <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Catatan</label>
                         <div className="row mb-3">
                             <div className="col-sm-10">

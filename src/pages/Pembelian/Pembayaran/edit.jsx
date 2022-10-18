@@ -656,6 +656,7 @@ const EditPembayaranPembelian = () => {
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
+                                    onChange={(e) => setKurs(e.target.value)}
                                 />
                             </div>
                         </div>

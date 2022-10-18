@@ -1469,8 +1469,8 @@ const EditTallySheet = () => {
                     </PageHeader>
                     {/* <h3 className="title fw-bold">Detail Tally Sheet</h3> */}
                 </div>
-                <div class="row">
-                    <div class="col">
+                <div className="row">
+                    <div className="col">
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
                             <div className="col-sm-7">
@@ -1556,7 +1556,7 @@ const EditTallySheet = () => {
                             </div>
                         </div>
                     </div>
-                    <div class="col">
+                    <div className="col">
                         <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Catatan</label>
                         <div className="row mb-3">
                             <div className="col-sm-10">

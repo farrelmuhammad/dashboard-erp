@@ -19,8 +19,8 @@ const columns = [
     align: 'center',
     render: (Qty) => (
       <>
-        <div class="col-xs-2">
-          <input class="form-control text-center" min={0} type="number"/>
+        <div className="col-xs-2">
+          <input className="form-control text-center" min={0} type="number"/>
         </div>
       </>
     ),

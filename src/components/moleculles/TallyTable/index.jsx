@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button, Input, Space, Table, Tag } from "antd";
-import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined,CloseOutlined , InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { useSelector } from "react-redux";
 
@@ -19,17 +19,65 @@ const TallyTable = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [code, setCode] = useState('');
   const auth = useSelector(state => state.auth);
+  const [supplierName, setSupplierName] = useState()
+  const [sumber, setSumber] = useState()
+  const [customer, setCustomer] = useState()
 
+  const deleteTallySheet = async (id, code) => {
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Data akan dihapus",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.delete(`${Url}/tally_sheets/${id}`, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${auth.token}`,
+          },
+        });
+        getTallySheet()
+        Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
 
-  const deleteTallySheet = async (id) => {
-    await axios.delete(`${Url}/tally_sheets/${id}`, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    });
-    getTallySheet()
-    Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+      }
+    })
+
+  };
+
+  const cancelTallySheet = async (id, code) => {
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Status data akan diubah ",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        try {
+          axios({
+            method: "patch",
+            url: `${Url}/tally_sheets/cancel/${id}`,
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          })
+
+          getTallySheet();
+          Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
+        }
+        catch (err) {
+          console.log(err);
+        }
+      }
+    })
+
   };
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -134,7 +182,7 @@ const TallyTable = () => {
 
   const getTallySheet = async (params = {}) => {
     setIsLoading(true);
-    await axios.get(`${Url}/tally_sheets`, {
+    await axios.get(`${Url}/tally_sheets?tipe=Sales`, {
       headers: {
         'Accept': 'application/json',
         'Authorization': `Bearer ${auth.token}`
@@ -143,6 +191,15 @@ const TallyTable = () => {
       .then(res => {
         const getData = res.data.data
         setGetDataTally(getData)
+        if(getData.supplier_id){
+          setSumber('Retur')
+
+        }
+        else{
+          setSumber('SO')
+
+
+        }
         // setCode(getData.code)
         // setStatus(getData.map(d => d.status))
         setIsLoading(false);
@@ -168,12 +225,22 @@ const TallyTable = () => {
       sortDirections: ['descend', 'ascend'],
     },
     {
-      title: 'Pemasok',
-      dataIndex: 'supplier',
+      title:'Pelanggan',
+      dataIndex: 'customer_name',
       width: '15%',
-      key: 'supplier',
-      ...getColumnSearchProps('supplier'),
-      // render: (supplier) => supplier.name
+      key: 'customer',
+      ...getColumnSearchProps('customer_name'),
+      // render: (customer) => customer.name
+      // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
+      // sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Supplier',
+      dataIndex:'supplier_name',
+      width: '15%',
+      key: 'customer',
+      ...getColumnSearchProps('supplier_name'),
+      // render: (customer) => customer.name
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
       // sortDirections: ['descend', 'ascend'],
     },
@@ -205,29 +272,53 @@ const TallyTable = () => {
       render: (_, record) => (
         <>
           <Space size="middle">
-            <Link to={`/tally/detail/${record.id}`}>
-              <Button
-                size='small'
-                type="primary"
-                icon={<InfoCircleOutlined />}
-              />
-            </Link>
-            <Link to={`/tally/edit/${record.id}`}>
-              <Button
-                size='small'
-                type="success"
-                icon={<EditOutlined />}
-              />
-            </Link>
-            <Button
-              size='small'
-              type="danger"
-              icon={<DeleteOutlined />}
-              onClick={() => deleteTallySheet(record.id)}
-            />
+            {record.can['read-tally_sheet'] ? (
+              <Link to={`/tally/detail/${record.id}`}>
+                <Button
+                  size='small'
+                  type="primary"
+                  icon={<InfoCircleOutlined />}
+                />
+              </Link>
+            ) : null}
+            {
+              record.can['cancel-tally_sheet'] ? (
+
+                <Button
+                  size='small'
+                  type="danger"
+                  icon={<CloseOutlined />}
+                  onClick={() => cancelTallySheet(record.id, record.code)}
+                />
+
+              ) : null
+            }
+            {
+              record.can['delete-tally_sheet'] ? (
+                <Space size="middle">
+                  <Button
+                    size='small'
+                    type="danger"
+                    icon={<DeleteOutlined />}
+                    onClick={() => deleteTallySheet(record.id, record.code)}
+                  />
+                </Space>
+              ) : null
+            }
+            {
+              record.can['update-tally_sheet'] ? (
+                <Link to={`/tally/edit/${record.id}`}>
+                  <Button
+                    size='small'
+                    type="success"
+                    icon={<EditOutlined />}
+                  />
+                </Link>
+              ) : null
+            }
           </Space>
         </>
-      ),
+      )
     },
   ];
   return <Table

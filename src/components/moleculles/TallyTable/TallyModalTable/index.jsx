@@ -34,21 +34,21 @@ const TallyModalTable = ({setOpenModal}) => {
                     <CTableDataCell scope="row">11</CTableDataCell>
                     <CTableDataCell>20</CTableDataCell>
                     <CTableDataCell>
-                        <button type="button" class="btn btn-success m-1">Edit</button>
+                        <button type="button" className="btn btn-success m-1">Edit</button>
                     </CTableDataCell>
                     </CTableRow>
                     <CTableRow>
                     <CTableDataCell scope="row">11</CTableDataCell>
                     <CTableDataCell>20</CTableDataCell>
                     <CTableDataCell>
-                        <button type="button" class="btn btn-success m-1">Edit</button>
+                        <button type="button" className="btn btn-success m-1">Edit</button>
                     </CTableDataCell>
                     </CTableRow>
                     <CTableRow>
                     <CTableDataCell scope="row">11</CTableDataCell>
                     <CTableDataCell>20</CTableDataCell>
                     <CTableDataCell>
-                        <button type="button" class="btn btn-success m-1">Edit</button>
+                        <button type="button" className="btn btn-success m-1">Edit</button>
                     </CTableDataCell>
                     </CTableRow>
                 </CTableBody>

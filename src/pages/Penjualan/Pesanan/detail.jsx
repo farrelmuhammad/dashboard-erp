@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import jsCookie from "js-cookie";
 import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
+import { BarsOutlined, DeleteOutlined, EditOutlined, LoadingOutlined, MinusOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons'
 import axios from 'axios';
 import Url from '../../../Config';
-import { Table, Tag } from 'antd';
+import { Table, Tag, Tooltip, Button } from 'antd';
 import { useSelector } from 'react-redux';
 import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
@@ -473,19 +474,30 @@ export const DetailPesanan = () => {
                             <PageHeader
                                 ghost={false}
                                 onBack={() => window.history.back()}
-                                title="Detail Pesanan">
+                                title="Detail Pesanan"
+                                extra={[
+                                    <Tooltip title="Cetak" placement="bottom">
+                                    <Button
+                                        type="primary"
+                                        icon={<PrinterOutlined />}
+                                        style={{ background: "orange", borderColor: "orange" }}
+                                        onClick={handlePrint}
+                                    />
+                                </Tooltip>,
+                                ]}
+                                >
                             </PageHeader>
                             {/* <h3 className="title fw-bold">Detail Pesanan</h3> */}
                         </div>
                     </div>
-                    <div className="col button-add text-end me-3">
-                        <button type="button" onClick={handlePrint} class="btn btn-warning rounded m-1">
+                    {/* <div className="col button-add text-end me-3">
+                        <button type="button" onClick={handlePrint} className="btn btn-warning rounded m-1">
                             Cetak
                         </button>
-                    </div>
+                    </div> */}
                 </div>
-                <div class="row">
-                    <div class="col">
+                <div className="row">
+                    <div className="col">
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
                             <div className="col-sm-7">
@@ -539,7 +551,7 @@ export const DetailPesanan = () => {
                             </div>
                         </div>
                     </div>
-                    <div class="col">
+                    <div className="col">
                         <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Catatan</label>
                         <div className="row mb-3">
                             <div className="col-sm-10">
@@ -565,14 +577,14 @@ export const DetailPesanan = () => {
             </form>
             <form className="p-3 mb-5 bg-body rounded">
                 <div className="text-title text-start mb-4">
-                    <div class="row">
-                        <div class="col">
+                    <div className="row">
+                        <div className="col">
                             <h4 className="title fw-normal">Cari Produk</h4>
                         </div>
-                        {/* <div class="col-sm-3 me-5">
-                            <div class="input-group">
-                                <input disabled="true" type="text" class="form-control" id="inlineFormInputGroupUsername" placeholder="Type..." />
-                                <div class="input-group-text">Search</div>
+                        {/* <div className="col-sm-3 me-5">
+                            <div className="input-group">
+                                <input disabled="true" type="text" className="form-control" id="inlineFormInputGroupUsername" placeholder="Type..." />
+                                <div className="input-group-text">Search</div>
                             </div>
                         </div> */}
                     </div>
@@ -587,91 +599,91 @@ export const DetailPesanan = () => {
                         size="middle"
                     />
                 </div>
-                <div class="row p-0">
-                    <div class="col ms-5">
-                        <div class="form-check">
+                <div className="row p-0">
+                    <div className="col ms-5">
+                        <div className="form-check">
                             {taxInclude === "1" ? <input
                                 disabled="true"
-                                class="form-check-input"
+                                className="form-check-input"
                                 type="checkbox"
                                 id="flexCheckDefault"
                                 value="1"
                                 checked
                             /> : <input
                                 disabled="true"
-                                class="form-check-input"
+                                className="form-check-input"
                                 type="checkbox"
                                 value="0"
                                 id="flexCheckDefault"
                             />}
                             {/* <input
                                 disabled="true"
-                                class="form-check-input"
+                                className="form-check-input"
                                 type="checkbox"
                                 value="1"
                                 id="flexCheckDefault"
                                 checked={taxInclude}
                             /> */}
-                            <label class="form-check-label" for="flexCheckDefault">
+                            <label className="form-check-label" for="flexCheckDefault">
                                 Harga Termasuk PPN
                             </label>
                         </div>
                     </div>
-                    <div class="col">
-                        <div class="row mb-3">
-                            <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>
-                            <div class="col-sm-6">
+                    <div className="col">
+                        <div className="row mb-3">
+                            <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>
+                            <div className="col-sm-6">
                                 {dataSO.map(d => (
                                     convertToRupiah(d.subtotal)
                                     // <input
                                     //     disabled="true"
                                     //     type="number"
-                                    //     class="form-control form-control-sm"
+                                    //     className="form-control form-control-sm"
                                     //     id="colFormLabelSm"
                                     //     value={d.total}
                                     // />
                                 ))}
                             </div>
                         </div>
-                        <div class="row mb-3">
-                            <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">Diskon</label>
-                            <div class="col-sm-6">
+                        <div className="row mb-3">
+                            <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Diskon</label>
+                            <div className="col-sm-6">
                                 {dataSO.map(d => (
                                     convertToRupiah(d.discount)
                                     // <input
                                     //     disabled="true"
                                     //     type="number"
-                                    //     class="form-control form-control-sm"
+                                    //     className="form-control form-control-sm"
                                     //     id="colFormLabelSm"
                                     //     value={d.discount}
                                     // />
                                 ))}
                             </div>
                         </div>
-                        <div class="row mb-3">
-                            <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">PPN</label>
-                            <div class="col-sm-6">
+                        <div className="row mb-3">
+                            <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">PPN</label>
+                            <div className="col-sm-6">
                                 {dataSO.map(d => (
                                     convertToRupiah(d.ppn)
                                     // <input
                                     //     disabled="true"
                                     //     type="number"
-                                    //     class="form-control form-control-sm"
+                                    //     className="form-control form-control-sm"
                                     //     id="colFormLabelSm"
                                     //     value={d.ppn}
                                     // />
                                 ))}
                             </div>
                         </div>
-                        <div class="row mb-3">
-                            <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">Total</label>
-                            <div class="col-sm-6">
+                        <div className="row mb-3">
+                            <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Total</label>
+                            <div className="col-sm-6">
                                 {dataSO.map(d => (
                                     convertToRupiah(d.total)
                                     // <input
                                     //     disabled="true"
                                     //     type="number"
-                                    //     class="form-control form-control-sm"
+                                    //     className="form-control form-control-sm"
                                     //     id="colFormLabelSm"
                                     //     value={d.total}
                                     // />

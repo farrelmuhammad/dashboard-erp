@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import 'antd/dist/antd.css';
-import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, InfoCircleOutlined,CloseOutlined , FileSyncOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Tag } from 'antd';
 import axios from 'axios';
 import Url from '../../../Config';
@@ -44,6 +44,70 @@ const FakturPembelianTable = () => {
       }
     })
   }
+
+  const cancelPurchaseOrder = async (id, code) => {
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Status data akan diubah ",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        try {
+          axios({
+            method: "patch",
+            url: `${Url}/purchase_invoices/cancel/id_faktur_pembelian=${id}`,
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          })
+
+          getFaktur();
+          Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
+        }
+        catch (err) {
+          console.log(err);
+        }
+      }
+    })
+
+  };
+
+  const ubahToDraft = async (id, code) => {
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Status data akan diubah ",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        try {
+          axios({
+            method: "patch",
+            url: `${Url}/purchase_invoices/submitted_to_draft?id_faktur_pembelian=${id}`,
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          })
+
+          getFaktur();
+          Swal.fire("Berhasil Diubah!", `${code} Menjadi Draft`, "success");
+        }
+        catch (err) {
+          console.log(err);
+        }
+      }
+    })
+
+  };
   
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -274,37 +338,62 @@ const FakturPembelianTable = () => {
       action:
       <>
           <Space size="middle">
-              {item.can['read-purchase_invoice'] ? (
-                  <Link to={`/fakturpembelian/detail/${item.id}`}>
-                      <Button
-                          size='small'
-                          type="primary"
-                          icon={<InfoCircleOutlined />}
-                      />
-                  </Link>
-              ) : null}
-              {
-                  item.can['update-purchase_invoice'] ? (
-                      <Link to={`/fakturpembelian/edit/${item.id}`}>
-                          <Button
-                              size='small'
-                              type="success"
-                              icon={<EditOutlined />}
-                          />
-                      </Link>
-                  ) : null
-              }
-              {
-                  item.can['delete-purchase_invoice'] ? (
-                          <Button
-                              size='small'
-                              type="danger"
-                              icon={<DeleteOutlined />}
-                              onClick={() => deletePurchaseFaktur(item.id, item.code)}
-                          />
-                  ) : null
-              }
-     
+            {item.can['read-purchase_invoice'] ? (
+              <Link to={`/fakturpembelian/detail/${item.id}`}>
+                <Button
+                  size='small'
+                  type="primary"
+                  icon={<InfoCircleOutlined />}
+                />
+              </Link>
+            ) : null}
+            {
+              item.can['cancel-purchase_invoice'] ? (
+
+                <Button
+                  size='small'
+                  type="danger"
+                  icon={<CloseOutlined />}
+                  onClick={() => cancelPurchaseOrder(item.id, item.code)}
+                />
+
+              ) : null
+            }
+            {
+              item.can['delete-purchase_invoice'] ? (
+                <Space size="middle">
+                  <Button
+                    size='small'
+                    type="danger"
+                    icon={<DeleteOutlined />}
+                    onClick={() => deletePurchaseFaktur(item.id, item.code)}
+                  />
+                </Space>
+              ) : null
+            }
+            {
+              item.can['update-purchase_invoice'] ? (
+                <Link to={`/fakturpembelian/edit/${item.id}`}>
+                  <Button
+                    size='small'
+                    type="success"
+                    icon={<EditOutlined />}
+                  />
+                </Link>
+              ) : null
+            }
+             {
+              item.can['submitted_to_draft-purchase_invoice'] ? (
+                <Space size="middle">
+                  <Button
+                    size='small'
+                    type="danger"
+                    icon={<FileSyncOutlined />}
+                    onClick={() => ubahToDraft(item.id, item.code)}
+                  />
+                </Space>
+              ) : null
+            }
           </Space>
       </>
 

@@ -435,10 +435,10 @@ const BuatPesananPembelian = () => {
             width: '20%',
             align: 'center',
             render: (text, record, index) => {
-                return <div class="input-group input-group-sm mb-3">
-                    <input style={{ width: "30px" }} type="text" class="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} value={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
+                return <div className="input-group input-group-sm mb-3">
+                    <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} value={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
                             <select
                                 onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
                                 id="grupSelect"
@@ -1047,12 +1047,12 @@ const BuatPesananPembelian = () => {
                     >
                         Submit
                     </button>
-                    <button
+                    {/* <button
                         type="button"
                         style={{ width: '100px' }}
                         className="btn btn-warning rounded m-1">
                         Cetak
-                    </button>
+                    </button> */}
                 </div>
                 <div style={{ clear: 'both' }}></div>
             </form>

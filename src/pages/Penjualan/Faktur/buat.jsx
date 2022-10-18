@@ -125,6 +125,9 @@ const BuatFaktur = () => {
     const [pilihanDiskon, setPilihanDiskon] = useState('');
     const [jumlahDiskon, setJumlahDiskon] = useState([]);
 
+    const [selectedSupplier, setSelectedSupplier] = useState()
+    const [sumber, setSumber] = useState('')
+
     useEffect(() => {
         const getProduct = async () => {
             const res = await axios.get(`${Url}/select_delivery_notes?nama_alias=${query}&pelanggan=${customer}&status=submitted`, {
@@ -444,7 +447,7 @@ const BuatFaktur = () => {
     const tableToRupiah = (angka, namaMataUang) => {
         return namaMataUang + ' ' + angka.toLocaleString('id');
     }
-    const [totalPerProduk, setTotalPerProduk] = useState([]);
+
     useEffect(() => {
         let totalPerProduk = 0;
         let grandTotal = 0;
@@ -523,46 +526,44 @@ const BuatFaktur = () => {
         },
         {
             title: 'Nama Produk Alias',
-            dataIndex: 'delivery_note_details',
-            render: (delivery_note_details) => delivery_note_details.map(d => d.product_alias_name)
-            // render(text, record) {
-            //     return {
-            //         props: {
-            //             style: { background: "#f5f5f5" }
-            //         },
-            //         children: <div>{text}</div>
-            //     };
-            // }
+            dataIndex: sumber == "SO" ? 'alias_name' : 'product_alias_name',
+            render(text, record) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: <div>{text}</div>
+                };
+            }
         },
         {
             title: 'Qty',
-            dataIndex: 'delivery_note_details',
+            dataIndex: 'quantity',
             width: '10%',
             align: 'center',
             editable: true,
-            render: (delivery_note_details) => delivery_note_details.map(d => d.quantity)
-            // render(text, record) {
-            //     return {
-            //         props: {
-            //         },
-            //         children: <div>{text}</div>
-            //     };
-            // }
+            render(text, record) {
+                return {
+                    props: {
+                    },
+                    // children: <div>{formatQuantity(text)}</div>
+                    children: <div>{text}</div>
+                };
+            }
         },
         {
             title: 'Stn',
-            dataIndex: 'delivery_note_details',
+            dataIndex: 'unit',
             width: '5%',
             align: 'center',
-            render: (delivery_note_details) => delivery_note_details.map(d => d.unit)
-            // render(text, record) {
-            //     return {
-            //         props: {
-            //             style: { background: "#f5f5f5" }
-            //         },
-            //         children: <div>{text}</div>
-            //     };
-            // }
+            render(text, record) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: <div>{text}</div>
+                };
+            }
         },
         {
             title: 'Harga',
@@ -574,7 +575,8 @@ const BuatFaktur = () => {
                 return {
                     props: {
                     },
-                    children: <div>Rp {text}</div>
+                    // children: <div>{formatRupiah(text)}</div>
+                    children: <div>{text}</div>
                 };
             }
         },
@@ -614,10 +616,10 @@ const BuatFaktur = () => {
             width: '20%',
             align: 'center',
             render: (text, record, index) => {
-                return <div class="input-group input-group-sm mb-3">
-                    <input style={{ width: "30px" }} type="text" class="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} defaultValue={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px", height: "35px" }}>
+                return <div className="input-group input-group-sm mb-3">
+                    <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} defaultValue={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px", height: "35px" }}>
                             <select
                                 onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
                                 id="grupSelect"
@@ -693,6 +695,12 @@ const BuatFaktur = () => {
                 }
         },
     ];
+
+    // const dataSuratJalan = [
+    //     ...product.delivery_note_details.map((item, i) => ({
+    //         product_alias_name: item.product_alias_name,
+    //     }))
+    // ]
 
     const handleChange = () => {
         setChecked(!checked);
@@ -798,11 +806,51 @@ const BuatFaktur = () => {
     const handleCheck = (event) => {
         console.log(event.target.checked)
         var updatedList = [...product];
+        let tmpData = [];
         if (event.target.checked) {
             updatedList = [...product, event.target.value];
+            if (sumber == "SO") {
+                for (let i = 0; i < updatedList.length; i++) {
+                    tmpData.push(
+                        {
+                            alias_name: updatedList[i].alias_name,
+                            quantity: updatedList[i].quantity,
+                            price: updatedList[i].price,
+                            discount_percentage: updatedList[i].discount_percentage,
+                            fixed_discount: updatedList[i].fixed_discount,
+                            subtotal: updatedList[i].subtotal,
+                            pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+                            unit: updatedList[i].unit,
+                            total: updatedList[i].total
+                        }
+                    )
+                }
+            } else if (sumber == "Surat") {
+                let tmpDataDetails = [];
+                for (let i = 0; i < updatedList.length; i++) {
+                    for (let j = 0; j < updatedList[i].delivery_note_details.length; j++) {
+                        tmpDataDetails.push(
+                            {
+                                product_alias_name: updatedList[i].product_alias_name,
+                                quantity: updatedList[i].quantity,
+                                price: updatedList[i].price,
+                                discount_percentage: updatedList[i].discount_percentage,
+                                fixed_discount: updatedList[i].fixed_discount,
+                                subtotal: updatedList[i].subtotal,
+                                pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+                                unit: updatedList[i].unit,
+                                total: updatedList[i].total
+                            }
+                        )
+                    }
+                    tmpData.push(tmpDataDetails)
+                }
+            }
+            console.log(updatedList);
         } else {
             updatedList.splice(product.indexOf(event.target.value), 1);
         }
+        console.log(updatedList);
         setProduct(updatedList);
         console.log(updatedList);
         let tmp = [];
@@ -961,6 +1009,13 @@ const BuatFaktur = () => {
         }
     ]
 
+    function klikUbahSumber(value) {
+        setSumber(value);
+        setProduct([])
+        setSelectedSupplier('');
+        setSelectedCustomer('')
+    }
+
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
         setCustomer(value.id);
@@ -1009,18 +1064,21 @@ const BuatFaktur = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pilih Transaksi</label>
                             <div className="col-sm-7">
-                                <AsyncSelect
-                                    placeholder="Pilih Penerima..."
-                                    cacheOptions
-                                    defaultOptions
-                                    value={selectedValue}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsCustomer}
-                                    onChange={handleChangeCustomer}
-                                />
+                                <select
+                                    onChange={(e) => klikUbahSumber(e.target.value)}
+                                    id="grupSelect"
+                                    className="form-select"
+                                >
+                                    <option value="">Pilih Transaksi</option>
+                                    <option value="SO">
+                                        Penjualan
+                                    </option>
+                                    <option value="Surat" >
+                                        Surat Jalan
+                                    </option>
+                                </select>
                             </div>
                         </div>
                         <div className="row mb-3">
@@ -1042,6 +1100,21 @@ const BuatFaktur = () => {
                     </div>
                     <div className="col">
                         <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
+                            <div className="col-sm-7">
+                                <AsyncSelect
+                                    placeholder="Pilih Penerima..."
+                                    cacheOptions
+                                    defaultOptions
+                                    value={selectedValue}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsCustomer}
+                                    onChange={handleChangeCustomer}
+                                />
+                            </div>
+                        </div>
+                        <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Alamat</label>
                             <div className="col-sm-7">
                                 <ReactSelect
@@ -1062,7 +1135,7 @@ const BuatFaktur = () => {
                             <textarea
                                 className="form-control"
                                 id="form4Example3"
-                                rows="4"
+                                rows="2"
                                 onChange={(e) => setDescription(e.target.value)}
                             />
                         </div>
@@ -1080,77 +1153,65 @@ const BuatFaktur = () => {
 
             <PageHeader
                 ghost={false}
-                title="Daftar Pesanan"
+                title={sumber == 'SO' ? "Daftar Pesanan" : "Daftar Surat Jalan"}
                 extra={[
                     <Button
                         type="primary"
                         icon={<PlusOutlined />}
-                        onClick={() => setModal2Visible(true)}
+                        onClick={() => {
+                            if (sumber == '') {
+                                Swal.fire("Gagal", "Mohon Pilih Transaksi Dahulu..", "error");
+                            }
+                            else {
+                                setModal2Visible(true)
+                            }
+                        }}
                     />,
                     <Modal
-                        title="Tambah Produk"
+                        title={sumber == 'SO' ? "Tambah Pesanan" : "Tambah Surat Jalan"}
                         centered
                         visible={modal2Visible}
                         onCancel={() => setModal2Visible(false)}
                         width={800}
-                        // footer={[
-                        //     <Button
-                        //         key="submit"
-                        //         type="primary"
-
-                        //     >
-                        //         Tambah
-                        //     </Button>,
-                        // ]}
                         footer={null}
                     >
                         <div className="text-title text-start">
                             <div className="row">
                                 <div className="col mb-3">
                                     <Search
-                                        placeholder="Cari Produk..."
+                                        placeholder={sumber == 'SO' ? "Cari Pesanan..." : "Cari Surat Jalan..."}
                                         style={{
                                             width: 400,
                                         }}
                                         onChange={(e) => setQuery(e.target.value.toLowerCase())}
                                     />
                                 </div>
-                                <Tabs
-                                    // onChange={onChange}
-                                    type="card"
-                                >
-                                    <Tabs.TabPane tab="Surat Jalan" key="1">
-                                        <Table
-                                            columns={columnsModal}
-                                            dataSource={getDataProduct}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
-                                    </Tabs.TabPane>
-                                    <Tabs.TabPane tab="Pesanan" key="2">
-                                        <Table
-                                            columns={columnsModal2}
-                                            dataSource={getDataProduct2}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
-                                    </Tabs.TabPane>
-                                </Tabs>
-
+                                {sumber == 'SO' ? <Table
+                                    columns={columnsModal2}
+                                    dataSource={getDataProduct2}
+                                    scroll={{
+                                        y: 250,
+                                    }}
+                                    pagination={false}
+                                    loading={isLoading}
+                                    size="middle"
+                                /> : <Table
+                                    columns={columnsModal}
+                                    dataSource={getDataProduct}
+                                    scroll={{
+                                        y: 250,
+                                    }}
+                                    pagination={false}
+                                    loading={isLoading}
+                                    size="middle"
+                                />
+                                }
                             </div>
                         </div>
                     </Modal>,
                 ]}
             >
-                <Table
+                {sumber == 'SO' ? <Table
                     components={components}
                     rowClassName={() => 'editable-row'}
                     bordered
@@ -1158,7 +1219,15 @@ const BuatFaktur = () => {
                     dataSource={product}
                     columns={columns}
                     onChange={(e) => setProduct(e.target.value)}
-                />
+                /> : <Table
+                    components={components}
+                    rowClassName={() => 'editable-row'}
+                    bordered
+                    pagination={false}
+                    dataSource={product}
+                    columns={columns}
+                    onChange={(e) => setProduct(e.target.value)}
+                />}
                 <div className="row p-0 mt-3">
                     <div className="col ms-5">
                         <div className="form-check">

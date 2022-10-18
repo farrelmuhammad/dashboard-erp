@@ -576,8 +576,8 @@ const BuatFakturPembelian = () => {
             disc:
                 data[i].pilihanDiskon == 'noDisc' ?
                     <div className='d-flex p-1' style={{ height: "100%" }}>
-                        <input onKeyDown={(event) => klikEnter(event)} style={{ width: "70%", fontSize: "10px!important" }} type="text" class="text-center editable-input" defaultValue={data[i].discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} />
-                        <div class="input-group-prepend"  >
+                        <input onKeyDown={(event) => klikEnter(event)} style={{ width: "70%", fontSize: "10px!important" }} type="text" className="text-center editable-input" defaultValue={data[i].discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} />
+                        <div className="input-group-prepend"  >
                             <select
                                 onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
                                 id="grupSelect"
@@ -595,7 +595,7 @@ const BuatFakturPembelian = () => {
                     data[i].pilihanDiskon == 'persen' ?
                         <div className='d-flex p-1' style={{ height: "100%" }} >
                             <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={data[i].discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
-                            <div class="input-group-prepend" >
+                            <div className="input-group-prepend" >
                                 <select
                                     onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
                                     id="grupSelect"
@@ -615,7 +615,7 @@ const BuatFakturPembelian = () => {
                             <div className='d-flex p-1' style={{ height: "100%" }}>
                                 <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={data[i].fixed_discount} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
 
-                                <div class="input-group-prepend" >
+                                <div className="input-group-prepend" >
                                     <select
                                         onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
                                         id="grupSelect"
