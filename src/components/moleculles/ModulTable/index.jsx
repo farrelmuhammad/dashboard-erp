@@ -22,9 +22,9 @@ const ModulTable = () => {
                     <CTableDataCell>Mark</CTableDataCell>
                     <CTableDataCell>Otto</CTableDataCell>
                     <CTableDataCell>
-                        <button type="button" class="btn btn-warning">Lihat</button>
-                        <button type="button" class="btn btn-success m-1">Edit</button>
-                        <button type="button" class="btn btn-danger">Delete</button>
+                        <button type="button" className="btn btn-warning">Lihat</button>
+                        <button type="button" className="btn btn-success m-1">Edit</button>
+                        <button type="button" className="btn btn-danger">Delete</button>
                     </CTableDataCell>
                     </CTableRow>
                     <CTableRow>
@@ -32,27 +32,27 @@ const ModulTable = () => {
                     <CTableDataCell>Jacob</CTableDataCell>
                     <CTableDataCell>Thornton</CTableDataCell>
                     <CTableDataCell>
-                        <button type="button" class="btn btn-warning">Lihat</button>
-                        <button type="button" class="btn btn-success m-1">Edit</button>
-                        <button type="button" class="btn btn-danger">Delete</button>
+                        <button type="button" className="btn btn-warning">Lihat</button>
+                        <button type="button" className="btn btn-success m-1">Edit</button>
+                        <button type="button" className="btn btn-danger">Delete</button>
                     </CTableDataCell>
                     </CTableRow>
                     <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan="2">Larry the Bird</CTableDataCell>
                     <CTableDataCell>
-                        <button type="button" class="btn btn-warning">Lihat</button>
-                        <button type="button" class="btn btn-success m-1">Edit</button>
-                        <button type="button" class="btn btn-danger">Delete</button>
+                        <button type="button" className="btn btn-warning">Lihat</button>
+                        <button type="button" className="btn btn-success m-1">Edit</button>
+                        <button type="button" className="btn btn-danger">Delete</button>
                     </CTableDataCell>
                     </CTableRow>
                     <CTableRow>
                     <CTableHeaderCell scope="row">3</CTableHeaderCell>
                     <CTableDataCell colSpan="2">Larry the Bird</CTableDataCell>
                     <CTableDataCell>
-                        <button type="button" class="btn btn-warning">Lihat</button>
-                        <button type="button" class="btn btn-success m-1">Edit</button>
-                        <button type="button" class="btn btn-danger">Delete</button>
+                        <button type="button" className="btn btn-warning">Lihat</button>
+                        <button type="button" className="btn btn-success m-1">Edit</button>
+                        <button type="button" className="btn btn-danger">Delete</button>
                     </CTableDataCell>
                     </CTableRow>
                 </CTableBody>

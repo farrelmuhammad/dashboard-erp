@@ -414,6 +414,7 @@ export const DetailPenerimaanBarang = () => {
 
 
             <form className="  p-3 mb-5 bg-body rounded">
+<<<<<<< HEAD
             <div className='row'>
                 <div className="col text-title text-start">
                 <PageHeader
@@ -442,6 +443,25 @@ export const DetailPenerimaanBarang = () => {
             </div>
                 <div class="row">
                     <div class="col">
+=======
+                <div className='row'>
+                    <div className="col text-title text-start">
+                        <PageHeader
+                            ghost={false}
+                            onBack={() => window.history.back()}
+                            title="Detail Penerimaan Barang">
+                        </PageHeader>
+                        {/* <h3 className="title fw-bold">Buat Penerimaan Barang</h3> */}
+                    </div>
+                    <div className="col button-add text-end me-3">
+                        <button type="button" onClick={handlePrint} className="btn btn-warning rounded m-1">
+                            Cetak
+                        </button>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col">
+>>>>>>> 465ad4cfbc90281dedbe545d0ec3413b1ebd2954
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
                             <div className="col-sm-7">
@@ -467,7 +487,7 @@ export const DetailPenerimaanBarang = () => {
                             </div>
                         </div> */}
                     </div>
-                    <div class="col">
+                    <div className="col">
                         <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Catatan</label>
                         <div className="row mb-3">
                             <div className="col-sm-10">

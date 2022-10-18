@@ -115,7 +115,6 @@ const EditFakturPembelian = () => {
 
                 // setting dat aakun 
                 let tmpAkun = []
-                let listPenerimaanBarang = getData.goods_receipts
                 let listAkun = getData.purchase_invoice_costs;
                 let totalCOA = 0
                 console.log(listAkun)
@@ -183,10 +182,22 @@ const EditFakturPembelian = () => {
                 console.log(getData.goods_receipts)
 
                 // setting id penerimaan barang 
+                let listPenerimaanBarang = []
+                if (getData.goods_receipts.length != 0) {
+                    listPenerimaanBarang = getData.goods_receipts
+                }
+                else {
+                    listPenerimaanBarang = getData.purchase_orders
+
+                }
+
                 for (let i = 0; i < listPenerimaanBarang.length; i++) {
                     tmpTandaTerima.push(listPenerimaanBarang[i].id)
                 }
+                console.log(tmpTandaTerima)
                 setIdTandaTerima(tmpTandaTerima)
+
+
 
                 if (getData.purchase_invoice_details[0].currency_name) {
 
@@ -842,8 +853,8 @@ const EditFakturPembelian = () => {
             disc:
                 item.pilihanDiskon == 'noDisc' ?
                     <div className='d-flex p-1' style={{ height: "100%" }}>
-                        <input onKeyDown={(event) => klikEnter(event)} style={{ width: "70%", fontSize: "10px!important" }} type="text" class="text-center editable-input" defaultValue={item.discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} />
-                        <div class="input-group-prepend"  >
+                        <input onKeyDown={(event) => klikEnter(event)} style={{ width: "70%", fontSize: "10px!important" }} type="text" className="text-center editable-input" defaultValue={item.discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} />
+                        <div className="input-group-prepend"  >
                             <select
                                 onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
                                 id="grupSelect"
@@ -861,7 +872,7 @@ const EditFakturPembelian = () => {
                     item.pilihanDiskon == 'persen' ?
                         <div className='d-flex p-1' style={{ height: "100%" }} >
                             <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
-                            <div class="input-group-prepend" >
+                            <div className="input-group-prepend" >
                                 <select
                                     onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
                                     id="grupSelect"
@@ -881,7 +892,7 @@ const EditFakturPembelian = () => {
                             <div className='d-flex p-1' style={{ height: "100%" }}>
                                 <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.fixed_discount} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
 
-                                <div class="input-group-prepend" >
+                                <div className="input-group-prepend" >
                                     <select
                                         onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
                                         id="grupSelect"
@@ -1462,6 +1473,8 @@ const EditFakturPembelian = () => {
         formData.append("pemasok", dataHeader.supplier_id);
         formData.append("catatan", dataHeader.notes);
         formData.append("ppn", totalPpn);
+        formData.append("muatan", dataHeader.payload);
+        formData.append("karton", dataHeader.carton);
         // formData.append("term", term);
         formData.append("uang_muka", uangMuka);
         formData.append("tanggal_jatuh_tempo", dataHeader.due_date);
@@ -1481,6 +1494,7 @@ const EditFakturPembelian = () => {
                 formData.append("id_pesanan_pembelian[]", idTandaTerima[y]);
             }
         }
+
         for (let x = 0; x < data.length; x++) {
 
             // formData.append("nama_alias_produk[]", data[x][y].nama);
@@ -1542,7 +1556,10 @@ const EditFakturPembelian = () => {
         formData.append("tanggal", dataHeader.date);
         formData.append("pemasok", dataHeader.supplier_id);
         formData.append("catatan", dataHeader.notes);
+        formData.append("muatan", dataHeader.payload);
+        formData.append("karton", dataHeader.carton);
         formData.append("ppn", totalPpn);
+
         // formData.append("term", term);
         formData.append("uang_muka", uangMuka);
         formData.append("tanggal_jatuh_tempo", dataHeader.due_date);
@@ -1551,6 +1568,7 @@ const EditFakturPembelian = () => {
         formData.append("id_faktur_pembelian", id);
 
         console.log(idTandaTerima)
+        console.log(grup)
 
         // for (let y = 0; y < idTandaTerima.length; y++) {
 
@@ -1753,7 +1771,7 @@ const EditFakturPembelian = () => {
                                     id="startDate"
                                     className="form-control"
                                     type="text"
-                                    value="sds"
+                                    defaultValue={dataHeader.carton}
                                     disabled
                                 />
                             </div>

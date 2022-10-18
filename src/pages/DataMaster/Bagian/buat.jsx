@@ -186,7 +186,7 @@ const BuatBagian = () => {
             </label>
             <div className="col-sm-10">
               <textarea
-                class="form-control"
+                className="form-control"
                 id="form4Example3"
                 rows="4"
                 onChange={(e) => setDescription(e.target.value)}

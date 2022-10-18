@@ -19,7 +19,9 @@ const TallyTable = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [code, setCode] = useState('');
   const auth = useSelector(state => state.auth);
-
+  const [supplierName, setSupplierName] = useState()
+  const [sumber, setSumber] = useState()
+  const [customer, setCustomer] = useState()
 
   const deleteTallySheet = async (id, code) => {
     Swal.fire({
@@ -180,7 +182,7 @@ const TallyTable = () => {
 
   const getTallySheet = async (params = {}) => {
     setIsLoading(true);
-    await axios.get(`${Url}/tally_sheets`, {
+    await axios.get(`${Url}/tally_sheets?tipe=Sales`, {
       headers: {
         'Accept': 'application/json',
         'Authorization': `Bearer ${auth.token}`
@@ -189,6 +191,15 @@ const TallyTable = () => {
       .then(res => {
         const getData = res.data.data
         setGetDataTally(getData)
+        if(getData.supplier_id){
+          setSumber('Retur')
+
+        }
+        else{
+          setSumber('SO')
+
+
+        }
         // setCode(getData.code)
         // setStatus(getData.map(d => d.status))
         setIsLoading(false);
@@ -214,12 +225,22 @@ const TallyTable = () => {
       sortDirections: ['descend', 'ascend'],
     },
     {
-      title: 'Pelanggan',
-      dataIndex: 'customer',
+      title:'Pelanggan',
+      dataIndex: 'customer_name',
       width: '15%',
       key: 'customer',
-      ...getColumnSearchProps('customer'),
-      render: (customer) => customer.name
+      ...getColumnSearchProps('customer_name'),
+      // render: (customer) => customer.name
+      // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
+      // sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Supplier',
+      dataIndex:'supplier_name',
+      width: '15%',
+      key: 'customer',
+      ...getColumnSearchProps('supplier_name'),
+      // render: (customer) => customer.name
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
       // sortDirections: ['descend', 'ascend'],
     },
