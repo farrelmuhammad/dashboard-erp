@@ -197,7 +197,7 @@ const EditGoodsRequest = () => {
 
     // load options using API call
     const loadOptionsWarehouse = (inputValue) => {
-        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}`, {
+        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}&tipe=internal`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -230,6 +230,10 @@ const EditGoodsRequest = () => {
             dataIndex: 'qty',
             width: '15%',
             align: 'center',
+            render: (text) => {
+                return <>{text.toString().replace('.', ',')}</>
+
+            }
         },
         {
             title: 'actions',
@@ -270,6 +274,10 @@ const EditGoodsRequest = () => {
             width: '30%',
             align: 'center',
             editable: true,
+            render: (text) => {
+                return <>{text.toString().replace('.', ',')}</>
+
+            }
         },
         {
             title: 'Satuan',
@@ -483,26 +491,26 @@ const EditGoodsRequest = () => {
                 <div className="p-3 mb-3">
                     <div className="card" style={cardOutline}>
                         <div className="card-header bg-white">
-                            <h6 className="title fw-bold">Buat Permintaan Barang</h6>
+                            <h6 className="title fw-bold">Edit Permintaan Barang</h6>
                         </div>
                         <div className="card-body">
                             <div className="row">
                                 <div className="col-md-6">
                                     <div className="form-group row mb-1">
-                                        <label for="code" className="col-sm-2 col-form-label">No</label>
-                                        <div className="col-sm-10">
+                                        <label for="code" className="col-sm-4 col-form-label">No</label>
+                                        <div className="col-sm-8">
                                             <input type="text" className="form-control" id="code" defaultValue={code} name="code" placeholder="Otomatis" readOnly />
                                         </div>
                                     </div>
                                     <div className="form-group row mb-1">
-                                        <label for="date" className="col-sm-2 col-form-label">Tanggal</label>
-                                        <div className="col-sm-10">
+                                        <label for="date" className="col-sm-4 col-form-label">Tanggal</label>
+                                        <div className="col-sm-8">
                                             <input type="date" className="form-control" id="date" name="date" defaultValue={date} onChange={(e) => setDate(e.target.value)} />
                                         </div>
                                     </div>
                                     <div className="form-group row mb-1">
-                                        <label for="type" className="col-sm-2 col-form-label">Tipe</label>
-                                        <div className="col-sm-10">
+                                        <label for="type" className="col-sm-4 col-form-label">Tipe</label>
+                                        <div className="col-sm-8">
                                             <select onChange={e => setType(e.target.value)} id="type" name="type" className="form-select">
                                                 <option>Pilih Tipe</option>
                                                 <option value="send" selected={type === "send"}>Kirim</option>
@@ -510,8 +518,8 @@ const EditGoodsRequest = () => {
                                         </div>
                                     </div>
                                     <div className="form-group row mb-1">
-                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Gudang Asal</label>
-                                        <div className="col-sm-10">
+                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Asal</label>
+                                        <div className="col-sm-8">
                                             <AsyncSelect
                                                 placeholder="Pilih Gudang Asal..."
                                                 cacheOptions
@@ -528,8 +536,8 @@ const EditGoodsRequest = () => {
                                 </div>
                                 <div className="col-md-6">
                                     <div className="form-group row mb-1">
-                                        <label for="notes" className="col-sm-2 col-form-label">Catatan</label>
-                                        <div className="col-sm-10">
+                                        <label for="notes" className="col-sm-4 col-form-label">Catatan</label>
+                                        <div className="col-sm-8">
                                             <textarea
                                                 className="form-control"
                                                 name="notes" id="notes"
@@ -540,16 +548,16 @@ const EditGoodsRequest = () => {
                                         </div>
                                     </div>
                                     <div className="form-group row mb-1">
-                                        <label for="adjustment_status" className="col-sm-2 col-form-label">Status</label>
-                                        <div className="col-sm-10">
+                                        <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
+                                        <div className="col-sm-8">
                                             <h3 className="badge bg-danger text-center m-1">
                                                 Draft
                                             </h3>
                                         </div>
                                     </div>
                                     <div className="form-group row mb-1">
-                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Gudang Tujuan</label>
-                                        <div className="col-sm-10">
+                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Tujuan</label>
+                                        <div className="col-sm-8">
                                             <AsyncSelect
                                                 placeholder="Pilih Gudang Tujuan..."
                                                 cacheOptions
