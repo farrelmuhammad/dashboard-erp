@@ -133,15 +133,21 @@ const BuatPembayaranPembelian = () => {
         let tmp = []
         let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
         // setting data baru 
+        let hasilSisa = Number(product[index].sisaNoEdit);
+
         for (let i = 0; i < product.length; i++) {
+            console.log(hasil)
             if (i == index) {
                 tmp.push({
                     code: product[i].code,
                     total: product[i].total,
-                    sisa: product[i].total - hasil,
+                    sisa: hasilSisa - hasil,
+                    sisaNoEdit: product[i].sisaNoEdit,
                     bayar: hasil,
                     idFaktur: product[i].idFaktur
                 })
+                // console.log(hasil)
+                // console.log(Number(product[i].sisa))
 
             }
             else {
@@ -242,6 +248,7 @@ const BuatPembayaranPembelian = () => {
                     code: data.code,
                     total: data.total_payment,
                     sisa: data.remains,
+                    sisaNoEdit: data.remains,
                     bayar: 0,
                     idFaktur: data.id
                 })
@@ -251,8 +258,9 @@ const BuatPembayaranPembelian = () => {
                     if (updatedList.length == i) {
                         tmp.push({
                             code: data.code,
-                            total: data.total,
-                            sisa: 0,
+                            total: data.total_payment,
+                            sisa: data.remains,
+                            sisaNoEdit: data.remains,
                             bayar: 0,
                             idFaktur: data.id
                         })
