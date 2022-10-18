@@ -33,7 +33,7 @@ const TallyTransferTable = () => {
       confirmButtonText: 'Ya'
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`${Url}/tally_sheet_ins/${id}`, {
+        axios.delete(`${Url}/tally_sheet_tf/${id}`, {
           headers: {
             Accept: "application/json",
             Authorization: `Bearer ${auth.token}`,
@@ -61,7 +61,7 @@ const TallyTransferTable = () => {
         try {
           axios({
             method: "patch",
-            url: `${Url}/tally_sheet_ins/cancel/${id}`,
+            url: `${Url}/tally_sheet_tf/cancel/${id}`,
             headers: {
               Accept: "application/json",
               Authorization: `Bearer ${auth.token}`,
@@ -181,7 +181,7 @@ const TallyTransferTable = () => {
 
   const getTallySheet = async (params = {}) => {
     setIsLoading(true);
-    await axios.get(`${Url}/tally_sheet_ins`, {
+    await axios.get(`${Url}/tally_sheet_tf`, {
       headers: {
         'Accept': 'application/json',
         'Authorization': `Bearer ${auth.token}`
@@ -214,15 +214,15 @@ const TallyTransferTable = () => {
       sorter: true,
       sortDirections: ['descend', 'ascend'],
     },
-    {
-      title: 'Supplier',
-      dataIndex: 'supplier_name',
-      key: 'supplier_name',
-      width: '20%',
-      ...getColumnSearchProps('supplier_name'),
-      // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
-      // sortDirections: ['descend', 'ascend'],
-    },
+    // {
+    //   title: 'Supplier',
+    //   dataIndex: 'supplier_name',
+    //   key: 'supplier_name',
+    //   width: '20%',
+    //   ...getColumnSearchProps('supplier_name'),
+    //   // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
+    //   // sortDirections: ['descend', 'ascend'],
+    // },
     {
       title: 'Gudang',
       dataIndex: 'warehouse_name',
