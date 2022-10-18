@@ -162,7 +162,9 @@ const TallyTable = () => {
     //   searchedColumn === dataIndex ? (
     //     <Highlighter
     //       highlightStyle={{
-    //         backgroundColor: '#ffc069',
+    //         backgroundColor: '#ffc069', 
+
+
     //         padding: 0,
     //       }}
     //       searchWords={[searchText]}
@@ -219,7 +221,7 @@ const TallyTable = () => {
       width: '15%',
       key: 'customer',
       ...getColumnSearchProps('customer'),
-      render: (supplier) => supplier.name
+      render: (customer) => customer.name
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
       // sortDirections: ['descend', 'ascend'],
     },
