@@ -949,8 +949,8 @@ const EditTallySheet = () => {
                     </PageHeader>
                     {/* <h3 className="title fw-bold">Detail Tally Sheet</h3> */}
                 </div>
-                <div class="row">
-                    <div class="col">
+                <div className="row">
+                    <div className="col">
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
                             <div className="col-sm-7">
@@ -977,7 +977,7 @@ const EditTallySheet = () => {
                             </div>
                         </div>
                     </div>
-                    <div class="col">
+                    <div className="col">
                         <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Catatan</label>
                         <div className="row mb-3">
                             <div className="col-sm-10">
@@ -1097,59 +1097,59 @@ const EditTallySheet = () => {
             </form>
             {/* <form className="  p-3 mb-5 bg-body rounded">
                 <div className="text-title text-start mb-4">
-                    <div class="row">
-                        <div class="col">
+                    <div className="row">
+                        <div className="col">
                             <h4 className="title fw-normal">Cari Produk</h4>
                         </div>
-                        <div class="col-sm-3 me-5">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="inlineFormInputGroupUsername" placeholder="Type..."/>
-                            <div class="input-group-text">Search</div>
+                        <div className="col-sm-3 me-5">
+                        <div className="input-group">
+                            <input type="text" className="form-control" id="inlineFormInputGroupUsername" placeholder="Type..."/>
+                            <div className="input-group-text">Search</div>
                         </div>
                         </div>
                     </div>
                 <ProdukPesananTable />
                 </div>
-            <div class="row p-0">
-                <div class="col ms-5">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"/>
-                        <label class="form-check-label" for="flexCheckDefault">
+            <div className="row p-0">
+                <div className="col ms-5">
+                    <div className="form-check">
+                        <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault"/>
+                        <label className="form-check-label" for="flexCheckDefault">
                             Harga Termasuk Pajak
                         </label>
                     </div>
                 </div>
-                <div class="col">
-                    <div class="row mb-3">
-                        <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>
-                        <div class="col-sm-6">
-                            <input type="email" class="form-control form-control-sm" id="colFormLabelSm"/>
+                <div className="col">
+                    <div className="row mb-3">
+                        <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>
+                        <div className="col-sm-6">
+                            <input type="email" className="form-control form-control-sm" id="colFormLabelSm"/>
                         </div>
                     </div>
-                    <div class="row mb-3">
-                        <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">Diskon</label>
-                        <div class="col-sm-6">
-                            <input type="email" class="form-control form-control-sm" id="colFormLabelSm"/>
+                    <div className="row mb-3">
+                        <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Diskon</label>
+                        <div className="col-sm-6">
+                            <input type="email" className="form-control form-control-sm" id="colFormLabelSm"/>
                         </div>
                     </div>
-                    <div class="row mb-3">
-                        <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">PPN</label>
-                        <div class="col-sm-6">
-                            <input type="email" class="form-control form-control-sm" id="colFormLabelSm"/>
+                    <div className="row mb-3">
+                        <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">PPN</label>
+                        <div className="col-sm-6">
+                            <input type="email" className="form-control form-control-sm" id="colFormLabelSm"/>
                         </div>
                     </div>
-                    <div class="row mb-3">
-                        <label for="colFormLabelSm" class="col-sm-2 col-form-label col-form-label-sm">Total</label>
-                        <div class="col-sm-6">
-                            <input type="email" class="form-control form-control-sm" id="colFormLabelSm"/>
+                    <div className="row mb-3">
+                        <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Total</label>
+                        <div className="col-sm-6">
+                            <input type="email" className="form-control form-control-sm" id="colFormLabelSm"/>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                <button type="button" class="btn btn-success rounded m-1">Simpan</button>
-                <button type="button" class="btn btn-primary rounded m-1">Submit</button>
-                <button type="button" class="btn btn-warning rounded m-1">Cetak</button>
+            <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                <button type="button" className="btn btn-success rounded m-1">Simpan</button>
+                <button type="button" className="btn btn-primary rounded m-1">Submit</button>
+                <button type="button" className="btn btn-warning rounded m-1">Cetak</button>
             </div>
             </form> */}
         </>

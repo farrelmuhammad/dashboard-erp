@@ -569,10 +569,10 @@ const BuatPesanan = () => {
             width: '20%',
             align: 'center',
             render: (text, record, index) => {
-                return <div class="input-group input-group-sm mb-3">
-                    <input style={{ width: "30px" }} type="text" class="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} defaultValue={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px", height: "35px" }}>
+                return <div className="input-group input-group-sm mb-3">
+                    <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} defaultValue={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
+                    <div className="input-group-prepend">
+                        <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px", height: "35px" }}>
                             <select
                                 onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
                                 id="grupSelect"

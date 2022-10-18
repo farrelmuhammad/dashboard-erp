@@ -43,7 +43,7 @@ export const DetailGrup = () => {
                     <div className="col-sm-10">
                         <textarea
                             disabled="true"
-                            class="form-control"
+                            className="form-control"
                             id="form4Example3"
                             rows="4"
                         />

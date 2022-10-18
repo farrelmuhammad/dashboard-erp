@@ -182,13 +182,13 @@ const DetailSupplier = () => {
                 {data?.map((d) => {
                 if (d.status === "Active") {
                   return (
-                    <button type="button" class="btn btn-primary pe-none">
+                    <button type="button" className="btn btn-primary pe-none">
                       {d.status}
                     </button>
                   );
                 } else {
                   return (
-                    <button type="button" class="btn btn-danger pe-none">
+                    <button type="button" className="btn btn-danger pe-none">
                       {d.status}
                     </button>
                   );

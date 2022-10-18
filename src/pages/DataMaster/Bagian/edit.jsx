@@ -188,7 +188,7 @@ const EditBagian = () => {
             <div className="col-sm-10">
               {/* {data?.map((d, index) => ( */}
                 <textarea
-                  class="form-control"
+                  className="form-control"
                   id="form4Example3"
                   rows="4"
                   value={description}

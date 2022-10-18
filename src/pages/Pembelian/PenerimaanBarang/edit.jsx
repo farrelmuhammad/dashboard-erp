@@ -498,8 +498,8 @@ const EditPenerimaanBarang = () => {
                     </PageHeader>
                     {/* <h3 className="title fw-bold">Buat Penerimaan Barang</h3> */}
                 </div>
-                <div class="row">
-                    <div class="col">
+                <div className="row">
+                    <div className="col">
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
                             <div className="col-sm-7">
@@ -552,7 +552,7 @@ const EditPenerimaanBarang = () => {
                         </div>
 
                     </div>
-                    <div class="col">
+                    <div className="col">
                         <label htmlFor="inputPassword3" className="col-sm-2 pt-0 col-form-label">Catatan</label>
                         <div className="row mb-3">
                             <div className="col-sm-10">
@@ -644,14 +644,14 @@ const EditPenerimaanBarang = () => {
                         isLoading={true}
                         columns={defaultColumns}
                     />
-                </div> <div class="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
+                </div> <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     {
                         status == 'Submitted' ?
-                            <button type="button" width="100px" class="btn btn-primary rounded m-1" onClick={() => handleSubmit()}>Update</button> :
+                            <button type="button" width="100px" className="btn btn-primary rounded m-1" onClick={() => handleSubmit()}>Update</button> :
                             <>
-                                <button type="button" width="100px" class="btn btn-success rounded m-1" onClick={() => handleDraft()}>Simpan</button>
-                                {/* <button type="button" width="100px" class="btn btn-warning rounded m-1" onClick={() => handleDraft()}>Cetak</button> */}
-                                <button type="button" width="100px" class="btn btn-primary rounded m-1" onClick={() => handleSubmit()}>Submit</button>
+                                <button type="button" width="100px" className="btn btn-success rounded m-1" onClick={() => handleDraft()}>Simpan</button>
+                                {/* <button type="button" width="100px" className="btn btn-warning rounded m-1" onClick={() => handleDraft()}>Cetak</button> */}
+                                <button type="button" width="100px" className="btn btn-primary rounded m-1" onClick={() => handleSubmit()}>Submit</button>
                             </>
 
 

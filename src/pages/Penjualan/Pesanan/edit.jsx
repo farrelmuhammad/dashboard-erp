@@ -605,13 +605,13 @@ const EditPesanan = () => {
             width: '20%',
             align: 'center',
             render: (text, record, index) => {
-                return <div class="input-group input-group-sm">
+                return <div className="input-group input-group-sm">
                     {
                         product[index].discount_percentage != 0 ?
                             <>
-                                <input style={{ width: "30px" }} type="text" class="form-control" aria-label="Small" defaultValue={product[index].discount_percentage} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" />
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
+                                <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" defaultValue={product[index].discount_percentage} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" />
+                                <div className="input-group-prepend">
+                                    <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
                                         <select
 
                                             onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
@@ -632,9 +632,9 @@ const EditPesanan = () => {
                                     </span>
                                 </div></> : product[index].fixed_discount != 0 ?
                                 <>
-                                    <input style={{ width: "30px" }} type="text" class="form-control" aria-label="Small" defaultValue={product[index].fixed_discount} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" />
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
+                                    <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" defaultValue={product[index].fixed_discount} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" />
+                                    <div className="input-group-prepend">
+                                        <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
                                             <select
 
                                                 onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
@@ -654,9 +654,9 @@ const EditPesanan = () => {
                                             </select>
                                         </span>
                                     </div></> : <>
-                                    <input style={{ width: "30px" }} type="text" class="form-control" aria-label="Small" defaultValue={product[index].fixed_discount} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" />
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
+                                    <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" defaultValue={product[index].fixed_discount} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" />
+                                    <div className="input-group-prepend">
+                                        <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
                                             <select
 
                                                 onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
