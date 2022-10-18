@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import jsCookie from "js-cookie";
 import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
+import { BarsOutlined, DeleteOutlined, EditOutlined, LoadingOutlined, MinusOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons'
 import axios from 'axios';
 import Url from '../../../Config';
-import { Table, Tag } from 'antd';
+import { Table, Tag, Tooltip, Button } from 'antd';
 import { useSelector } from 'react-redux';
 import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
@@ -473,16 +474,27 @@ export const DetailPesanan = () => {
                             <PageHeader
                                 ghost={false}
                                 onBack={() => window.history.back()}
-                                title="Detail Pesanan">
+                                title="Detail Pesanan"
+                                extra={[
+                                    <Tooltip title="Cetak" placement="bottom">
+                                    <Button
+                                        type="primary"
+                                        icon={<PrinterOutlined />}
+                                        style={{ background: "orange", borderColor: "orange" }}
+                                        onClick={handlePrint}
+                                    />
+                                </Tooltip>,
+                                ]}
+                                >
                             </PageHeader>
                             {/* <h3 className="title fw-bold">Detail Pesanan</h3> */}
                         </div>
                     </div>
-                    <div className="col button-add text-end me-3">
+                    {/* <div className="col button-add text-end me-3">
                         <button type="button" onClick={handlePrint} class="btn btn-warning rounded m-1">
                             Cetak
                         </button>
-                    </div>
+                    </div> */}
                 </div>
                 <div class="row">
                     <div class="col">

@@ -168,12 +168,12 @@ const TallyTable = () => {
       sortDirections: ['descend', 'ascend'],
     },
     {
-      title: 'Pemasok',
-      dataIndex: 'supplier',
+      title: 'Pelanggan',
+      dataIndex: 'customer',
       width: '15%',
-      key: 'supplier',
-      ...getColumnSearchProps('supplier'),
-      // render: (supplier) => supplier.name
+      key: 'customer',
+      ...getColumnSearchProps('customer'),
+      render: (customer) => customer.name
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
       // sortDirections: ['descend', 'ascend'],
     },
