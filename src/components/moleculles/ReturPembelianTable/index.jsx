@@ -8,6 +8,7 @@ import jsCookie from 'js-cookie'
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import CurrencyFormat from 'react-currency-format';
 
 const ReturPembelianTable = () => {
   const [searchText, setSearchText] = useState('');
@@ -18,6 +19,7 @@ const ReturPembelianTable = () => {
   const [isLoading, setIsLoading] = useState(false);
   // const token = jsCookie.get('auth')
   const auth = useSelector(state => state.auth);
+  const [mataUang, setMataUang] = useState('Rp.');
 
   const deletePurchaseRetur = async (id, code) => {
     Swal.fire({
@@ -190,6 +192,12 @@ const ReturPembelianTable = () => {
         setStatus(getData.map(d => d.status))
         setIsLoading(false);
         console.log(getData)
+
+        if(getData.purchase_return_details[0].currency){
+
+          setMataUang(getData.purchase_return_details[0].currency)
+      }
+
       })
   }
 
@@ -213,10 +221,10 @@ const ReturPembelianTable = () => {
     {
       title: 'Supplier',
       dataIndex: 'supplier',
-      width: '15%',
+      width: '12%',
       key: 'supplier',
-      ...getColumnSearchProps('supplier_id'),
-      render: (recipient) => recipient.name,
+      ...getColumnSearchProps('supplier'),
+      // render: (recipient) => recipient.name,
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
       // sortDirections: ['descend', 'ascend'],
     },
@@ -224,8 +232,12 @@ const ReturPembelianTable = () => {
       title: 'Total',
       dataIndex: 'total',
       key: 'total',
-      width: '10%',
+      width: '12%',
       ...getColumnSearchProps('total'),
+    //   render: (text) => {
+    //     return Number(text).toFixed(2).replace('.', ',')
+    // },
+
     },
     {
       title: 'Status',
@@ -233,77 +245,139 @@ const ReturPembelianTable = () => {
       key: 'status',
       align: 'center',
       width: '10%',
-      render: (_, { status }) => (
-        <>
-          {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
+      // render: (_, { status }) => (
+      //   <>
+      //     {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
 
-        </>
-      ),
+      //   </>
+      // ),
       ...getColumnSearchProps('status'),
     },
     {
       title: 'Actions',
       width: '10%',
+      dataIndex:'action',
       align: 'center',
-      render: (_, record) => (
-        <>
-          <Space size="middle">
-            {record.can['read-purchase_return'] ? (
-              <Link to={`/returpembelian/detail/${record.id}`}>
-                <Button
-                  size='small'
-                  type="primary"
-                  icon={<InfoCircleOutlined />}
-                />
-              </Link>
-            ) : null}
-            {
-              record.can['cancel-purchase_return'] ? (
+      // render: (_, record) => (
+      //   <>
+      //     <Space size="middle">
+      //       {record.can['read-purchase_return'] ? (
+      //         <Link to={`/returpembelian/detail/${record.id}`}>
+      //           <Button
+      //             size='small'
+      //             type="primary"
+      //             icon={<InfoCircleOutlined />}
+      //           />
+      //         </Link>
+      //       ) : null}
+      //       {
+      //         record.can['cancel-purchase_return'] ? (
 
-                <Button
-                  size='small'
-                  type="danger"
-                  icon={<CloseOutlined />}
-                  onClick={() => cancelPurchaseRetur(record.id, record.code)}
-                />
+      //           <Button
+      //             size='small'
+      //             type="danger"
+      //             icon={<CloseOutlined />}
+      //             onClick={() => cancelPurchaseRetur(record.id, record.code)}
+      //           />
 
-              ) : null
-            }
-            {
-              record.can['delete-purchase_return'] ? (
-                // <Space size="middle">
-                <Button
-                  size='small'
-                  type="danger"
-                  icon={<DeleteOutlined />}
-                  onClick={() => deletePurchaseRetur(record.id, record.code)}
-                />
-                // </Space>
-              ) : null
-            }
-            {
-              record.can['update-purchase_return'] ? (
-                <Link to={`/returpembelian/edit/${record.id}`}>
-                  <Button
-                    size='small'
-                    type="success"
-                    icon={<EditOutlined />}
-                  />
-                </Link>
-              ) : null
-            }
-          </Space>
-        </>
+      //         ) : null
+      //       }
+      //       {
+      //         record.can['delete-purchase_return'] ? (
+      //           // <Space size="middle">
+      //           <Button
+      //             size='small'
+      //             type="danger"
+      //             icon={<DeleteOutlined />}
+      //             onClick={() => deletePurchaseRetur(record.id, record.code)}
+      //           />
+      //           // </Space>
+      //         ) : null
+      //       }
+      //       {
+      //         record.can['update-purchase_return'] ? (
+      //           <Link to={`/returpembelian/edit/${record.id}`}>
+      //             <Button
+      //               size='small'
+      //               type="success"
+      //               icon={<EditOutlined />}
+      //             />
+      //           </Link>
+      //         ) : null
+      //       }
+      //     </Space>
+      //   </>
 
 
-      ),
+      // ),
     },
   ];
+
+  const dataColumn = [
+    ...getDataFaktur.map((item, i) => ({
+      date: item.date, 
+      code: item.code, 
+      supplier: item.supplier.name, 
+      total : <CurrencyFormat className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} value={Number(item.total).toFixed(2).replace('.' , ',')} />,
+      status :  
+        <>
+        {item.status === 'Submitted' ? <Tag color="blue">{item.status}</Tag> : item.status === 'Draft' ? <Tag color="orange">{item.status}</Tag> : item.status === 'Done' ? <Tag color="green">{item.status}</Tag> : item.status === 'Cancelled' ? <Tag color="red">{item.status}</Tag> : item.status === 'Processed' ? <Tag color="purple">{item.status}</Tag> : null}
+        </>,
+      action:
+      <>
+      <Space size="middle">
+          {item.can['read-purchase_return'] ? (
+              <Link to={`/returpembelian/detail/${item.id}`}>
+                  <Button
+                      size='small'
+                      type="primary"
+                      icon={<InfoCircleOutlined />}
+                  />
+              </Link>
+          ) : null}
+          {
+              item.can['cancel-purchase_return'] ? (
+
+                  <Button
+                      size='small'
+                      type="danger"
+                      icon={<CloseOutlined />}
+                      onClick={() => cancelPurchaseRetur(item.id, item.code)}
+                  />
+
+              ) : null
+          }
+          {
+              item.can['delete-purchase_return'] ? (
+                      <Button
+                          size='small'
+                          type="danger"
+                          icon={<DeleteOutlined />}
+                          onClick={() => deletePurchaseRetur(item.id, item.code)}
+                      />
+              ) : null
+          }
+          {
+              item.can['update-purchase_return'] ? (
+                <Link to={`/returpembelian/edit/${item.id}`}>
+                      <Button
+                          size='small'
+                          type="success"
+                          icon={<EditOutlined />}
+                      />
+                  </Link>
+              ) : null
+          }
+      </Space>
+  </>
+    }))
+  ]
+
   return <Table
     loading={isLoading}
     columns={columns}
     pagination={{ pageSize: 5 }}
-    dataSource={getDataFaktur}
+    dataSource={dataColumn}
     scroll={{
       y: 240,
     }}

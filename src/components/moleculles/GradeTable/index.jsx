@@ -9,11 +9,10 @@ import { Link, useParams } from "react-router-dom";
 import { Button, Input, Space, Table, Typography } from "antd";
 import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import { toTitleCase } from "../../../utils/helper";
-import { useSelector } from "react-redux";
 const { Text } = Typography;
 
 const GradeTable = () => {
-  const auth = useSelector(state => state.auth);
+  const token = jsCookie.get("auth");
   const [grades, setGrades] = useState();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -156,12 +155,12 @@ const GradeTable = () => {
           ellipsis={
             ellipsis
               ? {
-                tooltip: text,
+                tooltip: toTitleCase(text),
               }
               : false
           }
         >
-          {text}
+          {toTitleCase(text)}
         </Text>
       )
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
@@ -209,7 +208,7 @@ const GradeTable = () => {
       .get(`${Url}/grades`, {
         headers: {
           Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
+          Authorization: `Bearer ${token}`,
         },
       })
       .then(res => {
@@ -225,7 +224,7 @@ const GradeTable = () => {
     await axios.delete(`${Url}/grades/${id}`, {
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     getGrades();

@@ -8,6 +8,7 @@ import jsCookie from 'js-cookie'
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import CurrencyFormat from 'react-currency-format';
 
 const FakturTable = () => {
   const [searchText, setSearchText] = useState('');
@@ -180,6 +181,11 @@ const FakturTable = () => {
       key: 'total',
       width: '10%',
       ...getColumnSearchProps('total'),
+      render(text, record) {
+        return <div>{
+          <CurrencyFormat className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp. '} value={Number(text).toFixed(2).replace('.' , ',')} />
+          }</div>
+    }
     },
     {
       title: 'Tipe',

@@ -196,19 +196,19 @@ const ProductionTable = () => {
         },
         {
             title: 'Gudang Input',
-            dataIndex: 'warehouse_source_name',
-            key: 'warehouse_source_name',
+            dataIndex: 'warehouse_input_name',
+            key: 'warehouse_input_name',
             width: '20%',
-            ...getColumnSearchProps('warehouse_source_name'),
+            ...getColumnSearchProps('warehouse_input_name'),
             sorter: true,
             sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Gudang Output',
-            dataIndex: 'warehouse_destination_name',
-            key: 'warehouse_destination_name',
+            dataIndex: 'warehouse_output_name',
+            key: 'warehouse_output_name',
             width: '20%',
-            ...getColumnSearchProps('warehouse_destination_name'),
+            ...getColumnSearchProps('warehouse_output_name'),
             sorter: true,
             sortDirections: ['descend', 'ascend'],
         },
@@ -236,7 +236,7 @@ const ProductionTable = () => {
                 <>
                     {record.status === 'publish' ? (
                         <Space size="middle">
-                        <Link to={`/goodsrequest/detail/${record.id}`}>
+                        <Link to={`/production/detail/${record.id}`}>
                             <Button
                                 size='small'
                                 type="primary"
@@ -246,14 +246,14 @@ const ProductionTable = () => {
                     </Space>
                     ) : (
                         <Space size="middle">
-                        <Link to={`/goodsrequest/detail/${record.id}`}>
+                        <Link to={`/production/detail/${record.id}`}>
                             <Button
                                 size='small'
                                 type="primary"
                                 icon={<InfoCircleOutlined />}
                             />
                         </Link>
-                        <Link to={`/goodsrequest/edit/${record.id}`}>
+                        <Link to={`/production/edit/${record.id}`}>
                             <Button
                                 size='small'
                                 type="success"

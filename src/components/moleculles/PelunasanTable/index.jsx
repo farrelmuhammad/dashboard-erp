@@ -220,12 +220,12 @@ const PelunasanTable = () => {
     });
 
     useEffect(() => {
-        getPelunasan()
+        getDeliveryNotes()
     }, [])
 
-    const getPelunasan = async (params = {}) => {
+    const getDeliveryNotes = async (params = {}) => {
         setIsLoading(true);
-        await axios.get(`${Url}/sales_invoice_payments`, {
+        await axios.get(`${Url}/delivery_notes`, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${auth.token}`
@@ -268,7 +268,7 @@ const PelunasanTable = () => {
             // sortDirections: ['descend', 'ascend'],
         },
         {
-            title: 'total',
+            title: 'Total',
             dataIndex: 'total',
             key: 'total',
             width: '15%',

@@ -181,7 +181,7 @@ const TallyPembelianTable = () => {
 
   const getTallySheet = async (params = {}) => {
     setIsLoading(true);
-    await axios.get(`${Url}/tally_sheets`, {
+    await axios.get(`${Url}/tally_sheet_ins`, {
       headers: {
         'Accept': 'application/json',
         'Authorization': `Bearer ${auth.token}`
@@ -220,29 +220,8 @@ const TallyPembelianTable = () => {
       key: 'supplier_name',
       width: '20%',
       ...getColumnSearchProps('supplier_name'),
-      render: (text) => {
-        if (text == null) {
-          return <>-</>
-        }
-        else {
-          return <>{text}</>
-        }
-      }
-    },
-    {
-      title: 'Customer',
-      dataIndex: 'customer_name',
-      key: 'customer_name',
-      width: '20%',
-      ...getColumnSearchProps('supplier_name'),
-      render: (text) => {
-        if (text == null) {
-          return <>-</>
-        }
-        else {
-          return <>{text}</>
-        }
-      }
+      // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
+      // sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Gudang',

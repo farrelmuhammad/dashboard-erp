@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { Link, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { formatRupiah } from '../../../utils/helper';
+import CurrencyFormat from 'react-currency-format';
 
 const PesananTable = () => {
     const [searchText, setSearchText] = useState('');
@@ -184,7 +185,7 @@ const PesananTable = () => {
             dataIndex: 'customer',
             key: 'customer',
             ...getColumnSearchProps('customer'),
-            render: (customer) => customer.name
+            // render: (customer) => customer.name
             // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
             // sortDirections: ['descend', 'ascend'],
         },
@@ -192,98 +193,176 @@ const PesananTable = () => {
             title: 'Total',
             dataIndex: 'total',
             key: 'total',
-            width: '15%',
+            width: '20%',
+            align:'center',
             ...getColumnSearchProps('total'),
-            render: (text) => <div>{formatRupiah(text)}</div>
+            // render: (text) => <div>{formatRupiah(text)}</div>
         },
         {
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
             align: 'center',
-            width: '15%',
-            render: (_, { status }) => (
-                <>
-                    {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="volcano">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Processed' ? <Tag color="orange">{status}</Tag> : <Tag color="red">{status}</Tag>}
-                </>
-            ),
+            width: '12%',
+            // render: (_, { status }) => (
+            //     <>
+            //         {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="volcano">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Processed' ? <Tag color="orange">{status}</Tag> : <Tag color="red">{status}</Tag>}
+            //     </>
+            // ),
             ...getColumnSearchProps('status'),
         },
         {
             title: 'Actions',
             width: '20%',
             align: 'center',
-            render: (_, record) => (
-                <>
-                    {record.status === 'Submitted' ? (
-                        <Space size="middle">
-                            <Button
-                                size='small'
-                                type="danger"
-                                icon={<CloseOutlined />}
-                                onClick={() => cancelSalesOrder(record.id)}
-                            />
-                            <Link to={`/pesanan/detail/${record.id}`}>
-                                <Button
-                                    size='small'
-                                    type="primary"
-                                    icon={<InfoCircleOutlined />}
-                                />
-                            </Link>
-                            <Link to={`/pesanan/edit/${record.id}`}>
-                                <Button
-                                    size='small'
-                                    type="success"
-                                    icon={<EditOutlined />}
-                                />
-                            </Link>
-                        </Space>
-                    ) : record.status === 'Draft' ? (
-                        <Space size="middle">
-                            <Link to={`/pesanan/detail/${record.id}`}>
-                                <Button
-                                    size='small'
-                                    type="primary"
-                                    icon={<InfoCircleOutlined />}
-                                />
-                            </Link>
-                            <Link to={`/pesanan/edit/${record.id}`}>
-                                <Button
-                                    size='small'
-                                    type="success"
-                                    icon={<EditOutlined />}
-                                />
-                            </Link>
-                            <Button
-                                size='small'
-                                type="danger"
-                                icon={<DeleteOutlined />}
-                                onClick={() => deleteSalesOrder(record.id)}
-                            />
-                        </Space>
-                    ) : record.status === 'Done' ? (
-                        <Space size="middle">
-                            <Link to={`/pesanan/detail/${record.id}`}>
-                                <Button
-                                    size='small'
-                                    type="primary"
-                                    icon={<InfoCircleOutlined />}
-                                />
-                            </Link>
-                        </Space>
-                    ) : (
-                        <>
-                        </>
-                    )}
-                </>
-            ),
+            dataIndex:'action',
+            // render: (_, record) => (
+            //     <>
+            //         {record.status === 'Submitted' ? (
+            //             <Space size="middle">
+            //                 <Button
+            //                     size='small'
+            //                     type="danger"
+            //                     icon={<CloseOutlined />}
+            //                     onClick={() => cancelSalesOrder(record.id)}
+            //                 />
+            //                 <Link to={`/pesanan/detail/${record.id}`}>
+            //                     <Button
+            //                         size='small'
+            //                         type="primary"
+            //                         icon={<InfoCircleOutlined />}
+            //                     />
+            //                 </Link>
+            //                 <Link to={`/pesanan/edit/${record.id}`}>
+            //                     <Button
+            //                         size='small'
+            //                         type="success"
+            //                         icon={<EditOutlined />}
+            //                     />
+            //                 </Link>
+            //             </Space>
+            //         ) : record.status === 'Draft' ? (
+            //             <Space size="middle">
+            //                 <Link to={`/pesanan/detail/${record.id}`}>
+            //                     <Button
+            //                         size='small'
+            //                         type="primary"
+            //                         icon={<InfoCircleOutlined />}
+            //                     />
+            //                 </Link>
+            //                 <Link to={`/pesanan/edit/${record.id}`}>
+            //                     <Button
+            //                         size='small'
+            //                         type="success"
+            //                         icon={<EditOutlined />}
+            //                     />
+            //                 </Link>
+            //                 <Button
+            //                     size='small'
+            //                     type="danger"
+            //                     icon={<DeleteOutlined />}
+            //                     onClick={() => deleteSalesOrder(record.id)}
+            //                 />
+            //             </Space>
+            //         ) : record.status === 'Done' ? (
+            //             <Space size="middle">
+            //                 <Link to={`/pesanan/detail/${record.id}`}>
+            //                     <Button
+            //                         size='small'
+            //                         type="primary"
+            //                         icon={<InfoCircleOutlined />}
+            //                     />
+            //                 </Link>
+            //             </Space>
+            //         ) : (
+            //             <>
+            //             </>
+            //         )}
+            //     </>
+            // ),
         },
     ];
+
+    const dataColumn = [
+        ...getDataSO.map((item, i) => ({
+            date: item.date,
+            code:item.code,
+            customer: item.customer.name,
+            total: 
+            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" />,
+            status:  <>
+            {item.status === 'Submitted' ? <Tag color="blue">{item.status}</Tag> : item.status === 'Draft' ? <Tag color="volcano">{item.status}</Tag> : item.status === 'Done' ? <Tag color="green">{item.status}</Tag> : item.status === 'Processed' ? <Tag color="orange">{item.status}</Tag> : <Tag color="red">{item.status}</Tag>}
+        </>,
+            action:       <>
+            {item.status === 'Submitted' ? (
+                <Space size="middle">
+                    <Button
+                        size='small'
+                        type="danger"
+                        icon={<CloseOutlined />}
+                        onClick={() => cancelSalesOrder(item.id)}
+                    />
+                    <Link to={`/pesanan/detail/${item.id}`}>
+                        <Button
+                            size='small'
+                            type="primary"
+                            icon={<InfoCircleOutlined />}
+                        />
+                    </Link>
+                    <Link to={`/pesanan/edit/${item.id}`}>
+                        <Button
+                            size='small'
+                            type="success"
+                            icon={<EditOutlined />}
+                        />
+                    </Link>
+                </Space>
+            ) : item.status === 'Draft' ? (
+                <Space size="middle">
+                    <Link to={`/pesanan/detail/${item.id}`}>
+                        <Button
+                            size='small'
+                            type="primary"
+                            icon={<InfoCircleOutlined />}
+                        />
+                    </Link>
+                    <Link to={`/pesanan/edit/${item.id}`}>
+                        <Button
+                            size='small'
+                            type="success"
+                            icon={<EditOutlined />}
+                        />
+                    </Link>
+                    <Button
+                        size='small'
+                        type="danger"
+                        icon={<DeleteOutlined />}
+                        onClick={() => deleteSalesOrder(item.id)}
+                    />
+                </Space>
+            ) : item.status === 'Done' ? (
+                <Space size="middle">
+                    <Link to={`/pesanan/detail/${item.id}`}>
+                        <Button
+                            size='small'
+                            type="primary"
+                            icon={<InfoCircleOutlined />}
+                        />
+                    </Link>
+                </Space>
+            ) : (
+                <>
+                </>
+            )}
+        </>
+        }))
+    ]
+
     return <Table
         loading={isLoading}
         columns={columns}
         pagination={{ pageSize: 5 }}
-        dataSource={getDataSO}
+        dataSource={dataColumn}
         scroll={{
             y: 240,
         }}
