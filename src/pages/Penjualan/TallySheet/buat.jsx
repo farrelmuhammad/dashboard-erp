@@ -2161,7 +2161,6 @@ const BuatTally = () => {
                         <div className="row mb-3" style={{ display: sumber == 'Retur' ? 'flex' : 'none' }}>
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                             <div className="col-sm-7">
-
                                 <AsyncSelect
                                     placeholder="Pilih Supplier..."
                                     cacheOptions
@@ -2172,7 +2171,6 @@ const BuatTally = () => {
                                     loadOptions={loadOptionsSupplier}
                                     onChange={handleChangeSupplier}
                                 />
-
                             </div>
                         </div>
                         <div className="row mb-3" style={{ display: sumber == 'SO' ? 'flex' : 'none' }}>
@@ -2240,7 +2238,7 @@ const BuatTally = () => {
 
             <PageHeader
                 ghost={false}
-                title="Daftar Pesanan"
+                title={sumber == 'SO' ? "Daftar Pesanan" : "Daftar Retur Pembelian"}
                 extra={[
                     <Button
                         type="primary"
