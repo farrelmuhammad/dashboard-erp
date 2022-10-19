@@ -302,9 +302,10 @@ export const DetailPesanan = () => {
                                                     <th width="350px" className='border'>Nama Produk</th>
                                                     <th width="100px" className='border'>Qty</th>
                                                     <th width="100px" className='border'>Stn</th>
+                                                    <th width="200px" className='border'>Harga</th>
                                                     <th width="180px" className='border'>Diskon</th>
                                                     <th width="130px" className='border'>PPN</th>
-                                                    <th width="200px" className='border'>Harga</th>
+                                                    
                                                     <th width="210px" className='border'>Total</th>
                                                 </tr>
                                                 <tbody className="border">
@@ -315,7 +316,11 @@ export const DetailPesanan = () => {
                                                                 <td className='border-isi text-start'>{item.product_alias_name}</td>
                                                                 <td className='border-isi text-center'>{Number(item.quantity).toFixed(2)}</td>
                                                                 <td className='border-isi text-center'>{item.unit}</td>
-
+                                                                <td className='border-isi text-center'>{
+                                                                    namaMataUang === 'Rp' ?
+                                                                        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toFixed(2).replace('.', ',')} key="diskon" /> :
+                                                                        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toLocaleString('id')} key="diskon" />
+                                                                }</td>
                                                                 <td className='border-isi text-center'>{
                                                                     namaMataUang === 'Rp' ?
                                                                         < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.fixed_discount).toFixed(2).replace('.', ',')} key="diskon" /> :
@@ -327,11 +332,7 @@ export const DetailPesanan = () => {
 
                                                                 </td>
 
-                                                                <td className='border-isi text-center'>{
-                                                                    namaMataUang === 'Rp' ?
-                                                                        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toFixed(2).replace('.', ',')} key="diskon" /> :
-                                                                        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toLocaleString('id')} key="diskon" />
-                                                                }</td>
+                                                             
 
                                                                 <td className='border-isi text-center'>
                                                                     {

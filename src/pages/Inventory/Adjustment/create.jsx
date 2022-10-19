@@ -78,7 +78,7 @@ const EditableCell = ({
                 ]}
             >
                 {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
+                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" />
             </Form.Item>
         ) : (
             <div
@@ -134,7 +134,7 @@ const CreateAdjustment = () => {
     };
     // load options using API call
     const loadOptionsWarehouse = (inputValue) => {
-        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}`, {
+        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}&tipe=internal`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -166,6 +166,10 @@ const CreateAdjustment = () => {
             dataIndex: 'qty_before',
             width: '15%',
             align: 'center',
+            render: (text) => {
+                return <>{text.toString().replace('.', ',')}</>
+
+            }
         },
         {
             title: 'actions',
@@ -205,6 +209,10 @@ const CreateAdjustment = () => {
             dataIndex: 'qty_before',
             width: '30%',
             align: 'center',
+            render: (text) => {
+                return <>{text.toString().replace('.', ',')}</>
+
+            }
         },
         {
             title: 'Qty saat ini',
@@ -212,6 +220,14 @@ const CreateAdjustment = () => {
             width: '30%',
             align: 'center',
             editable: true,
+            render: (text,record) => {
+                // var number1 = text;
+                // var number2 = 30.22;
+                // console.log(number1,number1.toLocaleString("id-ID", {maximumFractionDigits:2}),number1.toLocaleString('id'),"-",number2.toLocaleString("id-ID", {maximumFractionDigits:2}))
+                // return number1.toLocaleString("id-ID", {maximumFractionDigits:2});
+                return <>{text.toString().replace('.', ',')}</>
+
+            }
         },
     ];
     const checkWarehouse = () => {
@@ -437,20 +453,20 @@ const CreateAdjustment = () => {
                             <div className="row">
                                 <div className="col-md-6">
                                     <div className="form-group row mb-1">
-                                        <label for="adjustment_no" className="col-sm-2 col-form-label">No</label>
-                                        <div className="col-sm-10">
+                                        <label for="adjustment_no" className="col-sm-4 col-form-label">No</label>
+                                        <div className="col-sm-8">
                                             <input type="text" className="form-control" id="adjustment_no" name="adjustment_no" placeholder="Otomatis" readOnly />
                                         </div>
                                     </div>
                                     <div className="form-group row mb-1">
-                                        <label for="adjustment_date" className="col-sm-2 col-form-label">Tanggal</label>
-                                        <div className="col-sm-10">
+                                        <label for="adjustment_date" className="col-sm-4 col-form-label">Tanggal</label>
+                                        <div className="col-sm-8">
                                             <input type="date" className="form-control" id="adjustment_date" name="adjustment_date" onChange={(e) => setAdjustmentDate(e.target.value)} />
                                         </div>
                                     </div>
                                     <div className="form-group row mb-1">
-                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Gudang</label>
-                                        <div className="col-sm-10">
+                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang</label>
+                                        <div className="col-sm-8">
                                             <AsyncSelect
                                                 placeholder="Pilih Gudang..."
                                                 cacheOptions
@@ -466,16 +482,16 @@ const CreateAdjustment = () => {
                                 </div>
                                 <div className="col-md-6">
                                     <div className="form-group row mb-1">
-                                        <label for="adjustment_status" className="col-sm-2 col-form-label">Status</label>
-                                        <div className="col-sm-10">
+                                        <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
+                                        <div className="col-sm-8">
                                             <h3 className="badge bg-danger text-center m-1">
                                                 Draft
                                             </h3>
                                         </div>
                                     </div>
                                     <div className="form-group row mb-1">
-                                        <label for="adjustment_notes" className="col-sm-2 col-form-label">Catatan</label>
-                                        <div className="col-sm-10">
+                                        <label for="adjustment_notes" className="col-sm-4 col-form-label">Catatan</label>
+                                        <div className="col-sm-8">
                                             <textarea
                                                 className="form-control"
                                                 name="adjustment_notes" id="adjustment_notes"
