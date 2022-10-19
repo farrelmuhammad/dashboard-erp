@@ -652,6 +652,102 @@ const EditTally = () => {
 
     }
 
+    function forceDoneProduct(index) {
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Status akan diubah menjadi Done",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let newProduct = []
+                for (let i = 0; i < product.length; i++) {
+
+                    if (i == index) {
+                        newProduct.push({
+                            id_produk: product[i].id_produk,
+                            id_pesanan_pembelian: product[i].id_pesanan_pembelian,
+                            code: product[i].code,
+                            boxes_quantity: product[i].boxes_quantity,
+                            number_of_boxes: product[i].number_of_boxes,
+                            boxes_unit: product[i].boxes_unit,
+                            product_alias_name: product[i].product_alias_name,
+                            product_name: product[i].product_name,
+                            action: 'Done',
+                            number_order_qty: product[i].number_order_qty,
+                            tally_sheets_qty: product[i].tally_sheets_qty,
+                            tally_sheets_qty_NoEdit: product[i].tally_sheets_qty_NoEdit,
+                            key: product[i].key
+                        })
+
+                    }
+                    else {
+                        newProduct.push(product[i])
+
+                    }
+
+                }
+                setProduct(newProduct)
+            }
+        })
+    }
+
+    function forceNexDeliveryProduct(index) {
+        console.log(product[index].tally_sheets_qty)
+        console.log(product[index].boxes_quantity)
+        if (product[index].boxes_quantity >= product[index].number_order_qty) {
+            Swal.fire(
+                "Tidak bisa mengubah status",
+                `Jumlah ini sudah melebihi jumlah pesanan`,
+                "error"
+            )
+        }
+        else {
+            Swal.fire({
+                title: 'Apakah Anda Yakin?',
+                text: "Status akan diubah menjadi Next Delivery",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let newProduct = []
+                    for (let i = 0; i < product.length; i++) {
+                        if (i == index) {
+                            newProduct.push({
+                                id_produk: product[i].id_produk,
+                                id_pesanan_pembelian: product[i].id_pesanan_pembelian,
+                                code: product[i].code,
+                                boxes_quantity: product[i].boxes_quantity,
+                                number_of_boxes: product[i].number_of_boxes,
+                                boxes_unit: product[i].boxes_unit,
+                                product_alias_name: product[i].product_alias_name,
+                                product_name: product[i].product_name,
+                                action: 'Next delivery',
+                                number_order_qty: product[i].number_order_qty,
+                                tally_sheets_qty: product[i].tally_sheets_qty,
+                                tally_sheets_qty_NoEdit: product[i].tally_sheets_qty_NoEdit,
+                                key: product[i].key
+                            })
+                        }
+                        else {
+                            newProduct.push(product[i])
+
+                        }
+
+                    }
+                    setProduct(newProduct)
+                }
+            })
+        }
+
+    }
+
     function hapusIndexProduct(index) {
         // console.log(index)
         let code = product[index].code;
@@ -1150,7 +1246,8 @@ const EditTally = () => {
                     </Modal>
                 </>,
 
-            status: item.action === 'Done' ? <Tag color="green">{item.action}</Tag> : item.action === 'Next delivery' ? <Tag color="orange">{item.action}</Tag> : <Tag color="red">{item.action}</Tag>,
+            status: item.action === 'Done' ? <Tag color="green" type="button" onClick={() => forceNexDeliveryProduct(i)}>{item.action}</Tag> : item.action === 'Next delivery' ? <Tag color="orange" type="button" onClick={() => forceDoneProduct(i)}>{item.action}</Tag> : <Tag color="red">{item.action}</Tag>,
+
             action: <Space size="middle">
                 <Button
                     size='small'
