@@ -532,7 +532,7 @@ const BuatPenerimaanBarang = () => {
                                     disabled
                                 />
                             </div>
-                        </div>
+                        </div> 
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pilih Transaksi</label>
                             <div className="col-sm-7">

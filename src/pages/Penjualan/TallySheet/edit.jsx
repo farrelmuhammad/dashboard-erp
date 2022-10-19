@@ -1624,7 +1624,14 @@ const EditTally = () => {
         e.preventDefault();
         const tallySheetData = new URLSearchParams();
         tallySheetData.append("tanggal", getTallySheet.date);
-        tallySheetData.append("pelanggan", getTallySheet.customer_id);
+        if (sumber == 'SO') {
+            tallySheetData.append("pelanggan", getTallySheet.customer_id);
+
+        }
+        if (sumber == 'Retur') {
+            tallySheetData.append("pemasok", getTallySheet.supplier_id);
+
+        }
         tallySheetData.append("gudang", getTallySheet.warehouse_id);
         tallySheetData.append("catatan", getTallySheet.notes);
         tallySheetData.append("status", "Submitted");
@@ -1634,7 +1641,14 @@ const EditTally = () => {
             tallySheetData.append("satuan_box[]", p.boxes_unit);
             tallySheetData.append("kuantitas_box[]", p.boxes_quantity);
             tallySheetData.append("aksi[]", p.action);
-            tallySheetData.append("id_pesanan_penjualan[]", p.id_pesanan_pembelian);
+            if (sumber == 'SO') {
+                tallySheetData.append("id_pesanan_penjualan[]", p.id_pesanan_pembelian);
+
+            }
+            else if (sumber == 'Retur') {
+                tallySheetData.append("id_retur_pembelian[]", p.id_pesanan_pembelian);
+
+            }
         });
 
         console.log(tallySheetData)
