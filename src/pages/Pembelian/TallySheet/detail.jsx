@@ -661,13 +661,8 @@ export const DetailTallySheet = () => {
                             <h3 className="title fw-bold">Detail Pesanan</h3>
                         </div> */}
                     </div>
-<<<<<<< HEAD
                     {/* <div className="col button-add text-end me-3">
                         <button type="button" onClick={handlePrint} class="btn btn-warning rounded m-1">
-=======
-                    <div className="col button-add text-end me-3">
-                        <button type="button" onClick={handlePrint} className="btn btn-warning rounded m-1">
->>>>>>> 465ad4cfbc90281dedbe545d0ec3413b1ebd2954
                             Cetak
                         </button>
                     </div> */}
