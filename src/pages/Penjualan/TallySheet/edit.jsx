@@ -139,9 +139,11 @@ const EditTally = () => {
                             action: dataTallySheet[i].action,
                             number_order_qty: number_order_qty,
                             tally_sheets_qty: dataTallySheet[i].tally_sheets_qty + dataTallySheet[i].boxes_quantity,
+                            tally_sheets_qty_NoEdit: dataTallySheet[i].tally_sheets_qty,
                             key: "lama"
                         })
 
+                        console.log(tmp[i].tally_sheets_qty)
                         let jumlahBaris = (Number(getData.tally_sheet_details[i].boxes.length) / 10) + 1;
                         let jumlahKolom = getData.tally_sheet_details[i].boxes.length;
                         let buatKolom = 0
@@ -546,6 +548,9 @@ const EditTally = () => {
         let tmp = []
         for (let i = 0; i < product.length; i++) {
             if (i == indexSO) {
+                console.log(product[i].tally_sheets_qty)
+                console.log(totTly[i])
+                console.log(product[i].number_order_qty)
                 tmp.push({
                     id_produk: product[i].id_produk,
                     id_pesanan_pembelian: product[i].id_pesanan_pembelian,
@@ -555,9 +560,10 @@ const EditTally = () => {
                     boxes_unit: product[i].boxes_unit,
                     product_alias_name: product[i].product_alias_name,
                     product_name: product[i].product_name,
-                    action: product[i].key == 'lama' ? Number(totTly[i]) + Number(product[i].tally_sheets_qty) >= product[i].number_order_qty ? 'Done' : 'Next delivery' : Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty) >= product[i].number_order_qty ? 'Done' : 'Next delivery',
+                    action: product[i].key == 'lama' ? Number(totTly[i]) + Number(product[i].tally_sheets_qty_NoEdit) >= product[i].number_order_qty ? 'Done' : 'Next delivery' : Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty) >= product[i].number_order_qty ? 'Done' : 'Next delivery',
                     number_order_qty: product[i].number_order_qty,
                     tally_sheets_qty: product[i].key == 'lama' ? totTly[i].toString() : Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty),
+                    tally_sheets_qty_NoEdit: product[i].tally_sheets_qty_NoEdit,
                     key: product[i].key
                 })
             }
@@ -582,6 +588,7 @@ const EditTally = () => {
                     action: tmp[indexSO].action,
                     number_order_qty: tmp[i].number_order_qty,
                     tally_sheets_qty: tmp[i].tally_sheets_qty,
+                    tally_sheets_qty_NoEdit: tmp[i].tally_sheets_qty_NoEdit,
                     key: tmp[i].key
                 })
             }
@@ -593,6 +600,57 @@ const EditTally = () => {
         console.log(sheetNoEdit)
 
     };
+
+    function klikTambahBaris() {
+        console.log(data)
+        let hasilData = [];
+        let tmpData = [];
+        // let defaultData 
+        for (let x = 0; x < product.length; x++) {
+            hasilData = [];
+
+            if (x == indexSO) {
+                let defaultData = [
+                    { readOnly: true, value: data[x].length },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' }
+                ]
+                hasilData.push(...data[x], defaultData);
+                tmpData.push(hasilData);
+
+            }
+            else {
+                tmpData.push(data[x]);
+            }
+
+        } console.log(tmpData)
+
+        setData(tmpData);
+    }
+
+    function klikHapusBaris() {
+        // setLoadingSpreadSheet(true);
+        let hasilData = [];
+        let tmpData = [...data];
+        for (let x = 0; x < product.length; x++) {
+            if (x === indexSO) {
+
+                if (tmpData[x].length - 2 > 0) {
+                    tmpData[x].splice(tmpData[x].length - 1, 1);
+                }
+            }
+        }
+        setData(tmpData)
+
+    }
 
     function hapusIndexProduct(index) {
         // console.log(index)
@@ -701,7 +759,8 @@ const EditTally = () => {
                         number_order_qty: product[i].number_order_qty,
                         product_alias_name: product[i].product_alias_name,
                         product_name: product[i].product_name,
-                        tally_sheets_qty: product[i].tally_sheets_qty
+                        tally_sheets_qty: product[i].tally_sheets_qty,
+                        tally_sheets_qty_NoEdit: product[i].tally_sheets_qty_NoEdit
                     })
                 } else if (r == product.length) {
                     arr.push(product[r - 1])
@@ -1059,6 +1118,33 @@ const EditTally = () => {
                                         onCellsChanged={onCellsChanged}
                                     />
                                 </div>
+                                <div>
+                                    <Button
+                                        size='small'
+                                        type="primary"
+                                        icon={<PlusOutlined />}
+                                        onClick={() => klikTambahBaris()}
+                                    />
+                                    {
+                                        data[indexSO].length - 2 > 0 ?
+                                            <Button
+                                                className='ms-2'
+                                                size='small'
+                                                type="danger"
+                                                icon={<MinusOutlined />}
+                                                onClick={() => klikHapusBaris()}
+                                            /> :
+                                            <Button
+                                                disabled
+                                                className='ms-2'
+                                                size='small'
+                                                type="danger"
+                                                icon={<MinusOutlined />}
+                                                onClick={() => klikHapusBaris()}
+                                            />
+                                    }
+
+                                </div>
                             </div>
                         </div>
                     </Modal>
@@ -1214,6 +1300,7 @@ const EditTally = () => {
                                     action: qtyAkhir >= qtyAwal ? 'Done' : 'Next delivery',
                                     number_order_qty: qtyAwal,
                                     tally_sheets_qty: qtyAkhir,
+                                    tally_sheets_qty_NoEdit: qtyAkhir,
                                     key: "baru"
                                 })
                             }
@@ -1826,7 +1913,7 @@ const EditTally = () => {
                 </div>
                 <div style={{ clear: 'both' }}></div>
             </PageHeader>
-            
+
             {/* <form className="  p-3 mb-5 bg-body rounded">
                 <div className="text-title text-start mb-4">
                     <div className="row">

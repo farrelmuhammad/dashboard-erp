@@ -463,55 +463,6 @@ const BuatTally = () => {
     }
 
 
-    // function klikTambahBaris() {
-    //     // console.log(indexPO)
-    //     // console.log(data)
-    //     let hasilData = [];
-    //     let tmpData = [];
-    //     for (let x = 0; x < product.length; x++) {
-    //         // pengecekan transaksi 
-    //         let dataSumber = [];
-    //         if (sumber == 'Retur') {
-    //             dataSumber = product[x].purchase_return_details;
-    //         }
-    //         else if (sumber == 'SO') {
-    //             dataSumber = product[x].sales_order_details;
-    //         }
-
-    //         if (x === idxPesanan) {
-    //             for (let i = 0; i < dataSumber.length; i++) {
-    //                 if (i === indexPO) {
-    //                     let pushData = [];
-    //                     let defaultData = [
-    //                         { readOnly: true, value: data[x][i].length },
-    //                         { value: '' },
-    //                         { value: '' },
-    //                         { value: '' },
-    //                         { value: '' },
-    //                         { value: '' },
-    //                         { value: '' },
-    //                         { value: '' },
-    //                         { value: '' },
-    //                         { value: '' },
-    //                         { value: '' }
-    //                     ]
-    //                     pushData.push(...data[x][i], defaultData)
-    //                     hasilData.push(pushData);
-    //                 }
-    //                 else {
-    //                     hasilData.push(data[x][i]);
-    //                 }
-    //             }
-    //             tmpData.push(hasilData);
-    //         }
-    //         else {
-    //             tmpData.push(data[x]);
-    //         }
-    //     }
-    //     // console.log(tmpData);
-    //     setData(tmpData);
-    //     // console.log(tmpData)
-    // }
 
     function klikHapusBaris() {
         // setLoadingSpreadSheet(true);
@@ -558,39 +509,6 @@ const BuatTally = () => {
 
     }
 
-    // function klikHapusBaris() {
-    //     // setLoadingSpreadSheet(true);
-    //     let hasilData = [];
-    //     let tmpData = [];
-    //     for (let x = 0; x < product.length; x++) {
-    //         // pengecekan transaksi 
-    //         let dataSumber = [];
-    //         if (sumber == 'Retur') {
-    //             dataSumber = product[x].purchase_return_details;
-    //         }
-    //         else if (sumber == 'SO') {
-    //             dataSumber = product[x].sales_order_details;
-    //         }
-
-    //         if (x === idxPesanan) {
-    //             for (let i = 0; i < dataSumber.length; i++) {
-    //                 if (i === indexPO) {
-    //                     data[x][i].splice(data[x][i].length - 1, 1);
-    //                     hasilData.push(data[x][i]);
-    //                 }
-    //                 else {
-    //                     hasilData.push(data[x][i]);
-    //                 }
-    //             }
-    //             tmpData.push(hasilData);
-    //         }
-    //         else {
-    //             tmpData.push(data[x]);
-    //         }
-    //     }
-    //     // console.log(tmpData);
-    //     setData(tmpData);
-    // }
 
     function simpanTallySheet(i) {
         let tmp = [];
