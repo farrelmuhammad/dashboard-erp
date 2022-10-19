@@ -125,7 +125,7 @@ const BuatSuratJalan = () => {
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     // const [selectedValue2, setSelectedAddress] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
-    const [sumber, setSumber] = useState()
+    const [sumber, setSumber] = useState('')
     const [supplier, setSupplier] = useState()
     const [grup, setGrup] = useState()
     const [selectedSupplier, setSelectedSupplier] = useState()
@@ -152,6 +152,9 @@ const BuatSuratJalan = () => {
                 width: '10%',
                 align: 'center',
                 key: 'name',
+                render: (_, record) => {
+                    return record.boxes_quantity.toString().replace('.' , ',')
+                }
             },
             {
                 title: 'Stn',
@@ -504,14 +507,16 @@ const BuatSuratJalan = () => {
         userData.append("kendaraan", vehicle);
         userData.append("pengirim", sender);
         userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("alamat_pelanggan", addressId);
+        if (sumber == 'SO') {
+            userData.append("pelanggan", customer);
+            userData.append("alamat_pelanggan", addressId);
+        }
+        else if (sumber == 'Retur') {
+            userData.append("alamat_pemasok", addressId);
+            userData.append("pemasok", supplier);
+        }
         tally.map((t) => userData.append("id_tally_sheet[]", t));
         userData.append("status", "Draft");
-
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
 
         axios({
             method: "post",
@@ -703,7 +708,14 @@ const BuatSuratJalan = () => {
                     <Button
                         type="primary"
                         icon={<PlusOutlined />}
-                        onClick={() => setModal2Visible(true)}
+                        onClick={() => {
+                            if(sumber == ''){
+                                Swal.fire("Gagal", "Mohon Pilih Transaksi Dahulu..", "error")
+                            }
+                            else{
+                                setModal2Visible(true)
+                            }
+                        }}
                     />,
                     <Modal
                         title="Tambah Tally Sheet"

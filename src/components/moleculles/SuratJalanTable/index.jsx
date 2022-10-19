@@ -268,14 +268,24 @@ const SuratJalanTable = () => {
         },
         {
             title: 'Pelanggan',
-            dataIndex: 'customer',
+            dataIndex: 'customer_name',
             key: 'customer',
             width: '15%',
             ...getColumnSearchProps('customer'),
-            render: (customer) => customer.name
+            // render: (customer) => customer.name
             // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
             // sortDirections: ['descend', 'ascend'],
         },
+        {
+            title: 'Supplier',
+            dataIndex:'supplier_name',
+            width: '15%',
+            key: 'supplier',
+            ...getColumnSearchProps('supplier_name'),
+            // render: (customer) => customer.name
+            // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
+            // sortDirections: ['descend', 'ascend'],
+          },
         {
             title: 'Kendaraan',
             dataIndex: 'vehicle',
