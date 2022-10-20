@@ -273,10 +273,10 @@ const SuratJalanTable = () => {
             width: '15%',
             ...getColumnSearchProps('customer'),
             render: (_, record) => {
-                if(record.customer_name){
+                if (record.customer_name) {
                     return <>{record.customer_name}</>
                 }
-                else{
+                else {
                     return <div className='text-center'>-</div>
                 }
             },
@@ -286,14 +286,14 @@ const SuratJalanTable = () => {
         },
         {
             title: 'Supplier',
-            dataIndex:'supplier_name',
+            dataIndex: 'supplier_name',
             width: '15%',
             key: 'supplier',
             render: (_, record) => {
-                if(record.supplier_name){
+                if (record.supplier_name) {
                     return <>{record.supplier_name}</>
                 }
-                else{
+                else {
                     return <div className='text-center'>-</div>
                 }
             },
@@ -301,7 +301,7 @@ const SuratJalanTable = () => {
             // render: (customer) => customer.name
             // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
             // sortDirections: ['descend', 'ascend'],
-          },
+        },
         {
             title: 'Kendaraan',
             dataIndex: 'vehicle',
@@ -389,7 +389,7 @@ const SuratJalanTable = () => {
                                                             placeholder="Pilih Penerima..."
                                                             cacheOptions
                                                             defaultOptions
-                                                            defaultInputValue={tampil?getCustomerName: null}
+                                                            defaultInputValue={tampil ? getCustomerName : null}
                                                             value={selectedValue}
                                                             getOptionLabel={(e) => e.name}
                                                             getOptionValue={(e) => e.id}
