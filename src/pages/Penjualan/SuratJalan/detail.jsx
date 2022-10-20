@@ -342,6 +342,17 @@ export const DetailSuratJalan = () => {
                                 />
                             </div>
                         </div>
+                        <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pilih Transaksi</label>
+                            <div className="col-sm-7">
+                                <input
+                                    value={sumber == 'SO' ? 'Pesanan Penjualan' : 'Retur Pembelian'}
+                                    type="Nama"
+                                    className="form-control"
+                                    disabled
+                                />
+                            </div>
+                        </div>
                         {
                             sumber == 'SO' ?
                                 <div className="row mb-3">

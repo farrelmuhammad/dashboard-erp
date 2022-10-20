@@ -267,7 +267,7 @@ const BuatSuratJalan = () => {
 
                 }
                 else {
-                    return record.supplier_name
+                    return record.supplier.name
 
                 }
             }

@@ -272,6 +272,14 @@ const SuratJalanTable = () => {
             key: 'customer',
             width: '15%',
             ...getColumnSearchProps('customer'),
+            render: (_, record) => {
+                if(record.customer_name){
+                    return <>{record.customer_name}</>
+                }
+                else{
+                    return <div className='text-center'>-</div>
+                }
+            },
             // render: (customer) => customer.name
             // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
             // sortDirections: ['descend', 'ascend'],
@@ -281,6 +289,14 @@ const SuratJalanTable = () => {
             dataIndex:'supplier_name',
             width: '15%',
             key: 'supplier',
+            render: (_, record) => {
+                if(record.supplier_name){
+                    return <>{record.supplier_name}</>
+                }
+                else{
+                    return <div className='text-center'>-</div>
+                }
+            },
             ...getColumnSearchProps('supplier_name'),
             // render: (customer) => customer.name
             // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
