@@ -62,7 +62,7 @@ export const DetailPesanan = () => {
             width: '8%',
             align: 'center',
             render(text, record) {
-                return <div>{Number(text).toFixed(2).toLocaleString('id')}</div>
+                return <div>{Number(text).toFixed(2).replace('.',',')}</div>
             }
         },
         {
@@ -239,7 +239,7 @@ export const DetailPesanan = () => {
     const cetakData =
         [...details.map((item, i) => ({
             name: item.product_alias_name,
-            quantity: Number(item.quantity).toFixed(2),
+            quantity: Number(item.quantity).toFixed(2).replace('.',','),
             discount: item.fixed_discount != 0 ? <>{'Rp ' + Number(Math.round(item.fixed_discount + 'e2') + 'e-2').toLocaleString('id')}</> : <>{item.discount_percentage + '%'}</>,
             ppn: item.ppn + '%',
             price: 'Rp ' + Number(Math.round(item.price + 'e2') + 'e-2').toLocaleString('id'),
@@ -314,7 +314,7 @@ export const DetailPesanan = () => {
                                                             <tr >
 
                                                                 <td className='border-isi text-start'>{item.product_alias_name}</td>
-                                                                <td className='border-isi text-center'>{Number(item.quantity).toFixed(2)}</td>
+                                                                <td className='border-isi text-center'>{Number(item.quantity).toFixed(2).replace('.',',')}</td>
                                                                 <td className='border-isi text-center'>{item.unit}</td>
                                                                 <td className='border-isi text-center'>{
                                                                     namaMataUang === 'Rp' ?

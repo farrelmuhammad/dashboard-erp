@@ -83,7 +83,7 @@ export const DetailSuratJalan = () => {
                 setCode(getData.code)
                 setDate(getData.date)
                 setCustomer(getData.customer.name)
-                setAddress(getData.customer_address_id)
+                setAddress(getData.customer_address.address)
                 setVehicle(getData.vehicle)
                 setSender(getData.sender)
                 setNotes(getData.notes)
@@ -128,13 +128,13 @@ export const DetailSuratJalan = () => {
           <div className="page-header-space"></div>
           <div className="page-header">
           <div className='row'>
-          <div className='d-flex mb-3 float-container' style={{position:"fixed", height:"100px", top:"0", width:"100%"}}>
+          <div className='d-flex' style={{position:"fixed", height:"100px", marginBottom:"200px"}}>
                 
               
               
              
-                <div className='col-1' style={{marginTop:"10px"}}><img src={logo} width="60px"></img></div>
-                <div className='col-4' style={{marginTop:"10px", marginRight:"100px"}}>  
+                <div className='col-1'><img src={logo} width="60px"></img></div>
+                <div className='col-4' style={{ marginRight:"100px"}}>  
                       <div className='ms-2' >
                           <div className='header-cetak'><b>PT. BUMI MAESTROAYU</b></div>
                           <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
@@ -149,23 +149,25 @@ export const DetailSuratJalan = () => {
                 <div className='col float-child'>
                     <div className='col' width="100px"></div>
 
-                <div className=' mt-3 mb-4 col d-flex justify-content-right ps-4 pe-4' height="100px" style={{ fontSize: "12px", fontStyle:"bold"}}>
-                      <div className='col-6'>
+                <div className=' mt-1 col d-flex justify-content-right ps-3 pe-3' height="100px" style={{ fontSize: "12px", fontStyle:"bold"}}>
+                      <div className='col-md-4'>
                           <div className="d-flex flex-row">
-                          <label className='col-8'>Tanggal</label>
-                              <div className='col-6'> : {date}</div>
+                          <label className='col-6'>Tanggal</label>
+                              <div className='col-8'> : {date}</div>
                           </div>
                           <div className="d-flex flex-row">
-                              <label className='col-8'>Kepada Yth.</label>
-                              <div className='col-6'> : {customer}  </div>
+                              <label className='col-6'>Kepada Yth.</label>
+                              <div className='col-8'> : {customer}  </div>
                           </div>
                           <div className="d-flex flex-row">
-                              <label className='col-8'>Alamat</label>
-                              <div className='col-6'> : {address}  </div>
+                              <label className='col-6'>Alamat</label>
+                              <div> : </div>
+                              
+                              <div className='col-8' style={{overflowWrap:"break-word", maxWidth:"200px", marginLeft:"3px"}}> {address}  </div>
                           </div>
                           <div className="d-flex flex-row">
-                              <label className='col-8'>Kendaraan</label>
-                              <div className='col-6'> : {vehicle} </div>
+                              <label className='col-6'>Kendaraan</label>
+                              <div className='col-8'> : {vehicle} </div>
                           </div>
                       </div>
                   </div>
@@ -177,6 +179,9 @@ export const DetailSuratJalan = () => {
         </div>
         <br/>
 <br/>
+<br/>
+<br/>
+
         <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold", textAlign:"center"}}>
                       <div className='align-items-center' style={{ fontSize: "16px", textDecoration: "underline", textAlign:"center"}}>SURAT JALAN</div>
                       <div style={{ fontSize: "10px",marginTop: "-5px" }}>NO. {code}</div>
@@ -206,7 +211,7 @@ export const DetailSuratJalan = () => {
                         <table style={{ fontSize: "10px", width: "100%"}}>
                             <tr className='text-center border' style={{ height: "50px" }}>
                                 <th width="50px"  className='border' >No</th>
-                                <th width="350px" className='border'>Nama Alias Produk</th>
+                                <th width="350px" className='border'>Nama Produk</th>
                                 <th width="100px" className='border'>Qty</th>
                                 <th width="100px" className='border'>Stn</th>
                             
