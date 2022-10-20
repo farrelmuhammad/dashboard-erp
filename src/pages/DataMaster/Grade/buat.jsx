@@ -103,22 +103,6 @@ const BuatGrade = () => {
         // Jika Gagal
         console.log(err);
       });
-
-    axios
-      .get(`${Url}/products`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-      .then((res) => {
-        setGetProduct(res.data.data);
-        console.log(res.data.data);
-      })
-      .catch((err) => {
-        // Jika Gagal
-        console.log(err);
-      });
   }, []);
 
   // const handleChangePage = (event, newPage) => {
@@ -151,7 +135,7 @@ const BuatGrade = () => {
                 type="kode"
                 className="form-control"
                 value={getGrade}
-                readOnly={getGrade}
+                disabled
               />
             </div>
           </div>

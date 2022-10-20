@@ -18,7 +18,7 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import Url from "../../../Config";
 import "./form.css";
-import { PageHeader } from "antd";
+import { PageHeader, Skeleton } from "antd";
 
 const DetailPosisi = () => {
   // const token = jsCookie.get("auth");
@@ -27,7 +27,7 @@ const DetailPosisi = () => {
   const [data, setData] = useState([]);
   const [getEmployee, setGetEmployee] = useState({});
 
-  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
@@ -39,6 +39,7 @@ const DetailPosisi = () => {
         },
       })
       .then((res) => {
+        setLoading(false)
         setData(res.data.data);
         setGetEmployee(res.data.data[0].employees);
         // console.log(res.data.data);
@@ -60,6 +61,16 @@ const DetailPosisi = () => {
   //   setPage(0);
   // };
 
+  if (loading) {
+    return (
+      <>
+        <form className="p-3 mb-3 bg-body rounded">
+          <Skeleton active />
+        </form>
+      </>
+    )
+  }
+
   if (getEmployee.length > 0) {
     return (
       <>
@@ -67,10 +78,6 @@ const DetailPosisi = () => {
           ghost={false}
           onBack={() => window.history.back()}
           title="Detail Posisi">
-        </PageHeader>
-
-        <form className="  p-3 mb-3 bg-body rounded">
-          
           <div className="row mb-3">
             <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
               Kode
@@ -118,143 +125,10 @@ const DetailPosisi = () => {
               ))}
             </div>
           </div>
-        </form>
-
-        {/* <form className="  p-3 mb-3 bg-body rounded">
-          <div className="text-title text-start mb-2">
-            <h4 className="title fw-bold">Daftar Data Karyawan</h4>
-          </div>
-          <Paper sx={{ width: "100%", overflow: "hidden" }}>
-            <TableContainer sx={{ maxHeight: 440 }}>
-              <Table size="small" stickyHeader aria-label="sticky table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Nama Karyawan</TableCell>
-                    <TableCell>Departmen</TableCell>
-                    <TableCell>Posisi</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {getEmployee
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((d) => {
-                      return (
-                        <TableRow hover role="checkbox" tabIndex={-1} key={d.id}>
-                          <TableCell>{d.name}</TableCell>
-                          <TableCell>{d.department_id}</TableCell>
-                          <TableCell>{d.position_id}</TableCell>
-                        </TableRow>
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={getEmployee.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </Paper>
-        </form> */}
-      </>
-    );
-  } else {
-    return (
-      <>
-        <form className="  p-3 mb-3 bg-body rounded">
-          <div className="text-title text-start mb-4">
-            <h3 className="title fw-bold">Detail Posisi</h3>
-          </div>
-          <div className="row mb-3">
-            <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
-              Kode
-            </label>
-            <div className="col-sm-10">
-              <input
-                type="kode"
-                className="form-control"
-                id="inputKode3"
-                // onChange={e => setId(e.target.value)}
-                defaultValue={id}
-                disabled
-              />
-            </div>
-          </div>
-          <div className="row mb-3">
-            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-              Nama Posisi
-            </label>
-            <div className="col-sm-10">
-              {data?.map((d) => (
-                <input
-                  type="Nama"
-                  className="form-control"
-                  defaultValue={d.name}
-                  disabled
-                />
-              ))}
-            </div>
-          </div>
-          <div className="row mb-3">
-            <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
-              Keterangan
-            </label>
-            <div className="col-sm-10">
-              {data?.map((d) => (
-                <textarea
-                  className="form-control"
-                  rows="4"
-                  type="Nama"
-                  defaultValue={d.description}
-                  disabled
-                />
-              ))}
-            </div>
-          </div>
-        </form>
-
-        {/* <form className="  p-3 mb-3 bg-body rounded">
-          <div className="text-title text-start mb-2">
-            <h4 className="title fw-bold">Daftar Data Karyawan</h4>
-          </div>
-          <Paper sx={{ width: "100%", overflow: "hidden" }}>
-            <TableContainer sx={{ maxHeight: 440 }}>
-              <Table size="small" stickyHeader aria-label="sticky table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Nama Karyawan</TableCell>
-                    <TableCell>Departmen</TableCell>
-                    <TableCell>Posisi</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                <TableRow hover role="checkbox" tabIndex={-1}>
-                          <TableCell></TableCell>
-                          <TableCell>No Data</TableCell>
-                          <TableCell></TableCell>
-                        </TableRow>
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={getEmployee.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </Paper>
-        </form> */}
+        </PageHeader>
       </>
     );
   }
-
 };
 
 export default DetailPosisi;

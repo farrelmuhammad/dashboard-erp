@@ -9,10 +9,11 @@ import { Link, useParams } from "react-router-dom";
 import { Button, Input, Space, Table, Typography } from "antd";
 import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import { toTitleCase } from "../../../utils/helper";
+import { useSelector } from "react-redux";
 const { Text } = Typography;
 
 const GradeTable = () => {
-  const token = jsCookie.get("auth");
+  const auth = useSelector(state => state.auth);
   const [grades, setGrades] = useState();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -155,12 +156,12 @@ const GradeTable = () => {
           ellipsis={
             ellipsis
               ? {
-                tooltip: toTitleCase(text),
+                tooltip: text,
               }
               : false
           }
         >
-          {toTitleCase(text)}
+          {text}
         </Text>
       )
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
@@ -173,14 +174,14 @@ const GradeTable = () => {
       render: (_, record) => (
         <>
           <Space size="middle">
-            <Link to={`/bagian/detail/${record.id}`}>
+            <Link to={`/grade/detail/${record.id}`}>
               <Button
                 size='small'
                 type="primary"
                 icon={<InfoCircleOutlined />}
               />
             </Link>
-            <Link to={`/bagian/edit/${record.id}`}>
+            <Link to={`/grade/edit/${record.id}`}>
               <Button
                 size='small'
                 type="success"
@@ -208,7 +209,7 @@ const GradeTable = () => {
       .get(`${Url}/grades`, {
         headers: {
           Accept: "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${auth.token}`,
         },
       })
       .then(res => {
@@ -224,7 +225,7 @@ const GradeTable = () => {
     await axios.delete(`${Url}/grades/${id}`, {
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${auth.token}`,
       },
     });
     getGrades();

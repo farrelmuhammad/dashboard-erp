@@ -19,7 +19,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
-import { PageHeader} from 'antd';
+import { PageHeader } from 'antd';
 
 // import { Checkbox } from "@mui/material";
 
@@ -166,13 +166,10 @@ const BuatDepartemen = () => {
   if (getEmployee?.length > 0) {
     return (
       <>
-       <PageHeader
+        <PageHeader
           ghost={false}
           onBack={() => window.history.back()}
           title="Buat Departemen">
-          </PageHeader>
-
-        <form className="  p-3 mb-3 bg-body rounded">
           <div className="row mb-3">
             <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
               Kode
@@ -184,7 +181,7 @@ const BuatDepartemen = () => {
                 // id="inputKode3"
                 // onChange={e => setId(e.target.value)}
                 value={getDepartment}
-                readOnly={getDepartment}
+                disabled
               />
             </div>
           </div>
@@ -214,63 +211,6 @@ const BuatDepartemen = () => {
               />
             </div>
           </div>
-          {/* <div className="p-2 mb-2 bg-body rounded">
-            <div className="text-title text-start">
-              <h4 className="title fw-bold mb-2">Masukkan Karyawan</h4>
-            </div>
-            <Paper sx={{ width: "100%", overflow: "hidden" }}>
-              <TableContainer sx={{ maxHeight: 440 }}>
-                <Table stickyHeader aria-label="sticky table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Nama Karyawan</TableCell>
-                      <TableCell>Departmen</TableCell>
-                      <TableCell>Posisi</TableCell>
-                      <TableCell>Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {getEmployee
-                      .slice(
-                        page * rowsPerPage,
-                        page * rowsPerPage + rowsPerPage
-                      )
-                      .map((d) => {
-                        return (
-                          <TableRow
-                            hover
-                            role="checkbox"
-                            tabIndex={-1}
-                            key={d.id}
-                          >
-                            <TableCell>{d.name}</TableCell>
-                            <TableCell>{d.department_id}</TableCell>
-                            <TableCell>{d.position_id}</TableCell>
-                            <TableCell>
-                              <Checkbox
-                                key={d.id}
-                                value={d.id}
-                                id={d.id}
-                                onChange={handleCheck}
-                              />
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[10, 25, 100]}
-                component="div"
-                count={getEmployee.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            </Paper>
-          </div> */}
           <div className="d-grid gap-2 d-md-flex justify-content-md-end">
             <Button
               onClick={handleSubmit}
@@ -280,7 +220,7 @@ const BuatDepartemen = () => {
               Simpan
             </Button>
           </div>
-        </form>
+        </PageHeader>
       </>
     );
   }
