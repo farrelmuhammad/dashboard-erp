@@ -104,6 +104,8 @@ const BuatSuratJalan = () => {
     const [sender, setSender] = useState("");
     const [customer, setCustomer] = useState("");
     const [address, setAddress] = useState("");
+    const [selectedAddress, setSelectedAddress] = useState("");
+    const [addressId, setAddressId] = useState("");
     const [product, setProduct] = useState('');
     const [tally, setTally] = useState([]);
     const [query, setQuery] = useState("");
@@ -111,6 +113,7 @@ const BuatSuratJalan = () => {
     const navigate = useNavigate();
 
     const [getDataProduct, setGetDataProduct] = useState([]);
+    const [getDataRetur, setGetDataRetur] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const [subTotal, setSubTotal] = useState("");
@@ -119,23 +122,15 @@ const BuatSuratJalan = () => {
     const [grandTotal, setGrandTotal] = useState("");
     const [checked, setChecked] = useState("");
 
-    const [selectedValue, setSelectedCustomer] = useState(null);
-    const [selectedValue2, setSelectedAddress] = useState(null);
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
+    // const [selectedValue2, setSelectedAddress] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
+    const [sumber, setSumber] = useState('')
+    const [supplier, setSupplier] = useState()
+    const [grup, setGrup] = useState()
+    const [selectedSupplier, setSelectedSupplier] = useState()
 
     const expandedRowRender = (product) => {
-        // const handleAdd = () => {
-        //     const newData = {
-        //         key: `${count}`,
-        //         alias_name: '',
-        //         name: '',
-        //         stn: '',
-        //         box: '',
-        //         action: '',
-        //     }
-        // setProduct([...product.sales_order_details, newData]);
-        // setCount(count + 1)
-        // }
 
         const columns = [
             {
@@ -157,6 +152,9 @@ const BuatSuratJalan = () => {
                 width: '10%',
                 align: 'center',
                 key: 'name',
+                render: (_, record) => {
+                    return record.boxes_quantity.toString().replace('.' , ',')
+                }
             },
             {
                 title: 'Stn',
@@ -169,6 +167,23 @@ const BuatSuratJalan = () => {
         return <Table columns={columns} dataSource={product.tally_sheet_details} pagination={false} />;
     };
 
+    const handleChangeSupplier = (value) => {
+        setSupplier(value.id);
+        setProduct([])
+        setSelectedSupplier(value);
+        setAddress(value.supplier_addresses)
+        setGrup(value._group)
+    };
+    // load options using API call
+    const loadOptionsSupplier = (inputValue) => {
+        return axios.get(`${Url}/delivery_notes_available_suppliers?nama=${inputValue}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.data.data);
+    };
+
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
         setCustomer(value.id);
@@ -177,29 +192,62 @@ const BuatSuratJalan = () => {
 
     // load options using API call
     const loadOptionsCustomer = (inputValue) => {
-        return fetch(`${Url}/select_customers?limit=10&nama=${inputValue}`, {
+        return axios.get(`${Url}/delivery_notes_available_customers?nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => res.data.data);
+    };
+
+    const handleChangeAddress = (value) => {
+        console.log(value)
+        setSelectedAddress(value);
+        setAddressId(value.id);
+        // setAddress(value.customer_addresses)
     };
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_tally_sheets?tipe=Sales&nama_alias=${query}&pelanggan=${customer}&status=submitted`, {
-                // const res = await axios.get(`${Url}/select_tally_sheets?tipe=Sales`, {
+            const res = await axios.get(`${Url}/delivery_notes_available_tally_sheets?nama_alias=${query}&pelanggan=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
-            console.log(res.data);
+            // let tmp = []
+            // for (let i = 0; i < res.data.length; i++) {
+            //     tmp.push({
+            //         detail: res.data[i],
+            //         statusCek: false
+            //     });
+            // }
+            setGetDataProduct(res.data.data)
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
     }, [query, customer])
+
+    useEffect(() => {
+        const getProduct = async () => {
+            const res = await axios.get(`${Url}/delivery_notes_available_tally_sheets?nama_alias=${query}&pemasok=${supplier}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${auth.token}`
+                }
+            })
+            // let tmp = []
+            // for (let i = 0; i < res.data.data.length; i++) {
+            //     tmp.push({
+            //         detail: res.data.data[i],
+            //         statusCek: false
+            //     });
+            // }
+            setGetDataRetur(res.data.data)
+        };
+
+        if (query.length === 0 || query.length > 2) getProduct();
+    }, [query, supplier])
 
     // Column for modal input product
     const columnsModal = [
@@ -209,11 +257,20 @@ const BuatSuratJalan = () => {
             dataIndex: 'code',
         },
         {
-            title: 'Pelanggan',
+            title: sumber == 'SO' ? 'Pelanggan' : 'Supplier',
             dataIndex: 'customer',
             width: '20%',
             align: 'center',
-            render: (customer) => customer.name
+            render: (_, record) => {
+                if (sumber == 'SO') {
+                    return record.customer.name
+
+                }
+                else {
+                    return record.supplier_name
+
+                }
+            }
         },
         {
             title: 'Gudang',
@@ -361,7 +418,7 @@ const BuatSuratJalan = () => {
         userData.append("pengirim", sender);
         userData.append("catatan", description);
         userData.append("pelanggan", customer);
-        userData.append("alamat_pelanggan", address);
+        userData.append("alamat_pelanggan", addressId);
         tally.map((t) => userData.append("id_tally_sheet[]", t));
         userData.append("status", "Submitted");
 
@@ -413,7 +470,7 @@ const BuatSuratJalan = () => {
                             description:
                                 err.response.data.error.id_tally_sheet,
                         });
-                    } 
+                    }
                     // notification['error']({
                     //     message: 'Silahkan Cek Input Anda!',
                     //     description:
@@ -450,14 +507,16 @@ const BuatSuratJalan = () => {
         userData.append("kendaraan", vehicle);
         userData.append("pengirim", sender);
         userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("alamat_pelanggan", address);
+        if (sumber == 'SO') {
+            userData.append("pelanggan", customer);
+            userData.append("alamat_pelanggan", addressId);
+        }
+        else if (sumber == 'Retur') {
+            userData.append("alamat_pemasok", addressId);
+            userData.append("pemasok", supplier);
+        }
         tally.map((t) => userData.append("id_tally_sheet[]", t));
         userData.append("status", "Draft");
-
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
 
         axios({
             method: "post",
@@ -495,6 +554,14 @@ const BuatSuratJalan = () => {
             });
     };
 
+    function klikUbahSumber(value) {
+        setSumber(value);
+        setProduct([])
+        setSelectedAddress('')
+        setSelectedSupplier('');
+        setSelectedCustomer('')
+    }
+
     return (
         <>
             <PageHeader
@@ -528,13 +595,48 @@ const BuatSuratJalan = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pilih Transaksi</label>
+                            <div className="col-sm-7">
+                                <select
+                                    onChange={(e) => klikUbahSumber(e.target.value)}
+                                    id="grupSelect"
+                                    className="form-select"
+                                >
+                                    <option value="">Pilih Transaksi</option>
+                                    <option value="SO">
+                                        Pesanan Penjualan
+                                    </option>
+                                    <option value="Retur" >
+                                        Retur Pembelian
+                                    </option>
+
+
+                                </select>
+                            </div>
+                        </div>
+                        <div className="row mb-3" style={{ display: sumber == 'Retur' ? 'flex' : 'none' }}>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
+                            <div className="col-sm-7">
+                                <AsyncSelect
+                                    placeholder="Pilih Supplier..."
+                                    cacheOptions
+                                    defaultOptions
+                                    value={selectedSupplier}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsSupplier}
+                                    onChange={handleChangeSupplier}
+                                />
+                            </div>
+                        </div>
+                        <div className="row mb-3" style={{ display: sumber == 'SO' ? 'flex' : 'none' }}>
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pelanggan</label>
                             <div className="col-sm-7">
                                 <AsyncSelect
                                     placeholder="Pilih Pelanggan..."
                                     cacheOptions
                                     defaultOptions
-                                    value={selectedValue}
+                                    value={selectedCustomer}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsCustomer}
@@ -550,22 +652,16 @@ const BuatSuratJalan = () => {
                                     placeholder="Pilih Alamat..."
                                     classNamePrefix="select"
                                     isLoading={isLoading}
+                                    value={selectedAddress}
                                     isSearchable
                                     getOptionLabel={(e) => e.address}
                                     getOptionValue={(e) => e.id}
                                     options={address}
-                                    onChange={(e) => setAddress(e.id)}
-                                />
-                                {/* <AsyncSelect
-                                    placeholder="Pilih Alamat..."
-                                    cacheOptions
-                                    defaultOptions
-                                    value={selectedValue2}
-                                    getOptionLabel={(e) => e.address}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsAddress}
                                     onChange={handleChangeAddress}
-                                /> */}
+
+                                // onChange={(e) => setAddress(e.id)}
+                                />
+
                             </div>
                         </div>
                     </div>
@@ -612,22 +708,20 @@ const BuatSuratJalan = () => {
                     <Button
                         type="primary"
                         icon={<PlusOutlined />}
-                        onClick={() => setModal2Visible(true)}
+                        onClick={() => {
+                            if(sumber == ''){
+                                Swal.fire("Gagal", "Mohon Pilih Transaksi Dahulu..", "error")
+                            }
+                            else{
+                                setModal2Visible(true)
+                            }
+                        }}
                     />,
                     <Modal
                         title="Tambah Tally Sheet"
                         centered
                         visible={modal2Visible}
                         onCancel={() => setModal2Visible(false)}
-                        // footer={[
-                        //     <Button
-                        //         key="submit"
-                        //         type="primary"
-
-                        //     >
-                        //         Tambah
-                        //     </Button>,
-                        // ]}
                         footer={null}
                         width={600}
                     >
@@ -642,16 +736,33 @@ const BuatSuratJalan = () => {
                                         onChange={(e) => setQuery(e.target.value.toLowerCase())}
                                     />
                                 </div>
-                                <Table
-                                    columns={columnsModal}
-                                    dataSource={getDataProduct}
-                                    scroll={{
-                                        y: 250,
-                                    }}
-                                    pagination={false}
-                                    loading={isLoading}
-                                    size="middle"
-                                />
+                                {
+                                    sumber == 'SO' ?
+                                        <Table
+                                            columns={columnsModal}
+                                            dataSource={getDataProduct}
+                                            scroll={{
+                                                y: 250,
+                                            }}
+                                            pagination={false}
+                                            loading={isLoading}
+                                            size="middle"
+                                        /> :
+                                        sumber == 'Retur' ?
+                                            <Table
+                                                columns={columnsModal}
+                                                dataSource={getDataRetur}
+                                                scroll={{
+                                                    y: 250,
+                                                }}
+                                                pagination={false}
+                                                loading={isLoading}
+                                                size="middle"
+                                            /> : null
+
+                                }
+
+
                             </div>
                         </div>
                     </Modal>,

@@ -139,9 +139,11 @@ const EditTally = () => {
                             action: dataTallySheet[i].action,
                             number_order_qty: number_order_qty,
                             tally_sheets_qty: dataTallySheet[i].tally_sheets_qty + dataTallySheet[i].boxes_quantity,
+                            tally_sheets_qty_NoEdit: dataTallySheet[i].tally_sheets_qty,
                             key: "lama"
                         })
 
+                        console.log(tmp[i].tally_sheets_qty)
                         let jumlahBaris = (Number(getData.tally_sheet_details[i].boxes.length) / 10) + 1;
                         let jumlahKolom = getData.tally_sheet_details[i].boxes.length;
                         let buatKolom = 0
@@ -546,6 +548,9 @@ const EditTally = () => {
         let tmp = []
         for (let i = 0; i < product.length; i++) {
             if (i == indexSO) {
+                console.log(product[i].tally_sheets_qty)
+                console.log(totTly[i])
+                console.log(product[i].number_order_qty)
                 tmp.push({
                     id_produk: product[i].id_produk,
                     id_pesanan_pembelian: product[i].id_pesanan_pembelian,
@@ -555,9 +560,10 @@ const EditTally = () => {
                     boxes_unit: product[i].boxes_unit,
                     product_alias_name: product[i].product_alias_name,
                     product_name: product[i].product_name,
-                    action: product[i].key == 'lama' ? Number(totTly[i]) + Number(product[i].tally_sheets_qty) >= product[i].number_order_qty ? 'Done' : 'Next delivery' : Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty) >= product[i].number_order_qty ? 'Done' : 'Next delivery',
+                    action: product[i].key == 'lama' ? Number(totTly[i]) + Number(product[i].tally_sheets_qty_NoEdit) >= product[i].number_order_qty ? 'Done' : 'Next delivery' : Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty) >= product[i].number_order_qty ? 'Done' : 'Next delivery',
                     number_order_qty: product[i].number_order_qty,
                     tally_sheets_qty: product[i].key == 'lama' ? totTly[i].toString() : Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty),
+                    tally_sheets_qty_NoEdit: product[i].tally_sheets_qty_NoEdit,
                     key: product[i].key
                 })
             }
@@ -582,6 +588,7 @@ const EditTally = () => {
                     action: tmp[indexSO].action,
                     number_order_qty: tmp[i].number_order_qty,
                     tally_sheets_qty: tmp[i].tally_sheets_qty,
+                    tally_sheets_qty_NoEdit: tmp[i].tally_sheets_qty_NoEdit,
                     key: tmp[i].key
                 })
             }
@@ -593,6 +600,153 @@ const EditTally = () => {
         console.log(sheetNoEdit)
 
     };
+
+    function klikTambahBaris() {
+        console.log(data)
+        let hasilData = [];
+        let tmpData = [];
+        // let defaultData 
+        for (let x = 0; x < product.length; x++) {
+            hasilData = [];
+
+            if (x == indexSO) {
+                let defaultData = [
+                    { readOnly: true, value: data[x].length },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' }
+                ]
+                hasilData.push(...data[x], defaultData);
+                tmpData.push(hasilData);
+
+            }
+            else {
+                tmpData.push(data[x]);
+            }
+
+        } console.log(tmpData)
+
+        setData(tmpData);
+    }
+
+    function klikHapusBaris() {
+        // setLoadingSpreadSheet(true);
+        let hasilData = [];
+        let tmpData = [...data];
+        for (let x = 0; x < product.length; x++) {
+            if (x === indexSO) {
+
+                if (tmpData[x].length - 2 > 0) {
+                    tmpData[x].splice(tmpData[x].length - 1, 1);
+                }
+            }
+        }
+        setData(tmpData)
+
+    }
+
+    function forceDoneProduct(index) {
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Status akan diubah menjadi Done",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                let newProduct = []
+                for (let i = 0; i < product.length; i++) {
+
+                    if (i == index) {
+                        newProduct.push({
+                            id_produk: product[i].id_produk,
+                            id_pesanan_pembelian: product[i].id_pesanan_pembelian,
+                            code: product[i].code,
+                            boxes_quantity: product[i].boxes_quantity,
+                            number_of_boxes: product[i].number_of_boxes,
+                            boxes_unit: product[i].boxes_unit,
+                            product_alias_name: product[i].product_alias_name,
+                            product_name: product[i].product_name,
+                            action: 'Done',
+                            number_order_qty: product[i].number_order_qty,
+                            tally_sheets_qty: product[i].tally_sheets_qty,
+                            tally_sheets_qty_NoEdit: product[i].tally_sheets_qty_NoEdit,
+                            key: product[i].key
+                        })
+
+                    }
+                    else {
+                        newProduct.push(product[i])
+
+                    }
+
+                }
+                setProduct(newProduct)
+            }
+        })
+    }
+
+    function forceNexDeliveryProduct(index) {
+        console.log(product[index].tally_sheets_qty)
+        console.log(product[index].boxes_quantity)
+        if (product[index].boxes_quantity >= product[index].number_order_qty) {
+            Swal.fire(
+                "Tidak bisa mengubah status",
+                `Jumlah ini sudah melebihi jumlah pesanan`,
+                "error"
+            )
+        }
+        else {
+            Swal.fire({
+                title: 'Apakah Anda Yakin?',
+                text: "Status akan diubah menjadi Next Delivery",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let newProduct = []
+                    for (let i = 0; i < product.length; i++) {
+                        if (i == index) {
+                            newProduct.push({
+                                id_produk: product[i].id_produk,
+                                id_pesanan_pembelian: product[i].id_pesanan_pembelian,
+                                code: product[i].code,
+                                boxes_quantity: product[i].boxes_quantity,
+                                number_of_boxes: product[i].number_of_boxes,
+                                boxes_unit: product[i].boxes_unit,
+                                product_alias_name: product[i].product_alias_name,
+                                product_name: product[i].product_name,
+                                action: 'Next delivery',
+                                number_order_qty: product[i].number_order_qty,
+                                tally_sheets_qty: product[i].tally_sheets_qty,
+                                tally_sheets_qty_NoEdit: product[i].tally_sheets_qty_NoEdit,
+                                key: product[i].key
+                            })
+                        }
+                        else {
+                            newProduct.push(product[i])
+
+                        }
+
+                    }
+                    setProduct(newProduct)
+                }
+            })
+        }
+
+    }
 
     function hapusIndexProduct(index) {
         // console.log(index)
@@ -701,7 +855,8 @@ const EditTally = () => {
                         number_order_qty: product[i].number_order_qty,
                         product_alias_name: product[i].product_alias_name,
                         product_name: product[i].product_name,
-                        tally_sheets_qty: product[i].tally_sheets_qty
+                        tally_sheets_qty: product[i].tally_sheets_qty,
+                        tally_sheets_qty_NoEdit: product[i].tally_sheets_qty_NoEdit
                     })
                 } else if (r == product.length) {
                     arr.push(product[r - 1])
@@ -1059,12 +1214,40 @@ const EditTally = () => {
                                         onCellsChanged={onCellsChanged}
                                     />
                                 </div>
+                                <div>
+                                    <Button
+                                        size='small'
+                                        type="primary"
+                                        icon={<PlusOutlined />}
+                                        onClick={() => klikTambahBaris()}
+                                    />
+                                    {
+                                        data[indexSO].length - 2 > 0 ?
+                                            <Button
+                                                className='ms-2'
+                                                size='small'
+                                                type="danger"
+                                                icon={<MinusOutlined />}
+                                                onClick={() => klikHapusBaris()}
+                                            /> :
+                                            <Button
+                                                disabled
+                                                className='ms-2'
+                                                size='small'
+                                                type="danger"
+                                                icon={<MinusOutlined />}
+                                                onClick={() => klikHapusBaris()}
+                                            />
+                                    }
+
+                                </div>
                             </div>
                         </div>
                     </Modal>
                 </>,
 
-            status: item.action === 'Done' ? <Tag color="green">{item.action}</Tag> : item.action === 'Next delivery' ? <Tag color="orange">{item.action}</Tag> : <Tag color="red">{item.action}</Tag>,
+            status: item.action === 'Done' ? <Tag color="green" type="button" onClick={() => forceNexDeliveryProduct(i)}>{item.action}</Tag> : item.action === 'Next delivery' ? <Tag color="orange" type="button" onClick={() => forceDoneProduct(i)}>{item.action}</Tag> : <Tag color="red">{item.action}</Tag>,
+
             action: <Space size="middle">
                 <Button
                     size='small'
@@ -1214,6 +1397,7 @@ const EditTally = () => {
                                     action: qtyAkhir >= qtyAwal ? 'Done' : 'Next delivery',
                                     number_order_qty: qtyAwal,
                                     tally_sheets_qty: qtyAkhir,
+                                    tally_sheets_qty_NoEdit: qtyAkhir,
                                     key: "baru"
                                 })
                             }
@@ -1440,7 +1624,14 @@ const EditTally = () => {
         e.preventDefault();
         const tallySheetData = new URLSearchParams();
         tallySheetData.append("tanggal", getTallySheet.date);
-        tallySheetData.append("pelanggan", getTallySheet.customer_id);
+        if (sumber == 'SO') {
+            tallySheetData.append("pelanggan", getTallySheet.customer_id);
+
+        }
+        if (sumber == 'Retur') {
+            tallySheetData.append("pemasok", getTallySheet.supplier_id);
+
+        }
         tallySheetData.append("gudang", getTallySheet.warehouse_id);
         tallySheetData.append("catatan", getTallySheet.notes);
         tallySheetData.append("status", "Submitted");
@@ -1450,7 +1641,14 @@ const EditTally = () => {
             tallySheetData.append("satuan_box[]", p.boxes_unit);
             tallySheetData.append("kuantitas_box[]", p.boxes_quantity);
             tallySheetData.append("aksi[]", p.action);
-            tallySheetData.append("id_pesanan_penjualan[]", p.id_pesanan_pembelian);
+            if (sumber == 'SO') {
+                tallySheetData.append("id_pesanan_penjualan[]", p.id_pesanan_pembelian);
+
+            }
+            else if (sumber == 'Retur') {
+                tallySheetData.append("id_retur_pembelian[]", p.id_pesanan_pembelian);
+
+            }
         });
 
         console.log(tallySheetData)
@@ -1826,7 +2024,7 @@ const EditTally = () => {
                 </div>
                 <div style={{ clear: 'both' }}></div>
             </PageHeader>
-            
+
             {/* <form className="  p-3 mb-5 bg-body rounded">
                 <div className="text-title text-start mb-4">
                     <div className="row">

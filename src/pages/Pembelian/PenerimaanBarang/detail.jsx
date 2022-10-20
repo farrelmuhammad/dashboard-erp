@@ -52,7 +52,7 @@ export const DetailPenerimaanBarang = () => {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        })
+        }) 
             .then((res) => {
                 const getData = res.data.data[0];
                 setDataPenerimaan(getData);

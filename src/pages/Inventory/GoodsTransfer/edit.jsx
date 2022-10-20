@@ -218,7 +218,7 @@ const EditGoodsTransfer = () => {
 
     // load options warehouse using API call
     const loadOptionsWarehouse = (inputValue) => {
-        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}`, {
+        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}&tipe=internal`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -310,6 +310,10 @@ const EditGoodsTransfer = () => {
             dataIndex: 'transfer_qty',
             width: '15%',
             align: 'center',
+            render: (text) => {
+                return <>{text.toString().replace('.', ',')}</>
+
+            }
         },
         {
             title: 'actions',
@@ -349,12 +353,20 @@ const EditGoodsTransfer = () => {
             dataIndex: 'current_qty',
             width: '15%',
             align: 'center',
+            render: (text) => {
+                return <>{text.toString().replace('.', ',')}</>
+
+            }
         },
         {
             title: 'Qty Transfer',
             dataIndex: 'transfer_qty',
             width: '15%',
             align: 'center',
+            render: (text) => {
+                return <>{text.toString().replace('.', ',')}</>
+
+            }
         },
         {
             title: 'Satuan',
