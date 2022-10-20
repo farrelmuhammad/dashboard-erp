@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import ReactSelect from 'react-select';
 import { useSelector } from 'react-redux';
+import { TenMp } from '@mui/icons-material';
 
 const EditableContext = createContext(null);
 
@@ -109,14 +110,15 @@ const EditSuratJalan = () => {
     const [sumber, setSumber] = useState("");
     const [address, setAddress] = useState("");
     const [product, setProduct] = useState('');
+    const [idTallySheet, setIdTallySheet] = useState([]);
     const [tally, setTally] = useState([]);
     const [query, setQuery] = useState("");
     const [getCode, setGetCode] = useState('');
     const navigate = useNavigate();
     const { id } = useParams();
 
-    const [getDataProduct, setGetDataProduct] = useState();
-    const [getDataRetur, setGetDataRetur] = useState();
+    const [getDataProduct, setGetDataProduct] = useState([]);
+    const [getDataRetur, setGetDataRetur] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const [subTotal, setSubTotal] = useState("");
@@ -128,7 +130,7 @@ const EditSuratJalan = () => {
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [selectedSupplier, setSelectedSupplier] = useState(null);
     const [selectedAddress, setSelectedAddress] = useState(null);
-    const [adressId, setAddressId] = useState(null);
+    const [addressId, setAddressId] = useState('');
     const [modal2Visible, setModal2Visible] = useState(false);
 
     useEffect(() => {
@@ -145,17 +147,28 @@ const EditSuratJalan = () => {
                 if (getData.customer) {
                     setCustomer(getData.customer.id)
                     setSelectedCustomer(getData.customer)
+                    setAddressId(getData.customer_address.id)
                     setSelectedAddress(getData.customer_address)
                     setSumber('SO')
                 }
                 else if (getData.supplier) {
                     setSupplier(getData.supplier.id)
                     setSelectedAddress(getData.supplier_address)
+                    setAddressId(getData.supplier_address.id)
                     setSelectedSupplier(getData.supplier)
                     setSumber('Retur')
                 }
 
                 setProduct(getData.delivery_note_details)
+                let tmp = []
+                for (let i = 0; i < getData.delivery_note_details.length; i++) {
+                    tmp.push(getData.delivery_note_details[i].tally_sheet_id)
+                }
+                console.log(tmp)
+                const unikTmp = [...new Set(tmp)];
+                console.log(unikTmp)
+                setIdTallySheet(unikTmp);
+
                 setVehicle(getData.vehicle)
                 setDescription(getData.notes)
                 setSender(getData.sender)
@@ -169,7 +182,7 @@ const EditSuratJalan = () => {
     const columns = [
         {
             title: 'No. Transaksi',
-            dataIndex: 'code',
+            dataIndex: 'tally_sheet_code',
             width: '25%',
             key: 'date',
 
@@ -193,8 +206,8 @@ const EditSuratJalan = () => {
             width: '10%',
             align: 'center',
             key: 'name',
-            render : (_,record) => {
-                return <>{record.quantity.toString().replace('.',',')}</>
+            render: (_, record) => {
+                return <>{record.quantity.toString().replace('.', ',')}</>
             }
         },
         {
@@ -276,8 +289,28 @@ const EditSuratJalan = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
+            let tmp = []
+            for (let i = 0; i < res.data.data.length; i++) {
+                for (let x = 0; x < idTallySheet.length; x++) {
 
-            setGetDataProduct(res.data.data)
+                    if (res.data.data[i].id == idTallySheet[x]) {
+                        tmp.push({
+                            detail: res.data.data[i],
+                            statusCek: true
+                        });
+                    }
+                    else {
+                        tmp.push({
+                            detail: res.data.data[i],
+                            statusCek: false
+                        });
+                    }
+
+                }
+
+            }
+            console.log(tmp)
+            setGetDataProduct(tmp)
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -291,8 +324,40 @@ const EditSuratJalan = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
+            let tmp = []
+            // let panjang = idTallySheet.length;
+            // let banding;
+            // for (let i = 0; i < res.data.data.length; i++) {
+            //     for (let x = 0; x < panjang; x++) {
+            //         if (x == 0) {
+            //             banding = idTallySheet[x]
+            //         }
+            //         else {
+            //             banding = banding + "|| res.data.data["+i+"].id == idTallySheet["+x+"]"
+            //         }
+            //     }
+            // }
 
-            setGetDataRetur(res.data.data)
+            for (let i = 0; i < res.data.data.length; i++) {
+                for (let x = 0; x < idTallySheet.length; x++) {
+                    if (res.data.data[i].id == idTallySheet[x]) {
+                        tmp.push({
+                            detail: res.data.data[i],
+                            statusCek: true
+                        });
+                    }
+                    else {
+                        tmp.push({
+                            detail: res.data.data[i],
+                            statusCek: false
+                        });
+                    }
+
+                }
+
+            }
+            console.log(tmp)
+            setGetDataRetur(tmp)
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -320,6 +385,9 @@ const EditSuratJalan = () => {
             title: 'No. Transaksi',
             width: '25%',
             dataIndex: 'code',
+            render: (_, record) => {
+                return <>{record.detail.code}</>
+            }
         },
         {
             title: sumber == 'SO' ? 'Pelanggan' : 'Supplier',
@@ -328,11 +396,11 @@ const EditSuratJalan = () => {
             align: 'center',
             render: (_, record) => {
                 if (sumber == 'SO') {
-                    return record.customer.name
+                    return record.detail.customer.name
 
                 }
                 else {
-                    return record.supplier.name
+                    return record.detail.supplier.name
 
                 }
             }
@@ -342,18 +410,22 @@ const EditSuratJalan = () => {
             dataIndex: 'warehouse',
             width: '15%',
             align: 'center',
-            render: (warehouse) => warehouse.name
+            // render: (warehouse) => warehouse.name
+            render: (_, record) => {
+                return <>{record.detail.warehouse.name}</>
+            }
         },
         {
-            title: 'actions',
-            dataIndex: 'address',
+            title: 'Actions',
+            dataIndex: 'action',
             width: '15%',
             align: 'center',
-            render: (_, record) => (
+            render: (_, record, index) => (
                 <>
                     <Checkbox
                         value={record}
-                        onChange={handleCheck}
+                        checked={record.statusCek}
+                        onChange={(e) => handleCheck(e, index)}
                     />
                 </>
             )
@@ -463,27 +535,97 @@ const EditSuratJalan = () => {
     //     };
     // });
 
-    const handleCheck = (event) => {
+    const handleCheck = (event, indexTransaksi) => {
         var updatedList = [...product];
-        if (event.target.checked) {
-            updatedList = [...product, event.target.value];
+        let tmpDataBaru = []
+        console.log(product)
+        console.log(event.target.value.detail)
+
+        if (sumber == 'Retur') {
+            // dataSumber = value.purchase_return_details;
+            for (let i = 0; i < getDataRetur.length; i++) {
+                if (i == indexTransaksi) {
+                    tmpDataBaru.push({
+                        detail: getDataRetur[i].detail,
+                        statusCek: !getDataRetur[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataRetur[i])
+                }
+            }
+            setGetDataRetur(tmpDataBaru)
+        }
+        else if (sumber == 'SO') {
+            // dataSumber = value.sales_order_details;
+            for (let i = 0; i < getDataProduct.length; i++) {
+                if (i == indexTransaksi) {
+                    tmpDataBaru.push({
+                        detail: getDataProduct[i].detail,
+                        statusCek: !getDataProduct[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataProduct[i])
+                }
+            }
+            setGetDataProduct(tmpDataBaru)
+        }
+
+        if (tmpDataBaru[indexTransaksi].statusCek) {
+            // let tmp = []
+            let dataProduk = event.target.value.detail.tally_sheet_details
+            for (let i = 0; i < dataProduk.length; i++) {
+                updatedList.push({
+                    product_alias_name: dataProduk[i].product_alias_name,
+                    product_id: dataProduk[i].product_id,
+                    product_name: dataProduk[i].product_name,
+                    purchase_return_id: dataProduk[i].purchase_return_id,
+                    quantity: dataProduk[i].boxes_quantity,
+                    returned: dataProduk[i].purchase_return_qty,
+                    sales_order_id: dataProduk[i].sales_order_id,
+                    tally_sheet_code: event.target.value.detail.code,
+                    tally_sheet_id: dataProduk[i].tally_sheet_id,
+                    unit: dataProduk[i].boxes_unit
+                })
+            }
+            // updatedList=[...product, tmp];
+            console.log(updatedList)
+
         } else {
-            updatedList.splice(product.indexOf(event.target.value), 1);
+            let jumlah = 0
+            for(let i = 0; i<updatedList.length; i++){
+                if(updatedList[i].tally_sheet_code == event.target.value.detail.code){
+                    jumlah = jumlah +1;
+                }
+            }
+            for(let i = 0; i<updatedList.length; i++){
+                if(updatedList[i].tally_sheet_code == event.target.value.detail.code){
+                    updatedList.splice(i, jumlah);
+
+                }
+            }
         }
         setProduct(updatedList);
-        setTally(updatedList.map(d => d.id));
+        setIdTallySheet(updatedList.map(d => d.tally_sheet_id));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const userData = new FormData();
+        const userData = new URLSearchParams();
         userData.append("tanggal", date);
         userData.append("kendaraan", vehicle);
         userData.append("pengirim", sender);
         userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("alamat_pelanggan", address);
-        tally.map((t) => userData.append("id_tally_sheet[]", t));
+        if (sumber == 'SO') {
+            userData.append("pelanggan", customer);
+            userData.append("alamat_pelanggan", addressId);
+        }
+        else if (sumber == 'Retur') {
+            userData.append("alamat_pemasok", addressId);
+            userData.append("pemasok", supplier);
+        }
+        idTallySheet.map((t) => userData.append("id_tally_sheet[]", t));
         userData.append("status", "Submitted");
 
         for (var pair of userData.entries()) {
@@ -491,8 +633,8 @@ const EditSuratJalan = () => {
         }
 
         axios({
-            method: "post",
-            url: `${Url}/delivery_notes`,
+            method: "put",
+            url: `${Url}/delivery_notes/${id}`,
             data: userData,
             headers: {
                 Accept: "application/json",
@@ -528,14 +670,21 @@ const EditSuratJalan = () => {
 
     const handleDraft = async (e) => {
         e.preventDefault();
-        const userData = new FormData();
+        const userData = new URLSearchParams();
         userData.append("tanggal", date);
         userData.append("kendaraan", vehicle);
         userData.append("pengirim", sender);
         userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("alamat_pelanggan", address);
-        tally.map((t) => userData.append("id_tally_sheet[]", t));
+        if (sumber == 'SO') {
+            userData.append("pelanggan", customer);
+            userData.append("alamat_pelanggan", addressId);
+        }
+        else if (sumber == 'Retur') {
+            userData.append("alamat_pemasok", addressId);
+            userData.append("pemasok", supplier);
+        }
+
+        idTallySheet.map((t) => userData.append("id_tally_sheet[]", t));
         userData.append("status", "Draft");
 
         // for (var pair of userData.entries()) {
@@ -543,8 +692,8 @@ const EditSuratJalan = () => {
         // }
 
         axios({
-            method: "post",
-            url: `${Url}/delivery_notes`,
+            method: "put",
+            url: `${Url}/delivery_notes/${id}`,
             data: userData,
             headers: {
                 Accept: "application/json",
