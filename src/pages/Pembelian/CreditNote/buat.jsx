@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
+import Select from "react-select";
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 import CurrencyFormat from 'react-currency-format';
-import { PageHeader} from 'antd';
+import { PageHeader } from 'antd';
+import { TenMp } from '@mui/icons-material';
 
 const BuatCreditNote = () => {
     const auth = useSelector(state => state.auth);
@@ -27,6 +29,8 @@ const BuatCreditNote = () => {
     const [COAId, setCOAId] = useState();
     const [fakturId, setFakturId] = useState();
     const [mataUangId, setMataUangId] = useState();
+    const [mataUang, setMataUang] = useState('Rp ');
+    const [dataSupplier, setDataSupplier] = useState();
 
     function klikEnter(event) {
         if (event.code == "Enter") {
@@ -49,6 +53,28 @@ const BuatCreditNote = () => {
         }).then((res) => res.json());
     };
 
+    useEffect(() => {
+        axios.get(`${Url}/select_suppliers?grup=impor`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => {
+            let tmp = []
+            for (let i = 0; i < res.data.length; i++) {
+                tmp.push({
+                    label: res.data[i].name,
+                    value: res.data[i].id
+                })
+            }
+            console.log(tmp)
+            setDataSupplier(tmp)
+        }
+
+
+        );
+    }, [])
+
     // handle change faktur 
     const handleChangeFaktur = (value) => {
         setFakturId(value.id);
@@ -66,6 +92,7 @@ const BuatCreditNote = () => {
     // handle change mata uang 
     const handleChangeMataUang = (value) => {
         setMataUangId(value.id);
+        setMataUang(value.name)
         setSelectedMataUang(value);
     };
     const loadOptionsMataUang = (inputValue) => {
@@ -109,6 +136,7 @@ const BuatCreditNote = () => {
 
 
     const handleSubmit = async (e) => {
+        console.log(document.getElementById('supplier'))
         e.preventDefault();
         const formData = new FormData();
         formData.append("tanggal", date);
@@ -117,7 +145,8 @@ const BuatCreditNote = () => {
         formData.append("mata_uang", mataUangId);
         formData.append("bagan_akun", COAId);
         formData.append("biaya", biayaId);
-        formData.append("nominal", nominal);
+        formData.append("nominal", nominal.replace('.', '').replace(/[^0-9\.]+/g, ""));
+
         formData.append("deskripsi", deskripsi);
         formData.append("status", 'Draft');
         axios({
@@ -136,7 +165,7 @@ const BuatCreditNote = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/penerimaanbarang");
+                navigate("/creditnote");
             })
             .catch((err) => {
                 if (err.response) {
@@ -210,11 +239,11 @@ const BuatCreditNote = () => {
 
     return (
         <>
-          <PageHeader
-          ghost={false}
-          onBack={() => window.history.back()}
-          title="Buat Credit Note">
-          </PageHeader>
+            <PageHeader
+                ghost={false}
+                onBack={() => window.history.back()}
+                title="Buat Credit Note">
+            </PageHeader>
             <form className="p-3 mb-3 bg-body rounded">
                 <div className="row">
                     <div className="col">
@@ -232,10 +261,27 @@ const BuatCreditNote = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                             <div className="col-sm-7">
+                                <Select
+                                    className="basic-single"
+                                    placeholder="Pilih Supplier..."
+                                    classNamePrefix="select"
+                                    id="supplier"
+                                    // defaultValue={selectedSupplier}
+                                    // isDisabled={isDisabled}
+                                    // isLoading={true}
+                                    isClearable={true}
+                                    // isRtl={isRtl}
+                                    isSearchable={true}
+                                    // onChange={(e) => setSupplierId(e.value)}
+                                    options={dataSupplier}
+                                />
+
                                 <AsyncSelect
                                     placeholder="Pilih Supplier..."
                                     cacheOptions
                                     defaultOptions
+                                    isClearable={true}
+                                    isSearchable={true}
                                     value={selectedSupplier}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
@@ -266,7 +312,7 @@ const BuatCreditNote = () => {
                                     className='form-control form-control-sm'
                                     thousandSeparator={'.'}
                                     decimalSeparator={','}
-                                    prefix={selectedMataUang.name + ' '}
+                                    prefix={mataUang + ' '}
                                     onKeyDown={(event) => klikEnter(event)}
                                     onChange={(e) => setNominal(e.target.value)} />
                             </div>
@@ -333,7 +379,7 @@ const BuatCreditNote = () => {
                     </div>
                 </div>
 
-                <div className="mt-5 mb-4 btn-group" role="group" aria-label="Basic mixed styles example" style={{float:'right',position:'relative'}}>
+                <div className="mt-5 mb-4 btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -359,7 +405,7 @@ const BuatCreditNote = () => {
                         Cetak
                     </button>
                 </div>
-                <div style={{clear:'both'}}></div>
+                <div style={{ clear: 'both' }}></div>
             </form>
 
         </>
