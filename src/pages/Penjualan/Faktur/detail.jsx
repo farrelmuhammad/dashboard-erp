@@ -14,6 +14,9 @@ import Search from 'antd/lib/transfer/search';
 import ReactSelect from 'react-select';
 import { useSelector } from 'react-redux';
 import { formatQuantity, formatRupiah } from '../../../utils/helper';
+import CurrencyFormat from 'react-currency-format';
+import { useReactToPrint } from 'react-to-print';
+import logo from "../../Logo.jpeg";
 
 const EditableContext = createContext(null);
 
@@ -363,16 +366,37 @@ const DetailFaktur = () => {
         }
     }
     const convertToRupiah = (angka, namaMataUang) => {
-        return <input
-            value={namaMataUang + ' ' + angka.toLocaleString('id')}
-            readOnly="true"
-            className="form-control form-control-sm"
-            id="colFormLabelSm"
-        />
+        // return <input
+        //     value={namaMataUang + ' ' + angka.toLocaleString('id')}
+        //     readOnly="true"
+        //     className="form-control form-control-sm"
+        //     id="colFormLabelSm"
+        // />
+        return <>
+        {
+            namaMataUang === 'Rp' ?
+                < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                : < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+        }
+    </>
     }
     const tableToRupiah = (angka, namaMataUang) => {
-        return namaMataUang + ' ' + angka.toLocaleString('id');
+        //return namaMataUang + ' ' + angka.toLocaleString('id');
+        return <>
+        {
+            namaMataUang === 'Rp' ?
+                < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" />
+                : < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" />
+
+        }
+    </>
     }
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+        copyStyles: true,
+        //  pageStyle: {pageStyle}
+    })
 
     useEffect(() => {
         let totalPerProduk = 0;
@@ -465,14 +489,14 @@ const DetailFaktur = () => {
         {
             title: 'Qty',
             dataIndex: 'quantity',
-            width: '10%',
+            width: '9%',
             align: 'center',
             render(text, record) {
                 return {
                     props: {
                     },
                     // children: <div>{formatQuantity(text)}</div>
-                    children: <div>{text}</div>
+                    children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
                 };
             }
         },
@@ -493,14 +517,14 @@ const DetailFaktur = () => {
         {
             title: 'Harga',
             dataIndex: 'price',
-            width: '15%',
+            width: '16%',
             align: 'center',
             render(text, record) {
                 return {
                     props: {
                     },
                     // children: <div>{formatRupiah(text)}</div>
-                    children: <div>{text}</div>
+                    children: <div>{< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.' , ',')} key="diskon" />}</div>
                 };
             }
         },
@@ -514,7 +538,7 @@ const DetailFaktur = () => {
                     props: {
                         style: { background: "#f5f5f5" }
                     },
-                    children: <div>{text}</div>
+                    children: <div>{< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.' , ',')} key="diskon" />}</div>
                 };
             }
         },
@@ -919,6 +943,218 @@ const DetailFaktur = () => {
 
     return (
         <>
+
+<div style={{ display: "none" , position:"absolute"}} >
+                <div ref={componentRef} className="p-4" >
+
+  <table>
+    <thead>
+      <tr>
+        <td>
+         
+          <div className="page-header-space"></div>
+          <div className="page-header">
+          <div className='d-flex' style={{position:"fixed", height:"100px", top:"5"}}>
+                      
+                      <div><img src={logo} width="60px"></img></div>
+                      <div className='ms-2' >
+                          <div className='header-cetak'><b>PT. BUMI MAESTROAYU</b></div>
+                          <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
+                          <div className='header-cetak'>JAKARTA SELATAN 12760</div>
+                          <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
+                      </div>
+                     
+                  </div>
+        <br/>
+        <br/>
+
+    <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold" }}>
+                      <div style={{ fontSize: "16px", textDecoration: "underline", textAlign:'center'}}>FAKTUR PENJUALAN</div>
+                      <div style={{ fontSize: "10px", textAlign:'center' }}>NO. {getCode}</div>
+                  </div>
+
+                  <div className='mt-3 mb-2 col d-flex justify-content-end ps-4 pe-4'  style={{ fontSize: "12px" }}>
+             
+                      <div className='col-6 col-md-4'>
+                      <div className="d-flex flex-row">
+                              <label className='col-6'>Tanggal</label>
+                              <div className='col-6'> : {date} </div>
+                          </div>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>Kepada Yth.</label>
+                              <div className='col-6'> : {customer} </div>
+                          </div>
+                      </div>
+
+                      {/* <div className='col-6 col-md-4'>
+                            <div className="d-flex flex-row">
+                                {
+                                    grup === 'Impor'?
+                                    <div className='col-6'> No Kontainer </div> :
+                                    <div></div>
+                                }
+                                {
+                                    grup === 'Impor' ? 
+                                    <div className='col-6'> : {dataHeader.container_number} </div>:
+                                    <div></div>
+                                }
+                            </div>
+                            <div className="d-flex flex-row">
+                                {
+                                    grup === 'Impor'?
+                                    <label className='col-6'>Muatan</label> :
+                                    <div></div>
+                                }
+                                {
+                                    grup === 'Impor'?
+                                    <div className='col-6'> : {dataHeader.payload} </div> :
+                                    <div></div>
+                                }
+                            </div>
+                            <div className="d-flex flex-row">
+                                {
+                                    grup === 'Impor'?
+                                    <label className='col-6'>Term</label> :
+                                    <div></div>
+                                }
+                                {
+                                    grup === 'Impor'?
+                                    <div className='col-6'> : {dataHeader.term} </div> : 
+                                    <div></div>
+                                }
+                            </div>
+                            <div className="d-flex flex-row">
+                                {
+                                    grup === 'Impor'?
+                                    <label className='col-6'>Ctn</label> :
+                                    <div></div>
+                                }
+                                {
+                                    grup === 'Impor'?
+                                    <div className='col-6'> : {dataHeader.carton} </div> : 
+                                    <div></div>
+                                }
+                            </div>
+
+                      </div> */}
+                  </div>
+
+                    <br/>
+                </div>
+        </td>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>
+       
+        
+          <div className="page" style={{lineHeight:"2"}}>
+ 
+          <div className='mt-1 ps-3 pe-3' >
+                       
+                        <table style={{ fontSize: "10px", width: "100%", pageBreakAfter:"auto"}}>
+                            <tr className='text-center border' style={{ height: "50px", pageBreakInside:"avoid", pageBreakAfter:"auto" }}>
+                                <th width="50px" className='border'>No</th>
+                                <th width="280px" className='border'>Nama Produk</th>
+                                <th width="130px" className='border'>Qty</th>  
+                                <th width="150px" className='border'>Stn</th>  
+                                <th width="150px" className='border'>Harga</th>                           
+                                <th width="160px" className='border'>Jumlah</th>
+                            
+                            </tr>
+                            <tbody className="border">
+                                {
+                                    product.map((item, i) => (
+                                        <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
+                                               <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{i+1}</td>
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{item.product_alias_name}</td>
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{Number(item.quantity).toFixed(2).replace('.',',')}</td>
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{item.unit}</td>
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{
+                                           tableToRupiah(item.price, "Rp")
+                                      
+                                            // mataUang + ' ' + Number(item.price).toFixed(2).toLocaleString('id')
+                                            }</td>
+                               
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{
+                                            // mataUang + ' ' + Number(item.total).toFixed(2).toLocaleString('id')
+                                            tableToRupiah(item.total, "Rp")
+                                            }</td>
+
+                                     </tr>
+                                    ))  
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    </div>
+                    </td>
+                </tr>
+                </tbody>
+
+                <tfoot>
+           <tr>
+            <td>
+                    <div className="page-footer-space"></div>
+                    <div className="page-footer" style={{position:"fixed", marginBottom:"0px", marginTop:"500px", width:"95%"}} >
+
+                    <div className='mt-3 col d-flex justify-content-end ps-2 pe-2' style={{ fontSize: "12px" , borderWidth:"0px"}}>
+                    <table style={{ fontSize: "10px", width: "100%", pageBreakAfter:"auto", marginRight:"10px", marginLeft:"10px"}}>
+                            <tr className='text-start border' style={{ height: "35px", pageBreakInside:"avoid", pageBreakAfter:"auto" }}>
+                                <td width="450px" className='border' style={{paddingLeft:"2px"}}> Jumlah Harga Jual / Penggantian / Uang Muka / Termin *)</td>
+                                <td width="90px" className='border'>  {tableToRupiah(subTotal, "Rp")}</td>
+                            </tr>
+                            <tbody className="border">
+                            <tr>
+                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border text-start'> Potongan Harga </td>
+                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border text-start'> {tableToRupiah(grandTotalDiscount, "Rp")}</td>
+                            </tr>
+                            <tr>
+                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border text-start'> Uang Muka yang Telah Diterima </td>
+                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border text-start'> {}</td>
+                            </tr>
+                            <tr>
+                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border text-start'> Dasar Pengenaan Pajak </td>
+                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border text-start'> {}</td>
+                            </tr>
+                            <tr>
+                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border text-start'> PPN </td>
+                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border text-start'> {tableToRupiah(totalPpn, "Rp")}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div className='d-flex flex-row mt-2 ps-2 pe-2' style={{ fontSize: "10px" }}>
+                    <div style={{ width: "61%" }}> </div>
+                    <div className='justify-content-right ' style={{ width: "39%" }}>
+                                                <div className='d-flex mt-3 justify-content-right  '>
+                                                    <label className='col-6'><b>Jumlah </b></label>
+                                                    <div> : </div>
+                                                    <div width="100%" className="col-6" > {
+                                                        tableToRupiah(subTotal, "Rp")
+                                                    }
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                    </div>
+                   
+                        </div>
+                    </td>
+                </tr>
+              </tfoot>
+
+
+    </table>
+
+</div>
+</div>
+
+
             <PageHeader
                 className="bg-body rounded mb-2"
                 onBack={() => window.history.back()}
@@ -929,7 +1165,7 @@ const DetailFaktur = () => {
                             type="primary"
                             icon={<PrinterOutlined />}
                             style={{ background: "orange", borderColor: "orange" }}
-                        // onClick={handlePrint}
+                            onClick={handlePrint}
                         />
                     </Tooltip>,
                 ]}
@@ -938,7 +1174,7 @@ const DetailFaktur = () => {
                     <div className="col">
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
-                            <div className="col-sm-4">
+                            <div className="col-sm-7">
                                 <input
                                     id="startDate"
                                     className="form-control"
@@ -1110,7 +1346,7 @@ const DetailFaktur = () => {
                         </div>
                     </div>
                 </div>
-                <div className="btn-group mt-2" role="group" aria-label="Basic mixed styles example">
+                {/* <div className="btn-group mt-2" role="group" aria-label="Basic mixed styles example">
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -1134,7 +1370,7 @@ const DetailFaktur = () => {
                         className="btn btn-warning rounded m-1">
                         Cetak
                     </button>
-                </div>
+                </div> */}
             </PageHeader>
         </>
     )
