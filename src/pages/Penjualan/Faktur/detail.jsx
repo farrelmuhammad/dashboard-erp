@@ -1090,41 +1090,63 @@ const DetailFaktur = () => {
                         </table>
                     </div>
 
+                    </div>
+                    </td>
+                </tr>
+                </tbody>
 
+                <tfoot>
+           <tr>
+            <td>
+                    <div className="page-footer-space"></div>
+                    <div className="page-footer" style={{position:"fixed", marginBottom:"0px", marginTop:"500px", width:"95%"}} >
 
-
-
-                    <div className='mt-3 col d-flex justify-content-end ps-1 pe-1' style={{ fontSize: "12px" , borderWidth:"0px"}}>
-                    <table style={{ fontSize: "10px", width: "100%", pageBreakAfter:"auto"}}>
-                            <tr className='text-start border' style={{ height: "30px", pageBreakInside:"avoid", pageBreakAfter:"auto" }}>
-                                <th width="400px" className='border' style={{paddingLeft:"2px"}}> Jumlah Harga Jual / Penggantian / Uang Muka / Termin *)</th>
-                                <th width="100px" className='border'>  {tableToRupiah(subTotal, "Rp")}</th>
+                    <div className='mt-3 col d-flex justify-content-end ps-2 pe-2' style={{ fontSize: "12px" , borderWidth:"0px"}}>
+                    <table style={{ fontSize: "10px", width: "100%", pageBreakAfter:"auto", marginRight:"10px", marginLeft:"10px"}}>
+                            <tr className='text-start border' style={{ height: "35px", pageBreakInside:"avoid", pageBreakAfter:"auto" }}>
+                                <td width="450px" className='border' style={{paddingLeft:"2px"}}> Jumlah Harga Jual / Penggantian / Uang Muka / Termin *)</td>
+                                <td width="90px" className='border'>  {tableToRupiah(subTotal, "Rp")}</td>
                             </tr>
                             <tbody className="border">
                             <tr>
-                                <td> Potongan Harga </td>
-                                <td> {tableToRupiah(grandTotalDiscount, "Rp")}</td>
+                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border text-start'> Potongan Harga </td>
+                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border text-start'> {tableToRupiah(grandTotalDiscount, "Rp")}</td>
                             </tr>
                             <tr>
-                                <td> Uang Muka yang Telah Diterima </td>
-                                <td> {tableToRupiah(grandTotalDiscount, "Rp")}</td>
+                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border text-start'> Uang Muka yang Telah Diterima </td>
+                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border text-start'> {}</td>
                             </tr>
                             <tr>
-                                <td> Dasar Pengenaan Pajak </td>
-                                <td> {tableToRupiah(grandTotalDiscount, "Rp")}</td>
+                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border text-start'> Dasar Pengenaan Pajak </td>
+                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border text-start'> {}</td>
                             </tr>
                             <tr>
-                                <td> PPN </td>
-                                <td> {tableToRupiah(totalPpn, "Rp")}</td>
+                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border text-start'> PPN </td>
+                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border text-start'> {tableToRupiah(totalPpn, "Rp")}</td>
                             </tr>
                             </tbody>
                         </table>
                     </div>
 
+                    <div className='d-flex flex-row mt-2 ps-2 pe-2' style={{ fontSize: "10px" }}>
+                    <div style={{ width: "61%" }}> </div>
+                    <div className='justify-content-right ' style={{ width: "39%" }}>
+                                                <div className='d-flex mt-3 justify-content-right  '>
+                                                    <label className='col-6'><b>Jumlah </b></label>
+                                                    <div> : </div>
+                                                    <div width="100%" className="col-6" > {
+                                                        tableToRupiah(subTotal, "Rp")
+                                                    }
+                                                    </div>
+                                                </div>
+
+                                            </div>
                     </div>
+                   
+                        </div>
                     </td>
                 </tr>
-                </tbody>
+              </tfoot>
 
 
     </table>

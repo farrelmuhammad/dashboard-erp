@@ -610,6 +610,11 @@ const RouteApp = () => {
         <Route path="/pembayaranpembelian/buat" exact element={<BuatPembayaranPembelian />} />
         <Route path="/pembayaranpembelian/edit/:id" exact element={<EditPembayaranPembelian />} />
         <Route path="/pembayaranpembelian/detail/:id" exact element={<DetailPembayaranPembelian />} />
+
+        <Route path="/pemetaan" exact element={<AccountMapping />} />
+        <Route path="/pembayaranpembelian/buat" exact element={<BuatPembayaranPembelian />} />
+        <Route path="/pembayaranpembelian/edit/:id" exact element={<EditPembayaranPembelian />} />
+        <Route path="/pembayaranpembelian/detail/:id" exact element={<DetailPembayaranPembelian />} />
     </>
 
 

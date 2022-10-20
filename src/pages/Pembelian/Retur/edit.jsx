@@ -87,7 +87,7 @@ const EditReturPembelian = () => {
                 setGrandTotalDiscount(getData.discount);
                 setTotalPpn(getData.ppn)
 
-                let total = Number(getData.total) - Number(getData.discount) + Number(getData.ppn)
+                let total = Number(getData.subtotal) - Number(getData.discount) + Number(getData.ppn)
                 setTotalKeseluruhan(total)
                 // setTampilProduk(getData.purchase_return_details)
 
@@ -532,7 +532,7 @@ const EditReturPembelian = () => {
     const dataProduk =
         [...tampilProduk.map((item, i) => ({
             name_product: item.label,
-            qty: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.quantity} onChange={(e) => klikUbahData(i, e.target.value, "qty")} key="qty" />,
+            qty: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.quantity.toString().replace('.', ',')} onChange={(e) => klikUbahData(i, e.target.value, "qty")} key="qty" />,
             stn: item.unit,
             prc:
                 <div className='d-flex'>
@@ -647,7 +647,7 @@ const EditReturPembelian = () => {
 
         for (let i = 0; i < tampilProduk.length; i++) {
             dataRetur.append('id_produk[]', tampilProduk[i].value);
-            dataRetur.append('kuantitas[]', tampilProduk[i].quantity);
+            dataRetur.append('kuantitas[]', tampilProduk[i].quantity.toString().replace(',', '.'));
             dataRetur.append('satuan[]', tampilProduk[i].unit);
             dataRetur.append('persentase_diskon[]', tampilProduk[i].discount_percentage);
             dataRetur.append('diskon_tetap[]', tampilProduk[i].fixed_discount);
@@ -705,7 +705,7 @@ const EditReturPembelian = () => {
 
         for (let i = 0; i < tampilProduk.length; i++) {
             dataRetur.append('id_produk[]', tampilProduk[i].value);
-            dataRetur.append('kuantitas[]', tampilProduk[i].quantity);
+            dataRetur.append('kuantitas[]', tampilProduk[i].quantity.toString().replace(',', '.'));
             dataRetur.append('satuan[]', tampilProduk[i].unit);
             dataRetur.append('persentase_diskon[]', tampilProduk[i].discount_percentage);
             dataRetur.append('diskon_tetap[]', tampilProduk[i].fixed_discount);

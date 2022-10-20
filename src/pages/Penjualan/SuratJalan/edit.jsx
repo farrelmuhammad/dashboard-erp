@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import ReactSelect from 'react-select';
 import { useSelector } from 'react-redux';
+import { TenMp } from '@mui/icons-material';
 
 const EditableContext = createContext(null);
 
@@ -104,15 +105,20 @@ const EditSuratJalan = () => {
     const [sender, setSender] = useState("");
     const [customer, setCustomer] = useState("");
     const [customerName, setCustomerName] = useState("");
+    const [supplier, setSupplier] = useState("");
+    const [supplierName, setSupplierName] = useState("");
+    const [sumber, setSumber] = useState("");
     const [address, setAddress] = useState("");
     const [product, setProduct] = useState('');
+    const [idTallySheet, setIdTallySheet] = useState([]);
     const [tally, setTally] = useState([]);
     const [query, setQuery] = useState("");
     const [getCode, setGetCode] = useState('');
     const navigate = useNavigate();
     const { id } = useParams();
 
-    const [getDataProduct, setGetDataProduct] = useState();
+    const [getDataProduct, setGetDataProduct] = useState([]);
+    const [getDataRetur, setGetDataRetur] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const [subTotal, setSubTotal] = useState("");
@@ -121,8 +127,10 @@ const EditSuratJalan = () => {
     const [grandTotal, setGrandTotal] = useState("");
     const [checked, setChecked] = useState("");
 
-    const [selectedValue, setSelectedCustomer] = useState(null);
-    const [selectedValue2, setSelectedAddress] = useState(null);
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const [selectedSupplier, setSelectedSupplier] = useState(null);
+    const [selectedAddress, setSelectedAddress] = useState(null);
+    const [addressId, setAddressId] = useState('');
     const [modal2Visible, setModal2Visible] = useState(false);
 
     useEffect(() => {
@@ -136,8 +144,31 @@ const EditSuratJalan = () => {
                 const getData = res.data.data[0]
                 setGetCode(getData.code)
                 setDate(getData.date)
-                setCustomer(getData.customer.id)
-                setCustomerName(getData.customer.name)
+                if (getData.customer) {
+                    setCustomer(getData.customer.id)
+                    setSelectedCustomer(getData.customer)
+                    setAddressId(getData.customer_address.id)
+                    setSelectedAddress(getData.customer_address)
+                    setSumber('SO')
+                }
+                else if (getData.supplier) {
+                    setSupplier(getData.supplier.id)
+                    setSelectedAddress(getData.supplier_address)
+                    setAddressId(getData.supplier_address.id)
+                    setSelectedSupplier(getData.supplier)
+                    setSumber('Retur')
+                }
+
+                setProduct(getData.delivery_note_details)
+                let tmp = []
+                for (let i = 0; i < getData.delivery_note_details.length; i++) {
+                    tmp.push(getData.delivery_note_details[i].tally_sheet_id)
+                }
+                console.log(tmp)
+                const unikTmp = [...new Set(tmp)];
+                console.log(unikTmp)
+                setIdTallySheet(unikTmp);
+
                 setVehicle(getData.vehicle)
                 setDescription(getData.notes)
                 setSender(getData.sender)
@@ -146,84 +177,207 @@ const EditSuratJalan = () => {
             })
     }, [])
 
-    const expandedRowRender = (product) => {
-        // const handleAdd = () => {
-        //     const newData = {
-        //         key: `${count}`,
-        //         alias_name: '',
-        //         name: '',
-        //         stn: '',
-        //         box: '',
-        //         action: '',
-        //     }
-        // setProduct([...product.sales_order_details, newData]);
-        // setCount(count + 1)
-        // }
+    // const expandedRowRender = (product) => {
 
-        const columns = [
-            {
-                title: 'Nama Alias',
-                dataIndex: 'product_alias_name',
-                width: '25%',
-                key: 'date',
+    const columns = [
+        {
+            title: 'No. Transaksi',
+            dataIndex: 'tally_sheet_code',
+            width: '25%',
+            key: 'date',
 
+        },
+        {
+            title: 'Nama Alias',
+            dataIndex: 'product_alias_name',
+            width: '25%',
+            key: 'date',
+
+        },
+        {
+            title: 'Nama Product',
+            dataIndex: 'product_name',
+            width: '25%',
+            key: 'name',
+        },
+        {
+            title: 'Qty',
+            dataIndex: 'quantity',
+            width: '10%',
+            align: 'center',
+            key: 'name',
+            render: (_, record) => {
+                return <>{record.quantity.toString().replace('.', ',')}</>
+            }
+        },
+        {
+            title: 'Stn',
+            dataIndex: 'unit',
+            align: 'center',
+            width: '10%',
+            key: 'name',
+        },
+    ];
+    // return <Table columns={columns} dataSource={product.tally_sheet_details} pagination={false} />;
+    // };
+
+    const handleChangeSupplier = (value) => {
+        setSupplier(value.id);
+        setProduct([])
+        setSelectedSupplier(value);
+        // setSelectedAddress(value.supplier_addresses)
+        setGrup(value._group)
+    };
+    // load options using API call
+    const loadOptionsSupplier = (inputValue) => {
+        return axios.get(`${Url}/delivery_notes_available_suppliers?nama=${inputValue}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
             },
-            {
-                title: 'Nama Product',
-                dataIndex: 'product_name',
-                width: '25%',
-                key: 'name',
-            },
-            {
-                title: 'Qty',
-                dataIndex: 'boxes_quantity',
-                width: '10%',
-                align: 'center',
-                key: 'name',
-            },
-            {
-                title: 'Stn',
-                dataIndex: 'boxes_unit',
-                align: 'center',
-                width: '10%',
-                key: 'name',
-            },
-        ];
-        return <Table columns={columns} dataSource={product.tally_sheet_details} pagination={false} />;
+        }).then((res) => res.data.data);
     };
 
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
         setCustomer(value.id);
-        setAddress(value.customer_addresses)
+        // setSelectedAddress(value.customer_addresses)
     };
 
-    // console.log(address)
-
-    // console.log(selectedValue);
     // load options using API call
     const loadOptionsCustomer = (inputValue) => {
-        return fetch(`${Url}/select_customers?limit=10&nama=${inputValue}`, {
+        return axios.get(`${Url}/delivery_notes_available_customers?nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => res.data.data);
+    };
+
+    const loadOptionsAddress = (inputValue) => {
+        if (sumber == 'Retur') {
+            return axios.get(`${Url}/supplier_addresses?alamat=${inputValue}&id_pemasok=${supplier}`, {
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            }).then((res) => res.data);
+        }
+        else if (sumber == 'SO') {
+            return axios.get(`${Url}/customer_addresses?alamat=${inputValue}&pelanggan=${supplier}`, {
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            }).then((res) => res.data.data);
+        }
+
+    };
+
+    const handleChangeAddress = (value) => {
+        console.log(value)
+        setSelectedAddress(value);
+        setAddressId(value.id);
+        // setAddress(value.customer_addresses)
     };
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_tally_sheets?nama_alias=${query}&id_pelanggan=${customer}`, {
+            const res = await axios.get(`${Url}/delivery_notes_available_tally_sheets?nama_alias=${query}&pelanggan=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
+            let tmp = []
+            for (let i = 0; i < res.data.data.length; i++) {
+                for (let x = 0; x < idTallySheet.length; x++) {
+
+                    if (res.data.data[i].id == idTallySheet[x]) {
+                        tmp.push({
+                            detail: res.data.data[i],
+                            statusCek: true
+                        });
+                    }
+                    else {
+                        tmp.push({
+                            detail: res.data.data[i],
+                            statusCek: false
+                        });
+                    }
+
+                }
+
+            }
+            console.log(tmp)
+            setGetDataProduct(tmp)
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
     }, [query, customer])
+
+    useEffect(() => {
+        const getProduct = async () => {
+            const res = await axios.get(`${Url}/delivery_notes_available_tally_sheets?nama_alias=${query}&pemasok=${supplier}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${auth.token}`
+                }
+            })
+            let tmp = []
+            // let panjang = idTallySheet.length;
+            // let banding;
+            // for (let i = 0; i < res.data.data.length; i++) {
+            //     for (let x = 0; x < panjang; x++) {
+            //         if (x == 0) {
+            //             banding = idTallySheet[x]
+            //         }
+            //         else {
+            //             banding = banding + "|| res.data.data["+i+"].id == idTallySheet["+x+"]"
+            //         }
+            //     }
+            // }
+
+            for (let i = 0; i < res.data.data.length; i++) {
+                for (let x = 0; x < idTallySheet.length; x++) {
+                    if (res.data.data[i].id == idTallySheet[x]) {
+                        tmp.push({
+                            detail: res.data.data[i],
+                            statusCek: true
+                        });
+                    }
+                    else {
+                        tmp.push({
+                            detail: res.data.data[i],
+                            statusCek: false
+                        });
+                    }
+
+                }
+
+            }
+            console.log(tmp)
+            setGetDataRetur(tmp)
+        };
+
+        if (query.length === 0 || query.length > 2) getProduct();
+    }, [query, supplier])
+
+    // useEffect(() => {
+    //     const getProduct = async () => {
+    //         const res = await axios.get(`${Url}/customer_addresses?nama_alias=${query}&pemasok=${supplier}`, {
+    //             headers: {
+    //                 'Accept': 'application/json',
+    //                 'Authorization': `Bearer ${auth.token}`
+    //             }
+    //         })
+
+    //         setGetDataRetur(res.data.data)
+    //     };
+
+    //     if (query.length === 0 || query.length > 2) getProduct();
+    // }, [query, supplier, customer])
+
 
     // Column for modal input product
     const columnsModal = [
@@ -231,54 +385,70 @@ const EditSuratJalan = () => {
             title: 'No. Transaksi',
             width: '25%',
             dataIndex: 'code',
+            render: (_, record) => {
+                return <>{record.detail.code}</>
+            }
         },
         {
-            title: 'Pelanggan',
+            title: sumber == 'SO' ? 'Pelanggan' : 'Supplier',
             dataIndex: 'customer',
-            width: '15%',
+            width: '20%',
             align: 'center',
-            render: (customer) => customer.name
+            render: (_, record) => {
+                if (sumber == 'SO') {
+                    return record.detail.customer.name
+
+                }
+                else {
+                    return record.detail.supplier.name
+
+                }
+            }
         },
         {
             title: 'Gudang',
             dataIndex: 'warehouse',
             width: '15%',
             align: 'center',
-            render: (warehouse) => warehouse.name
+            // render: (warehouse) => warehouse.name
+            render: (_, record) => {
+                return <>{record.detail.warehouse.name}</>
+            }
         },
         {
-            title: 'actions',
-            dataIndex: 'address',
+            title: 'Actions',
+            dataIndex: 'action',
             width: '15%',
             align: 'center',
-            render: (_, record) => (
+            render: (_, record, index) => (
                 <>
                     <Checkbox
                         value={record}
-                        onChange={handleCheck}
+                        checked={record.statusCek}
+                        onChange={(e) => handleCheck(e, index)}
                     />
                 </>
             )
         },
     ];
 
-    const defaultColumns = [
-        {
-            title: 'No. Transaksi',
-            dataIndex: 'code',
-            align: 'center',
-        },
-        {
-            title: 'Status',
-            dataIndex: 'status',
-            align: 'center',
-            render: (_, { status }) => (
-                <>
-                    <Tag color="blue">{status}</Tag>
-                </>
-            ),
-        },
-    ];
+    // const defaultColumns = [
+    //     {
+    //         title: 'No. Transaksi',
+    //         dataIndex: 'code',
+    //         align: 'center',
+    //     },
+    //     {
+    //         title: 'Status',
+    //         dataIndex: 'status',
+    //         align: 'center',
+    //         render: (_, { status }) => (
+    //             <>
+    //                 <Tag color="blue">{status}</Tag>
+    //             </>
+    //         ),
+    //     },
+    // ];
 
     const handleChange = () => {
         setChecked(!checked);
@@ -342,50 +512,120 @@ const EditSuratJalan = () => {
             }
         })
     }
-    const components = {
-        body: {
-            row: EditableRow,
-            cell: EditableCell,
-        },
-    };
-    const columns = defaultColumns.map((col) => {
-        if (!col.editable) {
-            return col;
+    // const components = {
+    //     body: {
+    //         row: EditableRow,
+    //         cell: EditableCell,
+    //     },
+    // };
+    // const columns = defaultColumns.map((col) => {
+    //     if (!col.editable) {
+    //         return col;
+    //     }
+
+    //     return {
+    //         ...col,
+    //         onCell: (record) => ({
+    //             record,
+    //             editable: col.editable,
+    //             dataIndex: col.dataIndex,
+    //             title: col.title,
+    //             handleSave,
+    //         }),
+    //     };
+    // });
+
+    const handleCheck = (event, indexTransaksi) => {
+        var updatedList = [...product];
+        let tmpDataBaru = []
+        console.log(product)
+        console.log(event.target.value.detail)
+
+        if (sumber == 'Retur') {
+            // dataSumber = value.purchase_return_details;
+            for (let i = 0; i < getDataRetur.length; i++) {
+                if (i == indexTransaksi) {
+                    tmpDataBaru.push({
+                        detail: getDataRetur[i].detail,
+                        statusCek: !getDataRetur[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataRetur[i])
+                }
+            }
+            setGetDataRetur(tmpDataBaru)
+        }
+        else if (sumber == 'SO') {
+            // dataSumber = value.sales_order_details;
+            for (let i = 0; i < getDataProduct.length; i++) {
+                if (i == indexTransaksi) {
+                    tmpDataBaru.push({
+                        detail: getDataProduct[i].detail,
+                        statusCek: !getDataProduct[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataProduct[i])
+                }
+            }
+            setGetDataProduct(tmpDataBaru)
         }
 
-        return {
-            ...col,
-            onCell: (record) => ({
-                record,
-                editable: col.editable,
-                dataIndex: col.dataIndex,
-                title: col.title,
-                handleSave,
-            }),
-        };
-    });
+        if (tmpDataBaru[indexTransaksi].statusCek) {
+            // let tmp = []
+            let dataProduk = event.target.value.detail.tally_sheet_details
+            for (let i = 0; i < dataProduk.length; i++) {
+                updatedList.push({
+                    product_alias_name: dataProduk[i].product_alias_name,
+                    product_id: dataProduk[i].product_id,
+                    product_name: dataProduk[i].product_name,
+                    purchase_return_id: dataProduk[i].purchase_return_id,
+                    quantity: dataProduk[i].boxes_quantity,
+                    returned: dataProduk[i].purchase_return_qty,
+                    sales_order_id: dataProduk[i].sales_order_id,
+                    tally_sheet_code: event.target.value.detail.code,
+                    tally_sheet_id: dataProduk[i].tally_sheet_id,
+                    unit: dataProduk[i].boxes_unit
+                })
+            }
+            // updatedList=[...product, tmp];
+            console.log(updatedList)
 
-    const handleCheck = (event) => {
-        var updatedList = [...product];
-        if (event.target.checked) {
-            updatedList = [...product, event.target.value];
         } else {
-            updatedList.splice(product.indexOf(event.target.value), 1);
+            let jumlah = 0
+            for(let i = 0; i<updatedList.length; i++){
+                if(updatedList[i].tally_sheet_code == event.target.value.detail.code){
+                    jumlah = jumlah +1;
+                }
+            }
+            for(let i = 0; i<updatedList.length; i++){
+                if(updatedList[i].tally_sheet_code == event.target.value.detail.code){
+                    updatedList.splice(i, jumlah);
+
+                }
+            }
         }
         setProduct(updatedList);
-        setTally(updatedList.map(d => d.id));
+        setIdTallySheet(updatedList.map(d => d.tally_sheet_id));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const userData = new FormData();
+        const userData = new URLSearchParams();
         userData.append("tanggal", date);
         userData.append("kendaraan", vehicle);
         userData.append("pengirim", sender);
         userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("alamat_pelanggan", address);
-        tally.map((t) => userData.append("id_tally_sheet[]", t));
+        if (sumber == 'SO') {
+            userData.append("pelanggan", customer);
+            userData.append("alamat_pelanggan", addressId);
+        }
+        else if (sumber == 'Retur') {
+            userData.append("alamat_pemasok", addressId);
+            userData.append("pemasok", supplier);
+        }
+        idTallySheet.map((t) => userData.append("id_tally_sheet[]", t));
         userData.append("status", "Submitted");
 
         for (var pair of userData.entries()) {
@@ -393,8 +633,8 @@ const EditSuratJalan = () => {
         }
 
         axios({
-            method: "post",
-            url: `${Url}/delivery_notes`,
+            method: "put",
+            url: `${Url}/delivery_notes/${id}`,
             data: userData,
             headers: {
                 Accept: "application/json",
@@ -430,14 +670,21 @@ const EditSuratJalan = () => {
 
     const handleDraft = async (e) => {
         e.preventDefault();
-        const userData = new FormData();
+        const userData = new URLSearchParams();
         userData.append("tanggal", date);
         userData.append("kendaraan", vehicle);
         userData.append("pengirim", sender);
         userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("alamat_pelanggan", address);
-        tally.map((t) => userData.append("id_tally_sheet[]", t));
+        if (sumber == 'SO') {
+            userData.append("pelanggan", customer);
+            userData.append("alamat_pelanggan", addressId);
+        }
+        else if (sumber == 'Retur') {
+            userData.append("alamat_pemasok", addressId);
+            userData.append("pemasok", supplier);
+        }
+
+        idTallySheet.map((t) => userData.append("id_tally_sheet[]", t));
         userData.append("status", "Draft");
 
         // for (var pair of userData.entries()) {
@@ -445,8 +692,8 @@ const EditSuratJalan = () => {
         // }
 
         axios({
-            method: "post",
-            url: `${Url}/delivery_notes`,
+            method: "put",
+            url: `${Url}/delivery_notes/${id}`,
             data: userData,
             headers: {
                 Accept: "application/json",
@@ -527,14 +774,39 @@ const EditSuratJalan = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pilih Transaksi</label>
+                            <div className="col-sm-7">
+                                <input
+                                    value={sumber == 'SO' ? 'Pesanan Penjualan' : 'Retur Pembelian'}
+                                    type="Nama"
+                                    className="form-control"
+                                    disabled
+                                />
+                            </div>
+                        </div>
+                        <div className="row mb-3" style={{ display: sumber == 'Retur' ? 'flex' : 'none' }}>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
+                            <div className="col-sm-7">
+                                <AsyncSelect
+                                    placeholder="Pilih Supplier..."
+                                    cacheOptions
+                                    defaultOptions
+                                    value={selectedSupplier}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsSupplier}
+                                    onChange={handleChangeSupplier}
+                                />
+                            </div>
+                        </div>
+                        <div className="row mb-3" style={{ display: sumber == 'SO' ? 'flex' : 'none' }}>
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pelanggan</label>
                             <div className="col-sm-7">
                                 <AsyncSelect
                                     placeholder="Pilih Pelanggan..."
                                     cacheOptions
                                     defaultOptions
-                                    defaultInputValue={customerName}
-                                    value={selectedValue}
+                                    value={selectedCustomer}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsCustomer}
@@ -545,27 +817,18 @@ const EditSuratJalan = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Alamat</label>
                             <div className="col-sm-7">
-                                <ReactSelect
-                                    className="basic-single"
-                                    placeholder="Pilih Alamat..."
-                                    classNamePrefix="select"
-                                    isLoading={isLoading}
-                                    isSearchable
-                                    getOptionLabel={(e) => e.address}
-                                    getOptionValue={(e) => e.id}
-                                    options={address}
-                                    onChange={(e) => setAddress(e.id)}
-                                />
-                                {/* <AsyncSelect
+                                <AsyncSelect
                                     placeholder="Pilih Alamat..."
                                     cacheOptions
                                     defaultOptions
-                                    value={selectedValue2}
+                                    value={selectedAddress}
                                     getOptionLabel={(e) => e.address}
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsAddress}
                                     onChange={handleChangeAddress}
-                                /> */}
+                                // onChange={(e) => setAddress(e.id)}
+                                />
+
                             </div>
                         </div>
                     </div>
@@ -643,31 +906,46 @@ const EditSuratJalan = () => {
                                         onChange={(e) => setQuery(e.target.value.toLowerCase())}
                                     />
                                 </div>
-                                <Table
-                                    columns={columnsModal}
-                                    dataSource={getDataProduct}
-                                    scroll={{
-                                        y: 250,
-                                    }}
-                                    pagination={false}
-                                    loading={isLoading}
-                                    size="middle"
-                                />
+                                {
+                                    sumber == 'SO' ?
+                                        <Table
+                                            columns={columnsModal}
+                                            dataSource={getDataProduct}
+                                            scroll={{
+                                                y: 250,
+                                            }}
+                                            pagination={false}
+                                            loading={isLoading}
+                                            size="middle"
+                                        /> :
+                                        sumber == 'Retur' ?
+                                            <Table
+                                                columns={columnsModal}
+                                                dataSource={getDataRetur}
+                                                scroll={{
+                                                    y: 250,
+                                                }}
+                                                pagination={false}
+                                                loading={isLoading}
+                                                size="middle"
+                                            /> : null
+
+                                }
                             </div>
                         </div>
                     </Modal>,
                 ]}
             >
                 <Table
-                    components={components}
+                    // components={components}
                     bordered
                     pagination={false}
                     dataSource={product}
                     columns={columns}
-                    expandable={{
-                        expandedRowRender,
-                        defaultExpandedRowKeys: ['0'],
-                    }}
+                // expandable={{
+                //     expandedRowRender,
+                //     defaultExpandedRowKeys: ['0'],
+                // }}
                 // onChange={(e) => setProduct(e.id)}
                 />
 
