@@ -277,9 +277,9 @@ export const DetailPenerimaanBarang = () => {
                           </div>
                           <div className="d-flex flex-row">
                               <label className='col-8'>No. Tally Sheet</label>
-                              <div>:</div>
+                              {/* <div>:</div> */}
                               <div className='col-8'>
-                                    {
+                                   : {
                                         nomorTS().map((item) => (
                                             <> {item}</>
                                         ))
