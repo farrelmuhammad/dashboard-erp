@@ -14,6 +14,7 @@ import Search from 'antd/lib/transfer/search';
 import ReactSelect from 'react-select';
 import { useSelector } from 'react-redux';
 import { formatQuantity, formatRupiah } from '../../../utils/helper';
+import { update } from 'lodash';
 
 const EditableContext = createContext(null);
 
@@ -111,7 +112,7 @@ const BuatFaktur = () => {
     const auth = useSelector(state => state.auth);
 
     const [getDataProduct, setGetDataProduct] = useState();
-    const [getDataProduct2, setGetDataProduct2] = useState();
+    const [getDataSurat, setGetDataSurat] = useState();
     const [isLoading, setIsLoading] = useState(false);
 
     const [subTotal, setSubTotal] = useState("");
@@ -128,16 +129,26 @@ const BuatFaktur = () => {
 
     const [selectedSupplier, setSelectedSupplier] = useState()
     const [sumber, setSumber] = useState('')
+    const [fakturType, setFakturType] = useState('')
+    const [selectedType, setSelectedType] = useState('')
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_delivery_notes?nama_alias=${query}&pelanggan=${customer}&status=submitted`, {
+            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?nama_alias=${query}&pelanggan=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
+            let tmp = []
+            for (let i = 0; i < res.data.data.length; i++) {
+                tmp.push({
+                    detail: res.data.data[i],
+                    statusCek: false
+                });
+            }
+
+            setGetDataSurat(tmp);
             // console.log(res.data.map(d => d.id))
         };
 
@@ -146,14 +157,21 @@ const BuatFaktur = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_product_alias?nama_alias=${query}&pelanggan=${customer}&status=submitted`, {
+            const res = await axios.get(`${Url}/sales_invoices_available_sales_orders?nama_alias=${query}&pelanggan=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct2(res.data);
-            console.log(res.data);
+            let tmp = []
+            for (let i = 0; i < res.data.data.length; i++) {
+                tmp.push({
+                    detail: res.data.data[i],
+                    statusCek: false
+                });
+            }
+
+            setGetDataProduct(tmp);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -168,34 +186,45 @@ const BuatFaktur = () => {
         {
             title: 'No. Transaksi',
             dataIndex: 'code',
+            render: (_, record) => {
+                return <>{record.detail.code}</>
+            }
         },
         {
             align: 'center',
             title: 'Pelanggan',
             dataIndex: 'customer',
-            render: (customer) => customer.name
+            render: (_, record) => {
+                return <>{record.detail.customer.name}</>
+            }
         },
         {
             align: 'center',
             title: 'Penerima',
             dataIndex: 'recipient',
+            render: (_, record) => {
+                return <>{record.detail.code}</>
+            }
         },
         {
             align: 'center',
             title: 'Total',
             dataIndex: 'total',
+            render: (_, record) => {
+                return <>{record.detail.total}</>
+            }
         },
         {
             title: 'actions',
             dataIndex: 'address',
             width: '15%',
             align: 'center',
-            render: (_, record) => (
+            render: (_, record, index) => (
                 <>
                     <Checkbox
                         value={record}
-                        onChange={handleCheck}
-                    // defaultChecked={record[getProduct]}
+                        checked={record.statusCek}
+                        onChange={(e) => handleCheck(e, index)}
                     />
                 </>
             )
@@ -540,7 +569,7 @@ const BuatFaktur = () => {
         },
         {
             title: 'Nama Produk Alias',
-            dataIndex: sumber == "SO" ? 'alias_name' : 'product_alias_name',
+            dataIndex: 'product_alias_name',
             render(text, record) {
                 return {
                     props: {
@@ -817,56 +846,116 @@ const BuatFaktur = () => {
         };
     });
 
-    const handleCheck = (event) => {
+    const handleCheck = (event, index) => {
         console.log(event.target.checked)
         var updatedList = [...product];
         let tmpData = [];
-        if (event.target.checked) {
-            updatedList = [...product, event.target.value];
-            if (sumber == "SO") {
-                for (let i = 0; i < updatedList.length; i++) {
-                    tmpData.push(
-                        {
-                            alias_name: updatedList[i].alias_name,
-                            quantity: updatedList[i].quantity,
-                            price: updatedList[i].price,
-                            discount_percentage: updatedList[i].discount_percentage,
-                            fixed_discount: updatedList[i].fixed_discount,
-                            subtotal: updatedList[i].subtotal,
-                            pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
-                            unit: updatedList[i].unit,
-                            total: updatedList[i].total
-                        }
-                    )
+        let tmpDataBaru = [];
+
+
+        // perubahan data dan status ceked 
+        if (sumber == 'Surat') {
+            for (let i = 0; i < getDataSurat.length; i++) {
+                if (i == index) {
+                    tmpDataBaru.push({
+                        detail: getDataSurat[i].detail,
+                        statusCek: !getDataSurat[i].statusCek
+                    })
                 }
-            } else if (sumber == "Surat") {
-                let tmpDataDetails = [];
-                for (let i = 0; i < updatedList.length; i++) {
-                    for (let j = 0; j < updatedList[i].delivery_note_details.length; j++) {
-                        tmpDataDetails.push(
-                            {
-                                product_alias_name: updatedList[i].product_alias_name,
-                                quantity: updatedList[i].quantity,
-                                price: updatedList[i].price,
-                                discount_percentage: updatedList[i].discount_percentage,
-                                fixed_discount: updatedList[i].fixed_discount,
-                                subtotal: updatedList[i].subtotal,
-                                pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
-                                unit: updatedList[i].unit,
-                                total: updatedList[i].total
-                            }
-                        )
-                    }
-                    tmpData.push(tmpDataDetails)
+                else {
+                    tmpDataBaru.push(getDataSurat[i])
                 }
             }
-            console.log(updatedList);
-        } else {
-            updatedList.splice(product.indexOf(event.target.value), 1);
+            setGetDataSurat(tmpDataBaru)
         }
-        console.log(updatedList);
+
+        else if (sumber == 'SO') {
+            for (let i = 0; i < getDataProduct.length; i++) {
+                if (i == index) {
+                    tmpDataBaru.push({
+                        detail: getDataProduct[i].detail,
+                        statusCek: !getDataProduct[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataProduct[i])
+                }
+            }
+            setGetDataProduct(tmpDataBaru)
+        }
+
+
+        if (tmpDataBaru[index].statusCek) {
+            // updatedList = [...product];
+            // console.log(product)
+            let dataSumber;
+            if (sumber == 'SO') {
+                dataSumber = event.target.value.detail.sales_order_details
+            }
+            else if (sumber == 'Surat') {
+                dataSumber = event.target.value.detail.delivery_note_details
+            }
+            // console.log(event.target.value.detail)
+
+            let tmp = [];
+            for (let i = 0; i <= updatedList.length; i++) {
+                if (i == updatedList.length) {
+                    for (let i = 0; i < dataSumber.length; i++) {
+                        if (sumber == 'Retur') {
+                            tmp.push({
+                                id_datasumber: sumber == 'Retur' ? dataSumber[i].delivery_note_id : dataSumber[i].sales_order_id,
+                                id: dataSumber[i].id,
+                                product_alias_name: dataSumber[i].product_alias_name,
+                                product_id: dataSumber[i].product_id,
+                                product_name: dataSumber[i].product_name,
+                                quantity: dataSumber[i].quantity,
+                                returned: dataSumber[i].returned,
+                                sales_order_id: dataSumber[i].sales_order_id,
+                                tally_sheet_code: dataSumber[i].tally_sheet_code,
+                                tally_sheet_id: dataSumber[i].tally_sheet_id,
+                                unit: dataSumber[i].unit
+                            })
+                        }
+                        else {
+                            tmp.push({
+                                customer_id:2,
+                                discount_percentage:"1",
+                                fixed_discount:"0",
+                                id:1,
+                                notes :"-",
+                                ppn : "1",
+                                price:"50000",
+                                product_alias_name:"Bagian 1 Grade 1 Merk 1",
+                                quantity:"1",
+                                sales_order_code : "BM220906-SO001",
+                                sales_order_id :2,
+                                subtotal:"50000",
+                                subtotal_after_discount    :"49500",
+                                tally_sheets_qty :0,
+                                total    :"49501",
+                                unit: "kg"
+                            })
+                        }
+
+                    }
+                }
+                else {
+                    tmp.push(updatedList[i])
+                }
+
+            }
+            updatedList = tmp
+
+        } else {
+            for (let i = 0; i < updatedList.length; i++) {
+
+                if (updatedList[i] == event.target.value.detail) {
+                    updatedList.splice(i, 1);
+                }
+            }
+            // updatedList.splice(product.indexOf(event.target.value), 1);
+        }
         setProduct(updatedList);
-        console.log(updatedList);
         let tmp = [];
         let tmpJumlah = [];
         for (let i = 0; i < updatedList.length; i++) {
@@ -1012,6 +1101,10 @@ const BuatFaktur = () => {
             });
     };
 
+    function handleChangeTipe(value) {
+        setFakturType(value.value)
+        setSelectedType(value)
+    }
     const optionsType = [
         {
             value: "Lokal",
@@ -1102,12 +1195,11 @@ const BuatFaktur = () => {
                                     className="basic-single"
                                     placeholder="Pilih Tipe Faktur..."
                                     classNamePrefix="select"
+                                    value={selectedType}
                                     isLoading={isLoading}
                                     isSearchable
-                                    getOptionLabel={(e) => e.label}
-                                    getOptionValue={(e) => e.value}
                                     options={optionsType}
-                                    onChange={(e) => setFakturType(e.value)}
+                                    onChange={handleChangeTipe}
                                 />
                             </div>
                         </div>
@@ -1201,8 +1293,8 @@ const BuatFaktur = () => {
                                     />
                                 </div>
                                 {sumber == 'SO' ? <Table
-                                    columns={columnsModal2}
-                                    dataSource={getDataProduct2}
+                                    columns={columnsModal}
+                                    dataSource={getDataProduct}
                                     scroll={{
                                         y: 250,
                                     }}
@@ -1211,7 +1303,7 @@ const BuatFaktur = () => {
                                     size="middle"
                                 /> : <Table
                                     columns={columnsModal}
-                                    dataSource={getDataProduct}
+                                    dataSource={getDataSurat}
                                     scroll={{
                                         y: 250,
                                     }}
