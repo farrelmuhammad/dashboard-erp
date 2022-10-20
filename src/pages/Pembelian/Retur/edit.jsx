@@ -532,11 +532,15 @@ const EditReturPembelian = () => {
     const dataProduk =
         [...tampilProduk.map((item, i) => ({
             name_product: item.label,
-            qty: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.quantity} onChange={(e) => klikUbahData(i, e.target.value, "qty")} key="qty" />,
+            qty: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(item.quantity).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "qty")} key="qty" />,
             stn: item.unit,
             prc:
                 <div className='d-flex'>
-                    <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} onKeyDown={(event) => klikEnter(event)} value={item.price} onChange={(e) => klikUbahData(i, e.target.value, "price")} />
+                    {
+                        mataUang === 'Rp ' ?
+<CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(item.price).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "price")} /> :
+<CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(item.price).toLocaleString('id')} onChange={(e) => klikUbahData(i, e.target.value, "price")} />
+                    }
 
                 </div>
             ,
@@ -582,8 +586,13 @@ const EditReturPembelian = () => {
                                 :
                                 item.pilihanDiskon == 'nominal' ?
                                     <div className='d-flex p-1' style={{ height: "100%" }}>
-                                        <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.fixed_discount} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
+                                        {
+                                            mataUang === 'Rp ' ?
+                                            <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(item.fixed_discount).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
+                                            :  <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(item.fixed_discount).toLocaleString('id')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
 
+                                        }
+                                      
                                         <div className="input-group-prepend" >
                                             <select
                                                 onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
@@ -601,8 +610,12 @@ const EditReturPembelian = () => {
                                     </div> : null
                     }</>,
 
-            total: < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix='Rp ' thousandSeparator={'.'} decimalSeparator={','} value={item.total} key="diskon" />,
-            act: <Space size="middle">
+            total:
+            mataUang === 'Rp ' ? 
+            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix='Rp ' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.',',')} key="diskon" />:
+            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix='Rp ' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />,
+          
+          act: <Space size="middle">
                 <Button
                     size='small'
                     type="danger"
@@ -937,16 +950,23 @@ const EditReturPembelian = () => {
                         <div className="d-flex justify-content-end mb-3">
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">Subtotal</label>
                             <div className="col-sm-6">
+                                {
+                                    mataUang === 'Rp ' ?
+                                    < CurrencyFormat disabled className='form-control form-control-sm  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(subTotal).toFixed(2).replace('.',',')} key="diskon" /> : 
+                                    < CurrencyFormat disabled className='form-control form-control-sm  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(subTotal).toLocaleString('id')} key="diskon" />
 
-                                < CurrencyFormat disabled className='form-control form-control-sm  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={subTotal} key="diskon" />
+                                } 
                             </div>
 
                         </div>
                         <div className="d-flex justify-content-end mb-3">
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">Diskon</label>
                             <div className="col-sm-6">
-
-                                < CurrencyFormat disabled className='form-control form-control-sm edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={grandTotalDiscount} key="diskon" />
+                                {
+                                    mataUang === 'Rp ' ?
+                                    < CurrencyFormat disabled className='form-control form-control-sm edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(grandTotalDiscount).toFixed(2).replace('.',',')} key="diskon" /> : 
+                                    < CurrencyFormat disabled className='form-control form-control-sm edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(grandTotalDiscount).toLocaleString('id')} key="diskon" />
+                                }
                             </div>
 
                         </div>
@@ -955,16 +975,21 @@ const EditReturPembelian = () => {
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">PPN</label>
 
                             <div className="col-sm-6">
-                                < CurrencyFormat disabled className='form-control form-control-sm edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={totalPpn} key="diskon" />
-
-
+                                {
+                                    mataUang === 'Rp ' ?
+                                    < CurrencyFormat disabled className='form-control form-control-sm edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toFixed(2).replace('.',',')} key="diskon" /> :
+                                    < CurrencyFormat disabled className='form-control form-control-sm edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toLocaleString('id')} key="diskon" />
+                                }
                             </div>
                         </div>
                         <div className="d-flex justify-content-end mb-3">
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">Total</label>
                             <div className="col-sm-6">
-
-                                < CurrencyFormat disabled className='form-control form-control-sm  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={totalKeseluruhan} key="diskon" />
+                            {
+                                mataUang === 'Rp ' ?
+                                < CurrencyFormat disabled className='form-control form-control-sm  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalKeseluruhan).toFixed(2).replace('.',',')} key="diskon" /> : 
+                                < CurrencyFormat disabled className='form-control form-control-sm  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalKeseluruhan).toLocaleString('id')} key="diskon" />
+                            }
                             </div>
 
                         </div>
@@ -990,12 +1015,12 @@ const EditReturPembelian = () => {
                     >
                         Submit
                     </button>
-                    <button
+                    {/* <button
                         type="button"
                         width="100px"
                         className="btn btn-warning rounded m-1">
                         Cetak
-                    </button>
+                    </button> */}
                 </div>
             <div style={{clear:'both'}}></div>
             </form>

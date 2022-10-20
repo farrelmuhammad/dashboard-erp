@@ -194,7 +194,7 @@ const EditSuratJalan = () => {
             align: 'center',
             key: 'name',
             render : (_,record) => {
-                return <>{record.quantity.toString().replace('.',',')}</>
+                return <>{Number(record.quantity).toFixed(2).replace('.',',')}</>
             }
         },
         {

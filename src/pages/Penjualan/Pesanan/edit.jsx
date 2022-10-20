@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
 import { formatQuantity, formatRupiah } from '../../../utils/helper';
+import CurrencyFormat from 'react-currency-format';
 
 const EditableContext = createContext(null);
 
@@ -488,16 +489,31 @@ const EditPesanan = () => {
     }
 
     const convertToRupiah = (angka, namaMataUang) => {
-        return <input
-            value={namaMataUang + ' ' + angka.toLocaleString('id')}
-            readOnly="true"
-            className="form-control form-control-sm"
-            id="colFormLabelSm"
-        />
+        // return <input
+        //     value={namaMataUang + ' ' + angka.toLocaleString('id')}
+        //     readOnly="true"
+        //     className="form-control form-control-sm"
+        //     id="colFormLabelSm"
+        // />
+
+        return <>
+        {
+            namaMataUang === 'Rp' ?
+                < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                : < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+        }
+    </>
     }
 
     const tableToRupiah = (angka, namaMataUang) => {
-        return namaMataUang + ' ' + angka.toLocaleString('id');
+        //return namaMataUang + ' ' + angka.toLocaleString('id');
+        // {
+        //     namaMataUang === 'Rp' ?
+        //         < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" />
+        //         : < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" />
+
+        // }
+        return < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" />
     }
 
     const defaultColumns = [
@@ -537,7 +553,7 @@ const EditPesanan = () => {
                 return {
                     props: {
                     },
-                    children: <div>{formatQuantity(text)}</div>
+                    children: <div>{Number(text).toFixed(2).replace('.',',')}</div>
                 };
             }
         },
@@ -558,14 +574,14 @@ const EditPesanan = () => {
         {
             title: 'Harga',
             dataIndex: 'price',
-            width: '10%',
+            width: '15%',
             align: 'center',
             editable: true,
             render(text, record) {
                 return {
                     props: {
                     },
-                    children: <div>{formatRupiah(text)}</div>
+                    children: <div>{< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.' , ',')} key="diskon" />}</div>
                 };
             }
         },
@@ -602,7 +618,7 @@ const EditPesanan = () => {
         {
             title: 'Discount',
             dataIndex: 'discount',
-            width: '20%',
+            width: '15%',
             align: 'center',
             render: (text, record, index) => {
                 return <div className="input-group input-group-sm">
@@ -719,12 +735,12 @@ const EditPesanan = () => {
                         let total = (record.quantity * record.price) - jumlahDiskon[index];
                         let getPpn = (total * record.ppn) / 100;
                         if (checked) {
-                            grandTotalAmount = tableToRupiah(total, "Rp");
+                            grandTotalAmount = tableToRupiah(Number(total), "Rp");
                         } else {
-                            grandTotalAmount = tableToRupiah(total + getPpn, "Rp");
+                            grandTotalAmount = tableToRupiah(Number(total) + Number(getPpn), "Rp");
                         }
                     } else {
-                        grandTotalAmount = tableToRupiah(record.quantity * Number(record.price), "Rp");
+                        grandTotalAmount = tableToRupiah(Number(record.quantity) * Number(record.price), "Rp");
                     }
                     return {
                         props: {
@@ -1211,11 +1227,11 @@ const EditPesanan = () => {
                     >
                         Submit
                     </button>
-                    <button
+                    {/* <button
                         type="button"
                         className="btn btn-warning rounded m-1">
                         Cetak
-                    </button>
+                    </button> */}
                 </div>
             </PageHeader>
         </>

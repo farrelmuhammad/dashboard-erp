@@ -153,7 +153,7 @@ const BuatSuratJalan = () => {
                 align: 'center',
                 key: 'name',
                 render: (_, record) => {
-                    return record.boxes_quantity.toString().replace('.' , ',')
+                    return Number(record.boxes_quantity).toFixed(2).replace('.' , ',')
                 }
             },
             {
@@ -797,11 +797,11 @@ const BuatSuratJalan = () => {
                     >
                         Submit
                     </button>
-                    <button
+                    {/* <button
                         type="button"
                         className="btn btn-warning rounded m-1">
                         Cetak
-                    </button>
+                    </button> */}
                 </div>
             </PageHeader>
         </>
