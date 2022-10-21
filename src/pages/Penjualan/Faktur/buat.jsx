@@ -114,7 +114,7 @@ const BuatFaktur = () => {
     const [product, setProduct] = useState([]);
     const [query, setQuery] = useState("");
     const [getCode, setGetCode] = useState('');
-    const [uangMuka, setUangMuka] = useState('');
+    const [uangMuka, setUangMuka] = useState(0);
     const navigate = useNavigate();
     const auth = useSelector(state => state.auth);
 
@@ -126,7 +126,7 @@ const BuatFaktur = () => {
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
     const [totalPpn, setTotalPpn] = useState("");
     const [grandTotal, setGrandTotal] = useState("");
-    const [checked, setChecked] = useState("");
+    const [checked, setChecked] = useState(false);
 
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
@@ -185,7 +185,7 @@ const BuatFaktur = () => {
     }, [query, customer])
 
     useEffect(() => {
-        setGrandTotal(Number(subTotal) - Number(grandTotalDiscount) + Number(totalPpn) + Number(uangMuka));
+        setGrandTotal(Number(subTotal) - Number(grandTotalDiscount) + Number(totalPpn) - Number(uangMuka));
     }, [totalPpn, uangMuka]);
 
     // Column for modal input product
@@ -766,10 +766,10 @@ const BuatFaktur = () => {
         calculate(newData, check_checked);
     };
 
-    function tambahUangMuka(value){
+    function tambahUangMuka(value) {
         let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
         setUangMuka(hasil);
-       
+
     }
 
     const calculate = (product, check_checked) => {
@@ -985,9 +985,10 @@ const BuatFaktur = () => {
         userData.append("catatan", description);
         userData.append("pelanggan", customer);
         userData.append("termasuk_pajak", checked);
+        userData.append("uang_muka", uangMuka);
         userData.append("status", "Submitted");
         product.map((p, i) => {
-            userData.append("nama_alias_produk[]", p.alias_name);
+            userData.append("nama_alias_produk[]", p.product_name);
             userData.append("kuantitas[]", p.quantity);
             userData.append("satuan[]", p.unit);
             userData.append("harga[]", p.price);
@@ -1009,7 +1010,7 @@ const BuatFaktur = () => {
 
         axios({
             method: "post",
-            url: `${Url}/sales_orders`,
+            url: `${Url}/sales_invoices`,
             data: userData,
             headers: {
                 Accept: "application/json",
@@ -1023,7 +1024,7 @@ const BuatFaktur = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/pesanan");
+                navigate("/faktur");
             })
             .catch((err) => {
                 if (err.response) {
@@ -1045,19 +1046,39 @@ const BuatFaktur = () => {
 
     const handleDraft = async (e) => {
         e.preventDefault();
+        console.log(product)
         const userData = new FormData();
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
+        userData.append("tipe", fakturType);
+        userData.append("alamat_penerima", address);
+        userData.append("penerima", customer);
         userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("termasuk_pajak", checked);
+        // userData.append("pelanggan", customer);
+        userData.append("uang_muka", uangMuka);
+        if (checked) {
+            userData.append("termasuk_pajak", 1);
+
+        }
+        else {
+            userData.append("termasuk_pajak", 0);
+
+        }
         userData.append("status", "Draft");
         product.map((p, i) => {
             console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
+            userData.append("nama_alias_produk[]", p.product_alias_name);
             userData.append("kuantitas[]", p.quantity);
             userData.append("satuan[]", p.unit);
             userData.append("harga[]", p.price);
+            if (sumber == 'SO') {
+                userData.append("id_pesanan_penjualan[]", p.sales_order_id);
+
+            }
+            else {
+                userData.append("id_surat_jalan[]", p.delivery_notes_id);
+
+            }
             if (pilihanDiskon[i] == 'percent') {
                 userData.append("persentase_diskon[]", jumlahDiskon[i]);
 
@@ -1070,7 +1091,7 @@ const BuatFaktur = () => {
             }
             userData.append("ppn[]", p.ppn);
         });
-        userData.append("termasuk_pajak", checked);
+        // userData.append("termasuk_pajak", checked);
 
         // for (var pair of userData.entries()) {
         //     console.log(pair[0] + ', ' + pair[1]);
@@ -1078,7 +1099,7 @@ const BuatFaktur = () => {
 
         axios({
             method: "post",
-            url: `${Url}/sales_orders`,
+            url: `${Url}/sales_invoices`,
             data: userData,
             headers: {
                 Accept: "application/json",
@@ -1092,7 +1113,7 @@ const BuatFaktur = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/pesanan");
+                navigate("/faktur");
             })
             .catch((err) => {
                 if (err.response) {
@@ -1376,14 +1397,14 @@ const BuatFaktur = () => {
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Uang Muka</label>
                             <div className="col-sm-6">
-                                    <CurrencyFormat
-                                        className='form-control form-control-sm'
-                                        thousandSeparator={'.'}
-                                        decimalSeparator={','}
-                                        prefix={'Rp '}
-                                        onKeyDown={(event) => klikEnter(event)}
-                                        value={uangMuka}
-                                        onChange={(e) => tambahUangMuka(e.target.value)} />
+                                <CurrencyFormat
+                                    className='form-control form-control-sm'
+                                    thousandSeparator={'.'}
+                                    decimalSeparator={','}
+                                    prefix={'Rp '}
+                                    onKeyDown={(event) => klikEnter(event)}
+                                    value={uangMuka}
+                                    onChange={(e) => tambahUangMuka(e.target.value)} />
                             </div>
                         </div>
                         <div className="row mb-3">
