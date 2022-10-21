@@ -86,12 +86,12 @@ export const DetailSuratJalan = () => {
                 setDate(getData.date)
                 if (getData.customer) {
                     setCustomer(getData.customer.name)
-                    setAddress(getData.customer_address_id)
+                    setAddress(getData.customer_address.address)
                     setSumber('SO')
                 }
                 else if (getData.supplier) {
                     setSupplier(getData.supplier.name)
-                    setAddress(getData.supplier_address_id)
+                    setAddress(getData.supplier_address.address)
                     setSumber('Retur')
                 }
                 setVehicle(getData.vehicle)
@@ -167,7 +167,16 @@ export const DetailSuratJalan = () => {
                                                             </div>
                                                             <div className="d-flex flex-row">
                                                                 <label className='col-8'>Kepada Yth.</label>
-                                                                <div className='col-6'> : {customer}  </div>
+                                                                {
+                                                                    sumber === 'SO'?
+                                                                    <div className='col-6'> 
+                                                                       : {customer}
+                                                                    </div> : 
+                                                                     <div className='col-6'> 
+                                                                       :  {supplier}
+                                                                     </div>
+                                                                }
+                                                               
                                                             </div>
                                                             <div className="d-flex flex-row">
                                                                 <label className='col-8'>Alamat</label>

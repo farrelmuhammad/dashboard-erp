@@ -14,6 +14,7 @@ import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
 import { formatQuantity, formatRupiah } from '../../../utils/helper';
+import CurrencyFormat from 'react-currency-format';
 
 const EditableContext = createContext(null);
 
@@ -392,15 +393,25 @@ const BuatPesanan = () => {
         }
     }
     const convertToRupiah = (angka, namaMataUang) => {
-        return <input
-            value={namaMataUang + ' ' + angka.toLocaleString('id')}
-            readOnly="true"
-            className="form-control form-control-sm"
-            id="colFormLabelSm"
-        />
+        // return <input
+        //     value={namaMataUang + ' ' + angka.toLocaleString('id')}
+        //     readOnly="true"
+        //     className="form-control form-control-sm"
+        //     id="colFormLabelSm"
+        // />
+
+        return <>
+        {
+            namaMataUang === 'Rp' ?
+                < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                : < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+        }
+    </>
+
     }
     const tableToRupiah = (angka, namaMataUang) => {
-        return namaMataUang + ' ' + angka.toLocaleString('id');
+        //return namaMataUang + ' ' + angka.toLocaleString('id');
+        return < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" />
     }
     const [totalPerProduk, setTotalPerProduk] = useState([]);
     useEffect(() => {
@@ -501,7 +512,7 @@ const BuatPesanan = () => {
                 return {
                     props: {
                     },
-                    children: <div>{formatQuantity(text)}</div>
+                    children: <div>{Number(text).toFixed(2).replace('.',',')}</div>
                 };
             }
         },
@@ -529,7 +540,7 @@ const BuatPesanan = () => {
                 return {
                     props: {
                     },
-                    children: <div>{formatRupiah(text)}</div>
+                    children: <div>{tableToRupiah(text,"Rp")}</div>
                 };
             }
         },
@@ -1113,11 +1124,11 @@ const BuatPesanan = () => {
                     >
                         Submit
                     </button>
-                    <button
+                    {/* <button
                         type="button"
                         className="btn btn-warning rounded m-1">
                         Cetak
-                    </button>
+                    </button> */}
                 </div>
             </PageHeader>
         </>

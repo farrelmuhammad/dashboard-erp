@@ -218,15 +218,15 @@ const DetailPembayaranPembelian = () => {
         [...dataDetail.map((item, i) => ({
             code: item.purchase_invoice_code,
             total: 
-            mataUang === 'Rp' ?
+            dataHeader.currency_name === 'IDR' ?
             < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.purchase_invoice_total_payment).toFixed(2).replace('.' , ',')} key="diskon" /> :
             < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.purchase_invoice_total_payment).toLocaleString('id')} key="diskon" /> ,                   
             sisa: 
-            mataUang === 'Rp' ?
+            mataUang === 'IDR' ?
             < CurrencyFormat  className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.remains).toFixed(2).replace('.' , ',')} key="diskon" /> :
             < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.remains).toLocaleString('id')} key="diskon" />,                    
             pays:
-            mataUang === 'Rp' ?
+            mataUang === 'IDR' ?
             < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.paid).toFixed(2).replace('.' , ',')} key="diskon" /> :
             < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.paid).toLocaleString('id')} key="diskon" />,                    
         
@@ -391,7 +391,7 @@ const DetailPembayaranPembelian = () => {
                                     <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {i + 1} </td>
                                     <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {item.purchase_invoice_code} </td>
                                     <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {
-                                   mataUang === 'Rp' ?
+                                   mataUang === 'IDR' ?
                                    < CurrencyFormat type='danger' disabled className=' text-center editable-input edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.paid).toFixed(2).replace('.' , ',')} key="diskon" /> :
                                    < CurrencyFormat type='danger' disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={   Number(item.paid).toLocaleString('id')} key="diskon" />                    
                                     } </td>
@@ -412,7 +412,7 @@ const DetailPembayaranPembelian = () => {
                                 <label className='col-6'><b> Total :</b></label>
                                 {/* <div>:</div> */}
                                 <div width="100%">{
-                                  mataUang === 'Rp' ?
+                                  mataUang === 'IDR ' ?
                                   < CurrencyFormat  disabled className=' text-end editable-input edit-disabled' style={{fontWeight:'bold' ,width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.paid).toFixed(2).replace('.' , ',')} key="diskon" /> :
                                   < CurrencyFormat  disabled className=' text-end editable-input  edit-disabled' style={{fontWeight:'bold', width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.paid).toLocaleString('id')} key="diskon" />                    
                                }  </div>
@@ -678,7 +678,7 @@ const DetailPembayaranPembelian = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Total</label>
                             <div className="col-sm-7">{
-                            mataUang === 'Rp' ?
+                            mataUang === 'IDR ' ?
                                   < CurrencyFormat disabled className='form-control text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.total).toFixed(2).replace('.' , ',')} key="diskon" /> :
                                   < CurrencyFormat disabled className='form-control text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.total).toLocaleString('id')} key="diskon" />                    
                             }    </div>
@@ -687,7 +687,7 @@ const DetailPembayaranPembelian = () => {
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Sisa</label>
                             <div className="col-sm-7">
                                 {
-                                      mataUang === 'Rp' ?
+                                      mataUang === 'IDR ' ?
                                       < CurrencyFormat disabled className='form-control text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.remains).toFixed(2).replace('.' , ',')} key="diskon" /> :
                                       < CurrencyFormat disabled className='form-control text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.remains).toLocaleString('id')} key="diskon" />                    
                                 }
@@ -734,7 +734,7 @@ const DetailPembayaranPembelian = () => {
                                         <Table.Summary.Cell index={0} colSpan={3} className="text-end">Total yang dibayarkan</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
                                             {
-                                                  mataUang === 'Rp' ?
+                                                  mataUang === 'IDR ' ?
                                                   < CurrencyFormat type='danger' disabled className=' text-end editable-input edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.paid).toFixed(2).replace('.' , ',')} key="diskon" /> :
                                                   < CurrencyFormat type='danger' disabled className=' text-end editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={   Number(dataHeader.paid).toLocaleString('id')} key="diskon" />                    
                                             }

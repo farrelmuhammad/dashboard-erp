@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 import CurrencyFormat from 'react-currency-format';
 import { PageHeader } from 'antd';
-import { TenMp } from '@mui/icons-material';
+import { Deselect, TenMp } from '@mui/icons-material';
 
 const BuatCreditNote = () => {
     const auth = useSelector(state => state.auth);
@@ -31,6 +31,14 @@ const BuatCreditNote = () => {
     const [mataUangId, setMataUangId] = useState();
     const [mataUang, setMataUang] = useState('Rp ');
     const [dataSupplier, setDataSupplier] = useState();
+  
+    const [isClearable, setIsClearable] = useState(true);
+    const [isSearchable, setIsSearchable] = useState(true);
+    const [isDisabled, setIsDisabled] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isRtl, setIsRtl] = useState(false);
+    const [selectedOption, setSelectedOption] = useState(null);
+  
 
     function klikEnter(event) {
         if (event.code == "Enter") {
@@ -137,6 +145,7 @@ const BuatCreditNote = () => {
 
     const handleSubmit = async (e) => {
         console.log(document.getElementById('supplier'))
+        //console.log(selectedOption)
         e.preventDefault();
         const formData = new FormData();
         formData.append("tanggal", date);
@@ -237,6 +246,14 @@ const BuatCreditNote = () => {
             });
     };
 
+
+    const options = [
+        { value: 'chocolate', label: 'Chocolate' },
+        { value: 'strawberry', label: 'Strawberry' },
+        { value: 'vanilla', label: 'Vanilla' },
+      ];
+
+
     return (
         <>
             <PageHeader
@@ -269,12 +286,27 @@ const BuatCreditNote = () => {
                                     // defaultValue={selectedSupplier}
                                     // isDisabled={isDisabled}
                                     // isLoading={true}
-                                    isClearable={true}
+                                    isClearable = {isClearable}
                                     // isRtl={isRtl}
-                                    isSearchable={true}
-                                    // onChange={(e) => setSupplierId(e.value)}
+                                    isSearchable={isSearchable}
+                                     onChange={setSelectedOption}
                                     options={dataSupplier}
                                 /> */}
+
+{/* <Select
+        className="basic-single"
+        classNamePrefix="select"
+        defaultValue={selectedOption}
+        isDisabled={isDisabled}
+        isLoading={isLoading}
+        isClearable={isClearable}
+        isRtl={isRtl}
+        isSearchable={isSearchable}
+        name="color"
+        onChange={setSelectedOption}
+      	 options = {dataSupplier}
+      /> */}
+
 
                                 <AsyncSelect
                                     placeholder="Pilih Supplier..."
@@ -398,12 +430,12 @@ const BuatCreditNote = () => {
                     >
                         Submit
                     </button>
-                    <button
+                    {/* <button
                         type="button"
                         width="100px"
                         className="btn btn-warning rounded m-1">
                         Cetak
-                    </button>
+                    </button> */}
                 </div>
                 <div style={{ clear: 'both' }}></div>
             </form>

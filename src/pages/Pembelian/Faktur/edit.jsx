@@ -843,12 +843,18 @@ const EditFakturPembelian = () => {
     const dataTBPenerimaan =
         [...data.map((item, i) => ({
             nama: item.product_name,
-            qty: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.quantity} onChange={(e) => klikUbahData(i, e.target.value, "qty")} key="qty" />,
+            qty: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(item.quantity).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "qty")} key="qty" />,
             stn: item.unit,
             price:
-                <div className='d-flex'>
-                    <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={data[i].currency_name + ' '} onKeyDown={(event) => klikEnter(event)} value={item.price} onChange={(e) => klikUbahData(i, e.target.value, "price")} />
-                </div>,
+                // <div className='d-flex'>
+                //     <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={data[i].currency_name + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(item.price).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "price")} />
+                // </div>
+ grup === 'Lokal' ? 
+ < CurrencyFormat  className=' text-start  editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" onChange={(e) => klikUbahData(i, e.target.value, "price")} />
+:< CurrencyFormat  className=' text-start  editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(item.total).toLocaleString('id')} key="diskon" onChange={(e) => klikUbahData(i, e.target.value, "price")} />
+
+                
+                ,
 
             disc:
                 item.pilihanDiskon == 'noDisc' ?
@@ -890,7 +896,14 @@ const EditFakturPembelian = () => {
                         :
                         item.pilihanDiskon == 'nominal' ?
                             <div className='d-flex p-1' style={{ height: "100%" }}>
-                                <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.fixed_discount} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
+{
+     grup === 'Lokal' ? 
+     < CurrencyFormat  className=' text-start editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(item.fixed_discount).toFixed(2).replace('.' , ',')} key="diskon" onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} />
+    :< CurrencyFormat  className=' text-start  editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(item.fixed_discount).toLocaleString('id')} key="diskon" onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} />
+    
+}
+                                
+                                {/* <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(item.fixed_discount).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" /> */}
 
                                 <div className="input-group-prepend" >
                                     <select
@@ -926,7 +939,13 @@ const EditFakturPembelian = () => {
             //     }
 
             // </>,
-            total: mataUang + ' ' + Number(item.total).toLocaleString('id'),
+            total: 
+            
+                grup === 'Lokal' ? 
+                      < CurrencyFormat  className=' text-start editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','}  value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon"  />
+                   :< CurrencyFormat  className=' text-start  editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon"  />
+            
+         
         }))
 
         ]
@@ -936,14 +955,42 @@ const EditFakturPembelian = () => {
 
     const convertToRupiah = (angka) => {
         // console.log(angka)
-        let hasil = mataUang + ' ' + Number(angka).toLocaleString('id')
-        return <input
-            disabled
-            value={hasil}
-            readOnly="true"
-            className="form-control form-control-sm"
-            id="colFormLabelSm"
-        />
+        // let hasil = mataUang + ' ' + Number(angka).toLocaleString('id')
+        // return <input
+        //     disabled
+        //     value={hasil}
+        //     readOnly="true"
+        //     className="form-control form-control-sm"
+        //     id="colFormLabelSm"
+        // />
+
+        return <>
+        {
+            grup === 'Lokal' ? 
+                  < CurrencyFormat  className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm"  className="form-control form-control-sm"/>}  />
+                  :< CurrencyFormat  className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true"  id="colFormLabelSm"  className="form-control form-control-sm"/>} />
+        }
+        </>
+    }
+
+    const convertToRupiah2 = (angka) => {
+        // console.log(angka)
+        // let hasil = mataUang + ' ' + Number(angka).toLocaleString('id')
+        // return <input
+        //     disabled
+        //     value={hasil}
+        //     readOnly="true"
+        //     className="form-control form-control-sm"
+        //     id="colFormLabelSm"
+        // />
+
+        return <>
+        {
+            grup === 'Lokal' ? 
+                  < CurrencyFormat  className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon"   />
+                  :< CurrencyFormat  className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon"  />
+        }
+        </>
     }
 
 
@@ -1051,6 +1098,8 @@ const EditFakturPembelian = () => {
             desc: item.name,
             total:
                 <div className='d-flex'>
+            {
+            grup === 'Lokal' ? 
                     <CurrencyFormat
                         className=' text-center editable-input'
                         style={{ width: "100%", padding: "0px" }}
@@ -1058,8 +1107,20 @@ const EditFakturPembelian = () => {
                         decimalSeparator={','}
                         prefix={mataUang + ' '}
                         onKeyDown={(event) => klikEnter(event)}
-                        value={item.jumlah}
+                        value={Number(item.jumlah).toFixed(2).replace('.',',')}
+                        onChange={(e) => ubahCOA(e.target.value, i)} key="coa" /> :
+
+
+                        <CurrencyFormat
+                        className=' text-center editable-input'
+                        style={{ width: "100%", padding: "0px" }}
+                        thousandSeparator={'.'}
+                        decimalSeparator={','}
+                        prefix={mataUang + ' '}
+                        onKeyDown={(event) => klikEnter(event)}
+                        value={Number(item.jumlah).toLocaleString('id')}
                         onChange={(e) => ubahCOA(e.target.value, i)} key="coa" />
+            }
                 </div>,
             action: <Space size="middle">
                 <Button
@@ -1078,15 +1139,29 @@ const EditFakturPembelian = () => {
             desc: item.deskripsi,
             total:
                 <div className='d-flex'>
-                    <CurrencyFormat
+                    {
+                        grup === 'Lokal' ? 
+                        <CurrencyFormat
                         className=' text-center editable-input'
                         style={{ width: "100%", padding: "0px" }}
                         thousandSeparator={'.'}
                         decimalSeparator={','}
                         prefix={mataUang + ' '}
                         onKeyDown={(event) => klikEnter(event)}
-                        value={item.jumlah}
+                        value={Number(item.jumlah).toFixed(2).replace('.',',')}
+                        onChange={(e) => ubahCredit(e.target.value, i)} key="credit" /> :
+
+                        <CurrencyFormat
+                        className=' text-center editable-input'
+                        style={{ width: "100%", padding: "0px" }}
+                        thousandSeparator={'.'}
+                        decimalSeparator={','}
+                        prefix={mataUang + ' '}
+                        onKeyDown={(event) => klikEnter(event)}
+                        value={Number(item.jumlah).toLocaleString('id')}
                         onChange={(e) => ubahCredit(e.target.value, i)} key="credit" />
+                    }
+                  
                 </div>,
             action: <Space size="middle">
                 <Button
@@ -1662,7 +1737,7 @@ const EditFakturPembelian = () => {
                         title="Edit Faktur Pembelian">
                     </PageHeader>
                     {/* <h3 className="title fw-bold">Detail Faktur Pembelian</h3> */}
-                    <h3 className="title fw-bold">Edit Faktur Pembelian</h3>
+                    {/* <h3 className="title fw-bold">Edit Faktur Pembelian</h3> */}
                 </div>
                 <div className="row">
                     <div className="col">
@@ -1965,28 +2040,55 @@ const EditFakturPembelian = () => {
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">Uang Muka</label>
 
                             <div className="col-sm-6">
-                                <CurrencyFormat
+                                {
+                                    grup === 'Lokal' ? 
+                                    <CurrencyFormat
                                     className='form-control form-control-sm'
                                     thousandSeparator={'.'}
                                     decimalSeparator={','}
                                     prefix={mataUang + ' '}
                                     onKeyDown={(event) => klikEnter(event)}
-                                    value={uangMuka}
+                                    value={Number(uangMuka).toFixed(2).replace('.',',')}
+                                    onChange={(e) => tambahUangMuka(e.target.value)} /> :
+
+                                    <CurrencyFormat
+                                    className='form-control form-control-sm'
+                                    thousandSeparator={'.'}
+                                    decimalSeparator={','}
+                                    prefix={mataUang + ' '}
+                                    onKeyDown={(event) => klikEnter(event)}
+                                    value={Number(uangMuka).toLocaleString('id')}
                                     onChange={(e) => tambahUangMuka(e.target.value)} />
+                                }
+                              
 
                             </div>
                         </div>
                         <div className="d-flex justify-content-end mb-3">
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">PPN</label>
                             <div className="col-sm-6">
-                                <CurrencyFormat
+                                {
+                                    grup === 'Lokal'?
+                                    <CurrencyFormat
                                     className='form-control form-control-sm'
                                     thousandSeparator={'.'}
                                     decimalSeparator={','}
                                     prefix={mataUang + ' '}
                                     onKeyDown={(event) => klikEnter(event)}
-                                    value={totalPpn}
+                                    value={Number(totalPpn).toFixed(2).replace('.',',')}
+                                    onChange={(e) => tambahPPN(e.target.value)} /> : 
+
+                                    <CurrencyFormat
+                                    className='form-control form-control-sm'
+                                    thousandSeparator={'.'}
+                                    decimalSeparator={','}
+                                    prefix={mataUang + ' '}
+                                    onKeyDown={(event) => klikEnter(event)}
+                                    value={Number(totalPpn).toLocaleString('id')}
                                     onChange={(e) => tambahPPN(e.target.value)} />
+
+                                }
+                             
                             </div>
                         </div>
                         <div className="d-flex justify-content-end mb-3">
@@ -2015,12 +2117,12 @@ const EditFakturPembelian = () => {
                     >
                         Submit
                     </button>
-                    <button
+                    {/* <button
                         type="button"
                         width="100px"
                         className="btn btn-warning rounded m-1">
                         Cetak
-                    </button>
+                    </button> */}
                 </div>
                 <div style={{ clear: 'both' }}></div>
             </form>

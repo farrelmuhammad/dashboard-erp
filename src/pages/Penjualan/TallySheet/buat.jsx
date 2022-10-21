@@ -1010,6 +1010,13 @@ const BuatTally = () => {
                 width: '5%',
                 align: 'center',
                 // editable: true,
+                render(text, record) {
+                    return {
+                        props: {
+                        },
+                        children: <div>{Number(text).toFixed(2).replace('.',',')}</div>
+                    };
+                }
             },
             {
                 title: 'Stn',
@@ -2388,11 +2395,11 @@ const BuatTally = () => {
                     >
                         Submit
                     </button>
-                    <button
+                    {/* <button
                         type="button"
                         className="btn btn-warning rounded m-1">
                         Cetak
-                    </button>
+                    </button> */}
                 </div>
             </PageHeader>
         </>

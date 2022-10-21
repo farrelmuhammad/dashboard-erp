@@ -206,8 +206,8 @@ const EditSuratJalan = () => {
             width: '10%',
             align: 'center',
             key: 'name',
-            render: (_, record) => {
-                return <>{record.quantity.toString().replace('.', ',')}</>
+            render : (_,record) => {
+                return <>{Number(record.quantity).toFixed(2).replace('.',',')}</>
             }
         },
         {
