@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import 'antd/dist/antd.css';
-import { CheckOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, MoreOutlined, SearchOutlined } from '@ant-design/icons';
+import { CheckOutlined, DeleteOutlined,CloseOutlined , EditOutlined, InfoCircleOutlined, MoreOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Dropdown, Input, Menu, Modal, Skeleton, Space, Table, Tag } from 'antd';
 import axios from 'axios';
 import Url from '../../../Config';
@@ -163,6 +163,39 @@ const SuratJalanTable = () => {
         Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
     };
 
+    const cancelDeliveryNote = async (id, code) => {
+        Swal.fire({
+          title: 'Apakah Anda Yakin?',
+          text: "Status data akan diubah ",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Ya'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            try {
+              axios({
+                method: "patch",
+                url: `${Url}/delivery_notes/cancel/${id}`,
+                headers: {
+                  Accept: "application/json",
+                  Authorization: `Bearer ${auth.token}`,
+                },
+              })
+    
+              getDeliveryNotes();
+              Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
+            }
+            catch (err) {
+              console.log(err);
+            }
+          }
+        })
+    
+      };
+
+    
 
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -364,7 +397,219 @@ const SuratJalanTable = () => {
             align: 'center',
             render: (_, record) => (
                 <>
-                    {record.status === 'Submitted' && record.is_delivered === false && record.customer != null ?
+                    {
+                        record.can['delivered-delivery-note'] ? (
+                            <Space size="middle">
+                                <Button
+                                    size='small'
+                                    type="primary"
+                                    icon={<CheckOutlined />}
+                                    onClick={() => showModal(record.id)}
+                                />
+                                <Modal
+                                    title="Konfirmasi Penerima"
+                                    visible={visible}
+                                    onCancel={() => { setVisible(false); setIsLoading(false) }}
+                                    footer={[
+                                        <Button
+                                            key="submit"
+                                            type="primary"
+                                            onClick={() => handleOk(record.id, record.code)}
+                                        >
+                                            Submit
+                                        </Button>,
+                                    ]}
+                                >
+                                    {isLoading === false ? (
+                                        <div className="text-title text-start">
+                                            <div className="row">
+                                                <div className="row">
+                                                    <label htmlFor="inputNama3" className="col-sm-4 ms-5 mb-3 col-form-label">
+                                                        <Skeleton.Input active="active" size="small" />
+                                                    </label>
+                                                    <div className="col-sm-6">
+                                                        <Skeleton.Input active="active" size="default" />
+                                                    </div>
+                                                    <label htmlFor="inputNama3" className="col-sm-4 ms-5 mb-3 col-form-label">
+                                                        <Skeleton.Input active="active" size="small" />
+                                                    </label>
+                                                    <div className="col-sm-6">
+                                                        <Skeleton.Input active="active" size="default   " />
+                                                    </div>
+                                                    <label htmlFor="inputNama3" className="col-sm-4 ms-5 col-form-label"></label>
+                                                    <div className="col-sm-6">
+                                                        <Skeleton.Input active="active" size="small" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                        : (
+
+                                            <div className="text-title text-start">
+                                                <div className="row">
+                                                    <div className="row">
+                                                        {
+                                                            tampilPelanggan ?
+                                                                <>
+                                                                    <label htmlFor="inputNama3" className="col-sm-4 ms-5 mb-2 col-form-label">Penerima</label>
+                                                                    <div className="col-sm-6">
+                                                                        <input
+                                                                            value={getCustomerName}
+                                                                            type="Nama"
+                                                                            className="form-control"
+                                                                            id="inputNama3"
+                                                                            disabled
+                                                                        />
+
+                                                                    </div>
+                                                                    <label htmlFor="inputNama3" className="col-sm-4 ms-5 mb-2 col-form-label">Alamat Penerima</label>
+                                                                    <div className="col-sm-6">
+                                                                        <input
+                                                                            value={getAddressName}
+                                                                            type="Nama"
+                                                                            className="form-control"
+                                                                            id="inputNama3"
+                                                                            disabled
+                                                                        />
+
+                                                                    </div>
+                                                                </> :
+                                                                <>
+                                                                    <label htmlFor="inputNama3" className="col-sm-4 ms-5 mb-2 col-form-label">Penerima</label>
+                                                                    <div className="col-sm-6">
+                                                                        <AsyncSelect
+                                                                            placeholder="Pilih Penerima..."
+                                                                            cacheOptions
+                                                                            defaultOptions
+                                                                            // defaultInputValue={ getCustomerName }
+                                                                            value={selectedCustomer}
+                                                                            getOptionLabel={(e) => e.name}
+                                                                            getOptionValue={(e) => e.id}
+                                                                            loadOptions={loadOptionsCustomer}
+                                                                            onChange={handleChangeCustomer}
+                                                                        />
+                                                                    </div>
+                                                                    <label htmlFor="inputNama3" className="col-sm-4 ms-5 mb-2 col-form-label">Alamat Penerima</label>
+                                                                    <div className="col-sm-6">
+                                                                        <ReactSelect
+                                                                            className="basic-single"
+                                                                            placeholder="Pilih Alamat..."
+                                                                            classNamePrefix="select"
+                                                                            // defaultInputValue={address}
+                                                                            isSearchable
+                                                                            value={selectedAddress}
+                                                                            getOptionLabel={(e) => e.address}
+                                                                            getOptionValue={(e) => e.id}
+                                                                            options={address}
+
+                                                                            // loadOptions={loadOptionsCustomer}
+                                                                            onChange={handleChangeAddress}
+                                                                        // onChange={(e) => setAddress(e.id)}
+                                                                        />
+                                                                    </div>
+                                                                </>
+                                                        }
+                                                        <label htmlFor="inputNama3" className="col-sm-4 ms-5 col-form-label"></label>
+                                                        <div className="col-sm-6">
+                                                            <Checkbox
+                                                                onChange={(e) => { setTampilPelanggan(!tampilPelanggan), setSelectedCustomer(''), setSelectedAddress('') }}
+                                                            >
+                                                                Sama Dengan Pelanggan
+                                                            </Checkbox>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                </Modal>
+                                <Dropdown overlay={
+                                    <Menu menu="horizontal">
+                                        <Menu.Item key="detail">
+                                            <Link to={`/suratjalan/detail/${record.id}`}>
+                                                <Button
+                                                    size='small'
+                                                    type="primary"
+                                                    icon={<InfoCircleOutlined />}
+                                                />
+                                            </Link>
+                                        </Menu.Item>
+                                        <Menu.Item key="edit">
+                                            <Link to={`/suratjalan/edit/${record.id}`}>
+                                                <Button
+                                                    size='small'
+                                                    type="success"
+                                                    icon={<EditOutlined />}
+                                                />
+                                            </Link>
+                                        </Menu.Item>
+                                        <Menu.Item key="delete">
+                                            <Button
+                                                size='small'
+                                                type="danger"
+                                                icon={<DeleteOutlined />}
+                                                onClick={() => deleteDeliveryNotes(record.id)}
+                                            />
+                                        </Menu.Item>
+                                    </Menu>
+                                }>
+                                    <a onClick={(e) => e.preventDefault()}>
+                                        <MoreOutlined style={{ marginBottom: 6 }} />
+                                    </a>
+                                </Dropdown>
+                            </Space >
+                        ) :
+
+                            <Space size="middle">
+                                {record.can['read-delivery_note'] ? (
+                                    <Link to={`/suratjalan/detail/${record.id}`}>
+                                        <Button
+                                            size='small'
+                                            type="primary"
+                                            icon={<InfoCircleOutlined />}
+                                        />
+                                    </Link>
+                                ) : null}
+                                {
+                                    record.can['cancel-delivery_note'] ? (
+
+                                        <Button
+                                            size='small'
+                                            type="danger"
+                                            icon={<CloseOutlined />}
+                                            onClick={() => cancelDeliveryNote(record.id, record.code)}
+                                        />
+
+                                    ) : null
+                                }
+                                {
+                                    record.can['delete-delivery_note'] ? (
+                                        <Space size="middle">
+                                            <Button
+                                                size='small'
+                                                type="danger"
+                                                icon={<DeleteOutlined />}
+                                                onClick={() => deleteDeliveryNotes(record.id, record.code)}
+                                            />
+                                        </Space>
+                                    ) : null
+                                }
+                                {
+                                    record.can['update-delivery_note'] ? (
+                                        <Link to={`/suratjalan/edit/${record.id}`}>
+                                            <Button
+                                                size='small'
+                                                type="success"
+                                                icon={<EditOutlined />}
+                                            />
+                                        </Link>
+                                    ) : null
+                                }
+
+                            </Space>
+                    }
+
+                    {/* {record.status === 'Submitted' && record.is_delivered === false && record.customer != null ?
                         <Space size="middle">
                             <Button
                                 size='small'
@@ -612,7 +857,7 @@ const SuratJalanTable = () => {
                                                 />
                                             </Link>
                                         </Space>
-                    }
+                    } */}
                 </>
             ),
         },

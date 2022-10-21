@@ -550,16 +550,16 @@ const EditPembayaranPembelian = () => {
         [...dataDetail.map((item, i) => ({
             code: item.code,
             total: selectedMataUang === 'IDR ' ?
-            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" /> :
-            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" /> ,                     
-            sisa: 
-            selectedMataUang === 'IDR ' ?
-            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" /> :
-            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" /> ,                     
+                < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.', ',')} key="diskon" /> :
+                < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />,
+            sisa:
+                selectedMataUang === 'IDR ' ?
+                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.', ',')} key="diskon" /> :
+                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />,
             pays:
-            selectedMataUang === 'IDR ' ?
-            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.bayar).toFixed(2).replace('.' , ',')} onChange={(e) => klikUbahTotal(i, e.target.value)} key="diskon" /> :
-            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.bayar).toLocaleString('id')} onChange={(e) => klikUbahTotal(i, e.target.value)} key="diskon" /> ,                     
+                selectedMataUang === 'IDR ' ?
+                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.bayar).toFixed(2).replace('.', ',')} onChange={(e) => klikUbahTotal(i, e.target.value)} key="diskon" /> :
+                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.bayar).toLocaleString('id')} onChange={(e) => klikUbahTotal(i, e.target.value)} key="diskon" />,
         }))
         ]
 
@@ -641,7 +641,14 @@ const EditPembayaranPembelian = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
                             <div className="col-sm-7">
-                                <AsyncSelect
+                                <input
+                                    type="Nama"
+                                    defaultValue={selectedMataUang}
+                                    disabled
+                                    className="form-control"
+                                    id="inputNama3"
+                                />
+                                {/* <AsyncSelect
                                     placeholder="Pilih Mata Uang..."
                                     cacheOptions
                                     defaultOptions
@@ -651,7 +658,7 @@ const EditPembayaranPembelian = () => {
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsMataUang}
                                     onChange={handleChangeMataUang}
-                                />
+                                /> */}
                             </div>
                         </div>
 
@@ -672,10 +679,10 @@ const EditPembayaranPembelian = () => {
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Total</label>
                             <div className="col-sm-7">
                                 {
-                                     selectedMataUang === 'IDR ' ?
-                                     < CurrencyFormat  className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toFixed(2).replace('.' , ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm"  className="form-control form-control-sm"/>}  />
-                                     :< CurrencyFormat  className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true"  id="colFormLabelSm"  className="form-control form-control-sm"/>} />
-                                }       
+                                    selectedMataUang === 'IDR ' ?
+                                        < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                                        : < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                                }
                             </div>
                         </div>
                         <div className="row mb-3">
@@ -683,8 +690,8 @@ const EditPembayaranPembelian = () => {
                             <div className="col-sm-7">
                                 {
                                     selectedMataUang === 'IDR ' ?
-                                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(sisaAkhir).toFixed(2).replace('.' , ',')} key="diskon" /> :
-                                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(sisaAkhir).toLocaleString('id')} key="diskon" />                    
+                                        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(sisaAkhir).toFixed(2).replace('.', ',')} key="diskon" /> :
+                                        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(sisaAkhir).toLocaleString('id')} key="diskon" />
                                 }
                             </div>
                         </div>
@@ -778,8 +785,8 @@ const EditPembayaranPembelian = () => {
                                         <Table.Summary.Cell index={1}>
                                             {
                                                 selectedMataUang === 'IDR ' ?
-                                                < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toFixed(2).replace('.' , ',')} key="diskon" /> :
-                                                < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toLocaleString('id')} key="diskon" />                    
+                                                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toFixed(2).replace('.', ',')} key="diskon" /> :
+                                                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toLocaleString('id')} key="diskon" />
                                             }
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>
@@ -843,7 +850,7 @@ const EditPembayaranPembelian = () => {
                                     className="btn btn-warning rounded m-1">
                                     Cetak
                                 </button> */}
-                                 </>
+                            </>
                     }
 
                 </div>

@@ -11,6 +11,7 @@ import CurrencyFormat from 'react-currency-format';
 import { PageHeader } from 'antd';
 import logo from "../../Logo.jpeg";
 import { useReactToPrint } from 'react-to-print';
+import { SettingsRemoteRounded } from '@material-ui/icons'
 
 export const DetailPIB = () => {
     const auth = useSelector(state => state.auth);
@@ -30,6 +31,7 @@ export const DetailPIB = () => {
     const [fakturId, setFakturId] = useState();
     const [mataUangId, setMataUangId] = useState();
     const [dataHeader, setDataHeader] = useState()
+    const [term, setTerm] = useState()
     const [dataPIB, setDataPIB] = useState([])
 
     useEffect(() => {
@@ -46,6 +48,7 @@ export const DetailPIB = () => {
                 const getData = res.data.data[0];
                 console.log(getData);
                 setDataHeader(getData);
+                setTerm(getData.term)
                 setDataPIB(getData.goods_import_declaration_details)
                 setSelectedMataUang(getData.currency_name)
                 setLoading(false);
@@ -95,7 +98,7 @@ export const DetailPIB = () => {
         //     align: 'center',
         // },
         {
-            title: 'Jumlah Setelah Diskon',
+            title: term,
             dataIndex: 'uangasing',
             width: '15%',
             align: 'center',
