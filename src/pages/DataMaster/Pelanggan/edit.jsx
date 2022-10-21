@@ -1,75 +1,119 @@
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
+
 import axios from "axios";
-import React, { useEffect } from "react";
-import jsCookie from "js-cookie";
-import { useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
-import SendIcon from "@mui/icons-material/Send";
-import Button from "@mui/material/Button";
-import EditIcon from '@mui/icons-material/Edit';
-import CancelIcon from "@mui/icons-material/Cancel";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-import {
-  Box,
-  Checkbox,
-  IconButton,
-  Input,
-  Modal,
-  TextField,
-  Typography,
-} from "@mui/material";
-// import MaterialTable from "material-table";
 import { useSelector } from "react-redux";
-// import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-// import EditIcon from "@mui/icons-material/Edit";
-// import DeleteIcon from "@mui/icons-material/Delete";
-// import { TextField } from "@mui/material";
-// import CheckIcon from "@mui/icons-material/Check";
-import { PageHeader, Switch } from "antd";
+import { Button, Form, Input, PageHeader, Popconfirm, Skeleton, Switch, Table } from "antd";
+import { DeleteOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
+import ReactSelect from "react-select";
 
+const EditableContext = React.createContext(null);
+
+const EditableRow = ({ index, ...props }) => {
+  const [form] = Form.useForm();
+  return (
+    <Form form={form} component={false}>
+      <EditableContext.Provider value={form}>
+        <tr {...props} />
+      </EditableContext.Provider>
+    </Form>
+  );
+};
+
+const EditableCell = ({
+  title,
+  editable,
+  children,
+  dataIndex,
+  record,
+  handleSave,
+  ...restProps
+}) => {
+  const [editing, setEditing] = useState(false);
+  const inputRef = useRef(null);
+  const form = useContext(EditableContext);
+  useEffect(() => {
+    if (editing) {
+      inputRef.current.focus();
+    }
+  }, [editing]);
+
+  const toggleEdit = () => {
+    setEditing(!editing);
+    form.setFieldsValue({
+      [dataIndex]: record[dataIndex],
+    });
+  };
+
+  const save = async () => {
+    try {
+      const values = await form.validateFields();
+      toggleEdit();
+      handleSave({ ...record, ...values });
+    } catch (errInfo) {
+      console.log('Save failed:', errInfo);
+    }
+  };
+
+  let childNode = children;
+
+  if (editable) {
+    childNode = editing ? (
+      <Form.Item
+        style={{
+          margin: 0,
+        }}
+        name={dataIndex}
+        rules={[
+          {
+            required: true,
+            message: `${title} is required.`,
+          },
+        ]}
+      >
+        <Input ref={inputRef} onPressEnter={save} onBlur={save} />
+      </Form.Item>
+    ) : (
+      <div
+        className="editable-cell-value-wrap"
+        style={{
+          paddingRight: 24,
+        }}
+        onClick={toggleEdit}
+      >
+        {children}
+      </div>
+    );
+  }
+
+  return <td {...restProps}>{childNode}</td>;
+};
 
 const EditPelanggan = () => {
-  // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [bussiness_ent, setBussiness_ent] = useState('');
+  const [bussinessName, setBussinessName] = useState('');
   const [phone_number, setPhone_number] = useState('');
   const [email, setEmail] = useState('');
   const [npwp, setNpwp] = useState('');
   const [term, setTerm] = useState('');
   const [discount, setDiscount] = useState('');
   const [status, setStatus] = useState('');
+  const [dataSource, setDataSource] = useState([]);
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const [alamat, setAlamat] = useState([]);
-  const [kota, setKota] = useState([]);
-  const [kecamatan, setKecamatan] = useState([]);
-  const [kelurahan, setKelurahan] = useState([]);
-  const [kode_pos, setKode_pos] = useState([]);
+  // const [address, setAddress] = useState([]);
 
-  // const [getCustomer, setGetCustomer] = useState();
-
-  const [address, setAddress] = useState([]);
-
-  const [data, setData] = useState([]);
-
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [count, setCount] = useState(2);
 
   const [checked, setChecked] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -82,12 +126,14 @@ const EditPelanggan = () => {
     userData.append("term", term);
     userData.append("diskon", discount);
     userData.append("status", status);
-    // 
-    // userData.append("alamat[]", address);
-    // userData.append("kota[]", kota);
-    // userData.append("kecamatan[]", kecamatan);
-    // userData.append("kelurahan[]", kelurahan);
-    // userData.append("kode_pos[]", kode_pos);
+    dataSource.map((address) => {
+      console.log(address);
+      userData.append("alamat[]", address.address);
+      userData.append("kota[]", address.city);
+      userData.append("kecamatan[]", address.sub_district);
+      userData.append("kelurahan[]", address.urban_village);
+      userData.append("kode_pos[]", address.postal_code);
+    });
 
     // for (var pair of userData.entries()) {
     //   console.log(pair[0] + ", " + pair[1]);
@@ -122,70 +168,14 @@ const EditPelanggan = () => {
       });
   };
 
-  const columns = [
-    { title: "ID", field: "id", editable: false },
-    { title: "Alamat", field: "address" },
-    { title: "Kelurahan", field: "urban_village" },
-    { title: "Kecamatan", field: "sub_district" },
-    { title: "Kota", field: "city" },
-    { title: "Kode Pos", field: "postal_code" },
-  ];
-
-  const handleAddress = async (e) => {
-    e.preventDefault();
-    const userData = new FormData();
-    address.map((address) => {
-      userData.append("alamat[]", address.address);
-      userData.append("kota[]", address.city);
-      userData.append("kecamatan[]", address.sub_district);
-      userData.append("kelurahan[]", address.urban_village);
-      userData.append("kode_pos[]", address.postal_code);
-    });
-    // for (var pair of userData.entries()) {
-    //   console.log(pair[0] + ', ' + pair[1]);
-    // }
-    axios({
-      method: "post",
-      url: `${Url}/customer_addresses/${id}`,
-      data: userData,
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    })
-      .then(function (res) {
-        //handle success
-        console.log(res);
-        Swal.fire("Alamat Berhasil Ditambahkan", `Alamat ${id} Berhasil Ditambah`, "success");
-        navigate(`/pelanggan/edit/${id}`);
-        setTimeout(window.location.reload.bind(window.location), 600);
-      })
-      .catch((err) => {
-        if (err.response) {
-          console.log("err.response ", err.response);
-          Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: err.response.data.error.nama,
-          });
-        } else if (err.request) {
-          console.log("err.request ", err.request);
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        } else if (err.message) {
-          // do something other than the other two
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        }
-      });
-  }
-
   const onChange = () => {
     checked ? setChecked(false) : setChecked(true)
 
     if (checked === false) {
-      setStatus("Active");
+      setStatus("Inactive");
       // console.log('Active');
     } else {
-      setStatus("Inactive");
+      setStatus("Active");
       // console.log('Inactive');
     }
   };
@@ -202,21 +192,19 @@ const EditPelanggan = () => {
       },
     })
       .then((res) => {
-        setData(res.data.data[0]);
         const getData = res.data.data[0];
+        setLoading(false)
         setCode(getData.code);
         setName(getData.name);
-        setBussiness_ent(getData.business_entity);
+        setBussinessName(getData.business_entity);
         setPhone_number(getData.phone_number);
         setEmail(getData.email);
         setNpwp(getData.npwp);
         setTerm(getData.term);
         setDiscount(getData.discount);
         setStatus(getData.status);
-        console.log(getData.business_entity);
-        setAddress(getData.customer_addresses)
-        console.log(getData.customer_addresses)
-        console.log(res.data.data);
+        setDataSource(getData.customer_addresses)
+        console.log(getData);
       })
       .catch((err) => {
         // Jika Gagal
@@ -224,19 +212,145 @@ const EditPelanggan = () => {
       });
   }
 
+  const handleDelete = (id) => {
+    const newData = dataSource.filter((item) => item.id !== id);
+    setDataSource(newData);
+  };
 
+  const defaultColumns = [
+    {
+      title: 'No.',
+      dataIndex: 'index',
+      width: '3%',
+      align: 'center',
+      render: (text, record, index) => index + 1
+    },
+    {
+      title: 'Alamat',
+      dataIndex: 'address',
+      width: '30%',
+      editable: true,
+    },
+    {
+      title: 'Kelurahan',
+      editable: true,
+      dataIndex: 'urban_village',
+    },
+    {
+      title: 'Kecamatan',
+      editable: true,
+      dataIndex: 'sub_district',
+    },
+    {
+      title: 'Kota',
+      editable: true,
+      dataIndex: 'city',
+    },
+    {
+      title: 'Kode Pos',
+      editable: true,
+      dataIndex: 'postal_code',
+    },
+    {
+      title: 'operation',
+      dataIndex: 'operation',
+      align: 'center',
+      width: '5%',
+      render: (_, record) =>
+        dataSource.length >= 1 ? (
+          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.id)}>
+            <Button
+              size='small'
+              type="danger"
+              icon={<DeleteOutlined />}
+            />
+          </Popconfirm>
+        ) : null,
+    },
+  ];
 
+  const handleAdd = () => {
+    const newData = {
+      key: count,
+      name: ``,
+      age: '',
+      address: ``,
+    };
+    setDataSource([...dataSource, newData]);
+    setCount(count + 1);
+  };
 
+  const handleSave = (row) => {
+    const newData = [...dataSource];
+    const index = newData.findIndex((item) => row.key === item.key);
+    const item = newData[index];
+    newData.splice(index, 1, { ...item, ...row });
+    setDataSource(newData);
+  };
+
+  const components = {
+    body: {
+      row: EditableRow,
+      cell: EditableCell,
+    },
+  };
+  const columns = defaultColumns.map((col) => {
+    if (!col.editable) {
+      return col;
+    }
+
+    return {
+      ...col,
+      onCell: (record) => ({
+        record,
+        editable: col.editable,
+        dataIndex: col.dataIndex,
+        title: col.title,
+        handleSave,
+      }),
+    };
+  });
+
+  const optionsBussiness = [
+    {
+      label: "PT",
+      value: "PT"
+    },
+    {
+      label: "CV",
+      value: "CV"
+    },
+    {
+      label: "Lainnya...",
+      value: "Lainnya..."
+    }
+  ];
+
+  const handleSingleChange = (e) => {
+    setBussiness_ent(e.value);
+  };
+
+  if (loading) {
+    return (
+      <>
+        <form className="p-3 mb-3 bg-body rounded">
+          <Skeleton active />
+        </form>
+        <form className="p-3 mb-3 bg-body rounded">
+          <Skeleton active />
+        </form>
+      </>
+    )
+  }
 
   return (
     <>
-    <PageHeader
-          ghost={false}
-          onBack={() => window.history.back()}
-          title="Edit Pelanggan">
-     </PageHeader>
-
-      <form className="  p-3 mb-4 bg-body rounded">
+      <PageHeader
+        ghost={false}
+        className="bg-body rounded mb-2"
+        onBack={() => window.history.back()}
+        title="Edit Pelanggan"
+      >
         <div className="row mb-3">
           <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
             Kode
@@ -245,9 +359,9 @@ const EditPelanggan = () => {
             <input
               type="kode"
               className="form-control"
-              defaultValue={code}
-              disabled
               id="inputKode3"
+              value={code}
+              disabled
             />
           </div>
         </div>
@@ -259,8 +373,8 @@ const EditPelanggan = () => {
             <input
               type="Nama"
               className="form-control"
-              defaultValue={name}
               id="inputNama3"
+              value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </div>
@@ -274,7 +388,7 @@ const EditPelanggan = () => {
               type="Nama"
               className="form-control"
               id="inputNama3"
-              defaultValue={phone_number}
+              value={phone_number}
               onChange={(e) => setPhone_number(e.target.value)}
             />
           </div>
@@ -288,7 +402,7 @@ const EditPelanggan = () => {
               type="Nama"
               className="form-control"
               id="inputNama3"
-              defaultValue={email}
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
@@ -302,7 +416,7 @@ const EditPelanggan = () => {
               type="Nama"
               className="form-control"
               id="inputNama3"
-              defaultValue={npwp}
+              value={npwp}
               onChange={(e) => setNpwp(e.target.value)}
             />
           </div>
@@ -312,22 +426,15 @@ const EditPelanggan = () => {
             Badan Usaha
           </label>
           <div className="col-sm-10">
-            <select
-              onChange={(e) => setBussiness_ent(e.target.value)}
-              id="bussinessSelect"
-              className="form-select"
-            >
-              <option>Pilih Badan Usaha</option>
-              <option value="PT" selected={bussiness_ent === "PT"}>
-                PT
-              </option>
-              <option value="CV" selected={bussiness_ent === "CV"}>
-                CV
-              </option>
-              <option value="Lainnya" selected={bussiness_ent === "Lainnya.."}>
-                Lainnya..
-              </option>
-            </select>
+            <ReactSelect
+              className="basic-single"
+              placeholder="Pilih Badan Usaha..."
+              classNamePrefix="select"
+              isSearchable
+              defaultInputValue={bussinessName}
+              onChange={handleSingleChange}
+              options={optionsBussiness}
+            />
           </div>
         </div>
         <div className="row mb-3">
@@ -339,7 +446,7 @@ const EditPelanggan = () => {
               type="Nama"
               className="form-control"
               id="inputNama3"
-              defaultValue={term}
+              value={term}
               onChange={(e) => setTerm(e.target.value)}
             />
           </div>
@@ -353,151 +460,58 @@ const EditPelanggan = () => {
               type="Nama"
               className="form-control"
               id="inputNama3"
-              defaultValue={discount}
+              value={discount}
               onChange={(e) => setDiscount(e.target.value)}
             />
           </div>
         </div>
-
         <div className="row mb-3">
           <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
           <div className="col-sm-7">
-            <Switch defaultChecked={checked} onChange={onChange} />
+            <Switch defaultChecked={status} onChange={onChange} />
             <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
               {
-                checked ? "Aktif"
-                  : "Nonaktif"
+                checked ? "Nonaktif"
+                  : "Aktif"
               }
             </label>
           </div>
         </div>
+      </PageHeader>
 
-        {/* <fieldset className="row mb-3">
-          <legend className="col-form-label col-sm-2 pt-0">Status</legend>
-          <div className="col-sm-10">
-            <div className="form-check">
-              <input
-                onChange={(e) => setStatus(e.target.value)}
-                value="Active"
-                checked={status === "Active"}
-                className="form-check-input"
-                type="radio"
-                name="flexRadioDefault"
-                id="flexRadioDefault1"
-              />
-              <label className="form-check-label" htmlFor="gridRadios1">
-                Aktif
-              </label>
-            </div>
-            <div className="form-check">
-              <input
-                onChange={(e) => setStatus(e.target.value)}
-                value="Inactive"
-                checked={status === "Inactive"}
-                className="form-check-input"
-                type="radio"
-                name="flexRadioDefault"
-                id="flexRadioDefault2"
-              />
-              <label className="form-check-label" htmlFor="gridRadios2">
-                Non-Aktif
-              </label>
-            </div>
-          </div>
-        </fieldset> */}
-        <div className="d-grid mt-3 gap-2 d-md-flex justify-content-md-end">
-          <button onClick={handleUpdate} className="btn btn-primary" type="button">
-            Simpan <SendIcon className="ms-1" />
-          </button>
-          {/* <Button
-          onClick={handleSubmit}
-          variant="contained"
-          endIcon={<SendIcon />}
-        >
-          Simpan
-        </Button> */}
-        </div>
-      </form>
-      <form className="  p-3 mb-3 bg-body rounded">
-        {/* <MaterialTable
-          title="Alamat Pelanggan"
-          data={address}
+      <PageHeader
+        ghost={false}
+        className="bg-body rounded"
+        title="Tambah Alamat Pelanggan"
+        extra={[
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={handleAdd}
+            style={{
+              marginBottom: 16,
+            }}
+          />
+        ]}
+      >
+        <Table
+          components={components}
+          rowClassName={() => 'editable-row'}
+          bordered
+          dataSource={dataSource}
           columns={columns}
-          onChange={(e) => setAddress(e.target.value)}
-          editable={{
-            onRowAdd: (newRow) =>
-              new Promise((resolve, reject) => {
-                const updatedRows = [
-                  ...address,
-                  { id: address.length + 1, ...newRow },
-                ];
-                setTimeout(() => {
-                  setAddress(updatedRows);
-                  resolve();
-                }, 2000);
-              }),
-            onRowDelete: (selectedRow) =>
-              new Promise((resolve, reject) => {
-                const index = selectedRow.tableData.id;
-                const updatedRows = [...address];
-                updatedRows.splice(index, 1);
-                setTimeout(() => {
-                  setAddress(updatedRows);
-                  resolve();
-                }, 2000);
-              }),
-            onRowUpdate: (updatedRow, oldRow) =>
-              new Promise((resolve, reject) => {
-                const index = oldRow.tableData.id;
-                const updatedRows = [...address];
-                updatedRows[index] = updatedRow;
-                setTimeout(() => {
-                  setAddress(updatedRows);
-                  resolve();
-                }, 2000);
-              }),
-            onBulkUpdate: (selectedRows) =>
-              new Promise((resolve, reject) => {
-                const rows = Object.values(selectedRows);
-                const updatedRows = [...address];
-                let index;
-                rows.map((emp) => {
-                  index = emp.oldData.tableData.id;
-                  updatedRows[index] = emp.newData;
-                });
-                setTimeout(() => {
-                  setAddress(updatedRows);
-                  resolve();
-                }, 2000);
-              }),
-          }}
-          options={{
-            actionsColumnIndex: -1,
-            addRowPosition: "first",
-          }}
-        /> */}
-        <div className="d-grid mt-3 gap-2 d-md-flex justify-content-md-end">
-          <button onClick={handleAddress} className="btn btn-primary" type="button">
-            Simpan <SendIcon className="ms-1" />
-          </button>
-          {/* <Button
-          onClick={handleSubmit}
-          variant="contained"
-          endIcon={<SendIcon />}
-        >
-          Simpan
-        </Button> */}
+        />
+        <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+          <Button
+            type="primary"
+            icon={<SendOutlined />}
+            size="large"
+            onClick={handleUpdate}
+          >
+            Submit
+          </Button>
         </div>
-      </form>
-      {/* <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-        <Button
-          onClick={handleUpdate}
-          variant="contained"
-          endIcon={<SendIcon />}
-        >
-          Simpan
-        </Button>
-      </div> */}
+      </PageHeader>
     </>
   );
 };

@@ -20,7 +20,7 @@ const PajakTable = () => {
   const searchInput = useRef(null);
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [ellipsis, setEllipsis] = useState(true);
 
   const { id } = useParams();
@@ -155,12 +155,12 @@ const PajakTable = () => {
           ellipsis={
             ellipsis
               ? {
-                tooltip: toTitleCase(text),
+                tooltip: text,
               }
               : false
           }
         >
-          {toTitleCase(text)}
+          {text}
         </Text>
       )
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,

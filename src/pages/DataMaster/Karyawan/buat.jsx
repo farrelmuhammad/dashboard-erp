@@ -6,8 +6,6 @@
 // import TableHead from "@mui/material/TableHead";
 // import TablePagination from "@mui/material/TablePagination";
 // import TableRow from "@mui/material/TableRow";
-import SendIcon from "@mui/icons-material/Send";
-import Button from "@mui/material/Button";
 import axios from "axios";
 import jsCookie from "js-cookie";
 import { useEffect, useState } from "react";
@@ -20,7 +18,8 @@ import React from "react";
 // import Select from "react-select";
 import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
-import { PageHeader, Switch} from 'antd';
+import { Button, PageHeader, Switch } from 'antd';
+import { SendOutlined } from "@ant-design/icons";
 
 const BuatKaryawan = () => {
   // const token = jsCookie.get("auth");
@@ -85,7 +84,7 @@ const BuatKaryawan = () => {
     }).then((res) => res.json());
   };
 
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(true);
   const onChange = () => {
     checked ? setChecked(false) : setChecked(true)
 
@@ -239,12 +238,11 @@ const BuatKaryawan = () => {
   if (getWarehouse?.length > 0) {
     return (
       <>
-       <PageHeader
+        <PageHeader
           ghost={false}
+          className="bg-body rounded mb-2"
           onBack={() => window.history.back()}
           title="Buat Karyawan">
-          </PageHeader>
-        <form className="  p-3 mb-3 bg-body rounded">
           <div className="row mb-3">
             <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
               Kode
@@ -255,7 +253,7 @@ const BuatKaryawan = () => {
                 className="form-control"
                 id="inputKode3"
                 value={getEmployee}
-                readOnly={getEmployee}
+                disabled
               />
             </div>
           </div>
@@ -404,11 +402,12 @@ const BuatKaryawan = () => {
               />
             </div>
           </div>
-        </form>
-        <form className="  p-3 mb-3 bg-body rounded">
-          <div className="text-title text-start mb-4">
-            <h3 className="title fw-bold">Dokumen</h3>
-          </div>
+        </PageHeader>
+        <PageHeader
+          ghost={false}
+          className="bg-body rounded"
+          title="Dokumen"
+        >
           <div className="row mb-3">
             <label htmlFor="inputnpwp" className="col-sm-2 col-form-label">
               NPWP
@@ -496,117 +495,28 @@ const BuatKaryawan = () => {
           </div>
 
           <div className="row mb-3">
-          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
-          <div className="col-sm-7">
-            <Switch defaultChecked={checked} onChange={onChange} />
-            <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
-              {
-                checked ? "Aktif"
-                  : "Nonaktif"
-              }
-            </label>
-          </div>
-        </div>
-
-          {/* <fieldset className="row mb-3">
-            <legend className="col-form-label col-sm-2 pt-0">Status</legend>
-            <div className="col-sm-10">
-              <div className="form-check">
-                <input
-                  onChange={(e) => setStatus(e.target.value)}
-                  value="Active"
-                  checked={status === "Active"}
-                  className="form-check-input"
-                  type="radio"
-                  name="flexRadioDefault"
-                  id="flexRadioDefault1"
-                />
-                <label className="form-check-label" htmlFor="gridRadios1">
-                  Aktif
-                </label>
-              </div>
-              <div className="form-check">
-                <input
-                  onChange={(e) => setStatus(e.target.value)}
-                  value="Inactive"
-                  checked={status === "Inactive"}
-                  className="form-check-input"
-                  type="radio"
-                  name="flexRadioDefault"
-                  id="flexRadioDefault2"
-                />
-                <label className="form-check-label" htmlFor="gridRadios2">
-                  Non-Aktif
-                </label>
-              </div>
-            </div>
-          </fieldset> */}
-        </form>
-        {/* <form className="  p-3 mb-3 bg-body rounded">
-          <div className="p-2 mb-1 bg-body rounded">
-            <div className="text-title text-start">
-              <h4 className="title fw-bold mb-1">Pilih Gudang</h4>
+            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
+            <div className="col-sm-7">
+              <Switch defaultChecked={status} onChange={onChange} />
+              <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
+                {
+                  checked ? "Nonaktif"
+                    : "Aktif"
+                }
+              </label>
             </div>
           </div>
-          <Paper sx={{ width: "100%", overflow: "hidden" }}>
-            <TableContainer sx={{ maxHeight: 440 }}>
-              <Table stickyHeader aria-label="sticky table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Kode</TableCell>
-                    <TableCell>Nama Gudang</TableCell>
-                    <TableCell>Alamat</TableCell>
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {getWarehouse
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((d) => {
-                      return (
-                        <TableRow
-                          hover
-                          role="checkbox"
-                          tabIndex={-1}
-                          key={d.id}
-                        >
-                          <TableCell>{d.id}</TableCell>
-                          <TableCell>{d.name}</TableCell>
-                          <TableCell>{d.address}</TableCell>
-                          <TableCell>
-                            <Checkbox
-                              key={d.id}
-                              value={d.id}
-                              id={d.id}
-                              onChange={handleCheck}
-                            />
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
-              component="div"
-              count={getEmployee.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </Paper>
-        </form> */}
-        <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            endIcon={<SendIcon />}
-          >
-            Simpan
-          </Button>
-        </div>
+          <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+            <Button
+              type="primary"
+              icon={<SendOutlined />}
+              size="large"
+              onClick={handleSubmit}
+            >
+              Submit
+            </Button>
+          </div>
+        </PageHeader>
       </>
     );
   }
