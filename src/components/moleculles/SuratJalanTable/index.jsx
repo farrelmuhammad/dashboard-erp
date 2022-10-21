@@ -20,8 +20,9 @@ const SuratJalanTable = () => {
     const [status, setStatus] = useState([]);
     // const [getCustomer, setGetCustomer] = useState('');
     const [getCustomerName, setGetCustomerName] = useState(null);
-    // const [getAddress, setGetAddress] = useState('');
     const [getAddressName, setGetAddressName] = useState(null);
+    // const [getAddress, setGetAddress] = useState('');
+    // const [getAddressName, setGetAddressName] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [checked, setChecked] = useState(null);
 
@@ -29,14 +30,26 @@ const SuratJalanTable = () => {
     const [confirmLoading, setConfirmLoading] = useState(false);
     // const [modalText, setModalText] = useState('Content of the modal');
     const [customer, setCustomer] = useState("");
+    const [customerIdDefault, setCustomerIdDefault] = useState("");
     const [address, setAddress] = useState("");
-    const [selectedValue, setSelectedCustomer] = useState(null);
-    const [selectedValue2, setSelectedAddress] = useState(null);
+    const [addressId, setAddressId] = useState("");
+    const [addressIdDefault, setAddressIdDefault] = useState("");
+    const [tampilPelanggan, setTampilPelanggan] = useState(false);
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const [selectedAddress, setSelectedAddress] = useState(null);
 
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
         setCustomer(value.id);
         setAddress(value.customer_addresses)
+        setSelectedAddress([])
+        // console.log(value.customer_addresses)
+    };
+
+    const handleChangeAddress = (value) => {
+        setSelectedAddress(value);
+        setAddressId(value.id);
+        // setAddress(value.customer_addresses)
     };
 
     // load options using API call
@@ -60,10 +73,10 @@ const SuratJalanTable = () => {
         })
             .then(res => {
                 const getData = res.data.data[0]
-                setCustomer(getData.customer.id)
+                setCustomerIdDefault(getData.customer.id)
                 setGetCustomerName(getData.customer.name)
-                setAddress(getData.customer_address_id)
-                // console.log(getData)
+                setGetAddressName(getData.customer_address.address)
+                setAddressIdDefault(getData.customer_address_id)
                 setIsLoading(true);
             })
             .catch((err) => {
@@ -72,48 +85,71 @@ const SuratJalanTable = () => {
             });
     };
 
-    const handleOk = async (id, code, record) => {
-        // setModalText('The modal will be closed after two seconds');
-        setConfirmLoading(true);
+    const handleOk = async (id, code) => {
         try {
-            const userData = new URLSearchParams();
-            userData.append("penerima", customer);
-            userData.append("alamat_penerima", address);
-
-            for (var pair of userData.entries()) {
-                console.log(pair[0] + ', ' + pair[1]);
+            const formData = new URLSearchParams();
+            if (tampilPelanggan) {
+                formData.append("penerima", customerIdDefault);
+                formData.append("alamat_penerima", addressIdDefault);
+            }
+            else {
+                formData.append("penerima", customer);
+                formData.append("alamat_penerima", addressId);
             }
 
-            // await axios({
-            //     method: "patch",
-            //     url: `${Url}/delivery_notes/delivered/${id}`,
-            //     data: userData,
-            //     headers: {
-            //         Accept: "application/json",
-            //         Authorization: `Bearer ${auth.token}`,
-            //     },
-            // })
-            // getDeliveryNotes();
-            // Swal.fire("Sudah Diterima!", `${code} Diterima`, "success");
+            axios({
+                data: formData,
+                method: "patch",
+                url: `${Url}/delivery_notes/delivered/${id}`,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            }).then(function (response) {
+                //handle success
+                Swal.fire(
+                    "Berhasil DiSubmit!",
+                    `${code} Disubmit`,
+                    "success"
+                );
+                getDeliveryNotes()
+                // navigate("/suratjalan");
+            })
+                .catch((err) => {
+                    if (err.response) {
+                        console.log("err.response ", err.response);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: err.response.data.error.nama,
+                        });
+                    }
+                });
+            setVisible(false)
+            // setModalText('The modal will be closed after two seconds');
+            setIsLoading(false)
+
+
         }
         catch (err) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: err.response.data.error.nama,
+            });
             console.log(err);
+            setVisible(false)
+            setIsLoading(false)
+            // setModalText('The modal will be closed after two seconds');
+            // setConfirmLoading(false);
         }
+
+
     };
 
     const [tampil, setTampil] = useState(false)
     const onChange = (e) => {
-        // checked ? setChecked(false) : setChecked(true)
-        // console.log(checked);
-        if (tampil) {
-            setTampil(false)
 
-        }
-        else {
-            setTampil(true)
-
-        }
-        console.log(e.target.checked);
     };
 
     const deleteDeliveryNotes = async (id) => {
@@ -328,7 +364,7 @@ const SuratJalanTable = () => {
             align: 'center',
             render: (_, record) => (
                 <>
-                    {record.status === 'Submitted' && record.is_delivered === false ?
+                    {record.status === 'Submitted' && record.is_delivered === false && record.customer != null ?
                         <Space size="middle">
                             <Button
                                 size='small'
@@ -373,72 +409,77 @@ const SuratJalanTable = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    // <Space>
-                                    //     <Skeleton.Button active="active" size="default" shape="default" block={false} />
-                                    //     <Skeleton.Avatar active="active" size="default" shape="circle" />
-                                    //     <Skeleton.Input active="active" size="default" />
-                                    // </Space>
                                 )
                                     : (
+
                                         <div className="text-title text-start">
                                             <div className="row">
                                                 <div className="row">
-                                                    <label htmlFor="inputNama3" className="col-sm-4 ms-5 mb-2 col-form-label">Penerima</label>
-                                                    <div className="col-sm-6">
-                                                        <AsyncSelect
-                                                            placeholder="Pilih Penerima..."
-                                                            cacheOptions
-                                                            defaultOptions
-                                                            defaultInputValue={tampil ? getCustomerName : null}
-                                                            value={selectedValue}
-                                                            getOptionLabel={(e) => e.name}
-                                                            getOptionValue={(e) => e.id}
-                                                            loadOptions={loadOptionsCustomer}
-                                                            onChange={handleChangeCustomer}
-                                                        />
-                                                        {/* {checked === false ?
-                                                            <AsyncSelect
-                                                                placeholder="Pilih Penerima..."
-                                                                cacheOptions
-                                                                defaultOptions
-                                                                // defaultInputValue={getCustomerName}
-                                                                value={selectedValue}
-                                                                getOptionLabel={(e) => e.name}
-                                                                getOptionValue={(e) => e.id}
-                                                                loadOptions={loadOptionsCustomer}
-                                                                onChange={handleChangeCustomer}
-                                                            />
-                                                            : <AsyncSelect
-                                                                placeholder="Pilih Penerima..."
-                                                                cacheOptions
-                                                                defaultOptions
-                                                                defaultInputValue={getCustomerName}
-                                                                value={selectedValue}
-                                                                getOptionLabel={(e) => e.name}
-                                                                getOptionValue={(e) => e.id}
-                                                                loadOptions={loadOptionsCustomer}
-                                                                onChange={handleChangeCustomer}
-                                                            />
-                                                        } */}
-                                                    </div>
-                                                    <label htmlFor="inputNama3" className="col-sm-4 ms-5 mb-2 col-form-label">Alamat Penerima</label>
-                                                    <div className="col-sm-6">
-                                                        <ReactSelect
-                                                            className="basic-single"
-                                                            placeholder="Pilih Alamat..."
-                                                            classNamePrefix="select"
-                                                            defaultInputValue={tampil ? address : null}
-                                                            isSearchable
-                                                            getOptionLabel={(e) => e.address}
-                                                            getOptionValue={(e) => e.id}
-                                                            options={address}
-                                                            onChange={(e) => setAddress(e.id)}
-                                                        />
-                                                    </div>
+                                                    {
+                                                        tampilPelanggan ?
+                                                            <>
+                                                                <label htmlFor="inputNama3" className="col-sm-4 ms-5 mb-2 col-form-label">Penerima</label>
+                                                                <div className="col-sm-6">
+                                                                    <input
+                                                                        value={getCustomerName}
+                                                                        type="Nama"
+                                                                        className="form-control"
+                                                                        id="inputNama3"
+                                                                        disabled
+                                                                    />
+
+                                                                </div>
+                                                                <label htmlFor="inputNama3" className="col-sm-4 ms-5 mb-2 col-form-label">Alamat Penerima</label>
+                                                                <div className="col-sm-6">
+                                                                    <input
+                                                                        value={getAddressName}
+                                                                        type="Nama"
+                                                                        className="form-control"
+                                                                        id="inputNama3"
+                                                                        disabled
+                                                                    />
+
+                                                                </div>
+                                                            </> :
+                                                            <>
+                                                                <label htmlFor="inputNama3" className="col-sm-4 ms-5 mb-2 col-form-label">Penerima</label>
+                                                                <div className="col-sm-6">
+                                                                    <AsyncSelect
+                                                                        placeholder="Pilih Penerima..."
+                                                                        cacheOptions
+                                                                        defaultOptions
+                                                                        // defaultInputValue={ getCustomerName }
+                                                                        value={selectedCustomer}
+                                                                        getOptionLabel={(e) => e.name}
+                                                                        getOptionValue={(e) => e.id}
+                                                                        loadOptions={loadOptionsCustomer}
+                                                                        onChange={handleChangeCustomer}
+                                                                    />
+                                                                </div>
+                                                                <label htmlFor="inputNama3" className="col-sm-4 ms-5 mb-2 col-form-label">Alamat Penerima</label>
+                                                                <div className="col-sm-6">
+                                                                    <ReactSelect
+                                                                        className="basic-single"
+                                                                        placeholder="Pilih Alamat..."
+                                                                        classNamePrefix="select"
+                                                                        // defaultInputValue={address}
+                                                                        isSearchable
+                                                                        value={selectedAddress}
+                                                                        getOptionLabel={(e) => e.address}
+                                                                        getOptionValue={(e) => e.id}
+                                                                        options={address}
+
+                                                                        // loadOptions={loadOptionsCustomer}
+                                                                        onChange={handleChangeAddress}
+                                                                    // onChange={(e) => setAddress(e.id)}
+                                                                    />
+                                                                </div>
+                                                            </>
+                                                    }
                                                     <label htmlFor="inputNama3" className="col-sm-4 ms-5 col-form-label"></label>
                                                     <div className="col-sm-6">
                                                         <Checkbox
-                                                            onChange={onChange}
+                                                            onChange={(e) => { setTampilPelanggan(!tampilPelanggan), setSelectedCustomer(''), setSelectedAddress('') }}
                                                         >
                                                             Sama Dengan Pelanggan
                                                         </Checkbox>
@@ -506,7 +547,7 @@ const SuratJalanTable = () => {
                                     onClick={() => deleteDeliveryNotes(record.id)}
                                 />
                             </Space>
-                            : record.status === 'Draft' ?
+                            : record.status === 'Submitted' && record.is_delivered === false && record.customer == null ?
                                 <Space size="middle">
                                     <Link to={`/suratjalan/detail/${record.id}`}>
                                         <Button
@@ -529,7 +570,7 @@ const SuratJalanTable = () => {
                                         onClick={() => deleteDeliveryNotes(record.id)}
                                     />
                                 </Space>
-                                : record.status === 'Processed' ?
+                                : record.status === 'Draft' ?
                                     <Space size="middle">
                                         <Link to={`/suratjalan/detail/${record.id}`}>
                                             <Button
@@ -538,16 +579,39 @@ const SuratJalanTable = () => {
                                                 icon={<InfoCircleOutlined />}
                                             />
                                         </Link>
-                                    </Space>
-                                    : <Space size="middle">
-                                        <Link to={`/suratjalan/detail/${record.id}`}>
+                                        <Link to={`/suratjalan/edit/${record.id}`}>
                                             <Button
                                                 size='small'
-                                                type="primary"
-                                                icon={<InfoCircleOutlined />}
+                                                type="success"
+                                                icon={<EditOutlined />}
                                             />
                                         </Link>
+                                        <Button
+                                            size='small'
+                                            type="danger"
+                                            icon={<DeleteOutlined />}
+                                            onClick={() => deleteDeliveryNotes(record.id)}
+                                        />
                                     </Space>
+                                    : record.status === 'Processed' ?
+                                        <Space size="middle">
+                                            <Link to={`/suratjalan/detail/${record.id}`}>
+                                                <Button
+                                                    size='small'
+                                                    type="primary"
+                                                    icon={<InfoCircleOutlined />}
+                                                />
+                                            </Link>
+                                        </Space>
+                                        : <Space size="middle">
+                                            <Link to={`/suratjalan/detail/${record.id}`}>
+                                                <Button
+                                                    size='small'
+                                                    type="primary"
+                                                    icon={<InfoCircleOutlined />}
+                                                />
+                                            </Link>
+                                        </Space>
                     }
                 </>
             ),

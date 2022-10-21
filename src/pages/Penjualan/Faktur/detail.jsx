@@ -165,7 +165,7 @@ const DetailFaktur = () => {
                 setDescription(getData.notes)
                 setProduct(getData.sales_invoice_details);
                 setLoading(false)
-                console.log(getData);
+                // console.log(getData);
             })
     }, [])
 
