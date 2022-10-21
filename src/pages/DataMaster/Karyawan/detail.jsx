@@ -13,13 +13,16 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import Url from "../../../Config";
 import "./form.css";
-import { PageHeader } from "antd";
+import { PageHeader, Skeleton, Switch, Tag } from "antd";
 
 export const DetailKaryawan = () => {
   // const auth.token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [data, setData] = useState([]);
-  const [dataWarehouse, setDataWarehouse] = useState([]);
+  const [department, setDepartment] = useState([]);
+  const [position, setPosition] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState('');
   const { id } = useParams();
 
   // const [page, setPage] = useState(0);
@@ -43,30 +46,33 @@ export const DetailKaryawan = () => {
         },
       })
       .then((res) => {
-        setData(res.data.data);
-        console.log(res.data.data);
+        const getData = res.data.data[0]
+        setData(getData);
+        setStatus(getData.status)
+        setDepartment(getData.department.name)
+        setPosition(getData.position.name)
+        setLoading(false)
+        console.log(getData);
       });
-
-    axios
-      .get(`${Url}/employee_warehouses/${id}`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-      .then((res) => setDataWarehouse(res.data.data));
   }, []);
+
+  if (loading) {
+    return (
+      <>
+        <form className="p-3 mb-3 bg-body rounded">
+          <Skeleton active />
+        </form>
+      </>
+    )
+  }
 
   return (
     <>
-    <PageHeader
-          ghost={false}
-          onBack={() => window.history.back()}
-          title="Detail Karyawan">
-    </PageHeader>
-
-      <form className="  p-3 mb-3 bg-body rounded">
-       
+      <PageHeader
+        ghost={false}
+        onBack={() => window.history.back()}
+        className="bg-body rounded mb-2"
+        title="Detail Karyawan">
         <div className="row mb-3">
           <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
             Kode
@@ -75,8 +81,8 @@ export const DetailKaryawan = () => {
             <input
               type="kode"
               className="form-control"
-              defaultValue={id}
-              readOnly
+              value={data.code}
+              disabled
             />
           </div>
         </div>
@@ -85,15 +91,12 @@ export const DetailKaryawan = () => {
             NIP
           </label>
           <div className="col-sm-10">
-            {data?.map((d, index) => (
-              <input
-                key={index}
-                type="kode"
-                className="form-control"
-                readOnly
-                defaultValue={d.nip}
-              />
-            ))}
+            <input
+              type="kode"
+              className="form-control"
+              disabled
+              value={data.nip}
+            />
           </div>
         </div>
         <div className="row mb-3">
@@ -101,15 +104,12 @@ export const DetailKaryawan = () => {
             NIK
           </label>
           <div className="col-sm-10">
-            {data?.map((d, index) => (
-              <input
-                key={index}
-                type="kode"
-                className="form-control"
-                readOnly
-                defaultValue={d.nik}
-              />
-            ))}
+            <input
+              type="kode"
+              className="form-control"
+              disabled
+              value={data.nik}
+            />
           </div>
         </div>
         <div className="row mb-3">
@@ -117,15 +117,12 @@ export const DetailKaryawan = () => {
             Nama Karyawan
           </label>
           <div className="col-sm-10">
-            {data?.map((d, index) => (
-              <input
-                key={index}
-                type="Nama"
-                className="form-control"
-                readOnly
-                defaultValue={d.name}
-              />
-            ))}
+            <input
+              type="Nama"
+              className="form-control"
+              disabled
+              value={data.name}
+            />
           </div>
         </div>
         <div className="row mb-3">
@@ -133,15 +130,12 @@ export const DetailKaryawan = () => {
             Inisial
           </label>
           <div className="col-sm-10">
-            {data?.map((d, index) => (
-              <input
-                key={index}
-                type="Nama"
-                className="form-control"
-                readOnly
-                defaultValue={d.initial}
-              />
-            ))}
+            <input
+              type="Nama"
+              className="form-control"
+              disabled
+              value={data.initial}
+            />
           </div>
         </div>
         <div className="row mb-3">
@@ -150,14 +144,9 @@ export const DetailKaryawan = () => {
           </label>
           <div className="col-sm-10">
             <select className="form-select" disabled="true">
-              <option>Pilih Departemen</option>
-              {data?.map((d) => {
-                return (
-                  <option selected={d.department_id} key={d}>
-                    {d.department_id}
-                  </option>
-                );
-              })}
+              <option>
+                {department}
+              </option>
             </select>
           </div>
         </div>
@@ -167,14 +156,9 @@ export const DetailKaryawan = () => {
           </label>
           <div className="col-sm-10">
             <select className="form-select" disabled="true">
-              <option>Pilih Posisi</option>
-              {data?.map((d) => {
-                return (
-                  <option selected={d.position_id} key={d}>
-                    {d.position_id}
-                  </option>
-                );
-              })}
+              <option>
+                {position}
+              </option>
             </select>
           </div>
         </div>
@@ -183,15 +167,12 @@ export const DetailKaryawan = () => {
             No Telepon
           </label>
           <div className="col-sm-10">
-            {data?.map((d, index) => (
-              <input
-                key={index}
-                type="Nama"
-                className="form-control"
-                readOnly
-                defaultValue={d.phone_number}
-              />
-            ))}
+            <input
+              type="Nama"
+              className="form-control"
+              disabled
+              value={data.phone_number}
+            />
           </div>
         </div>
         <div className="row mb-3">
@@ -199,15 +180,12 @@ export const DetailKaryawan = () => {
             Email
           </label>
           <div className="col-sm-10">
-            {data?.map((d, index) => (
-              <input
-                key={index}
-                type="Nama"
-                className="form-control"
-                readOnly
-                defaultValue={d.email}
-              />
-            ))}
+            <input
+              type="Nama"
+              className="form-control"
+              disabled
+              defaultValue={data.email}
+            />
           </div>
         </div>
         <div className="row mb-3">
@@ -215,9 +193,7 @@ export const DetailKaryawan = () => {
             Tanggal Lahir
           </label>
           <div className="col-sm-10">
-            {data?.map((d) => (
-              <input readOnly type="date" value={d.date_of_birth} className="form-control" />
-            ))}
+            <input disabled type="date" value={data.date_of_birth} className="form-control" />
           </div>
         </div>
         <div className="row mb-3">
@@ -225,229 +201,94 @@ export const DetailKaryawan = () => {
             Tanggal Masuk
           </label>
           <div className="col-sm-10">
-            {data?.map((d) => (
-              <input readOnly type="date" value={d.start_date} className="form-control" />
-            ))}
+            <input disabled type="date" value={data.start_date} className="form-control" />
           </div>
         </div>
-      </form>
-      <form className="  p-3 mb-3 bg-body rounded">
-        <div className="text-title text-start mb-4">
-          <h3 className="title fw-bold">Dokumen</h3>
-        </div>
-        {/* <div className="row mb-3">
-                        <label htmlFor="inputKode3" className="col-sm-2 col-form-label">Tanggal Keluar</label>
-                        <div className="col-sm-10">
-                        <input type="kode" className="form-control" id="inputKode3"/>
-                        </div>
-                    </div> */}
+      </PageHeader>
+      <PageHeader
+        ghost={false}
+        title="Dokumen"
+      >
         <div className="row mb-3">
           <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
             NPWP
           </label>
           <div className="col-sm-10">
-            {data?.map((d, index) => (
-              <input
-                key={index}
-                type="Nama"
-                className="form-control"
-                readOnly
-                defaultValue={d.npwp}
-              />
-            ))}
+            <input
+              type="Nama"
+              className="form-control"
+              disabled
+              value={data.npwp}
+            />
           </div>
         </div>
         <div className="row mb-3">
           <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Alamat</label>
           <div className="col-sm-10">
-          {data?.map((d, index) => (
             <textarea
-            key={index}
               className="form-control"
               id="form4Example3"
               rows="4"
-              value={d.address}
+              value={data.address}
               disabled
             />
-          ))}
           </div>
         </div>
         <div className="row mb-3">
           <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Kelurahan</label>
           <div className="col-sm-10">
-          {data?.map((d, index) => (
             <input
               type="Nama"
               className="form-control"
               id="inputNama3"
               disabled
-              value={d.urban_village}
-              key={index}
+              value={data.urban_village}
             />
-          ))}
           </div>
         </div>
         <div className="row mb-3">
           <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Kecamatan</label>
           <div className="col-sm-10">
-          {data?.map((d, index) => (
             <input
               type="Nama"
               className="form-control"
               id="inputNama3"
               disabled
-              value={d.sub_district}
-              key={index}
+              value={data.sub_district}
             />
-          ))}
           </div>
         </div>
         <div className="row mb-3">
           <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Kota</label>
           <div className="col-sm-10">
-          {data?.map((d, index) => (
             <input
-            key={index}
               type="Nama"
               className="form-control"
               id="inputNama3"
               disabled
-              value={d.city}
+              value={data.city}
             />
-          ))}
           </div>
         </div>
         <div className="row mb-3">
           <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Kode Pos</label>
           <div className="col-sm-10">
-          {data?.map((d, index) => (
             <input
-            key={index}
               type="Nama"
               className="form-control"
               id="inputNama3"
               disabled
-              value={d.postal_code}
+              value={data.postal_code}
             />
-          ))}
           </div>
         </div>
-        <fieldset className="row mb-3">
+        <div className="row mb-3">
           <legend className="col-form-label col-sm-2 pt-0">Status</legend>
-          <div className="col-sm-10">
-            <div className="status">
-              {data?.map((d) => {
-                if (d.status === "active") {
-                  return (
-                    <button type="button" className="btn btn-primary pe-none">
-                      {d.status}
-                    </button>
-                  );
-                } else {
-                  return (
-                    <button type="button" className="btn btn-danger pe-none">
-                      {d.status}
-                    </button>
-                  );
-                }
-              })}
-              {/* <input
-                value="active"
-                checked={status === "active"}
-                className="form-check-input"
-                type="radio"
-                name="flexRadioDefault"
-                id="flexRadioDefault1"
-              />
-              <label className="form-check-label" htmlFor="gridRadios1">
-                Aktif
-              </label> */}
-            </div>
-            {/* <div className="form-check">
-                  <input
-                    value="non-active"
-                    checked={status === "non-active"}
-                    className="form-check-input"
-                    type="radio"
-                    name="flexRadioDefault"
-                    id="flexRadioDefault2"
-                  />
-                  <label className="form-check-label" htmlFor="gridRadios2">
-                    Non-Aktif
-                  </label>
-                </div> */}
+          <div className="col-sm-7">
+            {status === "Active" ? <Tag color="blue">{status}</Tag> : <Tag color="red">{status}</Tag>}
           </div>
-        </fieldset>
-      </form>
-      {/* <form className="  p-3 mb-3 bg-body rounded">
-        <div className="text-title text-start mb-2">
-          <h4 className="title fw-bold">Data Gudang</h4>
         </div>
-        <Paper sx={{ width: "100%", overflow: "hidden" }}>
-          <TableContainer sx={{ maxHeight: 440 }}>
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Kode</TableCell>
-                  <TableCell>Nama Gudang</TableCell>
-                  <TableCell>Alamat</TableCell>
-                  <TableCell>Kota</TableCell>
-                  <TableCell>Kode Pos</TableCell>
-                  <TableCell>No. Telepon</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {dataWarehouse
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((d) => {
-                    if (!dataWarehouse) {
-                      return (
-                        <TableRow>
-                          <TableCell>Data Kosong</TableCell>
-                        </TableRow>
-                      );
-                    } else {
-                      return (
-                        <TableRow
-                          hover
-                          role="checkbox"
-                          tabIndex={-1}
-                          key={d.id}
-                        >
-                          <TableCell>{d.id}</TableCell>
-                          <TableCell>{d.name}</TableCell>
-                          <TableCell>{d.address}</TableCell>
-                          <TableCell>{d.city}</TableCell>
-                          <TableCell>{d.postal_code}</TableCell>
-                          <TableCell>{d.phone_number}</TableCell>
-                          
-                        </TableRow>
-                      );
-                    }
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
-            component="div"
-            count={data.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Paper>
-      </form> */}
-      {/* <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-            <Button
-              onClick={handleUpdate}
-              variant="contained"
-              endIcon={<SendIcon />}
-            >
-              Simpan
-            </Button>
-          </div> */}
+      </PageHeader>
     </>
   );
 };
