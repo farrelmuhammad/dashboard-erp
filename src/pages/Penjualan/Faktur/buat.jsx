@@ -141,7 +141,7 @@ const BuatFaktur = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?nama_alias=${query}&pelanggan=${customer}`, {
+            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?nama_alias=${query}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -164,7 +164,7 @@ const BuatFaktur = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/sales_invoices_available_sales_orders?nama_alias=${query}&pelanggan=${customer}`, {
+            const res = await axios.get(`${Url}/sales_invoices_available_sales_orders?nama_alias=${query}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -205,14 +205,14 @@ const BuatFaktur = () => {
                 return <>{record.detail.customer.name}</>
             }
         },
-        {
-            align: 'center',
-            title: 'Penerima',
-            dataIndex: 'recipient',
-            render: (_, record) => {
-                return <>{record.detail.code}</>
-            }
-        },
+        // {
+        //     align: 'center',
+        //     title: 'Penerima',
+        //     dataIndex: 'recipient',
+        //     render: (_, record) => {
+        //         return <>{record.detail.code}</>
+        //     }
+        // },
         {
             align: 'center',
             title: 'Total',
@@ -802,7 +802,7 @@ const BuatFaktur = () => {
                 subTotal += (totalPerProduk * 100) / (100 + values.ppn);
                 totalDiscount += ((rowDiscount * 100) / (100 + values.ppn));
                 totalPpn += ((((totalPerProduk * 100) / (100 + values.ppn)) - (rowDiscount * 100) / (100 + values.ppn)) * values.ppn) / (100);
-                grandTotal = subTotal - totalDiscount + Number(totalPpn);
+                grandTotal = subTotal - totalDiscount + Number(totalPpn) - Number(uangMuka);
                 setSubTotal(subTotal)
                 setGrandTotalDiscount(totalDiscount);
                 setTotalPpn(totalPpn)
@@ -929,22 +929,22 @@ const BuatFaktur = () => {
                         }
                         else {
                             tmp.push({
-                                customer_id: 2,
-                                discount_percentage: "1",
-                                fixed_discount: "0",
-                                id: 1,
-                                notes: "-",
-                                ppn: "1",
-                                price: "50000",
-                                product_alias_name: "Bagian 1 Grade 1 Merk 1",
-                                quantity: "1",
-                                sales_order_code: "BM220906-SO001",
-                                sales_order_id: 2,
-                                subtotal: "50000",
-                                subtotal_after_discount: "49500",
-                                tally_sheets_qty: 0,
-                                total: "49501",
-                                unit: "kg"
+                                customer_id: dataSumber[i].customer_id,
+                                discount_percentage: dataSumber[i].discount_percentage,
+                                fixed_discount: dataSumber[i].fixed_discount,
+                                id: dataSumber[i].id,
+                                notes: dataSumber[i].notes,
+                                ppn: dataSumber[i].ppn,
+                                price: dataSumber[i].price,
+                                product_alias_name: dataSumber[i].product_alias_name,
+                                quantity: dataSumber[i].quantity,
+                                code: dataSumber[i].sales_order_code,
+                                sales_order_id: dataSumber[i].sales_order_id,
+                                subtotal: dataSumber[i].subtotal,
+                                subtotal_after_discount: dataSumber[i].subtotal_after_discount,
+                                tally_sheets_qty: dataSumber[i].tally_sheets_qty,
+                                total: dataSumber[i].total,
+                                unit: dataSumber[i].unit
                             })
                         }
 
@@ -953,18 +953,24 @@ const BuatFaktur = () => {
                 else {
                     tmp.push(updatedList[i])
                 }
+                console.log(tmp)
 
             }
             updatedList = tmp
 
-        } else {
+        }
+        else {
+            console.log(updatedList)
+            console.log(event.target.value.detail)
+            let jumlah = 0
+            let index = []
             for (let i = 0; i < updatedList.length; i++) {
-
-                if (updatedList[i] == event.target.value.detail) {
-                    updatedList.splice(i, 1);
+                if (updatedList[i].code == event.target.value.detail.code) {
+                    jumlah = jumlah + 1
+                    index.push(i);
                 }
             }
-            // updatedList.splice(product.indexOf(event.target.value), 1);
+            updatedList.splice(index[0], jumlah);
         }
         setProduct(updatedList);
         let tmp = [];

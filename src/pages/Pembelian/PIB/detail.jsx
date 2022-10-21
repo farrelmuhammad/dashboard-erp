@@ -48,6 +48,7 @@ export const DetailPIB = () => {
                 console.log(getData);
                 setDataHeader(getData);
                 setDataPIB(getData.goods_import_declaration_details)
+                setSelectedMataUang(getData.currency_name)
                 setLoading(false);
             })
             .catch((err) => {
@@ -82,12 +83,12 @@ export const DetailPIB = () => {
                 };
             }
         },
-        {
-            title: 'Harga',
-            dataIndex: 'hrg',
-            width: '10%',
-            align: 'center',
-        },
+        // {
+        //     title: 'Harga',
+        //     dataIndex: 'hrg',
+        //     width: '10%',
+        //     align: 'center',
+        // },
         // {
         //     title: 'Diskon',
         //     dataIndex: 'dsc',
@@ -139,9 +140,9 @@ export const DetailPIB = () => {
     
     [...dataPIB.map((item, i) => ({
         nama: item.product_name,
-        qty: item.quantity.replace('.', ','),
-        hrg: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toFixed(2).replace('.', ',')} key="total" />,
-        uangasing: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.subtotal).toFixed(2).replace('.', ',')} key="total" />,
+        qty: item.quantity,
+        // hrg: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toFixed(2).replace('.', ',')} key="total" />,
+        uangasing: <CurrencyFormat prefix={selectedMataUang} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.subtotal).toFixed(2).replace('.', ',')} key="total" />,
         rupiah: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.converted_subtotal).toFixed(2).replace('.' , ',')} key="total" />,
         bea: <CurrencyFormat prefix='Rp ' disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.import_duty).toFixed(2).replace('.' , ',')} key="pay" />,
         total: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="total" />,
@@ -653,7 +654,7 @@ export const DetailPIB = () => {
                         </div>
 
                         <div className="row mb-3">
-                            <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Shipment Periode </label>
+                            <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Periode Pengiriman </label>
                             <div className="col-sm-7">
                                 <input
                                     id="startDate"
@@ -766,14 +767,14 @@ export const DetailPIB = () => {
                             return (
                                 <>
                                     <Table.Summary.Row>
-                                        <Table.Summary.Cell index={0} colSpan={6} className="text-end">Sub Total</Table.Summary.Cell>
+                                        <Table.Summary.Cell index={0} colSpan={5} className="text-end">Sub Total</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
                                             <CurrencyFormat prefix='Rp ' disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.subtotal).toFixed(2).replace('.', ',')} key="pay" />
 
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>
                                     <Table.Summary.Row>
-                                        <Table.Summary.Cell index={0} colSpan={6} className="text-end">Biaya Masuk</Table.Summary.Cell>
+                                        <Table.Summary.Cell index={0} colSpan={5} className="text-end">Bea Masuk</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
                                             <CurrencyFormat prefix='Rp ' disabled className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.import_duty).toFixed(2).replace('.',',')} key="pay"/>
 
@@ -781,21 +782,21 @@ export const DetailPIB = () => {
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>
                                     <Table.Summary.Row>
-                                        <Table.Summary.Cell index={0} colSpan={6} className="text-end">Pph 22</Table.Summary.Cell>
+                                        <Table.Summary.Cell index={0} colSpan={5} className="text-end">PPh 22</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
                                             <CurrencyFormat prefix='Rp ' disabled className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.pph).toFixed(2).replace('.',',')} key="pay" />
 
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>
                                     <Table.Summary.Row>
-                                        <Table.Summary.Cell index={0} colSpan={6} className="text-end">PPN</Table.Summary.Cell>
+                                        <Table.Summary.Cell index={0} colSpan={5} className="text-end">PPN</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
                                             <CurrencyFormat prefix='Rp '  disabled className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.ppn).toFixed(2).replace('.',',')}  key="pay" />
 
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>
                                     <Table.Summary.Row>
-                                        <Table.Summary.Cell index={0} colSpan={6} className="text-end">Total (Rp)</Table.Summary.Cell>
+                                        <Table.Summary.Cell index={0} colSpan={5} className="text-end">Total (Rp)</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
                                             <CurrencyFormat prefix='Rp ' disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.total).toFixed(2).replace('.', ',')} key="pay" />
 

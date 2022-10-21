@@ -135,7 +135,7 @@ const DetailFaktur = () => {
     const [sumber, setSumber] = useState('')
     const [selectedSupplier, setSelectedSupplier] = useState()
     // const [sumber, setSumber] = useState('')
-    
+
 
 
 
@@ -164,11 +164,11 @@ const DetailFaktur = () => {
                 setUangMuka(getData.down_payment)
                 setFakturType(getData.type);
                 setCustomer(getData.recipient.name);
-                setAddress(getData.recipient_address);
+                setAddress(getData.recipient_address.address);
                 setDescription(getData.notes)
                 setProduct(getData.sales_invoice_details);
                 setLoading(false)
-                console.log(getData);
+                // console.log(getData);
             })
     }, [])
 
@@ -410,14 +410,13 @@ const DetailFaktur = () => {
     const [dpp, setDpp] = useState('0');
     let hasildpp = 0;
 
-    function hitungDPP()
-    {
-        hasildpp = subTotal - grandTotalDiscount - uangMuka; 
-       // console.log(hasildpp);
-       setDpp(hasildpp);
+    function hitungDPP() {
+        hasildpp = subTotal - grandTotalDiscount - uangMuka;
+        // console.log(hasildpp);
+        setDpp(hasildpp);
     }
 
-    
+
     useEffect(() => {
         hitungDPP()
     },)
@@ -768,198 +767,6 @@ const DetailFaktur = () => {
         };
     });
 
-    const handleCheck = (event) => {
-        console.log(event.target.checked)
-        var updatedList = [...product];
-        if (event.target.checked) {
-            updatedList = [...product, event.target.value];
-            console.log(updatedList);
-            for (let i = 0; i < updatedList.length; i++) {
-
-            }
-        } else {
-            updatedList.splice(product.indexOf(event.target.value), 1);
-        }
-        setProduct(updatedList);
-        console.log(updatedList);
-        let tmp = [];
-        let tmpJumlah = [];
-        for (let i = 0; i < updatedList.length; i++) {
-            tmp[i] = 'percent';
-            tmpJumlah[i] = 0;
-        }
-        setPilihanDiskon(tmp);
-        setJumlahDiskon(tmpJumlah)
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const userData = new FormData();
-        userData.append("tanggal", date);
-        userData.append("referensi", referensi);
-        userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("termasuk_pajak", checked);
-        userData.append("status", "Submitted");
-        product.map((p, i) => {
-            userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("harga[]", p.price);
-            if (pilihanDiskon[i] == 'percent') {
-                userData.append("persentase_diskon[]", jumlahDiskon[i]);
-                userData.append("diskon_tetap[]", 0);
-            }
-            else if (pilihanDiskon[i] == 'nominal') {
-                userData.append("diskon_tetap[]", jumlahDiskon[i]);
-                userData.append("persentase_diskon[]", 0);
-            }
-            userData.append("ppn[]", p.ppn);
-        });
-        userData.append("termasuk_pajak", checked);
-
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
-
-        axios({
-            method: "post",
-            url: `${Url}/sales_orders`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/pesanan");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
-            });
-    };
-
-    const handleDraft = async (e) => {
-        e.preventDefault();
-        const userData = new FormData();
-        userData.append("tanggal", date);
-        userData.append("referensi", referensi);
-        userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("termasuk_pajak", checked);
-        userData.append("status", "Draft");
-        product.map((p, i) => {
-            console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("harga[]", p.price);
-            if (pilihanDiskon[i] == 'percent') {
-                userData.append("persentase_diskon[]", jumlahDiskon[i]);
-
-                userData.append("diskon_tetap[]", 0);
-            }
-            else if (pilihanDiskon[i] == 'nominal') {
-                userData.append("diskon_tetap[]", jumlahDiskon[i]);
-
-                userData.append("persentase_diskon[]", 0);
-            }
-            userData.append("ppn[]", p.ppn);
-        });
-        userData.append("termasuk_pajak", checked);
-
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
-
-        axios({
-            method: "post",
-            url: `${Url}/sales_orders`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/pesanan");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
-            });
-    };
-
-    const optionsType = [
-        {
-            value: "Lokal",
-            label: "Lokal"
-        },
-        {
-            value: "Standar",
-            label: "Standar"
-        }
-    ]
-
-    function klikUbahSumber(value) {
-        setSumber(value);
-        setProduct([])
-        setSelectedSupplier('');
-        setSelectedCustomer('')
-    }
-
-    const handleChangeCustomer = (value) => {
-        setSelectedCustomer(value);
-        setCustomer(value.id);
-        setAddress(value.customer_addresses)
-    };
-    // load options using API call
-    const loadOptionsCustomer = (inputValue) => {
-        return fetch(`${Url}/select_customers?limit=10&nama=${inputValue}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        }).then((res) => res.json());
-    };
-
     if (loading) {
         return (
             <>
@@ -1112,7 +919,7 @@ const DetailFaktur = () => {
 
                                                                 <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'>{
                                                                     // mataUang + ' ' + Number(item.total).toFixed(2).toLocaleString('id')
-                                                                    tableToRupiah(Number(item.quantity) * Number(item.price) , "Rp")
+                                                                    tableToRupiah(Number(item.quantity) * Number(item.price), "Rp")
                                                                 }</td>
 
                                                             </tr>
@@ -1146,11 +953,11 @@ const DetailFaktur = () => {
                                                     </tr>
                                                     <tr>
                                                         <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border text-start'> Dikurangi Uang Muka yang Telah Diterima </td>
-                                                        <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border text-start'> {tableToRupiah(uangMuka,'Rp')}</td>
+                                                        <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border text-start'> {tableToRupiah(uangMuka, 'Rp')}</td>
                                                     </tr>
                                                     <tr>
                                                         <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border text-start'> Dasar Pengenaan Pajak </td>
-                                                        <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border text-start'> {tableToRupiah(dpp,'Rp')}</td>
+                                                        <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border text-start'> {tableToRupiah(dpp, 'Rp')}</td>
                                                     </tr>
                                                     <tr>
                                                         <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border text-start'> PPN </td>

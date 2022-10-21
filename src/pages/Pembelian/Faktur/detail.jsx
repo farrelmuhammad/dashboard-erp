@@ -47,14 +47,14 @@ const DetailFakturPembelian = () => {
 
     const convertToRupiahTabel = (angka) => {
         return <>
-        {
-            grup === 'Lokal' ? 
-            < CurrencyFormat disabled className=' text-start editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon" />
-            :< CurrencyFormat disabled className=' text-start editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" />
-            
-        }
+            {
+                grup === 'Lokal' ?
+                    < CurrencyFormat disabled className=' text-start editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" />
+                    : < CurrencyFormat disabled className=' text-start editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" />
+
+            }
         </>
-        }
+    }
 
     useEffect(() => {
         getDataFaktur();
@@ -75,7 +75,7 @@ const DetailFakturPembelian = () => {
                 setGrup(getData.supplier._group)
                 setDataSupplier(getData.supplier)
                 setDataBarang(getData.purchase_invoice_details)
-                if(getData.purchase_invoice_details[0].currency_name){
+                if (getData.purchase_invoice_details[0].currency_name) {
 
                     setMataUang(getData.purchase_invoice_details[0].currency_name)
                 }
@@ -104,7 +104,7 @@ const DetailFakturPembelian = () => {
         {
             title: 'Nama Produk',
             dataIndex: 'nama',
-            width:'28%'
+            width: '28%'
         },
         {
             title: 'Qty',
@@ -165,39 +165,39 @@ const DetailFakturPembelian = () => {
             nama: item.product_name,
             qty: item.quantity,
             stn: item.unit,
-            price:  grup === 'Lokal' ? 
-            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toFixed(2).replace('.' , ',')} key="diskon" />
-             :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang  + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toLocaleString('id')} key="diskon" />,
-      
-           // mataUang + ' ' + Number(item.price).toFixed(2).toLocaleString('id'),
+            price: grup === 'Lokal' ?
+                < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toFixed(2).replace('.', ',')} key="diskon" />
+                : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toLocaleString('id')} key="diskon" />,
+
+            // mataUang + ' ' + Number(item.price).toFixed(2).toLocaleString('id'),
             diskon:
                 <>
                     {
                         item.discount_percentage == 0 && item.fixed_discount == 0 ? <div>-</div> :
                             item.discount_percentage != 0 ?
                                 <div className='d-flex p-1' style={{ height: "100%" }} >
-                                    <input disabled className=' text-center editable-input edit-disabled'  value={item.discount_percentage.replace('.', ',')} key="diskon" />
+                                    <input disabled className=' text-center editable-input edit-disabled' value={item.discount_percentage.replace('.', ',')} key="diskon" />
                                     <option selected value="persen" > %</option>
                                 </div> :
                                 item.fixed_discount != 0 ?
                                     <div className='d-flex p-1' style={{ height: "100%" }}>
-                                         {/* <option selected value="nominal">{mataUang}</option> */}
-                                       {
-                                            grup === 'Lokal' ? 
-              
-                                            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.fixed_discount).toFixed(2).replace('.' , ',')} key="diskon" />
-                                            :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang  + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.fixed_discount).toLocaleString('id')} key="diskon" />                            
-                                       }
-                            
+                                        {/* <option selected value="nominal">{mataUang}</option> */}
+                                        {
+                                            grup === 'Lokal' ?
+
+                                                < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.fixed_discount).toFixed(2).replace('.', ',')} key="diskon" />
+                                                : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.fixed_discount).toLocaleString('id')} key="diskon" />
+                                        }
+
                                     </div> : null
                     }
 
                 </>,
-            total:  grup === 'Lokal' ? 
-            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" />
-             :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang  + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />,
-      
-            
+            total: grup === 'Lokal' ?
+                < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.', ',')} key="diskon" />
+                : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />,
+
+
             //mataUang + ' ' + Number(item.total).toFixed(2).replace('.' , ','),
         }))
 
@@ -205,11 +205,11 @@ const DetailFakturPembelian = () => {
 
 
 
-        
+
     // const convertToRupiah = (angka) => {
     //     // console.log(angka)
     //     let hasil = mataUang + ' ' + Number(angka).toFixed(2).toLocaleString('id')
-       
+
     //     return <input
     //         value={hasil}
     //         readOnly="true"
@@ -219,21 +219,21 @@ const DetailFakturPembelian = () => {
     //     />
     // }
 
-    
+
     const convertToRupiah = (angka) => {
         return <>
-        {
-            grup === 'Lokal' ? 
-                  < CurrencyFormat  className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm"  className="form-control form-control-sm"/>}  />
-                  :< CurrencyFormat  className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true"  id="colFormLabelSm"  className="form-control form-control-sm"/>} />
-        }
+            {
+                grup === 'Lokal' ?
+                    < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                    : < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+            }
         </>
     }
 
     const convertToRupiah2 = (angka) => {
         // console.log(angka)
         let hasil = mataUang + ' ' + Number(angka).toFixed(2).toLocaleString('id')
-       
+
         return <input
             value={hasil}
             readOnly="true"
@@ -276,7 +276,7 @@ const DetailFakturPembelian = () => {
             //          grup === 'Lokal' ? 
             //          < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.' , ',')} key="diskon" />
             //          :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toLocaleString('id')} key="diskon" />
-                     
+
             //     }
             //     </>
             // }
@@ -284,48 +284,48 @@ const DetailFakturPembelian = () => {
         },
     ];
 
-    const dataBiaya = 
-    [...biaya?.map((item , i) => ({
-        code: item.chart_of_account.code,
-        desc: item.description,
-        total: 
-        grup === 'Lokal' ? 
-        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" />
-        :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />
-        
-
-    }))
-
-    ]
-
-   
-    const dataCredit = []
-
-       if (credit.length != 0)
-       {
-       dataCredit = 
-        [...credit?.map((item , i) => ({
-            code: item.credit_note_code,
+    const dataBiaya =
+        [...biaya?.map((item, i) => ({
+            code: item.chart_of_account.code,
             desc: item.description,
-            total: 
-            grup === 'Lokal' ? 
-            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" />
-            :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />
-            
-    
-            //mataUang + ' ' + Number(item.total).toLocaleString('id')
-    
+            total:
+                grup === 'Lokal' ?
+                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.', ',')} key="diskon" />
+                    : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />
+
+
         }))
-    
+
         ]
-       }
+
+
+    // const dataCredit = []
+
+    if (credit.length != 0) {
+        dataCredit =
+            [...credit?.map((item, i) => ({
+                code: item.credit_note_code,
+                desc: item.description,
+                total:
+                    grup === 'Lokal' ?
+                        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.', ',')} key="diskon" />
+                        : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />
+
+
+                //mataUang + ' ' + Number(item.total).toLocaleString('id')
+
+            }))
+
+            ]
+    }
 
 
     const componentRef = useRef();
     const pageStyle = `{
       
         @page { 
-            size: auto;  margin: 0mm ; } @media print { body { -webkit-print-color-adjust: exact; } }
+            size: auto;  margin: 0mm ; } @
+            media print { body { -webkit-print-color-adjust: exact; } }
             
             .page-header, .page-header-space {
                 height: 100px;
@@ -383,10 +383,10 @@ const DetailFakturPembelian = () => {
             }`;
 
 
-       const handlePrint = useReactToPrint({
+    const handlePrint = useReactToPrint({
         content: () => componentRef.current,
-         copyStyles: true,
-       // pageStyle: pageStyle
+        copyStyles: true,
+        // pageStyle: pageStyle
     })
 
 
@@ -402,234 +402,234 @@ const DetailFakturPembelian = () => {
     return (
         <>
 
-<div style={{ display: "none" , position:"absolute"}} >
+            <div style={{ display: "none", position: "absolute" }} >
                 <div ref={componentRef} className="p-4" >
 
-  <table>
-    <thead>
-      <tr>
-        <td>
-         
-          <div className="page-header-space"></div>
-          <div className="page-header">
-          <div className='d-flex' style={{position:"fixed", height:"100px", top:"5"}}>
-                      
-                      <div><img src={logo} width="60px"></img></div>
-                      <div className='ms-2' >
-                          <div className='header-cetak'><b>PT. BUMI MAESTROAYU</b></div>
-                          <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
-                          <div className='header-cetak'>JAKARTA SELATAN 12760</div>
-                          <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
-                      </div>
-                     
-                  </div>
-        <br/>
-        <br/>
+                    <table>
+                        <thead>
+                            <tr>
+                                <td>
 
-    <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold" }}>
-                      <div style={{ fontSize: "16px", textDecoration: "underline", textAlign:'center'}}>FAKTUR PEMBELIAN</div>
-                      <div style={{ fontSize: "10px", textAlign:'center' }}>NO. {dataHeader.code}</div>
-                  </div>
+                                    <div className="page-header-space"></div>
+                                    <div className="page-header">
+                                        <div className='d-flex' style={{ position: "fixed", height: "100px", top: "5" }}>
 
-                  <div className='mt-2 mb-2 col d-flex justify-content-center ps-4 pe-4'  style={{ fontSize: "12px" }}>
-             
-                      <div className='col-6 col-md-4'>
-                      <div className="d-flex flex-row">
-                              <label className='col-6'>Supplier</label>
-                              <div className='col-6'> : {dataSupplier.business_entity} {dataSupplier.name} </div>
-                          </div>
-                          <div className="d-flex flex-row">
-                              <label className='col-6'>Tanggal Faktur</label>
-                              <div className='col-6'> : {dataHeader.date} </div>
-                          </div>
-                          <div className="d-flex flex-row">
-                              <label className='col-6'>Tanggal Jatuh Tempo</label>
-                              <div className='col-6'> : {dataHeader.due_date} </div>
-                          </div>
-                      </div>
+                                            <div><img src={logo} width="60px"></img></div>
+                                            <div className='ms-2' >
+                                                <div className='header-cetak'><b>PT. BUMI MAESTROAYU</b></div>
+                                                <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
+                                                <div className='header-cetak'>JAKARTA SELATAN 12760</div>
+                                                <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
+                                            </div>
 
-                      <div className='col-6 col-md-4'>
-                            <div className="d-flex flex-row">
-                                {
-                                    grup === 'Impor'?
-                                    <div className='col-6'> No Kontainer </div> :
-                                    <div></div>
-                                }
-                                {
-                                    grup === 'Impor' ? 
-                                    <div className='col-6'> : {dataHeader.container_number} </div>:
-                                    <div></div>
-                                }
-                            </div>
-                            <div className="d-flex flex-row">
-                                {
-                                    grup === 'Impor'?
-                                    <label className='col-6'>Muatan</label> :
-                                    <div></div>
-                                }
-                                {
-                                    grup === 'Impor'?
-                                    <div className='col-6'> : {dataHeader.payload} </div> :
-                                    <div></div>
-                                }
-                            </div>
-                            <div className="d-flex flex-row">
-                                {
-                                    grup === 'Impor'?
-                                    <label className='col-6'>Term</label> :
-                                    <div></div>
-                                }
-                                {
-                                    grup === 'Impor'?
-                                    <div className='col-6'> : {dataHeader.term} </div> : 
-                                    <div></div>
-                                }
-                            </div>
-                            <div className="d-flex flex-row">
-                                {
-                                    grup === 'Impor'?
-                                    <label className='col-6'>Ctn</label> :
-                                    <div></div>
-                                }
-                                {
-                                    grup === 'Impor'?
-                                    <div className='col-6'> : {dataHeader.carton} </div> : 
-                                    <div></div>
-                                }
-                            </div>
+                                        </div>
+                                        <br />
+                                        <br />
 
-                      </div>
-                  </div>
+                                        <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold" }}>
+                                            <div style={{ fontSize: "16px", textDecoration: "underline", textAlign: 'center' }}>FAKTUR PEMBELIAN</div>
+                                            <div style={{ fontSize: "10px", textAlign: 'center' }}>NO. {dataHeader.code}</div>
+                                        </div>
 
-                    <br/>
-                </div>
-        </td>
-      </tr>
-    </thead>
+                                        <div className='mt-2 mb-2 col d-flex justify-content-center ps-4 pe-4' style={{ fontSize: "12px" }}>
 
-    <tbody>
-      <tr>
-        <td>
-       
-        
-          <div className="page" style={{lineHeight:"2"}}>
- 
-          <div className='mt-1 ps-3 pe-3' >
-                       
-                        <table style={{ fontSize: "10px", width: "100%", pageBreakAfter:"auto"}}>
-                            <tr className='text-center border' style={{ height: "50px", pageBreakInside:"avoid", pageBreakAfter:"auto" }}>
-                                <th width="50px" className='border'>No</th>
-                                <th width="280px" className='border'>Nama Produk</th>
-                                <th width="80px" className='border'>Qty</th>
-                                <th width="50px" className='border'>Stn</th>
-                                <th width="150px" className='border'>Harga</th>
-                                <th width="130px" className='border'>Diskon</th>
-                                <th width="140px" className='border'>Jumlah</th>
-                            
+                                            <div className='col-6 col-md-4'>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>Supplier</label>
+                                                    <div className='col-6'> : {dataSupplier.business_entity} {dataSupplier.name} </div>
+                                                </div>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>Tanggal Faktur</label>
+                                                    <div className='col-6'> : {dataHeader.date} </div>
+                                                </div>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>Tanggal Jatuh Tempo</label>
+                                                    <div className='col-6'> : {dataHeader.due_date} </div>
+                                                </div>
+                                            </div>
+
+                                            <div className='col-6 col-md-4'>
+                                                <div className="d-flex flex-row">
+                                                    {
+                                                        grup === 'Impor' ?
+                                                            <div className='col-6'> No Kontainer </div> :
+                                                            <div></div>
+                                                    }
+                                                    {
+                                                        grup === 'Impor' ?
+                                                            <div className='col-6'> : {dataHeader.container_number} </div> :
+                                                            <div></div>
+                                                    }
+                                                </div>
+                                                <div className="d-flex flex-row">
+                                                    {
+                                                        grup === 'Impor' ?
+                                                            <label className='col-6'>Muatan</label> :
+                                                            <div></div>
+                                                    }
+                                                    {
+                                                        grup === 'Impor' ?
+                                                            <div className='col-6'> : {dataHeader.payload} </div> :
+                                                            <div></div>
+                                                    }
+                                                </div>
+                                                <div className="d-flex flex-row">
+                                                    {
+                                                        grup === 'Impor' ?
+                                                            <label className='col-6'>Term</label> :
+                                                            <div></div>
+                                                    }
+                                                    {
+                                                        grup === 'Impor' ?
+                                                            <div className='col-6'> : {dataHeader.term} </div> :
+                                                            <div></div>
+                                                    }
+                                                </div>
+                                                <div className="d-flex flex-row">
+                                                    {
+                                                        grup === 'Impor' ?
+                                                            <label className='col-6'>Ctn</label> :
+                                                            <div></div>
+                                                    }
+                                                    {
+                                                        grup === 'Impor' ?
+                                                            <div className='col-6'> : {dataHeader.carton} </div> :
+                                                            <div></div>
+                                                    }
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <br />
+                                    </div>
+                                </td>
                             </tr>
-                            <tbody className="border">
-                                {
-                                    dataBarang.map((item, i) => (
-                                        <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
-                                               <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{i+1}</td>
-                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{item.product_name}</td>
-                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{Number(item.quantity).toFixed(2)}</td>
-                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{item.unit}</td>
-                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{
-                                            grup === 'Lokal' ? 
-                                            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toFixed(2).replace('.' , ',')} key="diskon" />
-                                             :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang  + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toLocaleString('id')} key="diskon" />
-                                      
-                                            // mataUang + ' ' + Number(item.price).toFixed(2).toLocaleString('id')
-                                            }</td>
-                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{
-                                                        <>
-                                                        {
-                                                            item.discount_percentage == 0 && item.fixed_discount == 0 ? <div>-</div> :
-                                                                item.discount_percentage != 0 ?
-                                                                    <div className='d-flex p-1' style={{ height: "100%" }} >
-                                                                        <input disabled className=' text-center editable-input edit-disabled'  value={item.discount_percentage.replace('.', ',')} key="diskon" />
-                                    
-                                                                        <option selected value="persen" >%</option>
-                                                                    </div> :
-                                                                    item.fixed_discount != 0 ?
-                                                                        <div className='d-flex p-1' style={{ height: "100%" }}>
-                                                                             {/* <option selected value="nominal">{mataUang}</option> */}
-                                                                             {
-                                                                                grup === 'Lokal' ? 
-                                                                                < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.fixed_discount).toFixed(2).replace('.' , ',')} key="diskon" />
-                                                                                 :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang  + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.fixed_discount).toLocaleString('id')} key="diskon" />
-                                                                          
-                                                                             }
-                                                                            {/* <CurrencyFormat disabled className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.fixed_discount).toFixed(2)} key="diskon" />
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>
+
+
+                                    <div className="page" style={{ lineHeight: "2" }}>
+
+                                        <div className='mt-1 ps-3 pe-3' >
+
+                                            <table style={{ fontSize: "10px", width: "100%", pageBreakAfter: "auto" }}>
+                                                <tr className='text-center border' style={{ height: "50px", pageBreakInside: "avoid", pageBreakAfter: "auto" }}>
+                                                    <th width="50px" className='border'>No</th>
+                                                    <th width="280px" className='border'>Nama Produk</th>
+                                                    <th width="80px" className='border'>Qty</th>
+                                                    <th width="50px" className='border'>Stn</th>
+                                                    <th width="150px" className='border'>Harga</th>
+                                                    <th width="130px" className='border'>Diskon</th>
+                                                    <th width="140px" className='border'>Jumlah</th>
+
+                                                </tr>
+                                                <tbody className="border">
+                                                    {
+                                                        dataBarang.map((item, i) => (
+                                                            <tr style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} >
+                                                                <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'>{i + 1}</td>
+                                                                <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'>{item.product_name}</td>
+                                                                <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'>{Number(item.quantity).toFixed(2)}</td>
+                                                                <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'>{item.unit}</td>
+                                                                <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'>{
+                                                                    grup === 'Lokal' ?
+                                                                        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toFixed(2).replace('.', ',')} key="diskon" />
+                                                                        : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toLocaleString('id')} key="diskon" />
+
+                                                                    // mataUang + ' ' + Number(item.price).toFixed(2).toLocaleString('id')
+                                                                }</td>
+                                                                <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'>{
+                                                                    <>
+                                                                        {
+                                                                            item.discount_percentage == 0 && item.fixed_discount == 0 ? <div>-</div> :
+                                                                                item.discount_percentage != 0 ?
+                                                                                    <div className='d-flex p-1' style={{ height: "100%" }} >
+                                                                                        <input disabled className=' text-center editable-input edit-disabled' value={item.discount_percentage.replace('.', ',')} key="diskon" />
+
+                                                                                        <option selected value="persen" >%</option>
+                                                                                    </div> :
+                                                                                    item.fixed_discount != 0 ?
+                                                                                        <div className='d-flex p-1' style={{ height: "100%" }}>
+                                                                                            {/* <option selected value="nominal">{mataUang}</option> */}
+                                                                                            {
+                                                                                                grup === 'Lokal' ?
+                                                                                                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.fixed_discount).toFixed(2).replace('.', ',')} key="diskon" />
+                                                                                                    : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.fixed_discount).toLocaleString('id')} key="diskon" />
+
+                                                                                            }
+                                                                                            {/* <CurrencyFormat disabled className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.fixed_discount).toFixed(2)} key="diskon" />
                                      */}
-                                    
-                                                                        </div> : null
-                                                        }
-                                    
-                                                    </>
-                                            }</td>
-                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>{
-                                            // mataUang + ' ' + Number(item.total).toFixed(2).toLocaleString('id')
-                                            grup === 'Lokal' ? 
-                                            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" />
-                                            :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang  + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />
-                                    
-                                            }</td>
 
-                                     </tr>
-                                    ))  
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                                                                                        </div> : null
+                                                                        }
+
+                                                                    </>
+                                                                }</td>
+                                                                <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'>{
+                                                                    // mataUang + ' ' + Number(item.total).toFixed(2).toLocaleString('id')
+                                                                    grup === 'Lokal' ?
+                                                                        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.', ',')} key="diskon" />
+                                                                        : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />
+
+                                                                }</td>
+
+                                                            </tr>
+                                                        ))
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
 
 
-                    <div className='mt-1 ps-3 pe-3'> 
-                        {/* <div style={{ width: "80%" }}>
+                                        <div className='mt-1 ps-3 pe-3'>
+                                            {/* <div style={{ width: "80%" }}>
                         </div> */}
-                        <div className="row mb-3">
-                        <label htmlFor="inputNama3" className="col-sm-5 ps-3 col-form-label" style={{fontSize:"12px"}}> <br/><b>Biaya Lain </b></label>
-                    </div>
-                   
-                        <table style={{ fontSize: "10px", width: "100%"}}>
-                            <tr className='text-center border' style={{ height: "40px" }}>
-                                <th width="50px" className='border' >No.</th>
-                                <th className='border'>Deskripsi</th>
-                                <th width="140px" className='border'>Jumlah</th>
-                             
-                            
-                            </tr>
-                            <tbody className="border" style={{height:"5px"}}>
-                                {
-                                    biaya.map((item, i) => (
-                                        <tr  >
-                                            <td  className='border-isi text-center'>{i+1}</td>
-                                            <td  className='border-isi text-center'>{item.description}</td>
-                                            <td  className='border-isi text-center'>{
-                                              grup === 'Lokal' ? 
-                                              < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" />
-                                              :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang  + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />
-                                             
-                                            //mataUang + ' ' + Number(item.total).toFixed(2).toLocaleString('id')
-                                            }</td>
-                                            
-                                     </tr>
-                                    ))  
-                                }
-                            </tbody>
-                        </table>
-                    </div> 
+                                            <div className="row mb-3">
+                                                <label htmlFor="inputNama3" className="col-sm-5 ps-3 col-form-label" style={{ fontSize: "12px" }}> <br /><b>Biaya Lain </b></label>
+                                            </div>
+
+                                            <table style={{ fontSize: "10px", width: "100%" }}>
+                                                <tr className='text-center border' style={{ height: "40px" }}>
+                                                    <th width="50px" className='border' >No.</th>
+                                                    <th className='border'>Deskripsi</th>
+                                                    <th width="140px" className='border'>Jumlah</th>
 
 
-                    <div className='mt-1 ps-3 pe-3' style={{ display: impor ? "block" : "none" }}> 
-                        {/* <div style={{ width: "80%" }}>
+                                                </tr>
+                                                <tbody className="border" style={{ height: "5px" }}>
+                                                    {
+                                                        biaya.map((item, i) => (
+                                                            <tr  >
+                                                                <td className='border-isi text-center'>{i + 1}</td>
+                                                                <td className='border-isi text-center'>{item.description}</td>
+                                                                <td className='border-isi text-center'>{
+                                                                    grup === 'Lokal' ?
+                                                                        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.', ',')} key="diskon" />
+                                                                        : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />
+
+                                                                    //mataUang + ' ' + Number(item.total).toFixed(2).toLocaleString('id')
+                                                                }</td>
+
+                                                            </tr>
+                                                        ))
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+
+                                        <div className='mt-1 ps-3 pe-3' style={{ display: impor ? "block" : "none" }}>
+                                            {/* <div style={{ width: "80%" }}>
                         </div> */}
-                        <div className="row mb-2">
-                        <label htmlFor="inputNama3" className="col-sm-5 ps-3 col-form-label" style={{fontSize:"12px"}}> <br/><b>Credit Note</b></label>
-                    </div>
+                                            <div className="row mb-2">
+                                                <label htmlFor="inputNama3" className="col-sm-5 ps-3 col-form-label" style={{ fontSize: "12px" }}> <br /><b>Credit Note</b></label>
+                                            </div>
 
-                    {/* <Table
+                                            {/* <Table
                         rowClassName={() => 'editable-row'}
                         bordered
                         dataSource={credit?dataCredit:null}
@@ -637,116 +637,116 @@ const DetailFakturPembelian = () => {
                         columns={columAkun}
                         onChange={(e) => setProduct(e.target.value)}
                     /> */}
-                   
-                        <table style={{ fontSize: "10px", width: "100%"}}>
-                            <tr className='text-center border' style={{ height: "40px" }}>
-                                <th width="50px" className='border' >No.</th>
-                                <th className='border'>Deskripsi</th>
-                                <th width="130px" className='border'>Jumlah</th>
-                             
-                            
+
+                                            <table style={{ fontSize: "10px", width: "100%" }}>
+                                                <tr className='text-center border' style={{ height: "40px" }}>
+                                                    <th width="50px" className='border' >No.</th>
+                                                    <th className='border'>Deskripsi</th>
+                                                    <th width="130px" className='border'>Jumlah</th>
+
+
+                                                </tr>
+                                                <tbody className="border" style={{ height: "5px" }}>
+                                                    {
+                                                        <>
+                                                            {
+                                                                credit.length === 0 ?
+
+                                                                    <tr style={{ height: "50px" }} >
+                                                                        <td className='border-isi text-center'></td>
+                                                                        <td className='border-isi text-center'></td>
+                                                                        <td className='border-isi text-center'></td>
+                                                                    </tr>
+                                                                    :
+                                                                    credit.map((item, i) => (
+                                                                        <tr style={{ height: "50px" }} >
+                                                                            <td className='border-isi text-center'>{i + 1}</td>
+                                                                            <td className='border-isi text-center'>{item.description}</td>
+                                                                            <td className='border-isi text-center'>{
+                                                                                grup === 'Lokal' ?
+                                                                                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.', ',')} key="diskon" />
+                                                                                    : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />
+
+                                                                                //mataUang + ' ' + Number(item.total).toLocaleString('id')
+                                                                            }</td>
+                                                                        </tr>
+                                                                    ))
+                                                            }</>
+
+
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div className='mt-3 col d-flex justify-content-end ps-1 pe-1' style={{ fontSize: "12px", borderWidth: "0px" }}>
+
+                                            <div className='col-6' style={{ width: "35%" }}>
+
+                                                <div className='d-flex mt-3'>
+                                                    <label className='col-6'>Subtotal</label>
+                                                    <div>:</div>
+                                                    <div className=' text-start' width="100%"> {convertToRupiahTabel(dataHeader.subtotal)} </div>
+                                                </div>
+
+                                                <div className='d-flex '>
+                                                    <label className='col-6'>Diskon</label>
+                                                    <div>:</div>
+                                                    <div className=' text-start ' width="100%"> {convertToRupiahTabel(dataHeader.discount)}</div>
+                                                </div>
+
+                                                <div className='d-flex'>
+                                                    <label className='col-6'>Uang Muka</label>
+                                                    <div>:</div>
+                                                    <div className=' text-start' width="100%">  {convertToRupiahTabel(dataHeader.down_payment)}</div>
+                                                </div>
+
+                                                <div className='d-flex'>
+                                                    <label className='col-6'>PPN</label>
+                                                    <div>:</div>
+                                                    <div className=' text-start' width="100%">  {convertToRupiahTabel(dataHeader.ppn)}</div>
+                                                </div>
+
+                                                <div className='d-flex '>
+                                                    <label className='col-6'><b>Total</b></label>
+                                                    <div>:</div>
+                                                    <div className=' text-start' width="100%">  {convertToRupiahTabel(dataHeader.total)}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </td>
                             </tr>
-                            <tbody className="border"  style={{height:"5px"}}>
-                                {
-                                    <>
-                                    {
-                                    credit.length === 0 ?
-                                                                        
-                                    <tr style={{  height:"50px"}} >
-                                            <td  className='border-isi text-center'></td>
-                                            <td  className='border-isi text-center'></td>
-                                            <td  className='border-isi text-center'></td>
-                                    </tr>
-                                    :
-                                    credit.map((item, i) => (
-                                    <tr style={{  height:"50px"}} >
-                                            <td  className='border-isi text-center'>{i + 1}</td>
-                                            <td className='border-isi text-center'>{item.description}</td>
-                                            <td  className='border-isi text-center'>{
-                                                 grup === 'Lokal' ? 
-                                                 < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" />
-                                                 :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang  + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />
-                                         
-                                            //mataUang + ' ' + Number(item.total).toLocaleString('id')
-                                            }</td>
-                                    </tr>
-                                    ))
-                                    }</>
-                                   
-
-                                }
-                            </tbody>
-                        </table>
-                    </div> 
-
-                    <div className='mt-3 col d-flex justify-content-end ps-1 pe-1' style={{ fontSize: "12px" , borderWidth:"0px"}}>
-                       
-                        <div className='col-6' style={{width:"35%"}}>
-                            
-                            <div className='d-flex mt-3'>
-                                <label className='col-6'>Subtotal</label>
-                                <div>:</div>
-                                <div className=' text-start' width="100%"> {convertToRupiahTabel(dataHeader.subtotal)} </div>
-                            </div>
-                           
-                            <div className='d-flex '>
-                                <label className='col-6'>Diskon</label>
-                                <div>:</div>
-                                <div className=' text-start ' width="100%"> {convertToRupiahTabel(dataHeader.discount)}</div>
-                            </div>
-                           
-                            <div className='d-flex'>
-                                <label className='col-6'>Uang Muka</label>
-                                <div>:</div>
-                                <div className=' text-start' width="100%">  {convertToRupiahTabel(dataHeader.down_payment)}</div>
-                            </div>
-                            
-                            <div className='d-flex'>
-                                <label className='col-6'>PPN</label>
-                                <div>:</div>
-                                <div className=' text-start' width="100%">  {convertToRupiahTabel(dataHeader.ppn)}</div>
-                            </div>
-                            
-                            <div className='d-flex '>
-                                <label className='col-6'><b>Total</b></label>
-                                <div>:</div>
-                                <div className=' text-start' width="100%">  {convertToRupiahTabel(dataHeader.total)}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    </div>
-                    </td>
-                </tr>
-                </tbody>
+                        </tbody>
 
 
-    </table>
+                    </table>
 
-</div>
-</div>
+                </div>
+            </div>
 
 
             <form className="p-3 mb-3 bg-body rounded">
                 <div className="row">
                     <div className="col text-title text-start">
                         <div className="text-title text-start mb-4">
-                        <PageHeader
+                            <PageHeader
                                 ghost={false}
                                 onBack={() => window.history.back()}
                                 title="Detail Faktur Pembelian"
                                 extra={[
                                     <Tooltip title="Cetak" placement="bottom">
-                                    <Button
-                                        type="primary"
-                                        icon={<PrinterOutlined />}
-                                        style={{ background: "orange", borderColor: "orange" }}
-                                        onClick={handlePrint}
-                                    />
-                                </Tooltip>,
+                                        <Button
+                                            type="primary"
+                                            icon={<PrinterOutlined />}
+                                            style={{ background: "orange", borderColor: "orange" }}
+                                            onClick={handlePrint}
+                                        />
+                                    </Tooltip>,
                                 ]}
-                                >
-                        </PageHeader>
+                            >
+                            </PageHeader>
                         </div>
                     </div>
                     {/* <div className="col button-add text-end me-3">
@@ -757,7 +757,7 @@ const DetailFakturPembelian = () => {
                         </button>
                     </div> */}
                 </div>
-             
+
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -887,7 +887,7 @@ const DetailFakturPembelian = () => {
                         <div className="col">
                             <h4 className="title fw-normal">Daftar Penerimaan Pesanan</h4>
                         </div>
-                    
+
                     </div>
                     <Table
                         // components={components}
@@ -916,13 +916,13 @@ const DetailFakturPembelian = () => {
                     <div className="row mb-3">
                         <label htmlFor="inputNama3" className="col-sm-2 ps-3 col-form-label">Credit Note</label>
                         <div className="col-sm-5">
-                          
+
                         </div>
                     </div>
                     <Table
                         rowClassName={() => 'editable-row'}
                         bordered
-                        dataSource={credit?dataCredit:null}
+                        dataSource={credit ? dataCredit : null}
                         pagination={false}
                         columns={columAkun}
                         onChange={(e) => setProduct(e.target.value)}

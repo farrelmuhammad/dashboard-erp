@@ -5,10 +5,12 @@ import axios from 'axios';
 import Url from "../../../Config";;
 import { Button, PageHeader, Skeleton, Table, Tag, Tooltip } from 'antd';
 import { useSelector } from 'react-redux';
-import { EditOutlined, PrinterOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, EditOutlined, PrinterOutlined, SyncOutlined } from '@ant-design/icons';
 import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
 import logo from "../../Logo.jpeg";
+import { Steps } from 'antd';
+const { Step } = Steps;
 
 export const DetailSuratJalan = () => {
     // const token = jsCookie.get("auth");
@@ -26,6 +28,7 @@ export const DetailSuratJalan = () => {
     const [notes, setNotes] = useState('');
     const [status, setStatus] = useState([]);
     const [details, setDetails] = useState([]);
+    const [delivered, setDelivered] = useState();
     const [loading, setLoading] = useState(true);
     const componentRef = useRef();
     const columns = [
@@ -99,8 +102,9 @@ export const DetailSuratJalan = () => {
                 setNotes(getData.notes)
                 setStatus(getData.status)
                 setDetails(getData.delivery_note_details)
+                setDelivered(getData.is_delivered)
                 setLoading(false)
-                console.log(getData.delivery_note_details)
+                console.log(getData)
                 // console.log(res.data.data.map(d => d.sales_order_details));
                 // console.log(getData.map(d => d.sales_order_details));
             })
@@ -168,15 +172,15 @@ export const DetailSuratJalan = () => {
                                                             <div className="d-flex flex-row">
                                                                 <label className='col-8'>Kepada Yth.</label>
                                                                 {
-                                                                    sumber === 'SO'?
-                                                                    <div className='col-6'> 
-                                                                       : {customer}
-                                                                    </div> : 
-                                                                     <div className='col-6'> 
-                                                                       :  {supplier}
-                                                                     </div>
+                                                                    sumber === 'SO' ?
+                                                                        <div className='col-6'>
+                                                                            : {customer}
+                                                                        </div> :
+                                                                        <div className='col-6'>
+                                                                            :  {supplier}
+                                                                        </div>
                                                                 }
-                                                               
+
                                                             </div>
                                                             <div className="d-flex flex-row">
                                                                 <label className='col-8'>Alamat</label>
@@ -431,6 +435,15 @@ export const DetailSuratJalan = () => {
                                 <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Status</label>
                                 <div className="col-sm-7 p-2">
                                     {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
+                                </div>
+                            </div>
+                            <div className="row mb-3">
+                                <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Status Pengiriman</label>
+                                <div className="col-sm-7 p-2">
+                                    {delivered === true ?
+                                        <Tag color="green">Sudah Diterima</Tag>
+                                        : <Tag color="red">Belum Diterima</Tag>
+                                    }
                                 </div>
                             </div>
 
