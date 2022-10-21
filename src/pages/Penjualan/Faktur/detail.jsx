@@ -135,6 +135,9 @@ const DetailFaktur = () => {
     const [sumber, setSumber] = useState('')
     const [selectedSupplier, setSelectedSupplier] = useState()
     // const [sumber, setSumber] = useState('')
+    
+
+
 
     useEffect(() => {
         axios.get(`${Url}/sales_invoices?id=${id}`, {
@@ -387,8 +390,8 @@ const DetailFaktur = () => {
         return <>
             {
                 namaMataUang === 'Rp' ?
-                    < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
-                    : < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                    < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm edit-disabled" />} />
+                    : < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm edit-disabled" />} />
             }
         </>
     }
@@ -403,6 +406,23 @@ const DetailFaktur = () => {
             }
         </>
     }
+
+    const [dpp, setDpp] = useState('0');
+    let hasildpp = 0;
+
+    function hitungDPP()
+    {
+        hasildpp = subTotal - grandTotalDiscount - uangMuka; 
+       // console.log(hasildpp);
+       setDpp(hasildpp);
+    }
+
+    
+    useEffect(() => {
+        hitungDPP()
+    },)
+
+
     const componentRef = useRef();
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
@@ -985,9 +1005,9 @@ const DetailFaktur = () => {
                                             <div style={{ fontSize: "10px", textAlign: 'center' }}>NO. {getCode}</div>
                                         </div>
 
-                                        <div className='mt-3 mb-2 col d-flex justify-content-end ps-4 pe-4' style={{ fontSize: "12px" }}>
+                                        <div className='mt-3 mb-2 col d-flex justify-content-start ps-4 pe-4' style={{ fontSize: "12px" }}>
 
-                                            <div className='col-6 col-md-4'>
+                                            <div className='col-6'>
                                                 <div className="d-flex flex-row">
                                                     <label className='col-6'>Tanggal</label>
                                                     <div className='col-6'> : {date} </div>
@@ -1092,7 +1112,7 @@ const DetailFaktur = () => {
 
                                                                 <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'>{
                                                                     // mataUang + ' ' + Number(item.total).toFixed(2).toLocaleString('id')
-                                                                    tableToRupiah(item.total, "Rp")
+                                                                    tableToRupiah(Number(item.quantity) * Number(item.price) , "Rp")
                                                                 }</td>
 
                                                             </tr>
@@ -1111,7 +1131,7 @@ const DetailFaktur = () => {
                             <tr>
                                 <td>
                                     <div className="page-footer-space"></div>
-                                    <div className="page-footer" style={{ position: "fixed", marginBottom: "0px", marginTop: "500px", width: "95%" }} >
+                                    <div className="page-footer" style={{ position: "fixed", marginBottom: "0px", marginTop: "450px", width: "95%" }} >
 
                                         <div className='mt-3 col d-flex justify-content-end ps-2 pe-2' style={{ fontSize: "12px", borderWidth: "0px" }}>
                                             <table style={{ fontSize: "10px", width: "100%", pageBreakAfter: "auto", marginRight: "10px", marginLeft: "10px" }}>
@@ -1121,16 +1141,16 @@ const DetailFaktur = () => {
                                                 </tr>
                                                 <tbody className="border">
                                                     <tr>
-                                                        <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border text-start'> Potongan Harga </td>
+                                                        <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border text-start'> Dikurangi Potongan Harga </td>
                                                         <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border text-start'> {tableToRupiah(grandTotalDiscount, "Rp")}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border text-start'> Uang Muka yang Telah Diterima </td>
-                                                        <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border text-start'> { }</td>
+                                                        <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border text-start'> Dikurangi Uang Muka yang Telah Diterima </td>
+                                                        <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border text-start'> {tableToRupiah(uangMuka,'Rp')}</td>
                                                     </tr>
                                                     <tr>
                                                         <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border text-start'> Dasar Pengenaan Pajak </td>
-                                                        <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border text-start'> { }</td>
+                                                        <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border text-start'> {tableToRupiah(dpp,'Rp')}</td>
                                                     </tr>
                                                     <tr>
                                                         <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border text-start'> PPN </td>
@@ -1147,7 +1167,7 @@ const DetailFaktur = () => {
                                                     <label className='col-6'><b>Jumlah </b></label>
                                                     <div> : </div>
                                                     <div width="100%" className="col-6" > {
-                                                        tableToRupiah(subTotal, "Rp")
+                                                        tableToRupiah(grandTotal, "Rp")
                                                     }
                                                     </div>
                                                 </div>

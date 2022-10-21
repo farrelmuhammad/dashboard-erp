@@ -1,6 +1,6 @@
-import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tag } from 'antd'
-import { DeleteOutlined, LoadingOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons'
-import React, { useEffect, useState } from 'react'
+import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tag, Tooltip} from 'antd'
+import { DeleteOutlined, LoadingOutlined, MinusOutlined, PlusOutlined , PrinterOutlined} from '@ant-design/icons'
+import React, { useEffect, useState , useRef} from 'react'
 import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
 import Search from 'antd/lib/transfer/search'
 import axios from 'axios'
@@ -9,6 +9,8 @@ import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import CurrencyFormat from 'react-currency-format';
 import { PageHeader } from 'antd';
+import logo from "../../Logo.jpeg";
+import { useReactToPrint } from 'react-to-print';
 
 export const DetailPIB = () => {
     const auth = useSelector(state => state.auth);
@@ -52,7 +54,13 @@ export const DetailPIB = () => {
                 console.log(err);
             });
     }
-
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+         copyStyles: true,
+       //pageStyle: pageStyle
+        
+    })
     const columnProduk = [
         {
             title: 'Nama Produk',
@@ -139,10 +147,373 @@ export const DetailPIB = () => {
 
     return (
         <>
+
+<div style={{ display: "none"}} >
+                <div ref={componentRef} className="p-4" style={{width:"100%"}} >
+
+  <table style={{width:"100%"}}>
+    <thead>
+      <tr>
+        <td>
+         
+          <div className="page-header-space"></div>
+          <div className="page-header">
+                 <div className='row'>
+          <div className='d-flex mb-3 float-container' style={{position:"fixed", height:"100px", top:"0"}}>
+                
+                
+               
+                      <div className='col-1' style={{marginTop:"10px"}}><img src={logo} width="60px"></img></div>
+                      <div className='col-4' style={{marginTop:"10px", marginRight:"100px"}}>
+                      <div className='ms-2' >
+                          <div className='header-cetak'><b>PT. BUMI MAESTROAYU</b></div>
+                          <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
+                          <div className='header-cetak'>JAKARTA SELATAN 12760</div>
+                          <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
+                      </div>
+                      </div>
+                     
+                
+               
+                <div className='col'>
+                <div className='col float-child'>
+                    <div className='col' width="100px"></div>
+
+                {/* <div className=' mt-3 mb-4 col d-flex justify-content-right ps-4 pe-4' height="100px" style={{ fontSize: "12px", fontStyle:"bold"}}> */}
+                    {/* <div className='col-6'>
+                          <div className="d-flex flex-row">
+                          <label className='col-8'>No. Pembayaran</label>
+                              <div className='col-12'> : {dataHeader.code}</div>
+                          </div>
+                          <div className="d-flex flex-row">
+                              <label className='col-8'>Tanggal</label>
+                              <div className='col-12'>
+                                  : { dataHeader.date }</div>
+                          </div>
+                        
+                      </div> */}
+                      {/* <div className='col-6'>
+                        <div className="d-flex flex-row">
+                              <label className='col-8'>No. Faktur</label>
+                              <div className='col-8'> : {dataHeader.purchase_invoice.code}</div>
+                          </div>
+                          <div className="d-flex flex-row">
+                          <label className='col-8'>Tanggal</label>
+                              <div className='col-6'> : {dataHeader.date}</div>
+                          </div>
+                         
+                          <div className="d-flex flex-row">
+                              <label className='col-8'>Kepada Yth. </label>
+                              <div className='col-6'> : {dataHeader.supplier.business_entity} {dataHeader.supplier.name}  </div>
+                          </div>
+                      </div> */}
+                  {/* </div> */}
+                </div>
+                </div>
+
+            </div>
+            </div>
+        
+        <br/>
+      
+   
+        <div className='mt-5 mb-2 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold", textAlign:"center"}}>
+                      <div className='align-items-center' style={{ fontSize: "14px", textDecoration: "underline", textAlign:"center"}}>VOUCHER KAS KELUAR</div>
+                      <div style={{ fontSize: "10px", marginTop: "-5px" }}>NO. {dataHeader.code}</div>
+        </div>
+        <br/>
+
+        
+        <div className='mt-2 mb-1 col d-flex justify-content-center ps-4 pe-4 '  style={{ fontSize: "12px", width:"100%" }}>
+                      <div className='col-6'>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>Divisi</label>
+                              <div className='col-6'> : Purchasing</div>
+                          </div>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>Rekening </label>
+                              <div className='col-6'> : {dataHeader.chart_of_account_name} </div>
+                          </div>
+                          
+                      </div>
+                      <div className='col-6'>
+                        <div className="d-flex flex-row">
+                                <label className='col-6'>Kepada</label>
+                                <div className='col-6'> : {dataHeader.supplier.name}</div>
+                            </div>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>Tanggal</label>
+                              <div className='col-6'> : {dataHeader.date} </div>
+                          </div>
+                        
+                          
+                      </div>
+                      <div>
+                        
+                      </div>
+                  </div>
+
+        {/* <div className='mt-2 mb-4 col d-flex justify-content-left ps-4 pe-4'  style={{ fontSize: "12px", fontWeight:"bold" }}>
+                      <div className='col-6 col-md-4'>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>Divisi</label>
+                              <div className='col-6'> : Purchasing</div>
+                          </div>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>Rekening</label>
+                              <div className='col-6'> : {dataHeader.chart_of_account.name} </div>
+                          </div>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>Dari</label>
+                              <div className='col-6'> : {dataHeader.supplier.name} </div>
+                          </div>
+                      </div>
+                  </div> */}
+                </div>
+        </td>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>
+          <div className="page" style={{lineHeight:"3", margin:"0"}}>
+
+          <div className='mt-2 ps-3 pe-3' >
+
+                <table style={{ fontSize: "10px", width: "100%", pageBreakAfter:"auto"}}>
+                    <tr className='border' style={{ height: "40px", pageBreakInside:"avoid", pageBreakAfter:"auto" }}>  
+                        {/* <th width="50px" className='text-center border'>No</th> */}
+                        <th width="300px" className='text-center border'>Deskripsi</th>
+                        <th width="80px" className='text-center border'>Jumlah</th>
+                     
+                    
+                    </tr>
+                    <tbody className="border">
+                        
+                           
+                                <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
+                                    {/* <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {i + 1} </td> */}
+                                    <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> Bea Masuk </td>
+                                    <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {
+                                        <CurrencyFormat prefix='Rp ' disabled className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.import_duty).toFixed(2).replace('.',',')} key="pay"/>
+                                    } </td>
+
+                                
+                                </tr>
+
+
+                                <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
+                                 
+                                    <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> Pph 22 </td>
+                                    <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {
+                                        <CurrencyFormat prefix='Rp ' disabled className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.pph).toFixed(2).replace('.',',')} key="pay" />
+                                    } </td>
+
+
+                                </tr>
+
+                                <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
+                                  
+                                    <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> PPN </td>
+                                    <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {
+                                    <CurrencyFormat prefix='Rp '  disabled className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.ppn).toFixed(2).replace('.',',')}  key="pay" />
+                                    } </td>
+
+
+                                </tr>
+
+
+                            
+                        
+                    </tbody>
+                </table>
+
+            {/* <div className='d-flex mt-1 ps-1 pe-1' style={{marginBottom:'2px', height:'65%'}}>
+                    
+             
+             <div style={{width:'40%', alignItems:'end', marginLeft:'450px'}}>
+
+             <div className='d-flex' style={{fontSize:"12px"}}>
+                                <label className='col-6'><b> Total :</b></label>
+                               
+                                <div width="100%">{
+                                  dataHeader.currency_name === 'IDR ' ?
+                                  < CurrencyFormat  disabled className=' text-end editable-input edit-disabled' style={{fontWeight:'bold' ,width: "70%", fontSize: "10px!important" }} prefix={dataHeader.currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.paid).toFixed(2).replace('.' , ',')} key="diskon" /> :
+                                  < CurrencyFormat  disabled className=' text-end editable-input  edit-disabled' style={{fontWeight:'bold', width: "70%", fontSize: "10px!important" }} prefix={dataHeader.currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.paid).toLocaleString('id')} key="diskon" />                    
+                               }  </div>
+                                <div>
+                                </div>
+                            </div>
+                      
+             </div>
+                    </div> */}
+
+
+            {/* <div className="row" style={{ marginLeft:'5px', height:"80px", alignItems:"start", fontSize:'12px'}}> 
+            Terbilang: {Terbilang(dataHeader.paid)} { dataHeader.currency_name} */}
+              {/* <div className="col-2" style={{alignItems:"start", fontSize:"12px"}}>
+              <b> Terbilang : {Terbilang(totalP) +  mataUang} </b>
+                </div> */}
+               {/* <div className="col-10">
+                {
+                    
+                } */}
+               {/* <textarea
+                                className="form-control"
+                                id="form4Example3"
+                                rows="2"
+                                value={Terbilang(totalP) +  mataUang}
+                                width={"100%"}
+                                height={"20px"}
+                                fontSize={"10px"}
+                                disabled
+                            /> */}
+              
+            {/* </div> */}
+            {/* </div> */}
+       
+
+            </div>
+
+
+
+        {/* <div className='mt-4 ps-4 pe-4' style={{fontSize:"13px"}}>
+
+
+
+           <div className="row" style={{marginBottom:"5px", height:"80px", display:"flex", alignItems:"center"}}>
+              <div className="col-5" style={{alignItems:"center"}}>
+                 <b> Sudah Dibayarkan Kepada</b>
+                </div>
+               <div className="col-7 " style={{fontSize:"10px"}} >
+                   <input
+                      value={dataHeader.supplier.name}
+                       id="inputNama3"
+                       className='form-control'
+                       type="Nama"
+                       width={"80%"}
+                       height={"30px"}
+                       fontSize={"10px"}
+                      
+                    /> 
+            </div>
+            </div>
+
+            <div className="row" style={{marginBottom:"5px", height:"80px", alignItems:"center"}}> 
+              <div className="col-5" style={{alignItems:"center"}}>
+              <b> Uang Sejumlah </b>
+                </div>
+               <div className="col-7">
+               <textarea
+                                className="form-control"
+                                id="form4Example3"
+                                rows="2"
+                                value={Terbilang((dataHeader.paid)) +  mataUang}
+                                width={"80%"}
+                                height={"30px"}
+                                fontSize={"10px"}
+                            />
+              
+            </div>
+            </div>
+
+            <div className="row" style={{marginBottom:"5px", height:"80px", alignItems:"center"}}>
+              <div className="col-5" style={{alignItems:"center"}}>
+               <b> Untuk Pembayaran </b>
+                </div>
+               <div className="col-7" >
+                   <input
+                   
+                      value={
+                        dataDetail.map((item, i) => (
+                            item.purchase_invoice_code
+                        ))
+                      }
+                       id="inputNama3"
+                       className='form-control'
+                       type="Nama"
+                       width={"80%"}
+                       height={"30px"}
+                       fontSize={"10px"}
+                    /> 
+            </div>
+            </div>
+
+            
+            <div className="row" style={{marginBottom:"5px", height:"80px", alignItems:"center"}}>
+              <div className="col-5" style={{alignItems:"center"}}>
+             <b>     Jumlah </b>
+                </div>
+               <div className="col-7 text-start" style={{fontSize:"12px"}}>
+               <input
+                                className="form-control"
+                                id="inputNama3"
+                                type="Nama"
+                                value={mataUang + dataHeader.paid}
+                                width={"80%"}
+                                height={"30px"}
+                                fontSize={"10px"}
+                            />
+            </div>
+            </div>
+
+        </div> */}
+                    </div>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot style={{position:"fixed", marginTop:"400px"}}>
+                        <tr>
+                            <td>
+                            
+                            <div className="page-footer-space"></div>
+                            <div className="page-footer" style={{position:"fixed", Bottom:"0px", width:"92%", marginRight:"5px", marginLeft:"5px"}} >
+                            <div className='d-flex' style={{width:"100%", bottom:"0"}}>
+                            <table style={{ fontSize: "10px", width: "100%", height:"100%", marginRight:"5px", marginLeft:"5px"}} >
+                                <tr className='text-center border' style={{ height: "50px", width:"70%" }}>
+                                    <th width="35px" className='border'>Dibuat</th>
+                                    <th width="35px" className='border'>Mengetahui</th>
+                                    <th width="35px" className='border'>Disetujui</th>
+                                    <th width="35px" className='border'>Diterima</th>
+                                </tr>
+                            
+                                        <tr className='text-center border ' style={{ height: "80px" ,width:"70%"}}>
+                                        
+                                        <td width="35px" className='border'><b>_________________</b></td>
+                                        <td width="35px"className='border'><b>_________________</b></td>
+                                        <td width="35px"className='border'><b>_________________</b></td>
+                                        <td width="35px"className='border'><b>_________________</b></td>
+                                        </tr>
+                            </table>
+                            </div>
+                            </div>
+                            </td>
+                        </tr>
+                        </tfoot>
+                    </table>
+
+                    </div>
+                    </div>
+
+
+
             <PageHeader
                 ghost={false}
                 onBack={() => window.history.back()}
-                title="Detail PIB">
+                title="Detail PIB"
+                extra={[
+                    <Tooltip title="Cetak" placement="bottom">
+                    <Button
+                        type="primary"
+                        icon={<PrinterOutlined />}
+                        style={{ background: "orange", borderColor: "orange" }}
+                        onClick={handlePrint}
+                    />
+                </Tooltip>,
+                ]}
+                >
+                
             </PageHeader>
             <form className="p-3 mb-3 bg-body rounded">
                 {/* <div className="text-title text-start mb-4">

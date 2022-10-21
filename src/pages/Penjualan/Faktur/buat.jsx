@@ -767,7 +767,7 @@ const BuatFaktur = () => {
     };
 
     function tambahUangMuka(value) {
-        let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+        let hasil = value.toString().replaceAll('.', '').replace(/[^0-9\.]+/g, "");
         setUangMuka(hasil);
 
     }
