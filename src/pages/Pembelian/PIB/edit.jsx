@@ -328,12 +328,12 @@ const EditPIB = () => {
             width: '10%',
             align: 'center',
         },
-        {
-            title: 'Harga',
-            dataIndex: 'hrg',
-            width: '10%',
-            align: 'center',
-        },
+        // {
+        //     title: 'Harga',
+        //     dataIndex: 'hrg',
+        //     width: '10%',
+        //     align: 'center',
+        // },
         // {
         //     title: 'Diskon',
         //     dataIndex: 'dsc',
@@ -507,7 +507,7 @@ const EditPIB = () => {
         [...dataPIB.map((item, i) => ({
             nama: item.product_name,
             qty: item.quantity.replace('.', ','),
-            hrg: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.price} key="total" />,
+            // hrg: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.price} key="total" />,
             uangasing: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.totalAsing.replace('.', ',')} key="total" />,
             rupiah: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.totalRupiah} key="total" />,
             bea: <CurrencyFormat prefix='Rp ' disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.bea).toFixed(2).replace('.', ',')} key="pay" />,
@@ -716,17 +716,25 @@ const EditPIB = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
                             <div className="col-sm-7">
-                                <AsyncSelect
+                                <input
+                                    type="Nama"
+                                    defaultValue={selectedMataUang}
+                                    disabled
+                                    className="form-control"
+                                    id="inputNama3"
+                                />
+                                {/* <AsyncSelect
                                     placeholder="Pilih Mata Uang..."
                                     cacheOptions
                                     defaultOptions
+                                    disabled
                                     defaultInputValue={selectedMataUang}
                                     value={selectedMataUang}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsMataUang}
                                     onChange={handleChangeMataUang}
-                                />
+                                /> */}
                             </div>
                         </div>
                         <div className="row mb-3">
@@ -769,7 +777,7 @@ const EditPIB = () => {
                         </div>
 
                         <div className="row mb-3">
-                            <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Shipment Periode </label>
+                            <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Periode Pengiriman</label>
                             <div className="col-sm-7">
                                 <input
                                     id="startDate"
@@ -887,7 +895,7 @@ const EditPIB = () => {
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>
                                     <Table.Summary.Row>
-                                        <Table.Summary.Cell index={0} colSpan={6} className="text-end">Biaya Masuk</Table.Summary.Cell>
+                                        <Table.Summary.Cell index={0} colSpan={6} className="text-end">Bea Masuk</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
                                             <CurrencyFormat prefix='Rp ' className='text-center editable-input pib-currencyinput' thousandSeparator={'.'} decimalSeparator={','} value={totalBea} key="pay" onKeyDown={(event) => klikEnter(event)} onChange={(e) => klikTambahBea(e.target.value, dataPIB)} />
 
@@ -902,7 +910,7 @@ const EditPIB = () => {
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>
                                     <Table.Summary.Row>
-                                        <Table.Summary.Cell index={0} colSpan={6} className="text-end">Pph 22</Table.Summary.Cell>
+                                        <Table.Summary.Cell index={0} colSpan={6} className="text-end">PPh 22</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
                                             <CurrencyFormat prefix='Rp ' className='text-center editable-input pib-currencyinput' onKeyDown={(event) => klikEnter(event)} thousandSeparator={'.'} decimalSeparator={','} value={totalPph} onChange={(e) => klikUbahPPh(e.target.value)} key="pay" />
 

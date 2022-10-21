@@ -25,11 +25,12 @@ const BuatPIB = () => {
     const [loadingTable, setLoadingTable] = useState(false);
 
     const [selectedSupplier, setSelectedSupplier] = useState(null);
-    const [selectedMataUang, setSelectedMataUang] = useState('Rp ');
+    const [selectedMataUang, setSelectedMataUang] = useState('');
     const [selectedFaktur, setSelectedFaktur] = useState(null);
     const [selectedCOA, setSelectedCOA] = useState(null);
     const [selectedBiaya, setSelectedBiaya] = useState(null);
     const [supplierId, setSupplierId] = useState();
+    // const [term, setTerm] = useState('CIF');
     const [biayaId, setBiayaId] = useState();
     const [nominal, setNominal] = useState();
     const [deskripsi, setDeskripsi] = useState()
@@ -59,7 +60,7 @@ const BuatPIB = () => {
     const [grandTotal, setGrandTotal] = useState("");
     const [checked, setChecked] = useState("");
     const [modal2Visible, setModal2Visible] = useState(false);
-    const [term, setTerm] = useState();
+    const [term, setTerm] = useState('CIF');
     const [muatan, setMuatan] = useState();
     const [ctn, setCtn] = useState();
     const [alamat, setAlamat] = useState();
@@ -110,10 +111,12 @@ const BuatPIB = () => {
                 tmp.push({
                     value: data[x].id,
                     label: data[x].code,
-                    info: data[x].purchase_invoice_details
+                    info: data[x].purchase_invoice_details,
+                    term: data[x].term
                 })
             }
             setOptionsFaktur(tmp)
+
         }
         );
     }, [supplierId])
@@ -135,6 +138,8 @@ const BuatPIB = () => {
     }
 
     const handleChangePilih = (value) => {
+        console.log(value)
+        setTerm(value.term)
         let dataDouble = [];
         // console.log(tampilProduk)
         for (let i = 0; i < tampilProduk.length; i++) {
@@ -175,6 +180,7 @@ const BuatPIB = () => {
             setJumlah(tmpJumlah)
             setDataFaktur(newIdFaktur)
             setTampilProduk(newData);
+            setSelectedMataUang(newData[0].currency_name)
         }
 
 
@@ -249,14 +255,14 @@ const BuatPIB = () => {
             width: '10%',
             align: 'center',
         },
+        // {
+        //     title: 'Harga',
+        //     dataIndex: 'hrg',
+        //     width: '10%',
+        //     align: 'center',
+        // },
         {
-            title: 'Harga',
-            dataIndex: 'hrg',
-            width: '10%',
-            align: 'center',
-        },
-        {
-            title: 'Jumlah Setelah Diskon',
+            title: term,
             dataIndex: 'uangasing',
             width: '15%',
             align: 'center',
@@ -384,7 +390,7 @@ const BuatPIB = () => {
             }
         }
         for (let x = 0; x < tampilProduk.length; x++) {
-            if(dataFaktur[x] == id){
+            if (dataFaktur[x] == id) {
                 dataFaktur.splice(x, 1);
             }
             if (tampilProduk[x].purchase_invoice_id == id) {
@@ -404,7 +410,7 @@ const BuatPIB = () => {
         [...tampilProduk.map((item, i) => ({
             nama: item.product_name,
             qty: item.quantity.replace('.', ','),
-            hrg: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.price} key="total" />,
+            // hrg: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.price} key="total" />,
             dsc: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.price} key="total" />,
             uangasing: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.total.replace('.', ',')} key="total" />,
             rupiah: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={totalRupiah[i]} key="total" />,
@@ -615,16 +621,25 @@ const BuatPIB = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
                             <div className="col-sm-7">
-                                <AsyncSelect
+                                <input
+                                    type="Nama"
+                                    defaultValue={selectedMataUang}
+                                    disabled
+                                    className="form-control"
+                                    id="inputNama3"
+                                />
+
+                                {/* <AsyncSelect
                                     placeholder="Pilih Mata Uang..."
                                     cacheOptions
                                     defaultOptions
+                                    disabled
                                     value={selectedMataUang}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsMataUang}
                                     onChange={handleChangeMataUang}
-                                />
+                                /> */}
                             </div>
                         </div>
                         <div className="row mb-3">
@@ -665,7 +680,7 @@ const BuatPIB = () => {
                         </div>
 
                         <div className="row mb-3">
-                            <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Shipment Periode </label>
+                            <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Periode Pengiriman </label>
                             <div className="col-sm-7">
                                 <input
                                     id="startDate"
@@ -779,7 +794,7 @@ const BuatPIB = () => {
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>
                                     <Table.Summary.Row>
-                                        <Table.Summary.Cell index={0} colSpan={6} className="text-end">Biaya Masuk</Table.Summary.Cell>
+                                        <Table.Summary.Cell index={0} colSpan={6} className="text-end">Bea Masuk</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
                                             <CurrencyFormat prefix='Rp ' className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={totalBea} key="pay" onKeyDown={(event) => klikEnter(event)} onChange={(e) => klikTambahBea(e.target.value, totalRupiah)} />
 
@@ -787,7 +802,7 @@ const BuatPIB = () => {
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>
                                     <Table.Summary.Row>
-                                        <Table.Summary.Cell index={0} colSpan={6} className="text-end">Pph 22</Table.Summary.Cell>
+                                        <Table.Summary.Cell index={0} colSpan={6} className="text-end">PPh 22</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
                                             <CurrencyFormat prefix='Rp ' className='text-center editable-input' onKeyDown={(event) => klikEnter(event)} thousandSeparator={'.'} decimalSeparator={','} value={totalPpn} onChange={(e) => klikUbahPPn(e.target.value)} key="pay" />
 

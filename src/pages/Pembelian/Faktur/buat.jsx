@@ -130,10 +130,10 @@ const BuatFakturPembelian = () => {
     const [modalListLokal, setModalListLokal] = useState(false);
     const [modalListImpor, setModalListImpor] = useState(false);
 
-    const [term, setTerm] = useState();
-    const [muatan, setMuatan] = useState();
-    const [ctn, setCtn] = useState();
-    const [kontainer, setKontainer] = useState()
+    const [term, setTerm] = useState('');
+    const [muatan, setMuatan] = useState('');
+    const [ctn, setCtn] = useState('');
+    const [kontainer, setKontainer] = useState('')
     const [loadingTable, setLoadingTable] = useState(false);
     const [idCOA, setIdCOA] = useState([]);
     const [idCredit, setIdCredit] = useState([]);
