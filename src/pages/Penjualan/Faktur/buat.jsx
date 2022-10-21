@@ -114,7 +114,7 @@ const BuatFaktur = () => {
     const [product, setProduct] = useState([]);
     const [query, setQuery] = useState("");
     const [getCode, setGetCode] = useState('');
-    const [uangMuka, setUangMuka] = useState('');
+    const [uangMuka, setUangMuka] = useState(0);
     const navigate = useNavigate();
     const auth = useSelector(state => state.auth);
 
@@ -126,7 +126,7 @@ const BuatFaktur = () => {
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
     const [totalPpn, setTotalPpn] = useState("");
     const [grandTotal, setGrandTotal] = useState("");
-    const [checked, setChecked] = useState("");
+    const [checked, setChecked] = useState(false);
 
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
@@ -141,7 +141,7 @@ const BuatFaktur = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?nama_alias=${query}&pelanggan=${customer}`, {
+            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?nama_alias=${query}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -164,7 +164,7 @@ const BuatFaktur = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/sales_invoices_available_sales_orders?nama_alias=${query}&pelanggan=${customer}`, {
+            const res = await axios.get(`${Url}/sales_invoices_available_sales_orders?nama_alias=${query}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -185,7 +185,7 @@ const BuatFaktur = () => {
     }, [query, customer])
 
     useEffect(() => {
-        setGrandTotal(Number(subTotal) - Number(grandTotalDiscount) + Number(totalPpn) + Number(uangMuka));
+        setGrandTotal(Number(subTotal) - Number(grandTotalDiscount) + Number(totalPpn) - Number(uangMuka));
     }, [totalPpn, uangMuka]);
 
     // Column for modal input product
@@ -205,14 +205,14 @@ const BuatFaktur = () => {
                 return <>{record.detail.customer.name}</>
             }
         },
-        {
-            align: 'center',
-            title: 'Penerima',
-            dataIndex: 'recipient',
-            render: (_, record) => {
-                return <>{record.detail.code}</>
-            }
-        },
+        // {
+        //     align: 'center',
+        //     title: 'Penerima',
+        //     dataIndex: 'recipient',
+        //     render: (_, record) => {
+        //         return <>{record.detail.code}</>
+        //     }
+        // },
         {
             align: 'center',
             title: 'Total',
@@ -766,10 +766,10 @@ const BuatFaktur = () => {
         calculate(newData, check_checked);
     };
 
-    function tambahUangMuka(value){
-        let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+    function tambahUangMuka(value) {
+        let hasil = value.toString().replaceAll('.', '').replace(/[^0-9\.]+/g, "");
         setUangMuka(hasil);
-       
+
     }
 
     const calculate = (product, check_checked) => {
@@ -802,7 +802,7 @@ const BuatFaktur = () => {
                 subTotal += (totalPerProduk * 100) / (100 + values.ppn);
                 totalDiscount += ((rowDiscount * 100) / (100 + values.ppn));
                 totalPpn += ((((totalPerProduk * 100) / (100 + values.ppn)) - (rowDiscount * 100) / (100 + values.ppn)) * values.ppn) / (100);
-                grandTotal = subTotal - totalDiscount + Number(totalPpn);
+                grandTotal = subTotal - totalDiscount + Number(totalPpn) - Number(uangMuka);
                 setSubTotal(subTotal)
                 setGrandTotalDiscount(totalDiscount);
                 setTotalPpn(totalPpn)
@@ -929,22 +929,22 @@ const BuatFaktur = () => {
                         }
                         else {
                             tmp.push({
-                                customer_id: 2,
-                                discount_percentage: "1",
-                                fixed_discount: "0",
-                                id: 1,
-                                notes: "-",
-                                ppn: "1",
-                                price: "50000",
-                                product_alias_name: "Bagian 1 Grade 1 Merk 1",
-                                quantity: "1",
-                                sales_order_code: "BM220906-SO001",
-                                sales_order_id: 2,
-                                subtotal: "50000",
-                                subtotal_after_discount: "49500",
-                                tally_sheets_qty: 0,
-                                total: "49501",
-                                unit: "kg"
+                                customer_id: dataSumber[i].customer_id,
+                                discount_percentage: dataSumber[i].discount_percentage,
+                                fixed_discount: dataSumber[i].fixed_discount,
+                                id: dataSumber[i].id,
+                                notes: dataSumber[i].notes,
+                                ppn: dataSumber[i].ppn,
+                                price: dataSumber[i].price,
+                                product_alias_name: dataSumber[i].product_alias_name,
+                                quantity: dataSumber[i].quantity,
+                                code: dataSumber[i].sales_order_code,
+                                sales_order_id: dataSumber[i].sales_order_id,
+                                subtotal: dataSumber[i].subtotal,
+                                subtotal_after_discount: dataSumber[i].subtotal_after_discount,
+                                tally_sheets_qty: dataSumber[i].tally_sheets_qty,
+                                total: dataSumber[i].total,
+                                unit: dataSumber[i].unit
                             })
                         }
 
@@ -953,18 +953,24 @@ const BuatFaktur = () => {
                 else {
                     tmp.push(updatedList[i])
                 }
+                console.log(tmp)
 
             }
             updatedList = tmp
 
-        } else {
+        }
+        else {
+            console.log(updatedList)
+            console.log(event.target.value.detail)
+            let jumlah = 0
+            let index = []
             for (let i = 0; i < updatedList.length; i++) {
-
-                if (updatedList[i] == event.target.value.detail) {
-                    updatedList.splice(i, 1);
+                if (updatedList[i].code == event.target.value.detail.code) {
+                    jumlah = jumlah + 1
+                    index.push(i);
                 }
             }
-            // updatedList.splice(product.indexOf(event.target.value), 1);
+            updatedList.splice(index[0], jumlah);
         }
         setProduct(updatedList);
         let tmp = [];
@@ -985,9 +991,10 @@ const BuatFaktur = () => {
         userData.append("catatan", description);
         userData.append("pelanggan", customer);
         userData.append("termasuk_pajak", checked);
+        userData.append("uang_muka", uangMuka);
         userData.append("status", "Submitted");
         product.map((p, i) => {
-            userData.append("nama_alias_produk[]", p.alias_name);
+            userData.append("nama_alias_produk[]", p.product_name);
             userData.append("kuantitas[]", p.quantity);
             userData.append("satuan[]", p.unit);
             userData.append("harga[]", p.price);
@@ -1009,7 +1016,7 @@ const BuatFaktur = () => {
 
         axios({
             method: "post",
-            url: `${Url}/sales_orders`,
+            url: `${Url}/sales_invoices`,
             data: userData,
             headers: {
                 Accept: "application/json",
@@ -1023,7 +1030,7 @@ const BuatFaktur = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/pesanan");
+                navigate("/faktur");
             })
             .catch((err) => {
                 if (err.response) {
@@ -1045,19 +1052,39 @@ const BuatFaktur = () => {
 
     const handleDraft = async (e) => {
         e.preventDefault();
+        console.log(product)
         const userData = new FormData();
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
+        userData.append("tipe", fakturType);
+        userData.append("alamat_penerima", address);
+        userData.append("penerima", customer);
         userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("termasuk_pajak", checked);
+        // userData.append("pelanggan", customer);
+        userData.append("uang_muka", uangMuka);
+        if (checked) {
+            userData.append("termasuk_pajak", 1);
+
+        }
+        else {
+            userData.append("termasuk_pajak", 0);
+
+        }
         userData.append("status", "Draft");
         product.map((p, i) => {
             console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
+            userData.append("nama_alias_produk[]", p.product_alias_name);
             userData.append("kuantitas[]", p.quantity);
             userData.append("satuan[]", p.unit);
             userData.append("harga[]", p.price);
+            if (sumber == 'SO') {
+                userData.append("id_pesanan_penjualan[]", p.sales_order_id);
+
+            }
+            else {
+                userData.append("id_surat_jalan[]", p.delivery_notes_id);
+
+            }
             if (pilihanDiskon[i] == 'percent') {
                 userData.append("persentase_diskon[]", jumlahDiskon[i]);
 
@@ -1070,7 +1097,7 @@ const BuatFaktur = () => {
             }
             userData.append("ppn[]", p.ppn);
         });
-        userData.append("termasuk_pajak", checked);
+        // userData.append("termasuk_pajak", checked);
 
         // for (var pair of userData.entries()) {
         //     console.log(pair[0] + ', ' + pair[1]);
@@ -1078,7 +1105,7 @@ const BuatFaktur = () => {
 
         axios({
             method: "post",
-            url: `${Url}/sales_orders`,
+            url: `${Url}/sales_invoices`,
             data: userData,
             headers: {
                 Accept: "application/json",
@@ -1092,7 +1119,7 @@ const BuatFaktur = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/pesanan");
+                navigate("/faktur");
             })
             .catch((err) => {
                 if (err.response) {
@@ -1376,14 +1403,14 @@ const BuatFaktur = () => {
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Uang Muka</label>
                             <div className="col-sm-6">
-                                    <CurrencyFormat
-                                        className='form-control form-control-sm'
-                                        thousandSeparator={'.'}
-                                        decimalSeparator={','}
-                                        prefix={'Rp '}
-                                        onKeyDown={(event) => klikEnter(event)}
-                                        value={uangMuka}
-                                        onChange={(e) => tambahUangMuka(e.target.value)} />
+                                <CurrencyFormat
+                                    className='form-control form-control-sm'
+                                    thousandSeparator={'.'}
+                                    decimalSeparator={','}
+                                    prefix={'Rp '}
+                                    onKeyDown={(event) => klikEnter(event)}
+                                    value={uangMuka}
+                                    onChange={(e) => tambahUangMuka(e.target.value)} />
                             </div>
                         </div>
                         <div className="row mb-3">
