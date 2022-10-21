@@ -1072,7 +1072,6 @@ const BuatFakturPembelian = () => {
             setIdTandaTerima(idTerima);
             var updatedList;
 
-            // console.log(updatedList)
             var strParams;
             if (grup == "Lokal") {
                 for (let i = 0; i < idTerima.length; i++) {

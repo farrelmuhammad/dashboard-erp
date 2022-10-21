@@ -301,8 +301,8 @@ const DetailFakturPembelian = () => {
 
     // const dataCredit = []
 
-    if (credit.length != 0) {
-        dataCredit =
+    // if (credit.length != 0) {
+        const dataCredit =
             [...credit?.map((item, i) => ({
                 code: item.credit_note_code,
                 desc: item.description,
@@ -317,7 +317,7 @@ const DetailFakturPembelian = () => {
             }))
 
             ]
-    }
+    // }
 
 
     const componentRef = useRef();

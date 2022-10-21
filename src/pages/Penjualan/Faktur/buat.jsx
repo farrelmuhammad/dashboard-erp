@@ -136,6 +136,7 @@ const BuatFaktur = () => {
 
     const [selectedSupplier, setSelectedSupplier] = useState()
     const [sumber, setSumber] = useState('')
+    const [idTandaTerima, setIdTandaTerima] = useState([])
     const [fakturType, setFakturType] = useState('')
     const [selectedType, setSelectedType] = useState('')
 
@@ -147,15 +148,15 @@ const BuatFaktur = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            let tmp = []
-            for (let i = 0; i < res.data.data.length; i++) {
-                tmp.push({
-                    detail: res.data.data[i],
-                    statusCek: false
-                });
-            }
+            // let tmp = []
+            // for (let i = 0; i < res.data.data.length; i++) {
+            //     tmp.push({
+            //         detail: res.data.data[i],
+            //         statusCek: false
+            //     });
+            // }
 
-            setGetDataSurat(tmp);
+            setGetDataSurat(res.data.data);
             // console.log(res.data.map(d => d.id))
         };
 
@@ -170,15 +171,16 @@ const BuatFaktur = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            let tmp = []
-            for (let i = 0; i < res.data.data.length; i++) {
-                tmp.push({
-                    detail: res.data.data[i],
-                    statusCek: false
-                });
-            }
+            // let tmp = []
+            // for (let i = 0; i < res.data.data.length; i++) {
+            //     tmp.push({
+            //         detail: res.data.data[i],
+            //         statusCek: false
+            //     });
+            // }
 
-            setGetDataProduct(tmp);
+            setGetDataProduct(res.data.data);
+            console.log(res.data.data)
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -193,45 +195,29 @@ const BuatFaktur = () => {
         {
             title: 'No. Transaksi',
             dataIndex: 'code',
-            render: (_, record) => {
-                return <>{record.detail.code}</>
-            }
         },
         {
+            title: 'Supplier',
+            dataIndex: 'customer_id',
+            width: '15%',
             align: 'center',
-            title: 'Pelanggan',
-            dataIndex: 'customer',
-            render: (_, record) => {
-                return <>{record.detail.customer.name}</>
-            }
         },
-        // {
-        //     align: 'center',
-        //     title: 'Penerima',
-        //     dataIndex: 'recipient',
-        //     render: (_, record) => {
-        //         return <>{record.detail.code}</>
-        //     }
-        // },
         {
-            align: 'center',
             title: 'Total',
             dataIndex: 'total',
-            render: (_, record) => {
-                return <>{record.detail.total}</>
-            }
+            width: '15%',
+            align: 'center',
         },
         {
             title: 'actions',
             dataIndex: 'address',
             width: '15%',
             align: 'center',
-            render: (_, record, index) => (
+            render: (_, record) => (
                 <>
                     <Checkbox
                         value={record}
-                        checked={record.statusCek}
-                        onChange={(e) => handleCheck(e, index)}
+                        onChange={handleCheck}
                     />
                 </>
             )
@@ -857,106 +843,210 @@ const BuatFaktur = () => {
         };
     });
 
-    const handleCheck = (event, index) => {
-        console.log(event.target.checked)
-        var updatedList = [...product];
+    const handleCheck = (event) => {
+        // console.log(event.target.checked)
+        // var updatedList = [...product];
         let tmpData = [];
         let tmpDataBaru = [];
 
 
         // perubahan data dan status ceked 
-        if (sumber == 'Surat') {
-            for (let i = 0; i < getDataSurat.length; i++) {
-                if (i == index) {
-                    tmpDataBaru.push({
-                        detail: getDataSurat[i].detail,
-                        statusCek: !getDataSurat[i].statusCek
-                    })
-                }
-                else {
-                    tmpDataBaru.push(getDataSurat[i])
-                }
+        // if (sumber == 'Surat') {
+        //     for (let i = 0; i < getDataSurat.length; i++) {
+        //         if (i == index) {
+        //             tmpDataBaru.push({
+        //                 detail: getDataSurat[i].detail,
+        //                 statusCek: !getDataSurat[i].statusCek
+        //             })
+        //         }
+        //         else {
+        //             tmpDataBaru.push(getDataSurat[i])
+        //         }
+        //     }
+        //     setGetDataSurat(tmpDataBaru)
+        // }
+
+        // else if (sumber == 'SO') {
+        //     for (let i = 0; i < getDataProduct.length; i++) {
+        //         if (i == index) {
+        //             tmpDataBaru.push({
+        //                 detail: getDataProduct[i].detail,
+        //                 statusCek: !getDataProduct[i].statusCek
+        //             })
+        //         }
+        //         else {
+        //             tmpDataBaru.push(getDataProduct[i])
+        //         }
+        //     }
+        //     setGetDataProduct(tmpDataBaru)
+        // }
+
+
+        if (event.target.checked) {
+            // mencari id yang di grouping 
+            var idTerima = [...idTandaTerima];
+            idTerima = [...idTandaTerima, event.target.value.id];
+            setIdTandaTerima(idTerima);
+            var updatedList
+
+            var strParams;
+            if (sumber == "SO") {
+                // belum
+                // for (let i = 0; i < idTerima.length; i++) {
+                //     if (i == 0) {
+                //         strParams = "id_tanda_terima_barang[]=" + idTerima[i]
+                //     }
+                //     else {
+                //         strParams = strParams + "&id_tanda_terima_barang[]=" + idTerima[i]
+                //     }
+
+                // }
+                // axios.get(`${Url}/purchase_invoices_grouped_goods_receipt_details?${strParams}`, {
+                //     headers: {
+                //         Accept: "application/json",
+                //         Authorization: `Bearer ${auth.token}`,
+                //     },
+                // })
+                //     .then((res) => {
+                //         updatedList = res.data.details;
+                //     })
+                //     .then(() => {
+                //         for (let i = 0; i < updatedList.length; i++) {
+                //             updatedList[i].currency_name ? setMataUang(updatedList[i].currency_name) : setMataUang('Rp')
+                //             tmpData.push(
+                //                 {
+                //                     id: updatedList[i].product_id,
+                //                     product_name: updatedList[i].product_name,
+                //                     quantity: updatedList[i].quantity,
+                //                     price: updatedList[i].price,
+                //                     discount_percentage: updatedList[i].discount_percentage,
+                //                     fixed_discount: updatedList[i].fixed_discount,
+                //                     subtotal: updatedList[i].subtotal,
+                //                     pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+                //                     currency_name: updatedList[i].currency_name ? updatedList[i].currency_name : 'Rp',
+                //                     unit: updatedList[i].unit,
+                //                     total: updatedList[i].total
+
+                //                 }
+                //             )
+
+                //         }
+
+                //         setData(tmpData)
+                //         calculate(tmpData)
+                //     })
+
             }
-            setGetDataSurat(tmpDataBaru)
-        }
 
-        else if (sumber == 'SO') {
-            for (let i = 0; i < getDataProduct.length; i++) {
-                if (i == index) {
-                    tmpDataBaru.push({
-                        detail: getDataProduct[i].detail,
-                        statusCek: !getDataProduct[i].statusCek
-                    })
-                }
-                else {
-                    tmpDataBaru.push(getDataProduct[i])
-                }
-            }
-            setGetDataProduct(tmpDataBaru)
-        }
-
-
-        if (tmpDataBaru[index].statusCek) {
-            // updatedList = [...product];
-            // console.log(product)
-            let dataSumber;
-            if (sumber == 'SO') {
-                dataSumber = event.target.value.detail.sales_order_details
-            }
-            else if (sumber == 'Surat') {
-                dataSumber = event.target.value.detail.delivery_note_details
-            }
-            // console.log(event.target.value.detail)
-
-            let tmp = [];
-            for (let i = 0; i <= updatedList.length; i++) {
-                if (i == updatedList.length) {
-                    for (let i = 0; i < dataSumber.length; i++) {
-                        if (sumber == 'Retur') {
-                            tmp.push({
-                                id_datasumber: sumber == 'Retur' ? dataSumber[i].delivery_note_id : dataSumber[i].sales_order_id,
-                                id: dataSumber[i].id,
-                                product_alias_name: dataSumber[i].product_alias_name,
-                                product_id: dataSumber[i].product_id,
-                                product_name: dataSumber[i].product_name,
-                                quantity: dataSumber[i].quantity,
-                                returned: dataSumber[i].returned,
-                                sales_order_id: dataSumber[i].sales_order_id,
-                                tally_sheet_code: dataSumber[i].tally_sheet_code,
-                                tally_sheet_id: dataSumber[i].tally_sheet_id,
-                                unit: dataSumber[i].unit
-                            })
-                        }
-                        else {
-                            tmp.push({
-                                customer_id: dataSumber[i].customer_id,
-                                discount_percentage: dataSumber[i].discount_percentage,
-                                fixed_discount: dataSumber[i].fixed_discount,
-                                id: dataSumber[i].id,
-                                notes: dataSumber[i].notes,
-                                ppn: dataSumber[i].ppn,
-                                price: dataSumber[i].price,
-                                product_alias_name: dataSumber[i].product_alias_name,
-                                quantity: dataSumber[i].quantity,
-                                code: dataSumber[i].sales_order_code,
-                                sales_order_id: dataSumber[i].sales_order_id,
-                                subtotal: dataSumber[i].subtotal,
-                                subtotal_after_discount: dataSumber[i].subtotal_after_discount,
-                                tally_sheets_qty: dataSumber[i].tally_sheets_qty,
-                                total: dataSumber[i].total,
-                                unit: dataSumber[i].unit
-                            })
-                        }
-
+            else if (sumber == "Surat") {
+                for (let i = 0; i < idTerima.length; i++) {
+                    if (i == 0) {
+                        strParams = "id_surat_jalan[]=" + idTerima[i]
                     }
-                }
-                else {
-                    tmp.push(updatedList[i])
-                }
-                console.log(tmp)
+                    else {
+                        strParams = strParams + "&id_surat_jalan[]=" + idTerima[i]
+                    }
 
+                }
+                axios.get(`${Url}/sales_invoices_grouped_delivery_note_details?${strParams}`, {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${auth.token}`,
+                    },
+                })
+                    .then((res) => {
+                        console.log(res)
+                        updatedList = res.data.details;
+                    })
+
+                console.log(updatedList)
+                // .then(() => {
+                //     for (let i = 0; i < updatedList.length; i++) {
+                //         updatedList[i].currency_name ? setMataUang(updatedList[i].currency_name) : setMataUang('Rp')
+                //         tmpData.push(
+                //             {
+                //                 id: updatedList[i].product_id,
+                //                 product_name: updatedList[i].product_name,
+                //                 quantity: updatedList[i].quantity,
+                //                 price: updatedList[i].price,
+                //                 discount_percentage: updatedList[i].discount_percentage,
+                //                 fixed_discount: updatedList[i].fixed_discount,
+                //                 subtotal: updatedList[i].subtotal,
+                //                 pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+                //                 currency_name: updatedList[i].currency_name ? updatedList[i].currency_name : 'Rp',
+                //                 unit: updatedList[i].unit,
+                //                 total: updatedList[i].total
+
+                //             }
+                //         )
+
+                //     }
+
+                //     // setData(tmpData)
+                //     // calculate(tmpData)
+                // })
             }
-            updatedList = tmp
+
+
+
+
+            // let dataSumber;
+            // if (sumber == 'SO') {
+            //     dataSumber = event.target.value.detail.sales_order_details
+            // }
+            // else if (sumber == 'Surat') {
+            //     dataSumber = event.target.value.detail.delivery_note_details
+            // }
+
+            // let tmp = [];
+            // for (let i = 0; i <= updatedList.length; i++) {
+            //     if (i == updatedList.length) {
+            //         for (let i = 0; i < dataSumber.length; i++) {
+            //             if (sumber == 'Retur') {
+            //                 tmp.push({
+            //                     id_datasumber: sumber == 'Retur' ? dataSumber[i].delivery_note_id : dataSumber[i].sales_order_id,
+            //                     id: dataSumber[i].id,
+            //                     product_alias_name: dataSumber[i].product_alias_name,
+            //                     product_id: dataSumber[i].product_id,
+            //                     product_name: dataSumber[i].product_name,
+            //                     quantity: dataSumber[i].quantity,
+            //                     returned: dataSumber[i].returned,
+            //                     sales_order_id: dataSumber[i].sales_order_id,
+            //                     tally_sheet_code: dataSumber[i].tally_sheet_code,
+            //                     tally_sheet_id: dataSumber[i].tally_sheet_id,
+            //                     unit: dataSumber[i].unit
+            //                 })
+            //             }
+            //             else {
+            //                 tmp.push({
+            //                     customer_id: dataSumber[i].customer_id,
+            //                     discount_percentage: dataSumber[i].discount_percentage,
+            //                     fixed_discount: dataSumber[i].fixed_discount,
+            //                     id: dataSumber[i].id,
+            //                     notes: dataSumber[i].notes,
+            //                     ppn: dataSumber[i].ppn,
+            //                     price: dataSumber[i].price,
+            //                     product_alias_name: dataSumber[i].product_alias_name,
+            //                     quantity: dataSumber[i].quantity,
+            //                     code: dataSumber[i].sales_order_code,
+            //                     sales_order_id: dataSumber[i].sales_order_id,
+            //                     subtotal: dataSumber[i].subtotal,
+            //                     subtotal_after_discount: dataSumber[i].subtotal_after_discount,
+            //                     tally_sheets_qty: dataSumber[i].tally_sheets_qty,
+            //                     total: dataSumber[i].total,
+            //                     unit: dataSumber[i].unit
+            //                 })
+            //             }
+
+            //         }
+            //     }
+            //     else {
+            //         tmp.push(updatedList[i])
+            //     }
+            //     console.log(tmp)
+
+            // }
+            // updatedList = tmp
 
         }
         else {

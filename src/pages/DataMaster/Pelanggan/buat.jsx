@@ -103,7 +103,7 @@ const BuatPelanggan = () => {
   const [npwp, setNpwp] = useState('');
   const [term, setTerm] = useState('');
   const [discount, setDiscount] = useState('');
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState('Active');
   const navigate = useNavigate();
 
   const [checked, setChecked] = useState(true);
