@@ -126,7 +126,8 @@ const EditPesananPembelian = () => {
     const [getStatus, setGetStatus] = useState('');
     const [getSupplier, setGetSupplier] = useState('');
     const [getSupplierName, setGetSupplierName] = useState('');
-    const [selectedMataUang, setSelectedMataUang] = useState('Rp ')
+    const [selectedMataUang, setSelectedMataUang] = useState()
+    const [namaMataUang, setNamaMataUang] = useState('Rp ')
     const [mataUangId, setMataUangId] = useState([])
     const [getProduct, setGetProduct] = useState([]);
     const [getDataProduct, setGetDataProduct] = useState();
@@ -143,7 +144,7 @@ const EditPesananPembelian = () => {
     const [grup, setGrup] = useState();
     const [dataMataUang, setDataMataUang] = useState([]);
     // const [matauang, setMataUang] = useState();
-    const [namaMataUang, setNamaMataUang] = useState();
+    // const [namaMataUang, setNamaMataUang] = useState();
     const [pilihanDiskon, setPilihanDiskon] = useState([]);
     const [jumlahDiskon, setJumlahDiskon] = useState([]);
     const [namaPIC, setNamaPIC] = useState()
@@ -156,6 +157,7 @@ const EditPesananPembelian = () => {
     const handleChangeMataUang = (value) => {
         setMataUangId(value.id);
         setSelectedMataUang(value);
+        setNamaMataUang(value.name)
     };
     const loadOptionsMataUang = (inputValue) => {
         return fetch(`${Url}/select_currencies?nama=${inputValue}`, {
@@ -229,7 +231,7 @@ const EditPesananPembelian = () => {
 
     const convertToRupiah = (angka) => {
         return <input
-            value={selectedMataUang + ' ' + angka.toLocaleString('id')}
+            value={namaMataUang + ' ' + angka.toLocaleString('id')}
             readOnly="true"
             className="form-control form-control-sm"
             id="colFormLabelSm"
@@ -428,7 +430,7 @@ const EditPesananPembelian = () => {
             editable: true,
             render(text, record) {
                 return {
-                    children: <div>{selectedMataUang + ' ' + Number(text).toLocaleString('id')}</div>
+                    children: <div>{namaMataUang + ' ' + Number(text).toLocaleString('id')}</div>
                 };
             }
         },
@@ -539,7 +541,7 @@ const EditPesananPembelian = () => {
                         grandTotal = record.quantity * Number(record.price);
                     }
 
-                    var hasil = selectedMataUang + ' ' + grandTotal.toLocaleString('id');
+                    var hasil = namaMataUang + ' ' + grandTotal.toLocaleString('id');
 
                     return {
                         props: {
@@ -680,6 +682,9 @@ const EditPesananPembelian = () => {
                 setSupplierId(getData.supplier_id);
                 setSelectedSupplier(getData.supplier.name);
                 setMataUangId(getData.currency_id);
+                if(getData.currency){
+                    setNamaMataUang(getData.currency.name)
+                }
                 setNamaPIC(getData.according_to);
                 setTanggalAkhir(getData.shipment_period_end_date);
                 setTanggalAwal(getData.shipment_period_start_date);
@@ -770,7 +775,7 @@ const EditPesananPembelian = () => {
         produkData.append("tanggal_awal_periode_pengiriman", tanggalAwal);
         produkData.append("tanggal_akhir_periode_pengiriman", tanggalAkhir);
         produkData.append("ppn", totalPpn);
-        produkData.append("mata_uang", selectedMataUang);
+        produkData.append("mata_uang", mataUangId);
         getProduct.map((p, i) => {
 
             produkData.append("nama_alias_produk[]", p.product_alias_name);
@@ -843,7 +848,7 @@ const EditPesananPembelian = () => {
         produkData.append("pemasok", supplierId);
         produkData.append("status", getStatus);
         produkData.append("ppn", totalPpn);
-        produkData.append("mata_uang", matauang);
+        produkData.append("mata_uang", mataUangId);
         produkData.append("berdasarkan", namaPIC);
         produkData.append("dibeli_oleh", namaPenerima);
         produkData.append("tanggal_awal_periode_pengiriman", tanggalAwal);

@@ -1325,7 +1325,7 @@ const BuatFakturPembelian = () => {
             else if (grup == "Impor") {
 
                 formData.append("id_pesanan_pembelian[]", idTandaTerima[y]);
-            }
+            } 
         }
         for (let x = 0; x < data.length; x++) {
             formData.append("kuantitas[]", data[x].quantity.replace(',', '.'));

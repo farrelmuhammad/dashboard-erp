@@ -278,7 +278,7 @@ const BuatCreditNote = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                             <div className="col-sm-7">
-                                <Select
+                                {/* <Select
                                     className="basic-single"
                                     placeholder="Pilih Supplier..."
                                     classNamePrefix="select"
@@ -291,7 +291,7 @@ const BuatCreditNote = () => {
                                     isSearchable={isSearchable}
                                      onChange={setSelectedOption}
                                     options={dataSupplier}
-                                />
+                                /> */}
 
 {/* <Select
         className="basic-single"
