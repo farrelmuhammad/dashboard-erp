@@ -131,9 +131,9 @@ const BuatPembayaranPembelian = () => {
 
     function klikUbahTotal(index, value) {
         let tmp = []
-        let hasil = value.replace('.', '').replace(/[^0-9\.]+/g, "");
+        let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
         // setting data baru 
-        let hasilSisa = Number(product[index].sisaNoEdit);
+        // let hasilSisa = Number(product[index].sisaNoEdit);
 
         for (let i = 0; i < product.length; i++) {
             console.log(hasil)
@@ -141,7 +141,7 @@ const BuatPembayaranPembelian = () => {
                 tmp.push({
                     code: product[i].code,
                     total: product[i].total,
-                    sisa: hasilSisa - hasil,
+                    sisa: product[i].sisaNoEdit - hasil,
                     sisaNoEdit: product[i].sisaNoEdit,
                     bayar: hasil,
                     idFaktur: product[i].idFaktur
@@ -592,6 +592,7 @@ const BuatPembayaranPembelian = () => {
                                 sisaAkhir += Number(sisa.props.value);
                                 setTotalAkhir(totalAkhir)
                                 setSisaAkhir(sisaAkhir)
+                                console.log(totalAkhir)
                             });
                             return (
                                 <>

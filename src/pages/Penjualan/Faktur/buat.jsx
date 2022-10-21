@@ -106,6 +106,7 @@ const BuatFaktur = () => {
     const [product, setProduct] = useState([]);
     const [query, setQuery] = useState("");
     const [getCode, setGetCode] = useState('');
+    const [uangMuka, setUangMuka] = useState('');
     const navigate = useNavigate();
     const auth = useSelector(state => state.auth);
 
@@ -368,7 +369,6 @@ const BuatFaktur = () => {
                         rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
                     }
                     else if (value == 'nominal') {
-
                         hasilDiskon += Number(jumlahDiskon[i]);
                         rowDiscount = Number(jumlahDiskon[i]);
                     }
@@ -448,6 +448,9 @@ const BuatFaktur = () => {
         return namaMataUang + ' ' + angka.toLocaleString('id');
     }
 
+    function calculateUangMuka(value, index) {
+    }
+
     useEffect(() => {
         let totalPerProduk = 0;
         let grandTotal = 0;
@@ -476,6 +479,12 @@ const BuatFaktur = () => {
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 subTotal += (subTotalDiscount * 100) / (100 + Number(values.ppn));
                 totalPpn = (subTotal * Number(values.ppn)) / 100;
+                // if (uangMuka == null) {
+                //     grandTotal = subTotal - hasilDiskon + Number(totalPpn);
+                // } else {
+                //     grandTotal = (subTotal - hasilDiskon + Number(totalPpn)) - uangMuka;
+                // }
+
                 grandTotal = subTotal - hasilDiskon + Number(totalPpn);
 
                 setSubTotal(subTotal)
@@ -500,6 +509,11 @@ const BuatFaktur = () => {
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 totalPpn += (subTotalDiscount * Number(values.ppn)) / 100;
                 grandTotal = total - totalDiscount + Number(totalPpn);
+                // if (uangMuka == null) {
+                //     grandTotal = subTotal - hasilDiskon + Number(totalPpn);
+                // } else {
+                //     grandTotal = (subTotal - hasilDiskon + Number(totalPpn)) - uangMuka;
+                // }
 
                 setSubTotal(total)
                 setGrandTotalDiscount(totalDiscount);
@@ -1262,10 +1276,11 @@ const BuatFaktur = () => {
                                 {/* {convertToRupiah(totalPpn, "Rp")} */}
                                 <input
                                     // defaultValue={grandTotalDiscount}
-                                    readOnly="true"
                                     type="number"
                                     className="form-control form-control-sm"
                                     id="colFormLabelSm"
+                                    // onChange={() => setUangMuka(e.target.value)}
+                                    onChange={calculateUangMuka}
                                 // placeholder='(total disc/item) ditotal semua'
                                 />
                             </div>

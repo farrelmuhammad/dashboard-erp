@@ -79,12 +79,12 @@ const BuatReturPembelian = () => {
         setSupplierId(value.id);
     };
     const loadOptionsSupplier = (inputValue) => {
-        return fetch(`${Url}/select_suppliers?nama=${inputValue}`, {
+        return axios.get(`${Url}/purchase_returns_available_suppliers?nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => res.data.data);
     };
 
     // faktur 
