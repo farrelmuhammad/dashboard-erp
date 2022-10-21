@@ -877,12 +877,13 @@ const EditPembayaranPembelian = () => {
                                 >
                                     Submit
                                 </button>
-                                <button
+                                {/* <button
                                     type="button"
                                     width="100px"
                                     className="btn btn-warning rounded m-1">
                                     Cetak
-                                </button> </>
+                                </button>  */}
+                                </>
                     }
 
                 </div>

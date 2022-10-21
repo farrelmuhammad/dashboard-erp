@@ -1511,7 +1511,8 @@ const BuatFaktur = () => {
                         </div>
                     </div>
                 </div>
-                <div className="btn-group mt-2" role="group" aria-label="Basic mixed styles example">
+                <br/>
+                <div className="btn-group mt-2" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -1530,12 +1531,13 @@ const BuatFaktur = () => {
                     >
                         Submit
                     </button>
-                    <button
+                    {/* <button
                         type="button"
                         className="btn btn-warning rounded m-1">
                         Cetak
-                    </button>
+                    </button> */}
                 </div>
+                <div style={{ clear: 'both' }}></div>
             </PageHeader>
         </>
     )

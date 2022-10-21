@@ -1977,6 +1977,7 @@ const EditTally = () => {
                     columns={columns}
                     onChange={(e) => setProduct(e.target.value)}
                 />
+                <br/>
                 <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
 
                     {
@@ -2015,12 +2016,12 @@ const EditTally = () => {
                                 </button>
                             </>
                     }
-                    <button
+                    {/* <button
                         type="button"
                         width="100px"
                         className="btn btn-warning rounded m-1">
                         Cetak
-                    </button>
+                    </button> */}
                 </div>
                 <div style={{ clear: 'both' }}></div>
             </PageHeader>

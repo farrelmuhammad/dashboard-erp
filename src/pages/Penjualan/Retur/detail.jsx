@@ -1,11 +1,11 @@
 import './form.css'
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, PageHeader } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
@@ -94,7 +94,7 @@ const EditableCell = ({
     return <td {...restProps}>{childNode}</td>;
 };
 
-const BuatRetur = () => {
+const DetailRetur = () => {
     // const auth.token = jsCookie.get("auth");
     const auth = useSelector(state => state.auth);
     const [date, setDate] = useState(null);
@@ -117,6 +117,41 @@ const BuatRetur = () => {
 
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
+
+    const [dataHeader, setDataHeader] = useState([])
+    const [salesRetur, setSalesRetur] = useState([])
+
+    const { id } = useParams();
+    useEffect(() => {
+        getDataRetur();
+    }, [])
+    const getDataRetur = async () => {
+        await axios.get(`${Url}/sales_returns?id=${id}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        })
+            .then((res) => {
+                let getData = res.data.data[0]
+                setDataHeader(getData)
+                setGetStatus(getData.status)
+                setSalesRetur(getData.sales_return_details)
+
+                // if(getData.sales_return_details[0].currency){
+
+                //     setMataUang(getData.purchase_return_details[0].currency)
+                // }
+                setLoading(false);
+            })
+            .catch((err) => {
+                // Jika Gagal
+                console.log(err);
+            });
+    }
+
+
+
 
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
@@ -512,20 +547,27 @@ const BuatRetur = () => {
 
     return (
         <>
+    
             <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
+                {/* <div className="text-title text-start mb-4">
                     <h3 className="title fw-bold">Buat Retur</h3>
-                </div>
+                </div> */}
+                     <PageHeader
+                className="bg-body rounded mb-2"
+                onBack={() => window.history.back()}
+                title="Detail Retur Penjualan"
+            ></PageHeader>
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
-                            <div className="col-sm-4">
+                            <div className="col-sm-7">
                                 <input
                                     id="startDate"
                                     className="form-control"
                                     type="date"
                                     onChange={(e) => setDate(e.target.value)}
+                                    value={dataHeader.date}
                                 />
                             </div>
                         </div>
@@ -740,4 +782,4 @@ const BuatRetur = () => {
     )
 }
 
-export default BuatRetur
+export default DetailRetur

@@ -2375,8 +2375,9 @@ const BuatTally = () => {
                     columns={defaultColumns}
                     onChange={(e) => setProduct(e.target.value)}
                 />
+<br/>
 
-                <div className="btn-group mt-2" role="group" aria-label="Basic mixed styles example">
+                <div className="btn-group mt-2" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -2401,6 +2402,7 @@ const BuatTally = () => {
                         Cetak
                     </button> */}
                 </div>
+                <div style={{ clear: 'both' }}></div>
             </PageHeader>
         </>
     )
