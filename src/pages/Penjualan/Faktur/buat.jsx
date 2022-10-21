@@ -14,6 +14,7 @@ import Search from 'antd/lib/transfer/search';
 import ReactSelect from 'react-select';
 import { useSelector } from 'react-redux';
 import { formatQuantity, formatRupiah } from '../../../utils/helper';
+import CurrencyFormat from 'react-currency-format';
 import { update } from 'lodash';
 
 const EditableContext = createContext(null);
@@ -97,6 +98,12 @@ const EditableCell = ({
 };
 
 const BuatFaktur = () => {
+    function klikEnter(event) {
+        if (event.code == "Enter") {
+            event.target.blur()
+        }
+    }
+
     // const auth.token = jsCookie.get("auth");
     const [date, setDate] = useState(null);
     const [referensi, setReferensi] = useState('');
@@ -178,8 +185,8 @@ const BuatFaktur = () => {
     }, [query, customer])
 
     useEffect(() => {
-        setGrandTotal(Number(subTotal) - Number(grandTotalDiscount) + Number(totalPpn));
-    }, [totalPpn]);
+        setGrandTotal(Number(subTotal) - Number(grandTotalDiscount) + Number(totalPpn) + Number(uangMuka));
+    }, [totalPpn, uangMuka]);
 
     // Column for modal input product
     const columnsModal = [
@@ -477,8 +484,7 @@ const BuatFaktur = () => {
         return namaMataUang + ' ' + angka.toLocaleString('id');
     }
 
-    function calculateUangMuka(value, index) {
-    }
+
 
     useEffect(() => {
         let totalPerProduk = 0;
@@ -760,6 +766,11 @@ const BuatFaktur = () => {
         calculate(newData, check_checked);
     };
 
+    function tambahUangMuka(value){
+        let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+        setUangMuka(hasil);
+       
+    }
 
     const calculate = (product, check_checked) => {
         let totalPerProduk = 0;
@@ -918,21 +929,21 @@ const BuatFaktur = () => {
                         }
                         else {
                             tmp.push({
-                                customer_id:2,
-                                discount_percentage:"1",
-                                fixed_discount:"0",
-                                id:1,
-                                notes :"-",
-                                ppn : "1",
-                                price:"50000",
-                                product_alias_name:"Bagian 1 Grade 1 Merk 1",
-                                quantity:"1",
-                                sales_order_code : "BM220906-SO001",
-                                sales_order_id :2,
-                                subtotal:"50000",
-                                subtotal_after_discount    :"49500",
-                                tally_sheets_qty :0,
-                                total    :"49501",
+                                customer_id: 2,
+                                discount_percentage: "1",
+                                fixed_discount: "0",
+                                id: 1,
+                                notes: "-",
+                                ppn: "1",
+                                price: "50000",
+                                product_alias_name: "Bagian 1 Grade 1 Merk 1",
+                                quantity: "1",
+                                sales_order_code: "BM220906-SO001",
+                                sales_order_id: 2,
+                                subtotal: "50000",
+                                subtotal_after_discount: "49500",
+                                tally_sheets_qty: 0,
+                                total: "49501",
                                 unit: "kg"
                             })
                         }
@@ -1365,16 +1376,14 @@ const BuatFaktur = () => {
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Uang Muka</label>
                             <div className="col-sm-6">
-                                {/* {convertToRupiah(totalPpn, "Rp")} */}
-                                <input
-                                    // defaultValue={grandTotalDiscount}
-                                    type="number"
-                                    className="form-control form-control-sm"
-                                    id="colFormLabelSm"
-                                    // onChange={() => setUangMuka(e.target.value)}
-                                    onChange={calculateUangMuka}
-                                // placeholder='(total disc/item) ditotal semua'
-                                />
+                                    <CurrencyFormat
+                                        className='form-control form-control-sm'
+                                        thousandSeparator={'.'}
+                                        decimalSeparator={','}
+                                        prefix={'Rp '}
+                                        onKeyDown={(event) => klikEnter(event)}
+                                        value={uangMuka}
+                                        onChange={(e) => tambahUangMuka(e.target.value)} />
                             </div>
                         </div>
                         <div className="row mb-3">
