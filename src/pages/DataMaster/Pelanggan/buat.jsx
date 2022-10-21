@@ -5,12 +5,11 @@ import jsCookie from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "./form.css";
-import SendIcon from "@mui/icons-material/Send";
 import { useSelector } from "react-redux";
-import { Button, Form, Input, Popconfirm, Switch, Table } from 'antd';
+import { Button, Form, Input, PageHeader, Popconfirm, Switch, Table } from 'antd';
 import Url from "../../../Config";
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import { Grid } from "@material-ui/core";
+import { DeleteOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
+import ReactSelect from "react-select";
 
 const EditableContext = React.createContext(null);
 
@@ -107,7 +106,7 @@ const BuatPelanggan = () => {
   const [status, setStatus] = useState('');
   const navigate = useNavigate();
 
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(true);
 
   const [dataSource, setDataSource] = useState([]);
   const [count, setCount] = useState(2);
@@ -306,12 +305,33 @@ const BuatPelanggan = () => {
       });
   }, []);
 
+  const optionsBussiness = [
+    {
+      label: "PT",
+      value: "PT"
+    },
+    {
+      label: "CV",
+      value: "CV"
+    },
+    {
+      label: "Lainnya...",
+      value: "Lainnya..."
+    }
+  ];
+
+  const handleSingleChange = (e) => {
+    setBussiness_ent(e.value);
+  };
+
   return (
     <>
-      <form className="  p-3 mb-3 bg-body rounded">
-        <div className="text-title text-start mb-4">
-          <h3 className="title fw-bold">Buat Pelanggan</h3>
-        </div>
+      <PageHeader
+        ghost={false}
+        className="bg-body rounded mb-2"
+        onBack={() => window.history.back()}
+        title="Buat Pelanggan"
+      >
         <div className="row mb-3">
           <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
             Kode
@@ -322,7 +342,7 @@ const BuatPelanggan = () => {
               className="form-control"
               id="inputKode3"
               value={getCustomer}
-              readOnly={getCustomer}
+              disabled
             />
           </div>
         </div>
@@ -383,22 +403,14 @@ const BuatPelanggan = () => {
             Badan Usaha
           </label>
           <div className="col-sm-10">
-            <select
-              onChange={(e) => setBussiness_ent(e.target.value)}
-              id="bussinessSelect"
-              className="form-select"
-            >
-              <option>Pilih Badan Usaha</option>
-              <option value="PT" checked={bussiness_ent === "PT"}>
-                PT
-              </option>
-              <option value="CV" checked={bussiness_ent === "CV"}>
-                CV
-              </option>
-              <option value="Lainnya" checked={bussiness_ent === "Lainnya.."}>
-                Lainnya..
-              </option>
-            </select>
+            <ReactSelect
+              className="basic-single"
+              placeholder="Pilih Badan Usaha..."
+              classNamePrefix="select"
+              isSearchable
+              onChange={handleSingleChange}
+              options={optionsBussiness}
+            />
           </div>
         </div>
         <div className="row mb-3">
@@ -439,19 +451,23 @@ const BuatPelanggan = () => {
             </label>
           </div>
         </div>
-      </form>
-      <form className="  p-3 mb-3 bg-body rounded">
-      <h5 className="title fw-bold">Tambah Alamat Pelanggan</h5>
-      <Grid container justify="flex-end">
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={handleAdd}
-          style={{
-            marginBottom: 16,
-          }}
-        />
-        </Grid>
+      </PageHeader>
+
+      <PageHeader
+        ghost={false}
+        className="bg-body rounded"
+        title="Tambah Alamat Pelanggan"
+        extra={[
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={handleAdd}
+            style={{
+              marginBottom: 16,
+            }}
+          />
+        ]}
+      >
         <Table
           components={components}
           rowClassName={() => 'editable-row'}
@@ -459,12 +475,17 @@ const BuatPelanggan = () => {
           dataSource={dataSource}
           columns={columns}
         />
-        <div className="d-grid mt-3 gap-2 d-md-flex justify-content-md-end">
-          <button onClick={handleSubmit} className="btn btn-primary" type="button">
-            Simpan <SendIcon className="ms-1" />
-          </button>
+        <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+          <Button
+            type="primary"
+            icon={<SendOutlined />}
+            size="large"
+            onClick={handleSubmit}
+          >
+            Submit
+          </Button>
         </div>
-      </form>
+      </PageHeader>
     </>
   );
 };

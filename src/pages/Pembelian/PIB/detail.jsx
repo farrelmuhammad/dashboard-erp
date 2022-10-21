@@ -33,6 +33,7 @@ export const DetailPIB = () => {
     const [dataHeader, setDataHeader] = useState()
     const [term, setTerm] = useState()
     const [dataPIB, setDataPIB] = useState([])
+    const [totalP, setTotalP] = useState([])
 
     useEffect(() => {
         getDataPIB();
@@ -125,6 +126,18 @@ export const DetailPIB = () => {
         },
 
     ];
+
+//     let totalpajak = 0;
+//   function hitungTotalP()
+//   {
+//     totalpajak = dataHeader.pph + dataHeader.ppn +dataHeader.import_duty
+//     setTotalP(totalpajak);
+//   }
+
+//   useEffect(() => {
+//     hitungTotalP()
+// }, [])
+
 
     const dataProduk =
     
@@ -281,9 +294,9 @@ export const DetailPIB = () => {
     <tbody>
       <tr>
         <td>
-          <div className="page" style={{lineHeight:"3", margin:"0"}}>
+          <div className="page" style={{lineHeight:"2", margin:"0"}}>
 
-          <div className='mt-2 ps-3 pe-3' >
+          <div className='mt-3 ps-2 pe-2' >
 
                 <table style={{ fontSize: "10px", width: "100%", pageBreakAfter:"auto"}}>
                     <tr className='border' style={{ height: "40px", pageBreakInside:"avoid", pageBreakAfter:"auto" }}>  
@@ -294,64 +307,67 @@ export const DetailPIB = () => {
                     
                     </tr>
                     <tbody className="border">
-                        
-                           
-                                <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
+                        {
+                            dataHeader.import_duty ==0 && dataHeader.pph == 0 && dataHeader.ppn == 0 ? 
+                            <tr style={{  height:"50px"}} >
+                            <td  className='border-isi text-center'></td>
+                            <td  className='border-isi text-center'></td>
+                            </tr> : null
+                        }
+                                {dataHeader.import_duty != 0 ?
+                                    <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
                                     {/* <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {i + 1} </td> */}
                                     <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> Bea Masuk </td>
                                     <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {
-                                        <CurrencyFormat prefix='Rp ' disabled className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.import_duty).toFixed(2).replace('.',',')} key="pay"/>
+                                    < CurrencyFormat type='danger' disabled className=' text-center editable-input edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.import_duty).toFixed(2).replace('.' , ',')} key="diskon" />
                                     } </td>
-
-                                
-                                </tr>
-
-
+                                </tr> :
+                                     null
+                                }
+                            
+                                {
+                                dataHeader.pph != 0 ?
                                 <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
-                                 
+                                                            
                                     <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> Pph 22 </td>
                                     <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {
-                                        <CurrencyFormat prefix='Rp ' disabled className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.pph).toFixed(2).replace('.',',')} key="pay" />
+                                   < CurrencyFormat type='danger' disabled className=' text-center editable-input edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.pph).toFixed(2).replace('.' , ',')} key="diskon" />
                                     } </td>
+                                </tr> : 
+                                null
+                                }
 
-
-                                </tr>
-
+                            {
+                                dataHeader.ppn != 0 ?
                                 <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
                                   
-                                    <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> PPN </td>
-                                    <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {
-                                    <CurrencyFormat prefix='Rp '  disabled className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.ppn).toFixed(2).replace('.',',')}  key="pay" />
-                                    } </td>
-
-
-                                </tr>
-
-
-                            
-                        
+                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> PPN </td>
+                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {
+                               < CurrencyFormat type='danger' disabled className=' text-center editable-input edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.ppn).toFixed(2).replace('.' , ',')} key="diskon" />
+                                } </td>
+                            </tr> : 
+                            null
+                            }
                     </tbody>
                 </table>
 
-            {/* <div className='d-flex mt-1 ps-1 pe-1' style={{marginBottom:'2px', height:'65%'}}>
+            <div className='d-flex mt-1 ps-1 pe-1' style={{marginBottom:'2px', height:'65%'}}>
                     
              
              <div style={{width:'40%', alignItems:'end', marginLeft:'450px'}}>
 
-             <div className='d-flex' style={{fontSize:"12px"}}>
+             <div className='d-flex' style={{fontSize:"10px"}}>
                                 <label className='col-6'><b> Total :</b></label>
                                
                                 <div width="100%">{
-                                  dataHeader.currency_name === 'IDR ' ?
-                                  < CurrencyFormat  disabled className=' text-end editable-input edit-disabled' style={{fontWeight:'bold' ,width: "70%", fontSize: "10px!important" }} prefix={dataHeader.currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.paid).toFixed(2).replace('.' , ',')} key="diskon" /> :
-                                  < CurrencyFormat  disabled className=' text-end editable-input  edit-disabled' style={{fontWeight:'bold', width: "70%", fontSize: "10px!important" }} prefix={dataHeader.currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.paid).toLocaleString('id')} key="diskon" />                    
+                                  < CurrencyFormat type='danger' disabled className=' text-center editable-input edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(Number(dataHeader.ppn) + Number(dataHeader.pph) + Number(dataHeader.import_duty)).toFixed(2).replace('.' , ',')} key="diskon" />
                                }  </div>
                                 <div>
                                 </div>
                             </div>
                       
              </div>
-                    </div> */}
+                    </div>
 
 
             {/* <div className="row" style={{ marginLeft:'5px', height:"80px", alignItems:"start", fontSize:'12px'}}> 
