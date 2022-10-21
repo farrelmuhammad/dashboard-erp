@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, PageHeader } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
@@ -512,10 +512,15 @@ const BuatRetur = () => {
 
     return (
         <>
+        <PageHeader
+                className="bg-body rounded mb-2"
+                onBack={() => window.history.back()}
+                title="Edit Retur Penjualan"
+            ></PageHeader>
             <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <h3 className="title fw-bold">Buat Retur</h3>
-                </div>
+                {/* <div className="text-title text-start mb-4">
+                    <h3 className="title fw-bold">Edit Retur Penjualan</h3>
+                </div> */}
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">

@@ -222,9 +222,12 @@ const DetailPembayaranPembelian = () => {
             < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={dataHeader.currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.purchase_invoice_total_payment).toFixed(2).replace('.' , ',')} key="diskon" /> :
             < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={dataHeader.currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.purchase_invoice_total_payment).toLocaleString('id')} key="diskon" /> ,                   
             sisa: 
-            dataHeader.currency_nameUang === 'IDR ' ?
-            < CurrencyFormat  className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={dataHeader.currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.remains).toFixed(2).replace('.' , ',')} key="diskon" /> :
-            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={dataHeader.currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.remains).toLocaleString('id')} key="diskon" />,                    
+            
+                dataHeader.currency_name === 'IDR' ?
+                < CurrencyFormat disabled  className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={dataHeader.currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.remains).toFixed(2).replace('.' , ',')} key="diskon" /> :
+                < CurrencyFormat  disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={dataHeader.currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.remains).toLocaleString('id')} key="diskon" />                    
+            ,
+          
             pays:
             dataHeader.currency_name === 'IDR' ?
             < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={dataHeader.currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.paid).toFixed(2).replace('.' , ',')} key="diskon" /> :
@@ -741,8 +744,8 @@ const DetailPembayaranPembelian = () => {
                                         <Table.Summary.Cell index={1}>
                                             {
                                                   dataHeader.currency_name === 'IDR' ?
-                                                  < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={dataHeader.currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.paid).toFixed(2).replace('.' , ',')} key="diskon" /> :
-                                                  < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={dataHeader.currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.paid).toLocaleString('id')} key="diskon" />                    
+                                                  < CurrencyFormat disabled className=' text-end editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={dataHeader.currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.paid).toFixed(2).replace('.' , ',')} key="diskon" /> :
+                                                  < CurrencyFormat disabled className=' text-end editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={dataHeader.currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.paid).toLocaleString('id')} key="diskon" />                    
                                               
                                             }
                                             {/* {dataHeader.paid} */}

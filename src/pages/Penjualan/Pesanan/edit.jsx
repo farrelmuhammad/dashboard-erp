@@ -1208,7 +1208,8 @@ const EditPesanan = () => {
                     </div>
                 </div>
 
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+<br/>
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -1233,6 +1234,7 @@ const EditPesanan = () => {
                         Cetak
                     </button> */}
                 </div>
+                <div style={{ clear: 'both' }}></div>
             </PageHeader>
         </>
     )

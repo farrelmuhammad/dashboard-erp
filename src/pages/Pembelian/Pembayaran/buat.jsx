@@ -642,12 +642,12 @@ const BuatPembayaranPembelian = () => {
                     >
                         Submit
                     </button>
-                    <button
+                    {/* <button
                         type="button"
                         style={{ width: '100px' }}
                         className="btn btn-warning rounded m-1">
                         Cetak
-                    </button>
+                    </button> */}
                 </div>
                 <div style={{ clear: 'both' }}></div>
             </form>
