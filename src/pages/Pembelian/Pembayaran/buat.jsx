@@ -70,6 +70,7 @@ const BuatPembayaranPembelian = () => {
     const handleChangeSupplier = (value) => {
         setSelectedSupplier(value);
         setSupplierId(value.id);
+        setProduct([])
     };
     const loadOptionsSupplier = (inputValue) => {
         return axios.get(`${Url}/purchase_invoice_payments_available_suppliers?nama=${inputValue}`, {
@@ -226,9 +227,9 @@ const BuatPembayaranPembelian = () => {
     const dataFaktur =
         [...product.map((item, i) => ({
             code: item.code,
-            total: <CurrencyFormat prefix='Rp ' disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.total} key="total" />,
-            sisa: <CurrencyFormat prefix='Rp ' disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.sisa} key="sisa" />,
-            pays: <CurrencyFormat prefix='Rp ' className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.bayar} onChange={(e) => klikUbahTotal(i, e.target.value)} key="pay" />,
+            total: <CurrencyFormat prefix={selectedMataUang + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.total} key="total" />,
+            sisa: <CurrencyFormat prefix={selectedMataUang + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.sisa} key="sisa" />,
+            pays: <CurrencyFormat prefix={selectedMataUang + ' '} className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.bayar} onChange={(e) => klikUbahTotal(i, e.target.value)} key="pay" />,
 
         }))
 
@@ -238,7 +239,14 @@ const BuatPembayaranPembelian = () => {
     const handleCheck = (event) => {
         var updatedList = [...product];
         let data = event.target.value
-
+        let mataUang = data.purchase_invoice_details[0].currency_name
+        if(mataUang){
+            setSelectedMataUang(mataUang)
+        }
+        else{
+            setSelectedMataUang('Rp ')
+        }
+        // console.log(data)
 
         if (event.target.checked) {
             // updatedList = [...product, event.target.value];
@@ -479,7 +487,8 @@ const BuatPembayaranPembelian = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
                             <div className="col-sm-7">
-                                <AsyncSelect
+                               
+                                {/* <AsyncSelect
                                     placeholder="Pilih Mata Uang..."
                                     cacheOptions
                                     defaultOptions
@@ -488,7 +497,7 @@ const BuatPembayaranPembelian = () => {
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsMataUang}
                                     onChange={handleChangeMataUang}
-                                />
+                                /> */}
                             </div>
                         </div>
 
@@ -508,14 +517,14 @@ const BuatPembayaranPembelian = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Total</label>
                             <div className="col-sm-7">
-                                <CurrencyFormat prefix='Rp ' disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={totalAkhir} key="total" />
+                                <CurrencyFormat prefix={selectedMataUang + ' '} disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={totalAkhir} key="total" />
 
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Sisa</label>
                             <div className="col-sm-7">
-                                <CurrencyFormat prefix='Rp ' disabled className='edit-disabled  form-control' thousandSeparator={'.'} decimalSeparator={','} value={sisaAkhir} key="sisa" />
+                                <CurrencyFormat prefix={selectedMataUang + ' '} disabled className='edit-disabled  form-control' thousandSeparator={'.'} decimalSeparator={','} value={sisaAkhir} key="sisa" />
                             </div>
                         </div>
                         <div className="row mb-3">

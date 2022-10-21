@@ -17,7 +17,7 @@ const PelangganTable = () => {
   const searchInput = useRef(null);
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { id } = useParams();
 

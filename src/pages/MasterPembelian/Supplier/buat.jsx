@@ -1,6 +1,6 @@
 import axios from "axios";
 // import MaterialTable from "material-table";
-import React, { useContext, useEffect, useRef} from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import jsCookie from "js-cookie";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +13,7 @@ import { useSelector } from "react-redux";
 
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { Grid } from "@material-ui/core";
-import { PageHeader} from 'antd';
+import { PageHeader } from 'antd';
 
 const EditableContext = React.createContext(null);
 
@@ -97,14 +97,13 @@ const EditableCell = ({
   return <td {...restProps}>{childNode}</td>;
 };
 
-
 const BuatSupplier = () => {
   // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [name, setName] = useState('');
   const [checked, setChecked] = useState(false);
   const [bussiness_ent, setBussiness_ent] = useState('');
-  
+
   const [grup, setGrup] = useState('');
   const [phone_number, setPhone_number] = useState('');
   const [email, setEmail] = useState('');
@@ -115,7 +114,7 @@ const BuatSupplier = () => {
   const navigate = useNavigate();
   const [dataSource, setDataSource] = useState([]);
   const [count, setCount] = useState(2);
-  
+
   const handleAdd = () => {
     const newData = {
       key: count,
@@ -126,6 +125,7 @@ const BuatSupplier = () => {
     setDataSource([...dataSource, newData]);
     setCount(count + 1);
   };
+
 
   const handleSave = (row) => {
     const newData = [...dataSource];
@@ -153,16 +153,84 @@ const BuatSupplier = () => {
       // console.log('Inactive');
     }
   };
+  const defaultColumns = [
+    {
+      title: 'No.',
+      dataIndex: 'index',
+      width: '3%',
+      align: 'center',
+      render: (text, record, index) => index + 1
+    },
+    {
+      title: 'Alamat',
+      dataIndex: 'address',
+      width: '30%',
+      editable: true,
+    },
+    {
+      title: 'Kelurahan',
+      editable: true,
+      dataIndex: 'urban_village',
+    },
+    {
+      title: 'Kecamatan',
+      editable: true,
+      dataIndex: 'sub_district',
+    },
+    {
+      title: 'Kota',
+      editable: true,
+      dataIndex: 'city',
+    },
+    {
+      title: 'Kode Pos',
+      editable: true,
+      dataIndex: 'postal_code',
+    },
+    {
+      title: 'operation',
+      dataIndex: 'operation',
+      align: 'center',
+      width: '5%',
+      render: (_, record) =>
+        dataSource.length >= 1 ? (
+          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
+            <Button
+              size='small'
+              type="danger"
+              icon={<DeleteOutlined />}
+            />
+          </Popconfirm>
+        ) : null,
+    },
+  ];
 
   const [data, setData] = useState([]);
-  const columns = [
-    { title: "ID", field: "id", editable: false },
-    { title: "Alamat", field: "address" },
-    { title: "Kelurahan", field: "urban_village" },
-    { title: "Kecamatan", field: "sub_district" },
-    { title: "Kota", field: "city" },
-    { title: "Kode Pos", field: "postal_code" },
-  ];
+  const columns = defaultColumns.map((col) => {
+    if (!col.editable) {
+      return col;
+    }
+
+    return {
+      ...col,
+      onCell: (record) => ({
+        record,
+        editable: col.editable,
+        dataIndex: col.dataIndex,
+        title: col.title,
+        handleSave,
+      }),
+    };
+  });
+
+  // const columns = [
+  //   { title: "ID", field: "id", editable: false },
+  //   { title: "Alamat", field: "address" },
+  //   { title: "Kelurahan", field: "urban_village" },
+  //   { title: "Kecamatan", field: "sub_district" },
+  //   { title: "Kota", field: "city" },
+  //   { title: "Kode Pos", field: "postal_code" },
+  // ];
 
   const [getSupplier, setGetSupplier] = useState();
 
@@ -252,10 +320,10 @@ const BuatSupplier = () => {
   return (
     <>
       <PageHeader
-          ghost={false}
-          onBack={() => window.history.back()}
-          title="Buat Supplier">
-          </PageHeader>
+        ghost={false}
+        onBack={() => window.history.back()}
+        title="Buat Supplier">
+      </PageHeader>
 
       <form className="  p-3 mb-3 bg-body rounded">
         <div className="row mb-3">
@@ -364,7 +432,7 @@ const BuatSupplier = () => {
               <option value="Impor" checked={grup === "Import"}>
                 Import
               </option>
-              
+
             </select>
           </div>
         </div>
@@ -384,6 +452,32 @@ const BuatSupplier = () => {
 
       </form>
       <form className="  p-3 mb-3 bg-body rounded">
+        <h5 className="title fw-bold">Tambah Alamat Supplier</h5>
+        <Grid container justify="flex-end">
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={handleAdd}
+            style={{
+              marginBottom: 16,
+            }}
+          />
+        </Grid>
+        <Table
+          components={components}
+          rowClassName={() => 'editable-row'}
+          bordered
+          dataSource={dataSource}
+          columns={columns}
+        />
+        <div className="d-grid mt-3 gap-2 d-md-flex justify-content-md-end">
+          <button onClick={handleSubmit} className="btn btn-primary" type="button">
+            Simpan <SendIcon className="ms-1" />
+          </button>
+        </div>
+      </form>
+
+      {/* <form className="  p-3 mb-3 bg-body rounded">
       <div className="row">
          <div className="col">
              <h4 className="title fw-normal">Tambah Alamat Supplier</h4>
@@ -400,10 +494,6 @@ const BuatSupplier = () => {
         </div> 
       </div>
 
-      {/* <h5 className="title fw-bold"></h5> */}
-      {/* <Grid container justify="flex-end">
-      
-        </Grid> */}
         <Table
           components={components}
           rowClassName={() => 'editable-row'}
@@ -411,71 +501,12 @@ const BuatSupplier = () => {
           dataSource={dataSource}
           columns={columns}
         />
-
-{/* 
-        <MaterialTable
-          title="Alamat Supplier"
-          data={data}
-          columns={columns}
-          onChange={(e) => setData(e.target.value)}
-          editable={{
-            onRowAdd: (newRow) =>
-              new Promise((resolve, reject) => {
-                const updatedRows = [
-                  ...data,
-                  { id: data.length + 1, ...newRow },
-                ];
-                setTimeout(() => {
-                  setData(updatedRows);
-                  resolve();
-                }, 2000);
-              }),
-            onRowDelete: (selectedRow) =>
-              new Promise((resolve, reject) => {
-                const index = selectedRow.tableData.id;
-                const updatedRows = [...data];
-                updatedRows.splice(index, 1);
-                setTimeout(() => {
-                  setData(updatedRows);
-                  resolve();
-                }, 2000);
-              }),
-            onRowUpdate: (updatedRow, oldRow) =>
-              new Promise((resolve, reject) => {
-                const index = oldRow.tableData.id;
-                const updatedRows = [...data];
-                updatedRows[index] = updatedRow;
-                setTimeout(() => {
-                  setData(updatedRows);
-                  resolve();
-                }, 2000);
-              }),
-            onBulkUpdate: (selectedRows) =>
-              new Promise((resolve, reject) => {
-                const rows = Object.values(selectedRows);
-                const updatedRows = [...data];
-                let index;
-                rows.map((emp) => {
-                  index = emp.oldData.tableData.id;
-                  updatedRows[index] = emp.newData;
-                });
-                setTimeout(() => {
-                  setData(updatedRows);
-                  resolve();
-                }, 2000);
-              }),
-          }}
-          options={{
-            actionsColumnIndex: -1,
-            addRowPosition: "first",
-          }}
-        /> */}
         <div className="d-grid mt-3 gap-2 d-md-flex justify-content-md-end">
           <button onClick={handleSubmit} className="btn btn-primary" type="button">
             Simpan <SendIcon className="ms-1" />
           </button>
         </div>
-      </form>
+      </form> */}
     </>
   );
 };

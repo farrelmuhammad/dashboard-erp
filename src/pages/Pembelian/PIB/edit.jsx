@@ -127,7 +127,7 @@ const EditPIB = () => {
                         totalRupiah: dataProduk[x].converted_subtotal,
                         bea: dataProduk[x].import_duty,
                         total: dataProduk[x].total,
-                        currency_name: dataProduk[x].currency_name
+                        currency_name: getData.currency_name
                     })
                     tmpIDFaktur.push(dataProduk[x].purchase_invoice_id)
 
@@ -135,6 +135,7 @@ const EditPIB = () => {
                 var unique = [...new Set(tmpIDFaktur)]
                 setDataFaktur(unique)
                 setDataPIB(tmpDataPIB)
+                setTerm(getData.term)
 
                 // data header 
                 setGetCode(getData.code);
@@ -341,7 +342,7 @@ const EditPIB = () => {
         //     align: 'center',
         // },
         {
-            title: 'Jumlah Setelah Diskon',
+            title: term,
             dataIndex: 'uangasing',
             width: '15%',
             align: 'center',
@@ -508,7 +509,7 @@ const EditPIB = () => {
             nama: item.product_name,
             qty: item.quantity.replace('.', ','),
             // hrg: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.price} key="total" />,
-            uangasing: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.totalAsing.replace('.', ',')} key="total" />,
+            uangasing: <CurrencyFormat prefix={selectedMataUang + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.totalAsing.replace('.', ',')} key="total" />,
             rupiah: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.totalRupiah} key="total" />,
             bea: <CurrencyFormat prefix='Rp ' disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.bea).toFixed(2).replace('.', ',')} key="pay" />,
             total: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.', ',')} key="total" />,

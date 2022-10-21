@@ -5,10 +5,6 @@ import Url from "../../../Config";
 import Swal from "sweetalert2";
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
-import InfoIcon from "@mui/icons-material/Info";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { IconButton } from "@mui/material";
 import { useSelector } from "react-redux";
 import { Button, Input, Space, Table, Typography } from "antd";
 import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
@@ -19,13 +15,11 @@ const DepartemenTable = () => {
   // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [departments, setDepartments] = useState();
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const searchInput = React.useRef(null);
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [ellipsis, setEllipsis] = useState(true);
 
   const { id } = useParams();
