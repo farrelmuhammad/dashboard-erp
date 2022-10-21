@@ -50,6 +50,7 @@ const DetailGrade = () => {
     <>
       <PageHeader
         ghost={false}
+        className="bg-body rounded mb-2"
         onBack={() => window.history.back()}
         title="Detail Grade">
         <div className="row mb-3">
