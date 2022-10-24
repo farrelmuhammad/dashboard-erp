@@ -1,18 +1,13 @@
 import axios from "axios";
-// import MaterialTable from "material-table";
 import React, { useContext, useEffect, useRef } from "react";
-import jsCookie from "js-cookie";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
-import SendIcon from "@mui/icons-material/Send";
 import { Button, Form, Input, Popconfirm, Switch, Table } from 'antd';
 import { useSelector } from "react-redux";
-
-import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import { Grid } from "@material-ui/core";
+import { DeleteOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
 import { PageHeader } from 'antd';
 
 const EditableContext = React.createContext(null);
@@ -126,6 +121,10 @@ const BuatSupplier = () => {
     setCount(count + 1);
   };
 
+  const handleDelete = (key) => {
+    const newData = dataSource.filter((item) => item.key !== key);
+    setDataSource(newData);
+  };
 
   const handleSave = (row) => {
     const newData = [...dataSource];
@@ -153,6 +152,7 @@ const BuatSupplier = () => {
       // console.log('Inactive');
     }
   };
+
   const defaultColumns = [
     {
       title: 'No.',
@@ -223,34 +223,20 @@ const BuatSupplier = () => {
     };
   });
 
-  // const columns = [
-  //   { title: "ID", field: "id", editable: false },
-  //   { title: "Alamat", field: "address" },
-  //   { title: "Kelurahan", field: "urban_village" },
-  //   { title: "Kecamatan", field: "sub_district" },
-  //   { title: "Kota", field: "city" },
-  //   { title: "Kode Pos", field: "postal_code" },
-  // ];
-
   const [getSupplier, setGetSupplier] = useState();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(data);
-
     const userData = new FormData();
-
     userData.append("nama", name);
     userData.append("badan_usaha", bussiness_ent);
     userData.append("grup", grup);
     userData.append("nomor_telepon", phone_number);
     userData.append("email", email);
     userData.append("npwp", npwp);
-    // userData.append("term", term);
-    // userData.append("diskon", discount);
     userData.append("status", status);
 
-    data.map((address) => {
+    dataSource.map((address) => {
       console.log(address);
       userData.append("alamat[]", address.address);
       userData.append("kota[]", address.city);
@@ -288,7 +274,7 @@ const BuatSupplier = () => {
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: err.response.data.error.nama,
+            text: err.response.data.error,
           });
         } else if (err.request) {
           console.log("err.request ", err.request);
@@ -321,11 +307,10 @@ const BuatSupplier = () => {
     <>
       <PageHeader
         ghost={false}
+        className="bg-body rounded mb-2"
         onBack={() => window.history.back()}
-        title="Buat Supplier">
-      </PageHeader>
-
-      <form className="  p-3 mb-3 bg-body rounded">
+        title="Buat Supplier"
+      >
         <div className="row mb-3">
           <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
             Kode
@@ -336,7 +321,7 @@ const BuatSupplier = () => {
               className="form-control"
               id="inputKode3"
               value={getSupplier}
-              readOnly={getSupplier}
+              disabled
             />
           </div>
         </div>
@@ -449,11 +434,13 @@ const BuatSupplier = () => {
             </label>
           </div>
         </div>
+      </PageHeader>
 
-      </form>
-      <form className="  p-3 mb-3 bg-body rounded">
-        <h5 className="title fw-bold">Tambah Alamat Supplier</h5>
-        <Grid container justify="flex-end">
+      <PageHeader
+        ghost={false}
+        className="bg-body rounded"
+        title="Tambah Alamat Supplier"
+        extra={[
           <Button
             type="primary"
             icon={<PlusOutlined />}
@@ -462,7 +449,8 @@ const BuatSupplier = () => {
               marginBottom: 16,
             }}
           />
-        </Grid>
+        ]}
+      >
         <Table
           components={components}
           rowClassName={() => 'editable-row'}
@@ -470,43 +458,17 @@ const BuatSupplier = () => {
           dataSource={dataSource}
           columns={columns}
         />
-        <div className="d-grid mt-3 gap-2 d-md-flex justify-content-md-end">
-          <button onClick={handleSubmit} className="btn btn-primary" type="button">
-            Simpan <SendIcon className="ms-1" />
-          </button>
+        <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+          <Button
+            type="primary"
+            icon={<SendOutlined />}
+            size="large"
+            onClick={handleSubmit}
+          >
+            Submit
+          </Button>
         </div>
-      </form>
-
-      {/* <form className="  p-3 mb-3 bg-body rounded">
-      <div className="row">
-         <div className="col">
-             <h4 className="title fw-normal">Tambah Alamat Supplier</h4>
-          </div>
-          <div className="col text-end me-2">
-            <Button
-                type="primary"
-                icon={<PlusOutlined />}
-                onClick={handleAdd}
-                style={{
-                        marginBottom: 16,
-                       }}
-           />
-        </div> 
-      </div>
-
-        <Table
-          components={components}
-          rowClassName={() => 'editable-row'}
-          bordered
-          dataSource={dataSource}
-          columns={columns}
-        />
-        <div className="d-grid mt-3 gap-2 d-md-flex justify-content-md-end">
-          <button onClick={handleSubmit} className="btn btn-primary" type="button">
-            Simpan <SendIcon className="ms-1" />
-          </button>
-        </div>
-      </form> */}
+      </PageHeader>
     </>
   );
 };

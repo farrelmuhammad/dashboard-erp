@@ -8,172 +8,177 @@ import "./form.css";
 import SendIcon from "@mui/icons-material/Send";
 import Button from "@mui/material/Button";
 import { useSelector } from "react-redux";
-import { PageHeader } from "antd";
+import { PageHeader, Skeleton } from "antd";
 
 const DetailGudang = () => {
   // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const { id } = useParams();
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get(`${Url}/warehouses?id=${id}`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
+    axios.get(`${Url}/warehouses?id=${id}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    })
       .then((res) => {
-        setData(res.data.data)
-        console.log(res.data.data)
+        const getData = res.data.data[0]
+        setData(getData)
+        setLoading(false)
       });
   }, []);
 
-  if (data) {
+  if (loading) {
     return (
       <>
-       <PageHeader
-          ghost={false}
-          onBack={() => window.history.back()}
-          title="Detail Gudang">
-        </PageHeader>
-        <form className="  p-3 mb-3 bg-body rounded">
-         
-          <div className="row mb-3">
-            <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
-              Kode
-            </label>
-            <div className="col-sm-10">
-            {data?.map((d) => (
-              <input
-                type="kode"
-                className="form-control"
-                id="inputKode3"
-                value={d.code}
-                disabled
-              />
-            ))}
-            </div>
-          </div>
-          <div className="row mb-3">
-            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-              Nama Gudang
-            </label>
-            <div className="col-sm-10">
-              {data?.map((d) => (
-                <input
-                  // key={index}
-                  type="Nama"
-                  className="form-control"
-                  id="inputNama3"
-                  defaultValue={d.name}
-                  disabled
-                />
-              ))}
-            </div>
-          </div>
-          <div className="row mb-3">
-              <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
-                Tipe
-              </label>
-              <div className="col-sm-10">
-                <select
-                  id="bussinessSelect"
-                  className="form-select"
-                  disabled
-                >
-              {data?.map((d) => (
-                <option>{d.type}</option>
-              ))}
-                </select>
-              </div>
-            </div>
-          <div className="row mb-3">
-            <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
-              Alamat
-            </label>
-            <div className="col-sm-10">
-              {data?.map((d) => (
-                <textarea
-                  className="form-control"
-                  id="form4Example3"
-                  rows="4"
-                  defaultValue={d.address}
-                  disabled
-                />
-              ))}
-            </div>
-          </div>
-          <div className="row mb-3">
-            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-              Kota
-            </label>
-            <div className="col-sm-10">
-              {data?.map((d) => (
-                <input
-                  type="Nama"
-                  className="form-control"
-                  id="inputNama3"
-                  defaultValue={d.city}
-                  disabled
-                />
-              ))}
-            </div>
-          </div>
-          <div className="row mb-3">
-            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-              Kode Pos
-            </label>
-            <div className="col-sm-10">
-              {data?.map((d) => (
-                <input
-                  type="Nama"
-                  className="form-control"
-                  id="inputNama3"
-                  defaultValue={d.postal_code}
-                  disabled
-                />
-              ))}
-            </div>
-          </div>
-          <div className="row mb-3">
-            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-              No Telepon
-            </label>
-            <div className="col-sm-10">
-              {data?.map((d) => (
-                <input
-                  type="Nama"
-                  className="form-control"
-                  id="inputNama3"
-                  defaultValue={d.phone_number}
-                  disabled
-                />
-              ))}
-            </div>
-          </div>
-          <div className="row mb-3">
-            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-              Nama Karyawan
-            </label>
-            <div className="col-sm-10">
-            {data?.map((d) => (
-                <input
-                type="Nama"
-                className="form-control"
-                id="inputNama3"
-                defaultValue={d.employee_id}
-                disabled
-              />
-            )
-            )}
-            </div>
-          </div>
+        <form className="p-3 mb-3 bg-body rounded">
+          <Skeleton active />
         </form>
       </>
-    );
+    )
   }
+
+  return (
+    <>
+      <PageHeader
+        ghost={false}
+        className="bg-body rounded mb-2"
+        onBack={() => window.history.back()}
+        title="Detail Gudang"
+      >
+        <div className="row mb-3">
+          <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
+            Kode
+          </label>
+          <div className="col-sm-10">
+            <input
+              type="kode"
+              className="form-control"
+              id="inputKode3"
+              value={data.code}
+              disabled
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            Nama Gudang
+          </label>
+          <div className="col-sm-10">
+            <input
+              // key={index}
+              type="Nama"
+              className="form-control"
+              id="inputNama3"
+              defaultValue={data.name}
+              disabled
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
+            Tipe
+          </label>
+          <div className="col-sm-10">
+            <select
+              id="bussinessSelect"
+              className="form-select"
+              disabled
+            >
+              <option>{data.type}</option>
+            </select>
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
+            Alamat
+          </label>
+          <div className="col-sm-10">
+            <textarea
+              className="form-control"
+              id="form4Example3"
+              rows="4"
+              defaultValue={data.address}
+              disabled
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            Kota
+          </label>
+          <div className="col-sm-10">
+            <input
+              type="Nama"
+              className="form-control"
+              id="inputNama3"
+              defaultValue={data.city}
+              disabled
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            Kode Pos
+          </label>
+          <div className="col-sm-10">
+            <input
+              type="Nama"
+              className="form-control"
+              id="inputNama3"
+              defaultValue={data.postal_code}
+              disabled
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            No Telepon
+          </label>
+          <div className="col-sm-10">
+            <input
+              type="Nama"
+              className="form-control"
+              id="inputNama3"
+              defaultValue={data.phone_number}
+              disabled
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            Nama Karyawan
+          </label>
+          <div className="col-sm-10">
+            <select
+              id="bussinessSelect"
+              className="form-select"
+              disabled
+            >
+              <option>{data.employee_id}</option>
+            </select>
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            COA
+          </label>
+          <div className="col-sm-10">
+            <select
+              id="bussinessSelect"
+              className="form-select"
+              disabled
+            >
+              {/* <option>{data.employee_id}</option> */}
+            </select>
+          </div>
+        </div>
+      </PageHeader>
+    </>
+  );
 };
 
 export default DetailGudang;
