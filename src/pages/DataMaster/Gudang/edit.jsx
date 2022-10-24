@@ -5,10 +5,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
-import SendIcon from "@mui/icons-material/Send";
-import Button from "@mui/material/Button";
 import { useSelector } from "react-redux";
-import { PageHeader } from "antd";
+import { Button, PageHeader, Skeleton } from "antd";
+import AsyncSelect from "react-select/async";
+import ReactSelect from "react-select";
+import { SendOutlined } from "@ant-design/icons";
 
 const EditGudang = () => {
   // const token = jsCookie.get("auth");
@@ -18,30 +19,64 @@ const EditGudang = () => {
   const [address, setAddress] = useState('');
   const [tipe, setTipe] = useState('');
   const [city, setCity] = useState('');
+  const [chart, setChart] = useState('');
   const [postal_code, setPostal_code] = useState('');
   const [phone_number, setPhone_number] = useState('');
   const [employees, setEmployees] = useState('');
+  const [employeesName, setEmployeesName] = useState('');
   const navigate = useNavigate();
   const { id } = useParams();
 
   const [employeesData, setEmployeesData] = useState();
 
+  const [selectedValue, setSelectedChart] = useState(null);
+  const [selectedValue2, setSelectedEmployee] = useState(null);
+
   const [data, setData] = useState();
-  const [isLoading, setisLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isError, setisError] = useState(false);
+
+  const handleChangeChart = (value) => {
+    setSelectedChart(value);
+    setChart(value.id);
+    // console.log(value)
+  };
+  // load options using API call
+  const loadOptionsChart = (inputValue) => {
+    return fetch(`${Url}/select_chart_of_accounts?limit=10&nama=${inputValue}&kode_kategori=114`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json());
+  };
+
+  const handleChangeEmployee = (value) => {
+    setSelectedEmployee(value);
+    setEmployee(value.id);
+    // console.log(value)
+  };
+  // load options using API call
+  const loadOptionsEmployee = (inputValue) => {
+    return fetch(`${Url}/select_employees?limit=10&nama=${inputValue}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json());
+  };
 
   useEffect(() => {
     fetchWarehouse();
   }, [])
 
   const fetchWarehouse = async () => {
-    axios
-      .get(`${Url}/warehouses?id=${id}`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
+    await axios.get(`${Url}/warehouses?id=${id}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    })
       .then(function (response) {
         setData(response.data.data[0]);
         console.log(response.data.data[0]);
@@ -52,14 +87,16 @@ const EditGudang = () => {
         setAddress(getData.address)
         setCity(getData.city)
         setTipe(getData.type)
+        // setChart()
+        setEmployeesName(getData.employee.name)
+        setTipe(getData.type)
         setPostal_code(getData.postal_code)
         setPhone_number(getData.phone_number)
-        setEmployees(getData.employee_id)
+        setEmployees(getData.employee.id)
+        setLoading(false)
       })
       .catch((err) => {
         // Jika Gagal
-        setisError(true);
-        setisLoading(false);
       });
   }
 
@@ -106,10 +143,24 @@ const EditGudang = () => {
       });
   };
 
-  //   const handleInputChange = event => {
-  //     const { name, value } = event.target;
-  //     setName({ ...name, [name]: value });
-  //   };
+  const optionsType = [
+    {
+      label: "Internal",
+      value: "internal"
+    },
+    {
+      label: "External",
+      value: "external"
+    },
+    {
+      label: "Virtual",
+      value: "virtual"
+    }
+  ];
+
+  const handleSingleChangeType = (e) => {
+    setTipe(e.value);
+  };
 
   useEffect(() => {
     axios
@@ -121,172 +172,178 @@ const EditGudang = () => {
       })
       .then((res) => setEmployeesData(res.data.data));
 
-    setisLoading(true);
-
   }, []);
 
-  if (data) {
-    if (employeesData)
-      return (
-        <>
-         <PageHeader
-          ghost={false}
-          onBack={() => window.history.back()}
-          title="Edit Gudang">
-        </PageHeader>
-          <form className="  p-3 mb-3 bg-body rounded">
-           
-            <div className="row mb-3">
-              <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
-                Kode
-              </label>
-              <div className="col-sm-10">
-                <input
-                  type="kode"
-                  className="form-control"
-                  id="inputKode3"
-                  value={code}
-                  disabled
-                />
-              </div>
-            </div>
-            <div className="row mb-3">
-              <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-                Nama Gudang
-              </label>
-              <div className="col-sm-10">
-                {/* {data?.map((data, index) => ( */}
-                <input
-                  // key={index}
-                  type="Nama"
-                  className="form-control"
-                  id="inputNama3"
-                  defaultValue={name}
-                  // value={"aabb"}
-                  onChange={(e) => setName(e.target.value)}
-                />
-                {/* ))} */}
-              </div>
-            </div>
-            <div className="row mb-3">
-              <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
-                Tipe
-              </label>
-              <div className="col-sm-10">
-                <select
-                  onChange={(e) => setTipe(e.target.value)}
-                  id="bussinessSelect"
-                  className="form-select"
-                >
-                  <option>Pilih Tipe Gudang</option>
-                  <option value="internal" selected={tipe === "Internal"}>
-                    Internal
-                  </option>
-                  <option value="external" selected={tipe === "External"}>
-                    External
-                  </option>
-                  <option value="virtual" selected={tipe === "Virtual"}>
-                    Virtual
-                  </option>
-                </select>
-              </div>
-            </div>
-            <div className="row mb-3">
-              <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
-                Alamat
-              </label>
-              <div className="col-sm-10">
-                {/* {data?.map((data) => ( */}
-                <textarea
-                  className="form-control"
-                  id="form4Example3"
-                  rows="4"
-                  defaultValue={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                />
-                {/* ))} */}
-              </div>
-            </div>
-            <div className="row mb-3">
-              <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-                Kota
-              </label>
-              <div className="col-sm-10">
-                {/* {data?.map((data) => ( */}
-                <input
-                  type="Nama"
-                  className="form-control"
-                  id="inputNama3"
-                  defaultValue={city}
-                  onChange={(e) => setCity(e.target.value)}
-                />
-                {/* ))} */}
-              </div>
-            </div>
-            <div className="row mb-3">
-              <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-                Kode Pos
-              </label>
-              <div className="col-sm-10">
-                {/* {data?.map((data) => ( */}
-                <input
-                  type="Nama"
-                  className="form-control"
-                  id="inputNama3"
-                  defaultValue={postal_code}
-                  onChange={(e) => setPostal_code(e.target.value)}
-                />
-                {/* ))} */}
-              </div>
-            </div>
-            <div className="row mb-3">
-              <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-                No Telepon
-              </label>
-              <div className="col-sm-10">
-                <input
-                  type="Nama"
-                  className="form-control"
-                  id="inputNama3"
-                  defaultValue={phone_number}
-                  onChange={(e) => setPhone_number(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="row mb-3">
-              <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-                Nama Karyawan
-              </label>
-              <div className="col-sm-10">
-                <select
-                  onChange={(e) => setEmployees(e.target.value)}
-                  className="form-select"
-                >
-                  <option>Pilih Karyawan</option>
-                  {employeesData?.map((d) => {
-                    return (
-                      <option selected={employees} value={d.id} key={d.id}>
-                        {d.name}
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
-            </div>
-          </form>
-          <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-            {/* <button onClick={handleUpdate} className="btn btn-success" type="button">Simpan</button> */}
-            <Button
-              onClick={handleUpdate}
-              variant="contained"
-              endIcon={<SendIcon />}
-            >
-              Simpan
-            </Button>
-          </div>
-        </>
-      );
+  if (loading) {
+    return (
+      <>
+        <form className="p-3 mb-3 bg-body rounded">
+          <Skeleton active />
+        </form>
+      </>
+    )
   }
+
+  return (
+    <>
+      <PageHeader
+        ghost={false}
+        className="bg-body rounded mb-2"
+        onBack={() => window.history.back()}
+        title="Edit Gudang"
+      >
+        <div className="row mb-3">
+          <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
+            Kode
+          </label>
+          <div className="col-sm-10">
+            <input
+              type="kode"
+              className="form-control"
+              id="inputKode3"
+              value={code}
+              disabled
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            Nama Gudang
+          </label>
+          <div className="col-sm-10">
+            {/* {data?.map((data, index) => ( */}
+            <input
+              // key={index}
+              type="Nama"
+              className="form-control"
+              id="inputNama3"
+              defaultValue={name}
+              // value={"aabb"}
+              onChange={(e) => setName(e.target.value)}
+            />
+            {/* ))} */}
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
+            Tipe
+          </label>
+          <div className="col-sm-10">
+            <ReactSelect
+              className="basic-single"
+              placeholder="Pilih Tipe Gudang..."
+              classNamePrefix="select"
+              isSearchable
+              defaultInputValue={tipe}
+              onChange={handleSingleChangeType}
+              options={optionsType}
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
+            Alamat
+          </label>
+          <div className="col-sm-10">
+            <textarea
+              className="form-control"
+              id="form4Example3"
+              rows="4"
+              defaultValue={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            Kota
+          </label>
+          <div className="col-sm-10">
+            <input
+              type="Nama"
+              className="form-control"
+              id="inputNama3"
+              defaultValue={city}
+              onChange={(e) => setCity(e.target.value)}
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            Kode Pos
+          </label>
+          <div className="col-sm-10">
+            <input
+              type="Nama"
+              className="form-control"
+              id="inputNama3"
+              defaultValue={postal_code}
+              onChange={(e) => setPostal_code(e.target.value)}
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            No Telepon
+          </label>
+          <div className="col-sm-10">
+            <input
+              type="Nama"
+              className="form-control"
+              id="inputNama3"
+              defaultValue={phone_number}
+              onChange={(e) => setPhone_number(e.target.value)}
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            Nama Karyawan
+          </label>
+          <div className="col-sm-10">
+            <AsyncSelect
+              placeholder="Pilih Karyawan..."
+              cacheOptions
+              defaultOptions
+              defaultInputValue={employeesName}
+              value={selectedValue2}
+              getOptionLabel={(e) => e.name}
+              getOptionValue={(e) => e.id}
+              loadOptions={loadOptionsEmployee}
+              onChange={handleChangeEmployee}
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            COA
+          </label>
+          <div className="col-sm-10">
+            <AsyncSelect
+              placeholder="Pilih Akun..."
+              cacheOptions
+              defaultOptions
+              value={selectedValue}
+              getOptionLabel={(e) => e.name}
+              getOptionValue={(e) => e.id}
+              loadOptions={loadOptionsChart}
+              onChange={handleChangeChart}
+            />
+          </div>
+        </div>
+        <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+          <Button
+            type="primary"
+            icon={<SendOutlined />}
+            size="large"
+            onClick={handleUpdate}
+          >
+            Submit
+          </Button>
+        </div>
+      </PageHeader>
+    </>
+  );
 };
 
 export default EditGudang;
