@@ -122,8 +122,8 @@ const EditSupplier = () => {
     setCount(count + 1);
   };
 
-  const handleDelete = (key) => {
-    const newData = dataSource.filter((item) => item.key !== key);
+  const handleDelete = (id) => {
+    const newData = dataSource.filter((item) => item.id !== id);
     setDataSource(newData);
   };
 
@@ -464,7 +464,7 @@ const EditSupplier = () => {
 
       <PageHeader
         ghost={false}
-        className="bg-body rounded"
+        className="bg-body rounded mb-2"
         title="Tambah Alamat Supplier"
         extra={[
           <Button
