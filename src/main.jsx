@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import App from './App';
-import 'antd/dist/antd.min.css'
+import 'antd/dist/antd.css'
 import 'bootstrap/dist/css/bootstrap.css';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
