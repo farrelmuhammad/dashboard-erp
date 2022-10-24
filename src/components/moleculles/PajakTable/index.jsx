@@ -130,39 +130,20 @@ const PajakTable = () => {
       ...getColumnSearchProps('code'),
     },
     {
-      title: 'Bagian',
-      dataIndex: 'name',
-      key: 'name',
+      title: 'Nama Pajak',
+      dataIndex: 'type',
+      key: 'type',
       width: '30%',
-      ...getColumnSearchProps('name'),
+      ...getColumnSearchProps('type'),
       sorter: true,
       sortDirections: ['descend', 'ascend'],
     },
     {
-      title: 'Keterangan',
-      dataIndex: 'description',
-      key: 'description',
-      ...getColumnSearchProps('description'),
-      render: (text) => (
-        <Text
-          style={
-            ellipsis
-              ? {
-                width: 500,
-              }
-              : undefined
-          }
-          ellipsis={
-            ellipsis
-              ? {
-                tooltip: text,
-              }
-              : false
-          }
-        >
-          {text}
-        </Text>
-      )
+      title: 'Persentase',
+      dataIndex: 'rate',
+      key: 'rate',
+      ...getColumnSearchProps('rate'),
+      render: (text) => <div>{text} %</div>
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
       // sortDirections: ['descend', 'ascend'],
     },

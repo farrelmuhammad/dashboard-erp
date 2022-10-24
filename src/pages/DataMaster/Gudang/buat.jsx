@@ -5,10 +5,11 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
-import SendIcon from "@mui/icons-material/Send";
-import Button from "@mui/material/Button";
 import { useSelector } from "react-redux";
-import { PageHeader} from 'antd';
+import { Button, PageHeader } from 'antd';
+import { SendOutlined } from "@ant-design/icons";
+import AsyncSelect from "react-select/async";
+import ReactSelect from "react-select";
 
 const BuatGudang = () => {
   // const auth.token = jsCookie.get("auth");
@@ -17,6 +18,7 @@ const BuatGudang = () => {
   const [address, setAddress] = useState('');
   const [tipe, setTipe] = useState('');
   const [city, setCity] = useState('');
+  const [chart, setChart] = useState('');
   const [postal_code, setPostal_code] = useState('');
   const [phone_number, setPhone_number] = useState('');
   const [employees, setEmployees] = useState('');
@@ -25,10 +27,43 @@ const BuatGudang = () => {
   const [employeesData, setEmployeesData] = useState();
   const [getWarehouse, setGetWarehouse] = useState();
 
+  const [selectedValue, setSelectedChart] = useState(null);
+  const [selectedValue2, setSelectedEmployee] = useState(null);
+
+
+  const handleChangeChart = (value) => {
+    setSelectedChart(value);
+    setChart(value.id);
+    // console.log(value)
+  };
+  // load options using API call
+  const loadOptionsChart = (inputValue) => {
+    return fetch(`${Url}/select_chart_of_accounts?limit=10&nama=${inputValue}&kode_kategori=114`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json());
+  };
+
+  const handleChangeEmployee = (value) => {
+    setSelectedEmployee(value);
+    setEmployee(value.id);
+    // console.log(value)
+  };
+  // load options using API call
+  const loadOptionsEmployee = (inputValue) => {
+    return fetch(`${Url}/select_employees?limit=10&nama=${inputValue}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json());
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const userData = new FormData();
-    // console.log(name, address, city, postal_code, phone_number, employees)
     userData.append("nama", name);
     userData.append("alamat", address);
     userData.append("kota", city);
@@ -36,9 +71,14 @@ const BuatGudang = () => {
     userData.append("kode_pos", postal_code);
     userData.append("nomor_telepon", phone_number);
     userData.append("karyawan", employees);
-    console.log(userData);
+    userData.append("bagan_akun", chart);
+
+    // for (var pair of userData.entries()) {
+    //   console.log(pair[0] + ', ' + pair[1]);
+    // }
+
     axios({
-      method: "POST",
+      method: "post",
       url: `${Url}/warehouses`,
       data: userData,
       headers: {
@@ -63,7 +103,7 @@ const BuatGudang = () => {
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: err.response.data.error.nama,
+            text: err.response.data.message,
           });
         } else if (err.request) {
           console.log("err.request ", err.request);
@@ -101,19 +141,34 @@ const BuatGudang = () => {
       });
   }, []);
 
+  const optionsType = [
+    {
+      label: "Internal",
+      value: "internal"
+    },
+    {
+      label: "External",
+      value: "external"
+    },
+    {
+      label: "Virtual",
+      value: "virtual"
+    }
+  ];
+
+  const handleSingleChangeType = (e) => {
+    setTipe(e.value);
+  };
+
   if (employeesData?.length > 0) {
     return (
       <>
-      <PageHeader
+        <PageHeader
           ghost={false}
+          className="bg-body rounded mb-2"
           onBack={() => window.history.back()}
-          title="Buat Gudang">
-          </PageHeader>
-
-        <form className="  p-3 mb-3 bg-body rounded">
-          {/* <div className="text-title text-start mb-4">
-            <h3 className="title fw-bold">Buat Gudang</h3>
-          </div> */}
+          title="Buat Gudang"
+        >
           <div className="row mb-3">
             <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
               Kode
@@ -147,22 +202,14 @@ const BuatGudang = () => {
               Tipe
             </label>
             <div className="col-sm-10">
-              <select
-                onChange={(e) => setTipe(e.target.value)}
-                id="bussinessSelect"
-                className="form-select"
-              >
-                <option>Pilih Tipe Gudang</option>
-                <option value="internal" selected={tipe === "Internal"}>
-                  Internal
-                </option>
-                <option value="external" selected={tipe === "External"}>
-                  External
-                </option>
-                <option value="virtual" selected={tipe === "Virtual"}>
-                  Virtual
-                </option>
-              </select>
+              <ReactSelect
+                className="basic-single"
+                placeholder="Pilih Tipe Gudang..."
+                classNamePrefix="select"
+                isSearchable
+                onChange={handleSingleChangeType}
+                options={optionsType}
+              />
             </div>
           </div>
           <div className="row mb-3">
@@ -226,32 +273,46 @@ const BuatGudang = () => {
               Nama Karyawan
             </label>
             <div className="col-sm-10">
-              <select
-                onChange={(e) => setEmployees(e.target.value)}
-                className="form-select"
-              >
-                <option>Pilih Karyawan</option>
-                {employeesData?.map((d) => {
-                  return (
-                    <option value={d.id} key={d.id}>
-                      {d.name}
-                    </option>
-                  );
-                })}
-              </select>
+              <AsyncSelect
+                placeholder="Pilih Karyawan..."
+                cacheOptions
+                defaultOptions
+                value={selectedValue2}
+                getOptionLabel={(e) => e.name}
+                getOptionValue={(e) => e.id}
+                loadOptions={loadOptionsEmployee}
+                onChange={handleChangeEmployee}
+              />
             </div>
           </div>
-          <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-            {/* <button onClick={handleSubmit} className="btn btn-success" type="button">Simpan</button> */}
+          <div className="row mb-3">
+            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+              COA
+            </label>
+            <div className="col-sm-10">
+              <AsyncSelect
+                placeholder="Pilih Akun..."
+                cacheOptions
+                defaultOptions
+                value={selectedValue}
+                getOptionLabel={(e) => e.name}
+                getOptionValue={(e) => e.id}
+                loadOptions={loadOptionsChart}
+                onChange={handleChangeChart}
+              />
+            </div>
+          </div>
+          <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
             <Button
+              type="primary"
+              icon={<SendOutlined />}
+              size="large"
               onClick={handleSubmit}
-              variant="contained"
-              endIcon={<SendIcon />}
             >
-              Simpan
+              Submit
             </Button>
           </div>
-        </form>
+        </PageHeader>
       </>
     );
   }

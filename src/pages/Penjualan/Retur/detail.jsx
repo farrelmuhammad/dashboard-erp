@@ -1,18 +1,22 @@
 import './form.css'
 import jsCookie from "js-cookie";
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, PageHeader } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, PageHeader, Tooltip } from 'antd'
+import { PlusOutlined, PrinterOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import ReactSelect from 'react-select';
 import { useSelector } from 'react-redux';
+import CurrencyFormat from 'react-currency-format';
+import logo from "../../Logo.jpeg";
+import { useReactToPrint } from 'react-to-print';
+
 
 const EditableContext = createContext(null);
 
@@ -33,7 +37,7 @@ const EditableCell = ({
     children,
     dataIndex,
     record,
-    handleSave,
+    // handleSave,
     ...restProps
 }) => {
     const [editing, setEditing] = useState(false);
@@ -120,6 +124,18 @@ const DetailRetur = () => {
 
     const [dataHeader, setDataHeader] = useState([])
     const [salesRetur, setSalesRetur] = useState([])
+    const [getStatus, setGetStatus] = useState()
+    const [mataUang, setMataUang] = useState('Rp.')
+    const [pilihanDiskon, setPilihanDiskon] = useState('');
+    const [jumlahDiskon, setJumlahDiskon] = useState([]);
+    const [diskonPersen, setDiskonPersen] = useState([]);
+    const [jumlahPPN, setJumlahPPN] = useState([]);
+
+    const [pelanggan, setPelanggan] = useState('');
+    const [noCode, setNoCode] = useState('')
+    const [bePelanggan, setBEPelanggan] = useState('');
+
+    const [loading, setLoading] = useState(true);
 
     const { id } = useParams();
     useEffect(() => {
@@ -138,11 +154,39 @@ const DetailRetur = () => {
                 setGetStatus(getData.status)
                 setSalesRetur(getData.sales_return_details)
 
+                setGrandTotal(getData.total)
+                setSubTotal(getData.subtotal)
+                setTotalPpn(getData.ppn)
+                setGrandTotalDiscount(getData.discount)
+
+                setChecked(getData.tax_included);
+
+                //console.log(checked)
+
+                let disc = [];
+                let ppn = [];
+                
+                for(let i=0; i< salesRetur.length; i++){
+                    disc[i] = salesRetur[i].discount_percentage;
+                    ppn[i] = salesRetur[i].ppn;  
+                }
+    
+                setDiskonPersen(disc);
+                setJumlahPPN(ppn);
+                // console.log(diskonPersen)
+
+                 //console.log(salesRetur)
+
                 // if(getData.sales_return_details[0].currency){
 
                 //     setMataUang(getData.purchase_return_details[0].currency)
                 // }
                 setLoading(false);
+
+                setPelanggan(getData.customer.name);
+                setNoCode(getData.sales_invoice.code);
+                setBEPelanggan(getData.customer.business_entity);
+                console.log(bePelanggan)
             })
             .catch((err) => {
                 // Jika Gagal
@@ -151,7 +195,17 @@ const DetailRetur = () => {
     }
 
 
+    const tableToRupiah = (angka, namaMataUang) => {
+        //return namaMataUang + ' ' + angka.toLocaleString('id');
+        return <>
+            {
+                namaMataUang === 'Rp' ?
+                    < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" />
+                    : < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" />
 
+            }
+        </>
+    }
 
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
@@ -220,30 +274,30 @@ const DetailRetur = () => {
 
     const defaultColumns = [
         {
-            title: 'No. Faktur',
-            dataIndex: 'code',
-            width: '15%',
+            title: 'No.',
+            dataIndex: '',
+            width: '5%',
             align: 'center',
-            // render: (text, record, index) => index + 1,
+            render(text, record, index) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: <div>{index + 1}</div>
+                };
+            }
         },
         {
             title: 'Nama Produk',
-            dataIndex: 'sales_invoice_details',
-            render: (faktur) => (
-                <>
-                    <ReactSelect
-                        className="basic-single"
-                        placeholder="Pilih Alamat..."
-                        classNamePrefix="select"
-                        isLoading={isLoading}
-                        isSearchable
-                        getOptionLabel={(e) => e.product_alias_name}
-                        getOptionValue={(e) => e.id}
-                        options={faktur}
-                        onChange={(e) => setFaktur(e.id)}
-                    />
-                </>
-            ),
+            dataIndex: 'product_alias_name',
+            render(text) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: text,
+                }
+            }
         },
         {
             title: 'Qty',
@@ -251,30 +305,45 @@ const DetailRetur = () => {
             width: '8%',
             align: 'center',
             editable: true,
-            render: (text) => <a>{text}.00</a>,
+            render(text, record) {
+                return {
+                    props: {
+                    },
+                    // children: <div>{formatQuantity(text)}</div>
+                    children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
+                };
+            }
+            
         },
         {
             title: 'Stn',
-            dataIndex: 'sales_invoice_details',
+            dataIndex: 'unit',
             width: '5%',
             align: 'center',
-            render: (delivery_note_details) => delivery_note_details.map(service => service.unit),
+            render(text) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: text,
+                }
+            }
         },
         {
             title: 'Harga',
             dataIndex: 'price',
-            width: '10%',
+            width: '15%',
             align: 'center',
             editable: true,
-            render: (text) => <a>Rp. {text}</a>,
+           
         },
         {
             title: 'Discount (Rp)',
             dataIndex: 'nominal_disc',
-            width: '10%',
+            width: '15%',
             align: 'center',
             editable: true,
-            render: (text) => <a>Rp. {text}</a>,
+            
         },
         {
             title: 'Discount (%)',
@@ -282,97 +351,243 @@ const DetailRetur = () => {
             width: '5%',
             align: 'center',
             editable: true,
-            render: (text) => <a>{text} %</a>,
+          
         },
         {
             title: 'PPN',
             dataIndex: 'ppn',
-            width: '10%',
+            width: '12%',
             align: 'center',
             editable: true,
-            render: (text) => <a>{text} %</a>,
+        
+            
         },
         {
             title: 'Jumlah',
             dataIndex: 'total',
             width: '14%',
             align: 'center',
-            render:
-                (text, record) => {
-                    let total = (record.quantity * record.price) - record.nominal_disc;
-                    let getPercent = (total * record.discount) / 100;
-                    let totalDiscount = total - getPercent;
-                    let getPpn = (totalDiscount * record.ppn) / 100;
-                    if (checked) {
-                        return totalDiscount;
-                    } else {
-                        return totalDiscount + getPpn;
-                    }
+            render(text) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: text,
                 }
+            }
+            // render:
+            //     (text, record, index) => {
+            //         let grandTotalAmount = 0;
+            //         let  getPercent = 0;
+            //         let totalDiscount = 0;
+            //         let getPpn = 0;
+            //         let  getPercent1 = 0;
+            //         let  getPpn1 = 0;
+
+            //         // console.log("masuk percent")
+            //       //  let total = (record.quantity * record.price);
+            //        // console.log(record.price);
+            //         for(let i=0; i< salesRetur.length; i++){
+            //             let subtotal = salesRetur[i].price * salesRetur[i].quantity;
+            //             let s1 = subtotal - salesRetur[i].fixed_discount;
+            //             totalDiscount = s1 - Number(diskonPersen[i]/100);
+            //             let totalppn = totalDiscount + Number(jumlahPPN[i]/100)
+
+            //             //getPercent1 = 1 - Number(Number(diskonPersen[i])/100)
+
+            //             //getPercent = (salesRetur[i].price * Number(diskonPersen[i])) / 100;
+
+            //             //console.log(getPercent1)
+
+            //             //totalDiscount = Number(text) - getPercent;
+            //             // getPpn1 = 1 + Number(jumlahPPN[i]/100);
+            //             // getPpn = (totalDiscount * jumlahPPN[i]) / 100;
+            //             console.log(totalppn)
+
+            //             grandTotalAmount = Number(subtotal) * Number(getPercent1) * Number(getPpn1)
+
+            //             if (checked) {
+            //                 // grandTotalAmount = tableToRupiah(totalDiscount, "Rp");
+            //                 // grandTotalAmount = totalDiscount
+            //                 grandTotalAmount = subTotal * getPercent1 * getPpn1
+            //             } else {
+            //                 // grandTotalAmount = tableToRupiah(totalDiscount + getPpn, "Rp");
+            //                 grandTotalAmount = totalDiscount + getPpn
+            //             }
+            //             // console.log(grandTotalAmount);
+                       
+            //         }
+                    
+                    
+
+            //         return {
+            //             props: {
+            //                 style: { background: "#f5f5f5" }
+            //             },
+            //             children: grandTotalAmount
+            //         }
+            //     }
         },
     ];
-    const handleChange = () => {
-        setChecked(!checked);
-        let check_checked = !checked;
-        calculate(faktur, check_checked);
-    };
-    const handleSave = (row) => {
-        const newData = [...faktur];
-        const index = newData.findIndex((item) => row.id === item.id);
-        const item = newData[index];
-        newData.splice(index, 1, { ...item, ...row });
-        setFaktur(newData);
-        let check_checked = checked;
-        calculate(faktur, check_checked);
-    };
 
-
-    const calculate = (faktur, check_checked) => {
-        let subTotal = 0;
-        let totalDiscount = 0;
-        let totalNominalDiscount = 0;
-        let grandTotalDiscount = 0;
-        let getPpnDiscount = 0;
-        let allTotalDiscount = 0;
-        let totalPpn = 0;
-        let grandTotal = 0;
-        let getPpn = 0;
-        let total = 0;
-        faktur.map((values) => {
-            if (check_checked) {
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
-
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                subTotal += ((total - getPpnDiscount) * 100) / (100 + values.ppn);
-                allTotalDiscount += total - getPpnDiscount;
-                totalPpn = allTotalDiscount - subTotal;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
-                setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
-                setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
-            } else {
-                subTotal += (values.quantity * values.price);
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
-
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                allTotalDiscount = total - getPpnDiscount;
-                getPpn = (allTotalDiscount * values.ppn) / 100;
-                totalPpn += getPpn;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
-                setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
-                setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
+    const dataProduk = [
+        ...salesRetur.map((item,i) => ({
+            product_alias_name: item.product_alias_name,
+            quantity:item.quantity,
+            unit: item.unit,
+            price:  <div className='d-flex'>
+             <CurrencyFormat disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} value={Number(item.price).toFixed(2).replace('.' , ',')} />
+                    </div>,
+            nominal_disc :  <>
+            {
+                item.fixed_discount == 0 ? <div> 0 </div> : 
+                <div className='d-flex'>
+                <CurrencyFormat disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} value={Number(item.fixed_discount).toFixed(2).replace('.' , ',')} />
+                            </div>
             }
+            </>, 
+            discount: <>
+            {
+                item.discount_percentage == 0 ? <div> 0 </div> : 
+                <input disabled className=' text-center editable-input edit-disabled' value={item.discount_percentage.replace('.', ',') + '%'} key="diskon" />
+            }
+            </>,    
+            ppn : <>
+            {
+                item.ppn == 0 ? <div> 0 </div> : 
+                <input disabled className=' text-center editable-input edit-disabled' value={item.ppn.replace('.', ',') + '%'} key="diskon" />
+            }
+            </>,
+            total : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" />,
+          
+           
         })
-    }
+        )
+    ]
+
+    // const handleChange = () => {
+    //     setChecked(!checked);
+    //     let check_checked = !checked;
+    //     calculate(salesRetur, check_checked);
+    // };
+    // const handleSave = (row) => {
+    //     const newData = [...salesRetur];
+    //     const index = newData.findIndex((item) => row.alias_name === item.alias_name);
+    //     const item = newData[index];
+    //     newData.splice(index, 1, { ...item, ...row });
+    //     setSalesRetur(newData);
+    //     let check_checked = checked;
+    //     calculate(newData, check_checked);
+    // };
+
+
+    // const calculate = (salesRetur, check_checked) => {
+    //     let subTotal = 0;
+    //     let totalDiscount = 0;
+    //     let totalNominalDiscount = 0;
+    //     let grandTotalDiscount = 0;
+    //     let getPpnDiscount = 0;
+    //     let allTotalDiscount = 0;
+    //     let totalPpn = 0;
+    //     let grandTotal = 0;
+    //     let getPpn = 0;
+    //     let total = 0;
+    //     let hasilDiskon = 0;
+    //     let totalPerProduk = 0;
+    //     let rowDiscount = 0;
+    //     let subTotalDiscount = 0;
+
+    //     salesRetur.map((values, i) => {
+    //         if (check_checked) {
+                
+    //             total += (Number(values.quantity) * Number(values.price));
+    //             totalPerProduk = (Number(values.quantity) * Number(values.price));
+
+    //             if(pilihanDiskon[i] == 'percent'){
+    //                 hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+    //                 rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+    //             }
+    //             else if (pilihanDiskon[i] == 'nominal'){
+    //                 hasilDiskon += Number(jumlahDiskon[i]);
+    //                 rowDiscount = Number(jumlahDiskon[i]);
+    //             }
+
+    //             subTotalDiscount = totalPerProduk - rowDiscount;
+    //             subTotal += (totalPerProduk * 100) / (100 + values.ppn );
+    //             totalDiscount += ((rowDiscount * 100) / (100 + values.ppn));
+    //             totalPpn += ((((totalPerProduk * 100) / (100 + values.ppn)) - (rowDiscount * 100) / (100 + values.ppn)) * values.ppn) / (100);
+    //             grandTotal = subTotal - totalDiscount + Number(totalPpn);
+                
+
+
+
+    //             // total = (values.quantity * values.price) - values.nominal_disc;
+    //             // getPpnDiscount = (total * values.discount) / 100;
+    //             // totalDiscount += (total * values.discount) / 100;
+
+    //             // totalNominalDiscount += values.nominal_disc;
+    //             // grandTotalDiscount = totalDiscount + totalNominalDiscount;
+    //             // subTotal += ((total - getPpnDiscount) * 100) / (100 + values.ppn);
+    //             // allTotalDiscount += total - getPpnDiscount;
+    //             // totalPpn = allTotalDiscount - subTotal;
+    //            // grandTotal = subTotal - grandTotalDiscount + totalPpn;
+    //             setSubTotal(subTotal)
+    //             setGrandTotalDiscount(totalDiscount)
+    //             setTotalPpn(totalPpn)
+    //             setGrandTotal(grandTotal)
+    //         } else {
+
+    //             total += (Number(values.quantity) * Number(values.price));
+    //             totalPerProduk = (Number(values.quantity) * Number(values.price));
+
+    //             if(pilihanDiskon[i] == 'percent'){
+    //                 hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+    //                 rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+    //             }
+    //             else if (pilihanDiskon[i] == 'nominal'){
+    //                 hasilDiskon += Number(jumlahDiskon[i]);
+    //                 rowDiscount = Number(jumlahDiskon[i]);
+    //             }
+
+    //             totalDiscount += ((totalPerProduk * jumlahDiskon[i]) / 100);
+    //             subTotal = total - (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+    //             subTotalDiscount = totalPerProduk - rowDiscount;
+    //             totalPpn += (subTotalDiscount * values.ppn) / 100;
+    //             grandTotal = total - totalDiscount + Number(totalPpn);
+
+
+
+
+
+    //             // subTotal += (values.quantity * values.price);
+    //             // total = (values.quantity * values.price) - values.nominal_disc;
+    //             // getPpnDiscount = (total * values.discount) / 100;
+    //             // totalDiscount += (total * values.discount) / 100;
+
+    //             // totalNominalDiscount += values.nominal_disc;
+    //             // grandTotalDiscount = totalDiscount + totalNominalDiscount;
+    //             // allTotalDiscount = total - getPpnDiscount;
+    //             // getPpn = (allTotalDiscount * values.ppn) / 100;
+    //             // totalPpn += getPpn;
+    //             // grandTotal = subTotal - grandTotalDiscount + totalPpn;
+    //             setSubTotal(subTotal)
+    //             setGrandTotalDiscount(totalDiscount)
+    //             setTotalPpn(totalPpn)
+    //             setGrandTotal(grandTotal)
+    //         }
+    //     })
+    // }
+
+    const componentRef = useRef();
+
+    const handlePrint = useReactToPrint({
+        content: () => componentRef.current,
+         copyStyles: true,
+       //pageStyle: pageStyle
+        
+    })
+      
+
     const components = {
         body: {
             row: EditableRow,
@@ -391,7 +606,7 @@ const DetailRetur = () => {
                 editable: col.editable,
                 dataIndex: col.dataIndex,
                 title: col.title,
-                handleSave,
+                //handleSave,
             }),
         };
     });
@@ -547,6 +762,168 @@ const DetailRetur = () => {
 
     return (
         <>
+
+<div style={{ display: "none", position:"absolute"}} >
+                <div ref={componentRef} className="p-4" style={{width:"100%"}} >
+
+  <table style={{width:"100%"}}>
+    <thead>
+      <tr>
+        <td>
+         
+          <div className="page-header-space"></div>
+          <div className="page-header">
+          <div className='row'>
+          <div className='d-flex mb-3 float-container' style={{position:"fixed", height:"100px", top:"0"}}>
+                
+                
+               
+                      <div className='col-1' style={{marginTop:"10px"}}><img src={logo} width="60px"></img></div>
+                      <div className='col-4' style={{marginTop:"10px", marginRight:"100px"}}>
+                      <div className='ms-2' >
+                          <div className='header-cetak'><b>PT. BUMI MAESTROAYU</b></div>
+                          <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
+                          <div className='header-cetak'>JAKARTA SELATAN 12760</div>
+                          <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
+                      </div>
+                      </div>
+                     
+                
+               
+                <div className='col'>
+                <div className='col float-child'>
+                    <div className='col' width="100px"></div>
+
+                <div className=' mt-3 mb-4 col d-flex justify-content-right ps-4 pe-4' height="100px" style={{ fontSize: "12px", fontStyle:"bold"}}>
+                    <div className='col-6'>
+                          <div className="d-flex flex-row">
+                          <label className='col-6'>No. Faktur</label>
+                              <div className='col-12'> : {noCode}</div>
+                          </div>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>Tanggal</label>
+                              <div className='col-8'>
+                                  : { dataHeader.date }</div>
+                          </div>
+                          <div className="d-flex flex-row">
+                              <label className='col-6'>Kepada Yth.</label>
+                              <div className='col-8'> : {
+                                bePelanggan === 'Lainnya' || bePelanggan === 'lainnya' ? 
+                            '' : bePelanggan} {pelanggan}  </div>
+                          </div>
+                      </div>
+                      {/* <div className='col-6'>
+                        <div className="d-flex flex-row">
+                              <label className='col-8'>No. Faktur</label>
+                              <div className='col-8'> : {dataHeader.purchase_invoice.code}</div>
+                          </div>
+                          <div className="d-flex flex-row">
+                          <label className='col-8'>Tanggal</label>
+                              <div className='col-6'> : {dataHeader.date}</div>
+                          </div>
+                         
+                          <div className="d-flex flex-row">
+                              <label className='col-8'>Kepada Yth. </label>
+                              <div className='col-6'> : {dataHeader.supplier.business_entity} {dataHeader.supplier.name}  </div>
+                          </div>
+                      </div> */}
+                  </div>
+                </div>
+                </div>
+
+            </div>
+            </div>
+        
+        <br/>
+        <br/>
+        <br/>
+    
+        <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold", textAlign:"center"}}>
+                      <div className='align-items-center' style={{ fontSize: "14px", textDecoration: "underline", textAlign:"center"}}>RETUR PENJUALAN</div>
+                      <div className='align-items-center' style={{fontSize:"10px", textAlign:"center"}}>NO. {dataHeader.code}</div>
+                  </div>
+                    
+        </div>
+
+        </td>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr>
+        <td>
+       
+        
+          <div className="page" style={{lineHeight:"3"}}>
+           
+          <div className='mt-2 ps-4 pe-4' >
+
+        <div className='align-items-start' style={{fontSize:"12px"}}>Kami telah menerima kembali barang - barang sebagai berikut : </div>
+                        <table style={{ fontSize: "10px", width: "100%", pageBreakAfter:"auto"}}>
+                            <tr className='border' style={{ height: "40px", pageBreakInside:"avoid", pageBreakAfter:"auto" }}>  
+                                <th width="50px" className='text-center border'>No</th>
+                                <th width="300px" className='text-center border'>Nama Produk</th>
+                                <th width="80px" className='text-center border'>Qty</th>
+                                <th width="50px" className='text-center border'>Stn</th>
+                            
+                            </tr>
+                            <tbody className="border">
+                                {
+                                    salesRetur.map((item, i) => (
+                                        <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {i + 1} </td>
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {item.product_alias_name} </td>
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {Number(item.quantity).toFixed(2).replace('.' , ',')} </td>
+                                            <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {item.unit} </td>
+                                        </tr>
+                                        ))
+                                    
+                                }
+                            </tbody>
+
+
+                        </table>
+                    </div>
+
+
+                 
+                    </div>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot style={{position:"fixed", marginTop:"500px"}}>
+                        <tr>
+                            <td>
+                            
+                            <div className="page-footer-space"></div>
+                            <div className="page-footer" style={{position:"fixed", Bottom:"0px", width:"92%", marginRight:"5px", marginLeft:"5px"}} >
+                            <div className='d-flex' style={{width:"100%", bottom:"0"}}>
+                            <table style={{ fontSize: "10px", width: "100%", height:"100%", marginRight:"5px", marginLeft:"5px"}} >
+                                <tr className='text-center border' style={{ height: "50px", width:"70%" }}>
+                                    <th width="45px" className='border'>Pengirim</th>
+                                    <th width="45px" className='border'>Gudang</th>
+                                    <th width="45px" className='border'>Administrasi</th>
+                                </tr>
+                            
+                                        <tr className='text-center border ' style={{ height: "80px" ,width:"70%"}}>
+                                        
+                                        <td width="45px" className='border'><b>_________________</b></td>
+                                        <td width="45px"className='border'><b>_________________</b></td>
+                                        <td width="45px"className='border'><b>_________________</b></td>
+                                        
+                                        </tr>
+                            </table>
+                            </div>
+                            </div>
+                            </td>
+                        </tr>
+                        </tfoot>
+
+                    </table>
+
+                    </div>
+                    </div>
+
     
             <form className="p-3 mb-3 bg-body rounded">
                 {/* <div className="text-title text-start mb-4">
@@ -556,6 +933,16 @@ const DetailRetur = () => {
                 className="bg-body rounded mb-2"
                 onBack={() => window.history.back()}
                 title="Detail Retur Penjualan"
+                extra={[
+                    <Tooltip title="Cetak" placement="bottom">
+                    <Button
+                        type="primary"
+                        icon={<PrinterOutlined />}
+                        style={{ background: "orange", borderColor: "orange" }}
+                        onClick={handlePrint}
+                    />
+                    </Tooltip>,     
+                ]}
             ></PageHeader>
                 <div className="row">
                     <div className="col">
@@ -568,6 +955,7 @@ const DetailRetur = () => {
                                     type="date"
                                     onChange={(e) => setDate(e.target.value)}
                                     value={dataHeader.date}
+                                    disabled
                                 />
                             </div>
                         </div>
@@ -575,7 +963,7 @@ const DetailRetur = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Pesanan</label>
                             <div className="col-sm-7">
                                 <input
-                                    value={getCode}
+                                    value={dataHeader.code}
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
@@ -586,7 +974,14 @@ const DetailRetur = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pelanggan</label>
                             <div className="col-sm-7">
-                                <AsyncSelect
+                                <input
+                                    value={pelanggan}
+                                    type="Nama"
+                                    className='form-control'
+                                    id='inputNama3'
+                                    disabled
+                                />
+                                {/* <AsyncSelect
                                     placeholder="Pilih Pelanggan..."
                                     cacheOptions
                                     defaultOptions
@@ -595,6 +990,18 @@ const DetailRetur = () => {
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsCustomer}
                                     onChange={handleChangeCustomer}
+                                /> */}
+                            </div>
+                        </div>
+                        <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Faktur</label>
+                            <div className="col-sm-7">
+                                <input
+                                    type="Nama"
+                                    className="form-control"
+                                    id="inputNama3"
+                                    value={noCode}
+                                    disabled
                                 />
                             </div>
                         </div>
@@ -605,7 +1012,8 @@ const DetailRetur = () => {
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
-                                    onChange={(e) => setReferensi(e.target.value)}
+                                    value={dataHeader.reference}
+                                    disabled
                                 />
                             </div>
                         </div>
@@ -618,11 +1026,20 @@ const DetailRetur = () => {
                                     className="form-control"
                                     id="form4Example3"
                                     rows="4"
-                                    onChange={(e) => setDescription(e.target.value)}
+                                    value={dataHeader.notes}
+                                    disabled
                                 />
                             </div>
                         </div>
+
+                        <div className="row mb-3">
+                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Status</label>
+                        <div className="col-sm-4 p-1">
+                            {getStatus === 'Submitted' ? <Tag color="blue">{getStatus}</Tag> : getStatus === 'Draft' ? <Tag color="orange">{getStatus}</Tag> : getStatus === 'Done' ? <Tag color="green">{getStatus}</Tag> : <Tag color="red">{getStatus}</Tag>}
+                        </div>
                     </div>
+                    </div>
+                  
                 </div>
             </form>
             <form className="p-3 mb-5 bg-body rounded">
@@ -631,151 +1048,115 @@ const DetailRetur = () => {
                         <div className="col">
                             <h4 className="title fw-normal">Daftar Faktur</h4>
                         </div>
-                        <div className="col text-end me-2">
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
-                            />
-                            <Modal
-                                title="Tambah Faktur"
-                                centered
-                                visible={modal2Visible}
-                                onCancel={() => setModal2Visible(false)}
-                                // footer={[
-                                //     <Button
-                                //         key="submit"
-                                //         type="primary"
-
-                                //     >
-                                //         Tambah
-                                //     </Button>,
-                                // ]}
-                                footer={null}
-                                width={600}
-                            >
-                                <div className="text-title text-start">
-                                    <div className="row">
-                                        <div className="col mb-3">
-                                            <Search
-                                                placeholder="Cari Faktur..."
-                                                style={{
-                                                    width: 400,
-                                                }}
-                                                onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                            />
-                                        </div>
-                                        <Table
-                                            columns={columnsModal}
-                                            dataSource={getDataFaktur}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
-                                    </div>
-                                </div>
-                            </Modal>
-                        </div>
                     </div>
                     <Table
-                        components={components}
+                      
                         rowClassName={() => 'editable-row'}
                         bordered
                         pagination={false}
-                        dataSource={faktur}
+                        dataSource={dataProduk}
                         columns={columns}
                         onChange={(e) => setFaktur(e.target.value)}
                     />
                 </div>
                 <div className="row p-0">
-                    <div className="col ms-5">
+                <div className="col ms-5">
                         <div className="form-check">
-                            <input className="form-check-input" type="checkbox" id="flexCheckDefault" onChange={handleChange} />
+                            {checked === true ? <input 
+                                checked 
+                                disabled="true"
+                                className="form-check-input"
+                                type="checkbox"
+                                id="flexCheckDefault"
+                                value="yes"
+                            
+                                
+                            /> : <input
+                                disabled="true"
+                                className="form-check-input"
+                                type="checkbox"
+                                value="0"
+                                id="flexCheckDefault"
+                            />}
+                            {/* <input
+                                disabled="true"
+                                className="form-check-input"
+                                type="checkbox"
+                                value="1"
+                                id="flexCheckDefault"
+                                checked={taxInclude}
+                            /> */}
                             <label className="form-check-label" for="flexCheckDefault">
                                 Harga Termasuk Pajak
                             </label>
                         </div>
                     </div>
+                    {/* <div className="col ms-5">
+                        <div className="form-check">
+                            <input className="form-check-input" type="checkbox" id="flexCheckDefault" value={checked} />
+                            <label className="form-check-label" for="flexCheckDefault">
+                                Harga Termasuk Pajak
+                            </label>
+                        </div>
+                    </div> */}
                     <div className="col">
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>
                             <div className="col-sm-6">
-                                <input
+                            < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(subTotal).toFixed(2).replace('.' , ',')} key="diskon" renderText={value => <input value={value} readOnly="true"  id="colFormLabelSm"  className="form-control form-control-sm"/>} />
+                                {/* <input
                                     defaultValue={subTotal}
                                     readOnly="true"
                                     type="number"
                                     className="form-control form-control-sm"
                                     id="colFormLabelSm"
                                 // placeholder='(Total Qty X harga) per item + ... '
-                                />
+                                /> */}
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Diskon</label>
                             <div className="col-sm-6">
-                                <input
+                            < CurrencyFormat disabled  className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(grandTotalDiscount).toFixed(2).replace('.' , ',')} key="diskon" renderText={value => <input value={value} readOnly="true"  id="colFormLabelSm"  className="form-control form-control-sm"/>} />
+                                {/* <input
                                     defaultValue={grandTotalDiscount}
                                     readOnly="true"
                                     type="number"
                                     className="form-control form-control-sm"
                                     id="colFormLabelSm"
                                 // placeholder='(total disc/item) ditotal semua'
-                                />
+                                /> */}
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">PPN</label>
                             <div className="col-sm-6">
-                                <input
+                            < CurrencyFormat disabled  className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toFixed(2).replace('.' , ',')} key="diskon" renderText={value => <input value={value} readOnly="true"  id="colFormLabelSm"  className="form-control form-control-sm"/>} />
+                                {/* <input
                                     defaultValue={totalPpn}
                                     readOnly="true"
                                     type="number"
                                     className="form-control form-control-sm"
                                     id="colFormLabelSm"
                                 // placeholder='ppn per item di total semua row'
-                                />
+                                /> */}
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Total</label>
                             <div className="col-sm-6">
-                                <input
+                            < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(grandTotal).toFixed(2).replace('.' , ',')} key="diskon" renderText={value => <input value={value} readOnly="true"  id="colFormLabelSm"  className="form-control form-control-sm"/>} />
+                                {/* <input
                                     defaultValue={grandTotal}
                                     readOnly="true"
                                     type="number"
                                     className="form-control form-control-sm"
                                     id="colFormLabelSm"
                                 // placeholder='subtotal - diskon + ppn'
-                                />
+                                /> */}
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
-                    <button
-                        type="button"
-                        className="btn btn-success rounded m-1"
-                        value="Draft"
-                        onClick={handleDraft}
-                    >
-                        Simpan
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-primary rounded m-1"
-                        value="Submitted"
-                        onClick={handleSubmit}
-                    >
-                        Submit
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-warning rounded m-1">
-                        Cetak
-                    </button>
                 </div>
             </form>
         </>
