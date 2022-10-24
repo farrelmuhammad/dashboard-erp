@@ -117,7 +117,7 @@ const BuatFaktur = () => {
     const [uangMuka, setUangMuka] = useState(0);
     const navigate = useNavigate();
     const auth = useSelector(state => state.auth);
-
+    const [loadingTable, setLoadingTable] = useState(false)
     const [getDataProduct, setGetDataProduct] = useState();
     const [getDataSurat, setGetDataSurat] = useState();
     const [isLoading, setIsLoading] = useState(false);
@@ -133,7 +133,8 @@ const BuatFaktur = () => {
     // const [pilihanDiskon, setPilihanDiskon] = useState('percent');
     const [pilihanDiskon, setPilihanDiskon] = useState('');
     const [jumlahDiskon, setJumlahDiskon] = useState([]);
-
+    const [mataUang, setMataUang] = useState('Rp ')
+    const [data, setData] = useState('')
     const [selectedSupplier, setSelectedSupplier] = useState()
     const [sumber, setSumber] = useState('')
     const [idTandaTerima, setIdTandaTerima] = useState([])
@@ -148,15 +149,16 @@ const BuatFaktur = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            // let tmp = []
-            // for (let i = 0; i < res.data.data.length; i++) {
-            //     tmp.push({
-            //         detail: res.data.data[i],
-            //         statusCek: false
-            //     });
-            // }
+            let tmp = []
+            for (let i = 0; i < res.data.data.length; i++) {
+                tmp.push({
+                    detail: res.data.data[i],
+                    statusCek: false
+                });
+            }
 
-            setGetDataSurat(res.data.data);
+            // setGetDataSurat(res.data.data);
+            setGetDataSurat(tmp);
             // console.log(res.data.map(d => d.id))
         };
 
@@ -171,15 +173,15 @@ const BuatFaktur = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            // let tmp = []
-            // for (let i = 0; i < res.data.data.length; i++) {
-            //     tmp.push({
-            //         detail: res.data.data[i],
-            //         statusCek: false
-            //     });
-            // }
+            let tmp = []
+            for (let i = 0; i < res.data.data.length; i++) {
+                tmp.push({
+                    detail: res.data.data[i],
+                    statusCek: false
+                });
+            }
 
-            setGetDataProduct(res.data.data);
+            setGetDataProduct(tmp);
             console.log(res.data.data)
         };
 
@@ -195,61 +197,36 @@ const BuatFaktur = () => {
         {
             title: 'No. Transaksi',
             dataIndex: 'code',
+            render: (_, record) => {
+                return <>{record.detail.code}</>
+            }
         },
         {
-            title: 'Supplier',
-            dataIndex: 'customer_id',
+            title: 'Customer',
+            dataIndex: 'customer_name',
             width: '15%',
             align: 'center',
-        },
-        {
-            title: 'Total',
-            dataIndex: 'total',
-            width: '15%',
-            align: 'center',
+            render: (_, record) => {
+                return <>{record.detail.customer_name}</>
+            }
         },
         {
             title: 'actions',
             dataIndex: 'address',
             width: '15%',
             align: 'center',
-            render: (_, record) => (
+            render: (_, record, index) => (
                 <>
                     <Checkbox
                         value={record}
-                        onChange={handleCheck}
+                        checked={record.statusCek}
+                        onChange={(e) => handleCheck(e, index)}
                     />
                 </>
             )
         },
     ];
 
-    const columnsModal2 = [
-        {
-            title: 'Nama Produk',
-            dataIndex: 'alias_name',
-        },
-        {
-            title: 'Stok',
-            dataIndex: 'stock',
-            width: '15%',
-            align: 'center',
-        },
-        {
-            title: 'actions',
-            dataIndex: 'address',
-            width: '15%',
-            align: 'center',
-            render: (_, record) => (
-                <>
-                    <Checkbox
-                        value={record}
-                        onChange={handleCheck}
-                    />
-                </>
-            )
-        },
-    ];
 
     function gantiPilihanDiskon(value, index) {
         let tmp = [];
@@ -544,32 +521,32 @@ const BuatFaktur = () => {
         })
     }, [jumlahDiskon]);
 
-    const defaultColumns = [
+    const columns = [
         {
             title: 'No.',
-            dataIndex: '',
+            dataIndex: 'no',
             width: '5%',
             align: 'center',
-            render(text, record, index) {
-                return {
-                    props: {
-                        style: { background: "#f5f5f5" }
-                    },
-                    children: <div>{index + 1}</div>
-                };
-            }
+            // render(text, record, index) {
+            //     return {
+            //         props: {
+            //             style: { background: "#f5f5f5" }
+            //         },
+            //         children: <div>{index + 1}</div>
+            //     };
+            // }
         },
         {
             title: 'Nama Produk Alias',
             dataIndex: 'product_alias_name',
-            render(text, record) {
-                return {
-                    props: {
-                        style: { background: "#f5f5f5" }
-                    },
-                    children: <div>{text}</div>
-                };
-            }
+            // render(text, record) {
+            //     return {
+            //         props: {
+            //             style: { background: "#f5f5f5" }
+            //         },
+            //         children: <div>{text}</div>
+            //     };
+            // }
         },
         {
             title: 'Qty',
@@ -577,28 +554,12 @@ const BuatFaktur = () => {
             width: '10%',
             align: 'center',
             editable: true,
-            render(text, record) {
-                return {
-                    props: {
-                    },
-                    // children: <div>{formatQuantity(text)}</div>
-                    children: <div>{text}</div>
-                };
-            }
         },
         {
             title: 'Stn',
             dataIndex: 'unit',
             width: '5%',
             align: 'center',
-            render(text, record) {
-                return {
-                    props: {
-                        style: { background: "#f5f5f5" }
-                    },
-                    children: <div>{text}</div>
-                };
-            }
         },
         {
             title: 'Harga',
@@ -606,14 +567,6 @@ const BuatFaktur = () => {
             width: '15%',
             align: 'center',
             editable: true,
-            render(text, record) {
-                return {
-                    props: {
-                    },
-                    // children: <div>{formatRupiah(text)}</div>
-                    children: <div>{text}</div>
-                };
-            }
         },
         // {
         //     title: 'Discount (Rp)',
@@ -650,31 +603,31 @@ const BuatFaktur = () => {
             dataIndex: 'discount',
             width: '20%',
             align: 'center',
-            render: (text, record, index) => {
-                return <div className="input-group input-group-sm mb-3">
-                    <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} defaultValue={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
-                    <div className="input-group-prepend">
-                        <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px", height: "35px" }}>
-                            <select
-                                onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
-                                id="grupSelect"
-                                className="form-select select-diskon"
-                                style={{ width: "70px" }}
-                            >
-                                {/* <option value="" >
-                                    Pilih
-                                </option> */}
-                                <option value="percent">
-                                    %
-                                </option>
-                                <option value="nominal">
-                                    Rp
-                                </option>
-                            </select>
-                        </span>
-                    </div>
-                </div>
-            }
+            // render: (text, record, index) => {
+            //     return <div className="input-group input-group-sm mb-3">
+            //         <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} defaultValue={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
+            //         <div className="input-group-prepend">
+            //             <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px", height: "35px" }}>
+            //                 <select
+            //                     onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
+            //                     id="grupSelect"
+            //                     className="form-select select-diskon"
+            //                     style={{ width: "70px" }}
+            //                 >
+            //                     {/* <option value="" >
+            //                         Pilih
+            //                     </option> */}
+            //                     <option value="percent">
+            //                         %
+            //                     </option>
+            //                     <option value="nominal">
+            //                         Rp
+            //                     </option>
+            //                 </select>
+            //             </span>
+            //         </div>
+            //     </div>
+            // }
         },
         {
             title: 'PPN',
@@ -682,54 +635,348 @@ const BuatFaktur = () => {
             width: '10%',
             align: 'center',
             editable: true,
-            render(text, record) {
-                return {
-                    props: {
-                    },
-                    children: <div>{text} %</div>
-                };
-            }
+            // render(text, record) {
+            //     return {
+            //         props: {
+            //         },
+            //         children: <div>{text} %</div>
+            //     };
+            // }
         },
         {
             title: 'Jumlah',
             dataIndex: 'total',
             width: '14%',
             align: 'center',
-            render:
-                (text, record, index) => {
-                    let grandTotalAmount = 0;
-                    if (pilihanDiskon[index] == 'percent' || pilihanDiskon == 'percent') {
-                        // console.log("masuk percent")
-                        let total = (record.quantity * record.price);
-                        let getPercent = (total * jumlahDiskon[index]) / 100;
-                        let totalDiscount = total - getPercent;
-                        let getPpn = (totalDiscount * record.ppn) / 100;
-                        if (checked) {
-                            grandTotalAmount = tableToRupiah(totalDiscount, "Rp");
-                        } else {
-                            grandTotalAmount = tableToRupiah(totalDiscount + getPpn, "Rp");
-                        }
-                    } else if (pilihanDiskon[index] == 'nominal') {
-                        // console.log("masuk nominal")
-                        let total = (record.quantity * record.price) - jumlahDiskon[index];
-                        let getPpn = (total * record.ppn) / 100;
-                        if (checked) {
-                            grandTotalAmount = tableToRupiah(total, "Rp");
-                        } else {
-                            grandTotalAmount = tableToRupiah(total + getPpn, "Rp");
-                        }
-                    } else {
-                        grandTotalAmount = tableToRupiah(record.quantity * Number(record.price), "Rp");
-                    }
-                    return {
-                        props: {
-                            style: { background: "#f5f5f5" }
-                        },
-                        children: grandTotalAmount
-                    }
-                }
+            // render:
+            //     (text, record, index) => {
+            //         let grandTotalAmount = 0;
+            //         if (pilihanDiskon[index] == 'percent' || pilihanDiskon == 'percent') {
+            //             // console.log("masuk percent")
+            //             let total = (record.quantity * record.price);
+            //             let getPercent = (total * jumlahDiskon[index]) / 100;
+            //             let totalDiscount = total - getPercent;
+            //             let getPpn = (totalDiscount * record.ppn) / 100;
+            //             if (checked) {
+            //                 grandTotalAmount = tableToRupiah(totalDiscount, "Rp");
+            //             } else {
+            //                 grandTotalAmount = tableToRupiah(totalDiscount + getPpn, "Rp");
+            //             }
+            //         } else if (pilihanDiskon[index] == 'nominal') {
+            //             // console.log("masuk nominal")
+            //             let total = (record.quantity * record.price) - jumlahDiskon[index];
+            //             let getPpn = (total * record.ppn) / 100;
+            //             if (checked) {
+            //                 grandTotalAmount = tableToRupiah(total, "Rp");
+            //             } else {
+            //                 grandTotalAmount = tableToRupiah(total + getPpn, "Rp");
+            //             }
+            //         } else {
+            //             grandTotalAmount = tableToRupiah(record.quantity * Number(record.price), "Rp");
+            //         }
+            //         return {
+            //             props: {
+            //                 style: { background: "#f5f5f5" }
+            //             },
+            //             children: grandTotalAmount
+            //         }
+            //     }
         },
     ];
+
+    function klikUbahData(y, value, key) {
+        let tmpData = [];
+        if (key == 'qty') {
+            let hasil = value.replaceAll('.', '');
+            for (let i = 0; i < data.length; i++) {
+                if (i == y) {
+                    tmpData.push(
+                        {
+                            id: data[i].id,
+                            product_alias_name: data[i].product_alias_name,
+                            quantity: hasil,
+                            price: data[i].price,
+                            discount_percentage: data[i].discount_percentage,
+                            fixed_discount: data[i].fixed_discount,
+                            ppn: data[i].ppn,
+                            subtotal: data[i].subtotal,
+                            pilihanDiskon: data[i].pilihanDiskon,
+                            unit: data[i].unit,
+                            total: data[i].total
+
+                        })
+                }
+                else {
+                    tmpData.push(data[i]);
+                }
+
+            }
+            setData(tmpData);
+        }
+        else if (key == 'price') {
+            let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+
+            for (let i = 0; i < data.length; i++) {
+                if (i == y) {
+
+                    tmpData.push(
+                        {
+                            id: data[i].id,
+                            product_alias_name: data[i].product_alias_name,
+                            quantity: data[i].quantity,
+                            price: hasil,
+                            discount_percentage: data[i].discount_percentage,
+                            fixed_discount: data[i].fixed_discount,
+                            ppn: data[i].ppn,
+                            subtotal: data[i].subtotal,
+                            pilihanDiskon: data[i].pilihanDiskon,
+                            unit: data[i].unit,
+                            total: data[i].total,
+                        })
+                }
+                else {
+                    tmpData.push(data[i]);
+                }
+
+                // }
+                setData(tmpData);
+            }
+        }
+        else if (key == 'diskonValue') {
+            if (data[y].pilihanDiskon == 'nominal') {
+                let hasil = value.replaceAll('.', '');
+
+                for (let i = 0; i < data.length; i++) {
+                    if (i == y) {
+                        tmpData.push(
+                            {
+                                id: data[i].id,
+                                product_alias_name: data[i].product_alias_name,
+                                quantity: data[i].quantity,
+                                price: data[i].price,
+                                discount_percentage: data[i].discount_percentage,
+                                fixed_discount: hasil,
+                                ppn: data[i].ppn,
+                                subtotal: data[i].subtotal,
+                                pilihanDiskon: 'nominal',
+                                unit: data[i].unit,
+                                total: data[i].total,
+                            })
+                    }
+
+                    else {
+                        tmpData.push(data[i]);
+                    }
+
+                }
+                setData(tmpData);
+            }
+            else {
+
+                let hasil = value.replaceAll('.', '');
+
+                for (let i = 0; i < data.length; i++) {
+
+                    if (i == y) {
+                        tmpData.push(
+                            {
+                                id: data[i].id,
+                                product_alias_name: data[i].product_alias_name,
+                                quantity: data[i].quantity,
+                                price: data[i].price,
+                                discount_percentage: hasil,
+                                fixed_discount: data[i].fixed_discount,
+                                ppn: data[i].ppn,
+                                subtotal: data[i].subtotal,
+                                pilihanDiskon: 'persen',
+                                unit: data[i].unit,
+                                total: data[i].total,
+                            })
+                    }
+
+                    else {
+                        tmpData.push(data[i]);
+                    }
+
+                }
+                setData(tmpData);
+            }
+        }
+        else if (key == 'pilihanDiskon') {
+            for (let i = 0; i < data.length; i++) {
+                if (i == y) {
+                    tmpData.push(
+                        {
+                            id: data[i].id,
+                            product_alias_name: data[i].product_alias_name,
+                            quantity: data[i].quantity,
+                            price: data[i].price,
+                            discount_percentage: data[i].discount_percentage,
+                            fixed_discount: data[i].fixed_discount,
+                            ppn: data[i].ppn,
+                            subtotal: data[i].subtotal,
+                            pilihanDiskon: value,
+                            unit: data[i].unit,
+                            total: data[i].total,
+
+                        })
+                }
+                else {
+                    tmpData.push(data[i]);
+                }
+
+            }
+            setData(tmpData);
+        }
+        else if (key == 'ppn') {
+            let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+
+            for (let i = 0; i < data.length; i++) {
+                if (i == y) {
+
+                    tmpData.push(
+                        {
+                            id: data[i].id,
+                            product_alias_name: data[i].product_alias_name,
+                            quantity: data[i].quantity,
+                            price: data[i].price,
+                            discount_percentage: data[i].discount_percentage,
+                            fixed_discount: data[i].fixed_discount,
+                            ppn: hasil,
+                            subtotal: data[i].subtotal,
+                            pilihanDiskon: data[i].pilihanDiskon,
+                            unit: data[i].unit,
+                            total: data[i].total,
+                        })
+                }
+                else {
+                    tmpData.push(data[i]);
+                }
+
+                // }
+                setData(tmpData);
+            }
+        }
+
+        // ubah total 
+        let grandTotal;
+        let arrTotal = [];
+        for (let i = 0; i < tmpData.length; i++) {
+            if (i == y) {
+                if (tmpData[i].pilihanDiskon == 'persen') {
+                    let total = tmpData[i].quantity.replace(',', '.') * Number(tmpData[i].price);
+                    let ppn = (Number(total) * tmpData[i].ppn.replace(',', '.')) / 100;
+                    let getDiskon = (Number(total) * tmpData[i].discount_percentage.replace(',', '.')) / 100;
+                    grandTotal = total - Number(getDiskon) + Number(ppn);
+                }
+                else if (tmpData[i].pilihanDiskon == 'nominal') {
+                    let total = (Number(tmpData[i].quantity.replace(',', '.')) * Number(tmpData[i].price))
+                    let ppn = (Number(total) * tmpData[i].ppn.replace(',', '.')) / 100;
+                    let getDiskon = tmpData[i].fixed_discount;
+                    grandTotal = total - Number(getDiskon) + Number(ppn);
+                }
+                else {
+                    let total = (Number(tmpData[i].quantity.replace(',', '.')) * Number(tmpData[i].price))
+                    let ppn = (Number(total) * tmpData[i].ppn.replace(',', '.')) / 100;
+                    grandTotal = total + Number(ppn);
+                }
+                arrTotal.push(
+                    {
+                        id: tmpData[i].id,
+                        product_alias_name: tmpData[i].product_alias_name,
+                        quantity: tmpData[i].quantity,
+                        price: tmpData[i].price,
+                        discount_percentage: tmpData[i].discount_percentage,
+                        fixed_discount: tmpData[i].fixed_discount,
+                        ppn: tmpData[i].ppn,
+                        subtotal: tmpData[i].subtotal,
+                        pilihanDiskon: tmpData[i].pilihanDiskon,
+                        unit: tmpData[i].unit,
+                        total: grandTotal,
+                    })
+            }
+            else {
+                arrTotal.push(tmpData[i])
+
+            }
+        }
+
+        console.log(arrTotal)
+        setProduct(arrTotal)
+        calculate(arrTotal);
+        setData(arrTotal)
+
+    }
+
+    const tableData =
+        [...product.map((item, i) => ({
+            no: i + 1,
+            product_alias_name: item.product_alias_name,
+            quantity: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].quantity)} onChange={(e) => klikUbahData(i, e.target.value, "qty")} key="qty" />,
+            unit: item.unit,
+            price: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang} onKeyDown={(event) => klikEnter(event)} value={Number(item.price)} onChange={(e) => klikUbahData(i, e.target.value, "price")} />,
+            discount:
+                data[i].pilihanDiskon == 'noDisc' ?
+                    <div className='d-flex p-1' style={{ height: "100%" }}>
+                        <input onKeyDown={(event) => klikEnter(event)} style={{ width: "70%", fontSize: "10px!important" }} type="text" className="text-center editable-input" defaultValue={data[i].discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} />
+                        <div className="input-group-prepend"  >
+                            <select
+                                onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
+                                id="grupSelect"
+                                className="form-select select-diskon"
+                            >
+                                <option selected value="persen" >
+                                    %
+                                </option>
+                                <option value="nominal">
+                                    {mataUang}
+                                </option>
+                            </select>
+                        </div>
+                    </div> :
+                    data[i].pilihanDiskon == 'persen' ?
+                        <div className='d-flex p-1' style={{ height: "100%" }} >
+                            <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={data[i].discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
+                            <div className="input-group-prepend" >
+                                <select
+                                    onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
+                                    id="grupSelect"
+                                    className="form-select select-diskon"
+                                >
+                                    <option selected value="persen" >
+                                        %
+
+                                    </option>
+                                    <option value="nominal">
+                                        {mataUang}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        :
+                        data[i].pilihanDiskon == 'nominal' ?
+                            <div className='d-flex p-1' style={{ height: "100%" }}>
+                                <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].fixed_discount)} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
+
+                                <div className="input-group-prepend" >
+                                    <select
+                                        onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
+                                        id="grupSelect"
+                                        className="form-select select-diskon"
+                                    >
+                                        <option value="persen" >
+                                            %
+
+                                        </option>
+                                        <option selected value="nominal">
+                                            {mataUang}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div> : null,
+            ppn: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} suffix={'%'} onKeyDown={(event) => klikEnter(event)} value={Number(item.ppn)} onChange={(e) => klikUbahData(i, e.target.value, "ppn")} />,
+            total: mataUang + ' ' + Number(data[i].total).toFixed(2).replace('.', ',')
+        }))]
 
     // const dataSuratJalan = [
     //     ...product.delivery_note_details.map((item, i) => ({
@@ -740,17 +987,17 @@ const BuatFaktur = () => {
     const handleChange = () => {
         setChecked(!checked);
         let check_checked = !checked;
-        calculate(product, check_checked);
+        calculate(data, check_checked);
     };
-    const handleSave = (row) => {
-        const newData = [...product];
-        const index = newData.findIndex((item) => row.alias_name === item.alias_name);
-        const item = newData[index];
-        newData.splice(index, 1, { ...item, ...row });
-        setProduct(newData);
-        let check_checked = checked;
-        calculate(newData, check_checked);
-    };
+    // const handleSave = (row) => {
+    //     const newData = [...product];
+    //     const index = newData.findIndex((item) => row.alias_name === item.alias_name);
+    //     const item = newData[index];
+    //     newData.splice(index, 1, { ...item, ...row });
+    //     setProduct(newData);
+    //     let check_checked = checked;
+    //     calculate(newData, check_checked);
+    // };
 
     function tambahUangMuka(value) {
         let hasil = value.toString().replaceAll('.', '').replace(/[^0-9\.]+/g, "");
@@ -759,6 +1006,8 @@ const BuatFaktur = () => {
     }
 
     const calculate = (product, check_checked) => {
+        console.log(product)
+
         let totalPerProduk = 0;
         let grandTotal = 0;
         let total = 0;
@@ -769,42 +1018,50 @@ const BuatFaktur = () => {
         let subTotalDiscount = 0;
         let totalDiscount = 0;
         product.map((values, i) => {
+            // termasuk pajak 
             if (check_checked) {
                 total += (Number(values.quantity) * Number(values.price));
                 totalPerProduk = (Number(values.quantity) * Number(values.price));
 
-                if (pilihanDiskon[i] == 'percent') {
-                    hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                    rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                if (values.pilihanDiskon == 'persen') {
+                    hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                    rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
                 }
-                else if (pilihanDiskon[i] == 'nominal') {
+                else if (values.pilihanDiskon == 'nominal') {
 
-                    hasilDiskon += Number(jumlahDiskon[i]);
-                    rowDiscount = Number(jumlahDiskon[i]);
+                    hasilDiskon += Number(values.fixed_discount);
+                    rowDiscount = Number(values.fixed_discount);
+                }
+                else if (values.pilihanDiskon == "noDisc") {
+                    hasilDiskon += 0;
+                    rowDiscount = 0;
                 }
 
                 subTotalDiscount = totalPerProduk - rowDiscount;
-                // subTotal   += (subTotalDiscount * 100) / (100 + values.ppn);
                 subTotal += (totalPerProduk * 100) / (100 + values.ppn);
                 totalDiscount += ((rowDiscount * 100) / (100 + values.ppn));
                 totalPpn += ((((totalPerProduk * 100) / (100 + values.ppn)) - (rowDiscount * 100) / (100 + values.ppn)) * values.ppn) / (100);
                 grandTotal = subTotal - totalDiscount + Number(totalPpn) - Number(uangMuka);
                 setSubTotal(subTotal)
                 setGrandTotalDiscount(totalDiscount);
+                console.log(totalDiscount)
                 setTotalPpn(totalPpn)
                 setGrandTotal(grandTotal);
-            } else {
+            }
+
+            // tidak termasuk pajak 
+            else {
                 total += (Number(values.quantity) * Number(values.price));
                 totalPerProduk = (Number(values.quantity) * Number(values.price));
 
-                if (pilihanDiskon[i] == 'percent') {
-                    hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                    rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                if (values.pilihanDiskon == 'persen') {
+                    hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                    rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
                 }
-                else if (pilihanDiskon[i] == 'nominal') {
+                else if (values.pilihanDiskon == 'nominal') {
 
-                    hasilDiskon += Number(jumlahDiskon[i]);
-                    rowDiscount = Number(jumlahDiskon[i]);
+                    hasilDiskon += Number(values.fixed_discount);
+                    rowDiscount = Number(values.fixed_discount);
                 }
                 totalDiscount += ((totalPerProduk * jumlahDiskon[i]) / 100);
                 subTotal = total - (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
@@ -827,115 +1084,113 @@ const BuatFaktur = () => {
         },
     };
 
-    const columns = defaultColumns.map((col) => {
-        if (!col.editable) {
-            return col;
-        }
-        return {
-            ...col,
-            onCell: (record) => ({
-                record,
-                editable: col.editable,
-                dataIndex: col.dataIndex,
-                title: col.title,
-                handleSave,
-            }),
-        };
-    });
+    // const columns = defaultColumns.map((col) => {
+    //     if (!col.editable) {
+    //         return col;
+    //     }
+    //     return {
+    //         ...col,
+    //         onCell: (record) => ({
+    //             record,
+    //             editable: col.editable,
+    //             dataIndex: col.dataIndex,
+    //             title: col.title,
+    //             handleSave,
+    //         }),
+    //     };
+    // });
 
-    const handleCheck = (event) => {
-        // console.log(event.target.checked)
-        // var updatedList = [...product];
+
+    const handleCheck = (event, index) => {
+        setLoadingTable(true)
         let tmpData = [];
         let tmpDataBaru = [];
 
 
-        // perubahan data dan status ceked 
-        // if (sumber == 'Surat') {
-        //     for (let i = 0; i < getDataSurat.length; i++) {
-        //         if (i == index) {
-        //             tmpDataBaru.push({
-        //                 detail: getDataSurat[i].detail,
-        //                 statusCek: !getDataSurat[i].statusCek
-        //             })
-        //         }
-        //         else {
-        //             tmpDataBaru.push(getDataSurat[i])
-        //         }
-        //     }
-        //     setGetDataSurat(tmpDataBaru)
-        // }
+        // pengecekan centang
+        if (sumber == 'SO') {
+            for (let i = 0; i < getDataProduct.length; i++) {
+                if (i == index) {
+                    tmpDataBaru.push({
+                        detail: getDataProduct[i].detail,
+                        statusCek: !getDataProduct[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataProduct[i])
+                }
+            }
+            setGetDataProduct(tmpDataBaru)
 
-        // else if (sumber == 'SO') {
-        //     for (let i = 0; i < getDataProduct.length; i++) {
-        //         if (i == index) {
-        //             tmpDataBaru.push({
-        //                 detail: getDataProduct[i].detail,
-        //                 statusCek: !getDataProduct[i].statusCek
-        //             })
-        //         }
-        //         else {
-        //             tmpDataBaru.push(getDataProduct[i])
-        //         }
-        //     }
-        //     setGetDataProduct(tmpDataBaru)
-        // }
+        }
 
+        else if (sumber == 'Surat') {
+            for (let i = 0; i < getDataSurat.length; i++) {
+                if (i == index) {
+                    tmpDataBaru.push({
+                        detail: getDataSurat[i].detail,
+                        statusCek: !getDataSurat[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataSurat[i])
+                }
+            }
+            setGetDataSurat(tmpDataBaru)
+        }
 
-        if (event.target.checked) {
+        if (tmpDataBaru[index].statusCek) {
             // mencari id yang di grouping 
             var idTerima = [...idTandaTerima];
-            idTerima = [...idTandaTerima, event.target.value.id];
+            idTerima = [...idTandaTerima, event.target.value.detail.id];
             setIdTandaTerima(idTerima);
             var updatedList
 
             var strParams;
             if (sumber == "SO") {
-                // belum
-                // for (let i = 0; i < idTerima.length; i++) {
-                //     if (i == 0) {
-                //         strParams = "id_tanda_terima_barang[]=" + idTerima[i]
-                //     }
-                //     else {
-                //         strParams = strParams + "&id_tanda_terima_barang[]=" + idTerima[i]
-                //     }
+                for (let i = 0; i < idTerima.length; i++) {
+                    if (i == 0) {
+                        strParams = "id_pesanan_penjualan[]=" + idTerima[i]
+                    }
+                    else {
+                        strParams = strParams + "&id_pesanan_penjualan[]=" + idTerima[i]
+                    }
 
-                // }
-                // axios.get(`${Url}/purchase_invoices_grouped_goods_receipt_details?${strParams}`, {
-                //     headers: {
-                //         Accept: "application/json",
-                //         Authorization: `Bearer ${auth.token}`,
-                //     },
-                // })
-                //     .then((res) => {
-                //         updatedList = res.data.details;
-                //     })
-                //     .then(() => {
-                //         for (let i = 0; i < updatedList.length; i++) {
-                //             updatedList[i].currency_name ? setMataUang(updatedList[i].currency_name) : setMataUang('Rp')
-                //             tmpData.push(
-                //                 {
-                //                     id: updatedList[i].product_id,
-                //                     product_name: updatedList[i].product_name,
-                //                     quantity: updatedList[i].quantity,
-                //                     price: updatedList[i].price,
-                //                     discount_percentage: updatedList[i].discount_percentage,
-                //                     fixed_discount: updatedList[i].fixed_discount,
-                //                     subtotal: updatedList[i].subtotal,
-                //                     pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
-                //                     currency_name: updatedList[i].currency_name ? updatedList[i].currency_name : 'Rp',
-                //                     unit: updatedList[i].unit,
-                //                     total: updatedList[i].total
+                }
+                axios.get(`${Url}/sales_invoices_grouped_sales_order_details?${strParams}`, {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${auth.token}`,
+                    },
+                })
+                    .then((res) => {
+                        updatedList = res.data.details;
+                    })
+                    .then(() => {
+                        for (let i = 0; i < updatedList.length; i++) {
+                            // updatedList[i].currency_name ? setMataUang(updatedList[i].currency_name) : setMataUang('Rp')
+                            tmpData.push(
+                                {
+                                    id: updatedList[i].product_id,
+                                    product_alias_name: updatedList[i].product_alias_name,
+                                    quantity: updatedList[i].quantity,
+                                    price: updatedList[i].price,
+                                    discount_percentage: updatedList[i].discount_percentage,
+                                    fixed_discount: updatedList[i].fixed_discount,
+                                    ppn: updatedList[i].ppn,
+                                    subtotal: updatedList[i].subtotal,
+                                    pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+                                    unit: updatedList[i].unit,
+                                    total: updatedList[i].total
 
-                //                 }
-                //             )
+                                }
+                            )
 
-                //         }
+                        }
 
-                //         setData(tmpData)
-                //         calculate(tmpData)
-                //     })
-
+                        setData(tmpData)
+                        calculate(tmpData)
+                    })
             }
 
             else if (sumber == "Surat") {
@@ -955,122 +1210,159 @@ const BuatFaktur = () => {
                     },
                 })
                     .then((res) => {
-                        console.log(res)
                         updatedList = res.data.details;
+                        console.log(updatedList)
+
                     })
+                    .then(() => {
+                        for (let i = 0; i < updatedList.length; i++) {
+                            // updatedList[i].currency_name ? setMataUang(updatedList[i].currency_name) : setMataUang('Rp')
+                            tmpData.push(
+                                {
+                                    id: updatedList[i].product_id,
+                                    product_alias_name: updatedList[i].product_alias_name,
+                                    quantity: updatedList[i].quantity,
+                                    price: updatedList[i].price,
+                                    discount_percentage: updatedList[i].discount_percentage,
+                                    fixed_discount: updatedList[i].fixed_discount,
+                                    subtotal: updatedList[i].subtotal,
+                                    pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+                                    ppn: updatedList[i].ppn,
+                                    unit: updatedList[i].unit,
+                                    total: updatedList[i].total
 
-                console.log(updatedList)
-                // .then(() => {
-                //     for (let i = 0; i < updatedList.length; i++) {
-                //         updatedList[i].currency_name ? setMataUang(updatedList[i].currency_name) : setMataUang('Rp')
-                //         tmpData.push(
-                //             {
-                //                 id: updatedList[i].product_id,
-                //                 product_name: updatedList[i].product_name,
-                //                 quantity: updatedList[i].quantity,
-                //                 price: updatedList[i].price,
-                //                 discount_percentage: updatedList[i].discount_percentage,
-                //                 fixed_discount: updatedList[i].fixed_discount,
-                //                 subtotal: updatedList[i].subtotal,
-                //                 pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
-                //                 currency_name: updatedList[i].currency_name ? updatedList[i].currency_name : 'Rp',
-                //                 unit: updatedList[i].unit,
-                //                 total: updatedList[i].total
+                                }
+                            )
 
-                //             }
-                //         )
+                        }
 
-                //     }
+                        setData(tmpData)
+                        calculate(tmpData)
 
-                //     // setData(tmpData)
-                //     // calculate(tmpData)
-                // })
+                    })
             }
-
-
-
-
-            // let dataSumber;
-            // if (sumber == 'SO') {
-            //     dataSumber = event.target.value.detail.sales_order_details
-            // }
-            // else if (sumber == 'Surat') {
-            //     dataSumber = event.target.value.detail.delivery_note_details
-            // }
-
-            // let tmp = [];
-            // for (let i = 0; i <= updatedList.length; i++) {
-            //     if (i == updatedList.length) {
-            //         for (let i = 0; i < dataSumber.length; i++) {
-            //             if (sumber == 'Retur') {
-            //                 tmp.push({
-            //                     id_datasumber: sumber == 'Retur' ? dataSumber[i].delivery_note_id : dataSumber[i].sales_order_id,
-            //                     id: dataSumber[i].id,
-            //                     product_alias_name: dataSumber[i].product_alias_name,
-            //                     product_id: dataSumber[i].product_id,
-            //                     product_name: dataSumber[i].product_name,
-            //                     quantity: dataSumber[i].quantity,
-            //                     returned: dataSumber[i].returned,
-            //                     sales_order_id: dataSumber[i].sales_order_id,
-            //                     tally_sheet_code: dataSumber[i].tally_sheet_code,
-            //                     tally_sheet_id: dataSumber[i].tally_sheet_id,
-            //                     unit: dataSumber[i].unit
-            //                 })
-            //             }
-            //             else {
-            //                 tmp.push({
-            //                     customer_id: dataSumber[i].customer_id,
-            //                     discount_percentage: dataSumber[i].discount_percentage,
-            //                     fixed_discount: dataSumber[i].fixed_discount,
-            //                     id: dataSumber[i].id,
-            //                     notes: dataSumber[i].notes,
-            //                     ppn: dataSumber[i].ppn,
-            //                     price: dataSumber[i].price,
-            //                     product_alias_name: dataSumber[i].product_alias_name,
-            //                     quantity: dataSumber[i].quantity,
-            //                     code: dataSumber[i].sales_order_code,
-            //                     sales_order_id: dataSumber[i].sales_order_id,
-            //                     subtotal: dataSumber[i].subtotal,
-            //                     subtotal_after_discount: dataSumber[i].subtotal_after_discount,
-            //                     tally_sheets_qty: dataSumber[i].tally_sheets_qty,
-            //                     total: dataSumber[i].total,
-            //                     unit: dataSumber[i].unit
-            //                 })
-            //             }
-
-            //         }
-            //     }
-            //     else {
-            //         tmp.push(updatedList[i])
-            //     }
-            //     console.log(tmp)
-
-            // }
-            // updatedList = tmp
-
+            setProduct(tmpData);
         }
         else {
-            console.log(updatedList)
-            console.log(event.target.value.detail)
-            let jumlah = 0
-            let index = []
-            for (let i = 0; i < updatedList.length; i++) {
-                if (updatedList[i].code == event.target.value.detail.code) {
-                    jumlah = jumlah + 1
-                    index.push(i);
+
+            for (let i = 0; i < idTandaTerima.length; i++) {
+                if (event.target.value.detail.id == idTandaTerima[i]) {
+                    idTandaTerima.splice(i, 1);
                 }
             }
-            updatedList.splice(index[0], jumlah);
+
+            if (sumber == "SO") {
+                if (idTandaTerima.length != 0) {
+                    var strParams;
+                    for (let i = 0; i < idTandaTerima.length; i++) {
+                        if (i == 0) {
+                            strParams = "id_pesanan_penjualan[]=" + idTandaTerima[i]
+                        }
+                        else {
+                            strParams = strParams + "&id_pesanan_penjualan[]=" + idTandaTerima[i]
+                        }
+
+                    }
+
+                    axios.get(`${Url}/sales_invoices_grouped_delivery_note_details?${strParams}`, {
+                        headers: {
+                            Accept: "application/json",
+                            Authorization: `Bearer ${auth.token}`,
+                        },
+                    })
+                        .then((res) => {
+
+                            updatedList = res.data.details;
+                        })
+                        .then(() => {
+
+                            for (let i = 0; i < updatedList.length; i++) {
+                                tmpData.push(
+                                    {
+                                        id: updatedList[i].product_id,
+                                        product_alias_name: updatedList[i].product_alias_name,
+                                        quantity: updatedList[i].quantity,
+                                        price: updatedList[i].price,
+                                        discount_percentage: updatedList[i].discount_percentage,
+                                        fixed_discount: updatedList[i].fixed_discount,
+                                        subtotal: updatedList[i].subtotal,
+                                        pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+                                        ppn: updatedList[i].ppn,
+                                        unit: updatedList[i].unit,
+                                        total: updatedList[i].total
+
+                                    }
+                                )
+
+                            }
+
+                            setData(tmpData)
+                            calculate(tmpData)
+                        })
+
+                }
+                else {
+                    tmpData.push()
+                    setData(tmpData);
+                }
+            }
+            else if (sumber == 'Surat') {
+                if (idTandaTerima.length != 0) {
+                    var strParams;
+                    for (let i = 0; i < idTandaTerima.length; i++) {
+                        if (i == 0) {
+                            strParams = "id_pesanan_penjualan[]=" + idTandaTerima[i]
+                        }
+                        else {
+                            strParams = strParams + "&id_pesanan_penjualan[]=" + idTandaTerima[i]
+                        }
+
+                    }
+
+                    axios.get(`${Url}/sales_invoices_grouped_delivery_note_details?${strParams}`, {
+                        headers: {
+                            Accept: "application/json",
+                            Authorization: `Bearer ${auth.token}`,
+                        },
+                    })
+                        .then((res) => {
+
+                            updatedList = res.data.details;
+                        })
+                        .then(() => {
+                            for (let i = 0; i < updatedList.length; i++) {
+                                tmpData.push(
+                                    {
+                                        id: updatedList[i].product_id,
+                                        product_alias_name: updatedList[i].product_alias_name,
+                                        quantity: updatedList[i].quantity,
+                                        price: updatedList[i].price,
+                                        discount_percentage: updatedList[i].discount_percentage,
+                                        fixed_discount: updatedList[i].fixed_discount,
+                                        subtotal: updatedList[i].subtotal,
+                                        pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+                                        ppn: updatedList[i].ppn,
+                                        unit: updatedList[i].unit,
+                                        total: updatedList[i].total
+
+                                    }
+                                )
+
+                            }
+                            setData(tmpData)
+                            calculate(tmpData)
+                        })
+
+                }
+                else {
+                    tmpData.push()
+                    setData(tmpData);
+                }
+            }
+            setProduct(tmpData)
         }
-        setProduct(updatedList);
-        let tmp = [];
-        let tmpJumlah = [];
-        for (let i = 0; i < updatedList.length; i++) {
-            tmp[i] = 'percent';
-            tmpJumlah[i] = 0;
-        }
-        setPilihanDiskon(tmp);
-        setJumlahDiskon(tmpJumlah)
+
+        setLoadingTable(false)
     };
 
     const handleSubmit = async (e) => {
@@ -1245,6 +1537,27 @@ const BuatFaktur = () => {
     ]
 
     function klikUbahSumber(value) {
+        let tmpDataBaru = []
+        // handle cek 
+        if (sumber == 'SO') {
+            for (let i = 0; i < getDataProduct.length; i++) {
+                tmpDataBaru.push({
+                    detail: getDataProduct[i].detail,
+                    statusCek: false
+                })
+            }
+            setGetDataProduct(tmpDataBaru)
+        }
+        else if (sumber == 'Surat') {
+            for (let i = 0; i < getDataSurat.length; i++) {
+                tmpDataBaru.push({
+                    detail: getDataSurat[i].detail,
+                    statusCek: false
+                })
+            }
+            setGetDataSurat(tmpDataBaru)
+        }
+
         setSumber(value);
         setProduct([])
         setSelectedSupplier('');
@@ -1446,21 +1759,23 @@ const BuatFaktur = () => {
                 ]}
             >
                 {sumber == 'SO' ? <Table
-                    components={components}
-                    rowClassName={() => 'editable-row'}
+                    // components={components}
+                    // rowClassName={() => 'editable-row'}
                     bordered
                     pagination={false}
-                    dataSource={product}
+                    dataSource={tableData}
+                    isLoading={loadingTable}
                     columns={columns}
-                    onChange={(e) => setProduct(e.target.value)}
+                // onChange={(e) => setProduct(e.target.value)}
                 /> : <Table
-                    components={components}
-                    rowClassName={() => 'editable-row'}
+                    // components={components}
+                    // rowClassName={() => 'editable-row'}
                     bordered
                     pagination={false}
-                    dataSource={product}
+                    dataSource={tableData}
+                    isLoading={loadingTable}
                     columns={columns}
-                    onChange={(e) => setProduct(e.target.value)}
+                // onChange={(e) => setProduct(e.target.value)}
                 />}
                 <div className="row p-0 mt-3">
                     <div className="col ms-5">
@@ -1511,7 +1826,7 @@ const BuatFaktur = () => {
                         </div>
                     </div>
                 </div>
-                <br/>
+                <br />
                 <div className="btn-group mt-2" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"
