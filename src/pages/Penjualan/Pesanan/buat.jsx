@@ -81,7 +81,14 @@ const EditableCell = ({
                 ]}
             >
                 {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
+                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
+    //               formatter={value => `${value.replace('.',',')}`} 
+      decimalSeparator = {','}
+    onChange={value => {
+        value = parseFloat(value.toString().replace('.', ','))
+      }}
+      
+                />
             </Form.Item>
         ) : (
             <div
