@@ -244,6 +244,16 @@ const GoodsRequestTable = () => {
                             />
                         </Link>
                     </Space>
+                    ):record.status === 'done'? (
+                        <Space size="middle">
+                        <Link to={`/goodsrequest/detail/${record.id}`}>
+                            <Button
+                                size='small'
+                                type="primary"
+                                icon={<InfoCircleOutlined />}
+                            />
+                        </Link>
+                    </Space>
                     ) : (
                         <Space size="middle">
                         <Link to={`/goodsrequest/detail/${record.id}`}>

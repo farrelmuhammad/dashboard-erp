@@ -1495,7 +1495,7 @@ const CreateTallyTransfer = () => {
                     tallySheetData.append("id_permintaan_barang[]", p.id);
                     tallySheetData.append("id_produk[]", po.product_id);
                     tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
-                    tallySheetData.append("aksi[]", statusPO[pi][i]);
+                    tallySheetData.append("aksi[]", "Done");
                     tallySheetData.append("satuan_box[]", po.unit);
                     tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
 
