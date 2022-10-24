@@ -1,15 +1,5 @@
-// import Paper from "@mui/material/Paper";
-// import Table from "@mui/material/Table";
-// import TableBody from "@mui/material/TableBody";
-// import TableCell from "@mui/material/TableCell";
-// import TableContainer from "@mui/material/TableContainer";
-// import TableHead from "@mui/material/TableHead";
-// import TablePagination from "@mui/material/TablePagination";
-// import TableRow from "@mui/material/TableRow";
-import SendIcon from "@mui/icons-material/Send";
-import Button from "@mui/material/Button";
+
 import axios from "axios";
-import jsCookie from "js-cookie";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -18,7 +8,8 @@ import "./form.css";
 import { Checkbox } from "@mui/material";
 import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
-import { PageHeader, Skeleton, Switch } from "antd";
+import { Button, PageHeader, Skeleton, Switch } from "antd";
+import { SendOutlined } from "@ant-design/icons";
 
 const EditKaryawan = () => {
   // const token = jsCookie.get("auth");
@@ -491,13 +482,14 @@ const EditKaryawan = () => {
             </label>
           </div>
         </div>
-        <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+        <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
           <Button
+            type="primary"
+            icon={<SendOutlined />}
+            size="large"
             onClick={handleUpdate}
-            variant="contained"
-            endIcon={<SendIcon />}
           >
-            Simpan
+            Submit
           </Button>
         </div>
       </PageHeader>

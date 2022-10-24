@@ -137,6 +137,7 @@ const BuatPesanan = () => {
             },
         }).then((res) => res.json());
     };
+    
     useEffect(() => {
         const getProduct = async () => {
             const res = await axios.get(`${Url}/select_product_alias?nama_alias=${query}`, {
