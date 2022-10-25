@@ -199,7 +199,7 @@ const BuatTally = () => {
         setCustomer(value.id);
     };
     const loadOptionsCustomer = (inputValue) => {
-        return fetch(`${Url}/select_customers?limit=10&nama=${inputValue}`, {
+        return fetch(`${Url}/tally_sheets_available_customers?limit=10&nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -571,6 +571,147 @@ const BuatTally = () => {
         setQuantity(arrtmp);
         setStatusSO(arrStatus);
         setModal2Visible2(false)
+    }
+
+    function forceDoneProduct(baris, kolom) {
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Status akan diubah menjadi Done",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya'
+        }).then((result) => {
+            console.log(product)
+            if (result.isConfirmed) {
+                let newStatus = []
+                let dataSumber = []
+                for (let i = 0; i < product.length; i++) {
+                    let status = []
+                    if (sumber == 'Retur') {
+                        dataSumber = product[i].purchase_return_details;
+                    }
+                    else if (sumber == 'SO') {
+                        dataSumber = product[i].sales_order_details;
+                    }
+
+                    if (baris == i) {
+                        for (let x = 0; x < dataSumber.length; x++) {
+                            if (kolom == x) {
+                                status.push('Done')
+                            }
+                            else {
+                                status.push(statusSO[i][x])
+
+                            }
+                        }
+                        newStatus.push(status)
+
+                    }
+                    else {
+                        newStatus.push(statusSO[i])
+                    }
+
+                }
+                setStatusSO(newStatus)
+            }
+        })
+    }
+
+    function forceNexDeliveryProduct(baris, kolom) {
+        console.log(product)
+        // console.log(product[index].tally_sheets_qty)
+        // console.log(product[index].boxes_quantity)
+
+        let dataSumber = []
+        if (sumber == 'Retur') {
+            dataSumber = product[baris].purchase_return_details;
+        }
+        else if (sumber == 'SO') {
+            dataSumber = product[baris].sales_order_details;
+        }
+
+
+        if (dataSumber[kolom].tally_sheets_qty >= dataSumber[kolom].quantity) {
+            Swal.fire(
+                "Tidak bisa mengubah status",
+                `Jumlah ini sudah melebihi jumlah pesanan`,
+                "error"
+            )
+        }
+        else {
+            Swal.fire({
+                title: 'Apakah Anda Yakin?',
+                text: "Status akan diubah menjadi Next Delivery",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let newStatus = []
+                    let dataSumber = []
+                    for (let i = 0; i < product.length; i++) {
+                        let status = []
+                        if (sumber == 'Retur') {
+                            dataSumber = product[i].purchase_return_details;
+                        }
+                        else if (sumber == 'SO') {
+                            dataSumber = product[i].sales_order_details;
+                        }
+
+                        if (baris == i) {
+                            for (let x = 0; x < dataSumber.length; x++) {
+                                if (kolom == x) {
+                                    status.push('Next delivery')
+                                }
+                                else {
+                                    status.push(statusSO[i][x])
+
+                                }
+                            }
+                            newStatus.push(status)
+
+                        }
+                        else {
+                            newStatus.push(statusSO[i])
+                        }
+
+                    }
+                    setStatusSO(newStatus)
+                    console.log(newStatus)
+                    // let newProduct = []
+                    // for (let i = 0; i < product.length; i++) {
+                    //     if (i == index) {
+                    //         newProduct.push({
+                    //             id_produk: product[i].id_produk,
+                    //             id_pesanan_pembelian: product[i].id_pesanan_pembelian,
+                    //             code: product[i].code,
+                    //             boxes_quantity: product[i].boxes_quantity,
+                    //             number_of_boxes: product[i].number_of_boxes,
+                    //             boxes_unit: product[i].boxes_unit,
+                    //             product_alias_name: product[i].product_alias_name,
+                    //             product_name: product[i].product_name,
+                    //             action: 'Next delivery',
+                    //             number_order_qty: product[i].number_order_qty,
+                    //             tally_sheets_qty: product[i].tally_sheets_qty,
+                    //             tally_sheets_qty_NoEdit: product[i].tally_sheets_qty_NoEdit,
+                    //             key: product[i].key
+                    //         })
+                    //     }
+                    //     else {
+                    //         newProduct.push(product[i])
+
+                    //     }
+
+                    // }
+                    // setProduct(newProduct)
+                }
+            })
+        }
+
     }
 
     function hapusIndexProduct(i, idx) {
@@ -969,11 +1110,12 @@ const BuatTally = () => {
         // console.log(statusSO);
         setQtyPesanan(qtyPes)
         setProduct(tmp)
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil',
-            text: 'Data berhasil ditambah',
-        }).then(() => setLoadingTable(false));
+        setLoadingTable(false)
+        // Swal.fire({
+        //     icon: 'success',
+        //     title: 'Berhasil',
+        //     text: 'Data berhasil ditambah',
+        // }).then(() => );
     }
 
     function klikTampilSheet(indexProduct, indexPO) {
@@ -1014,7 +1156,7 @@ const BuatTally = () => {
                     return {
                         props: {
                         },
-                        children: <div>{Number(text).toFixed(2).replace('.',',')}</div>
+                        children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
                     };
                 }
             },
@@ -1067,7 +1209,7 @@ const BuatTally = () => {
                             onChange={(value) => handleChangeProduct(value, record.key, i)}
                         />
                     </>,
-                    quantity: quantity[record.key][i].toString().replace('.', ','),
+                    quantity: quantity[record.key][i],
                     unit: item.unit,
                     box:
                         <>
@@ -1130,7 +1272,7 @@ const BuatTally = () => {
                                                 <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
                                                 <div className="col-sm-3">
                                                     <input
-                                                        value={totalTallySheet[idxPesanan][indexPO]}
+                                                        value={totalTallySheet[idxPesanan][indexPO].toFixed(2).replace('.', ',')}
                                                         type="Nama"
                                                         className="form-control"
                                                         id="inputNama3"
@@ -1180,7 +1322,9 @@ const BuatTally = () => {
                                 </div>
                             </Modal>
                         </>,
-                    status: statusSO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusSO[record.key][i] === 'Next delivery' ? <Tag color="orange">{statusSO[record.key][i]}</Tag> : statusSO[record.key][i] === 'Done' ? <Tag color="green">{statusSO[record.key][i]}</Tag> : null,
+                    status: statusSO[record.key][i] === 'Done' ? <Tag color="green" type="button" onClick={() => forceNexDeliveryProduct(record.key, i)}>{statusSO[record.key][i]}</Tag> : statusSO[record.key][i] === 'Next delivery' ? <Tag color="orange" type="button" onClick={() => forceDoneProduct(record.key, i)}>{statusSO[record.key][i]}</Tag> : <Tag color="red">{statusSO[record.key][i]}</Tag>,
+
+
                     action:
                         <Space size="middle">
                             <Button
@@ -1547,7 +1691,6 @@ const BuatTally = () => {
                     let tempBox = [];
                     let stts = [];
                     let qtyPesanan = [];
-
                     let values = [];
                     let id = [];
 
@@ -1751,7 +1894,15 @@ const BuatTally = () => {
                             tempKuantitas.push(0);
                             tempValues.push("");
                             tempId.push("");
-                            tempStatus.push("");
+                            // tempStatus.push("");
+                            if (dataSumber[x].tally_sheets_qty >= dataSumber[x].quantity) {
+                                tempStatus.push('Done')
+                            }
+                            else if (dataSumber[x].tally_sheets_qty < dataSumber[x].quantity) {
+                                tempStatus.push('Next delivery')
+
+                            }
+
                             tempQtyPesanan.push(dataSumber[x].quantity)
                         }
                         arrKuantitas[i] = tempKuantitas;
@@ -1974,6 +2125,7 @@ const BuatTally = () => {
             setQuantity(arrqty);
             setQtyPesanan(arrQtyPesanan);
             setStatusSO(arrStatus)
+            console.log(arrStatus)
             setGetDataDetailSO(updatedList.map(d => d.sales_order_details))
             setSelectedProduct(idValues)
             setProductSelect(valuesId)
@@ -2321,7 +2473,7 @@ const BuatTally = () => {
                         }}
                     />,
                     <Modal
-                        title="Tambah Produk"
+                        title={sumber == 'SO' ? 'Tambah Pesanan Penjualan' : 'Tambah Retur Pembelian'}
                         centered
                         visible={modal2Visible}
                         onCancel={() => setModal2Visible(false)}
@@ -2375,7 +2527,7 @@ const BuatTally = () => {
                     columns={defaultColumns}
                     onChange={(e) => setProduct(e.target.value)}
                 />
-<br/>
+                <br />
 
                 <div className="btn-group mt-2" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button

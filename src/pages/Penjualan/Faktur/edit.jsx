@@ -96,7 +96,7 @@ const EditableCell = ({
 };
 
 const EditFaktur = () => {
-    
+
     function klikEnter(event) {
         if (event.code == "Enter") {
             event.target.blur()
@@ -113,6 +113,7 @@ const EditFaktur = () => {
     const [customer, setCustomer] = useState("");
     const [catatan, setCatatan] = useState("");
     const [product, setProduct] = useState([]);
+    const [loadingTable, setLoadingTable] = useState(false);
     const [source, setSource] = useState([]);
     const [query, setQuery] = useState("");
     const [idTandaTerima, setIdTandaTerima] = useState([]);
@@ -228,28 +229,29 @@ const EditFaktur = () => {
                 setGrandTotalDiscount(getData.discount);
                 setTerm(getData.term);
                 setSelectedAddress(getData.recipient_address)
+                setAddressId(getData.recipient_address.id)
                 setSelectedPenerima(getData.recipient)
                 setCustomer(getData.recipient.id)
                 setCatatan(getData.notes)
 
                 let dataSumber;
-                if (getData.sales_invoice_details) {
-                    setSumber('SO')
+                if (getData.delivery_notes) {
+                    setSumber('Surat')
                     setDataBarang(getData.sales_invoice_details)
-                    dataSumber = getData.sales_invoice_details
+                    dataSumber = getData.delivery_notes
 
                 }
-                else {
-                    setSumber('Retur')
-                    setDataBarang(getData.sales_order_details)
-                    dataSumber = getData.sales_order_details
+                else if (getData.sales_orders) {
+                    setSumber('SO')
+                    setDataBarang(getData.sales_invoice_details)
+                    dataSumber = getData.sales_orders
                 }
                 let total = Number(getData.ppn) - Number(getData.down_payment) + Number(getData.subtotal) - Number(getData.discount)
                 setTotalKeseluruhan(total)
 
 
                 // setting data produk
-                let updatedList = dataSumber
+                let updatedList = getData.sales_invoice_details
                 let tmpData = []
                 let tmpTandaTerima = []
                 for (let i = 0; i < updatedList.length; i++) {
@@ -262,7 +264,7 @@ const EditFaktur = () => {
                             fixed_discount: updatedList[i].fixed_discount,
                             subtotal: updatedList[i].subtotal,
                             pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
-                            ppn: 0,
+                            ppn: updatedList[i].ppn,
                             unit: updatedList[i].unit,
                             total: updatedList[i].total
 
@@ -445,8 +447,9 @@ const EditFaktur = () => {
     const handleChange = () => {
         setChecked(!checked);
         let check_checked = !checked;
-        calculate(product, check_checked);
+        calculate(data, check_checked);
     };
+
     const handleSave = (row) => {
         const newData = [...product];
         const index = newData.findIndex((item) => row.id === item.id);
@@ -457,53 +460,308 @@ const EditFaktur = () => {
         calculate(product, check_checked);
     };
 
+    function klikUbahData(y, value, key) {
+        let tmpData = [];
+        if (key == 'qty') {
+            let hasil = value.replaceAll('.', '');
+            for (let i = 0; i < data.length; i++) {
+                if (i == y) {
+                    tmpData.push(
+                        {
+                            id: data[i].id,
+                            product_alias_name: data[i].product_alias_name,
+                            quantity: hasil,
+                            price: data[i].price,
+                            discount_percentage: data[i].discount_percentage,
+                            fixed_discount: data[i].fixed_discount,
+                            ppn: data[i].ppn,
+                            subtotal: data[i].subtotal,
+                            pilihanDiskon: data[i].pilihanDiskon,
+                            unit: data[i].unit,
+                            total: data[i].total
+
+                        })
+                }
+                else {
+                    tmpData.push(data[i]);
+                }
+
+            }
+            setData(tmpData);
+        }
+        else if (key == 'price') {
+            let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+
+            for (let i = 0; i < data.length; i++) {
+                if (i == y) {
+
+                    tmpData.push(
+                        {
+                            id: data[i].id,
+                            product_alias_name: data[i].product_alias_name,
+                            quantity: data[i].quantity,
+                            price: hasil,
+                            discount_percentage: data[i].discount_percentage,
+                            fixed_discount: data[i].fixed_discount,
+                            ppn: data[i].ppn,
+                            subtotal: data[i].subtotal,
+                            pilihanDiskon: data[i].pilihanDiskon,
+                            unit: data[i].unit,
+                            total: data[i].total,
+                        })
+                }
+                else {
+                    tmpData.push(data[i]);
+                }
+
+                // }
+                setData(tmpData);
+            }
+        }
+        else if (key == 'diskonValue') {
+            if (data[y].pilihanDiskon == 'nominal') {
+                let hasil = value.replaceAll('.', '');
+
+                for (let i = 0; i < data.length; i++) {
+                    if (i == y) {
+                        tmpData.push(
+                            {
+                                id: data[i].id,
+                                product_alias_name: data[i].product_alias_name,
+                                quantity: data[i].quantity,
+                                price: data[i].price,
+                                discount_percentage: data[i].discount_percentage,
+                                fixed_discount: hasil,
+                                ppn: data[i].ppn,
+                                subtotal: data[i].subtotal,
+                                pilihanDiskon: 'nominal',
+                                unit: data[i].unit,
+                                total: data[i].total,
+                            })
+                    }
+
+                    else {
+                        tmpData.push(data[i]);
+                    }
+
+                }
+                setData(tmpData);
+            }
+            else {
+
+                let hasil = value.replaceAll('.', '');
+
+                for (let i = 0; i < data.length; i++) {
+
+                    if (i == y) {
+                        tmpData.push(
+                            {
+                                id: data[i].id,
+                                product_alias_name: data[i].product_alias_name,
+                                quantity: data[i].quantity,
+                                price: data[i].price,
+                                discount_percentage: hasil,
+                                fixed_discount: data[i].fixed_discount,
+                                ppn: data[i].ppn,
+                                subtotal: data[i].subtotal,
+                                pilihanDiskon: 'persen',
+                                unit: data[i].unit,
+                                total: data[i].total,
+                            })
+                    }
+
+                    else {
+                        tmpData.push(data[i]);
+                    }
+
+                }
+                setData(tmpData);
+            }
+        }
+        else if (key == 'pilihanDiskon') {
+            for (let i = 0; i < data.length; i++) {
+                if (i == y) {
+                    tmpData.push(
+                        {
+                            id: data[i].id,
+                            product_alias_name: data[i].product_alias_name,
+                            quantity: data[i].quantity,
+                            price: data[i].price,
+                            discount_percentage: data[i].discount_percentage,
+                            fixed_discount: data[i].fixed_discount,
+                            ppn: data[i].ppn,
+                            subtotal: data[i].subtotal,
+                            pilihanDiskon: value,
+                            unit: data[i].unit,
+                            total: data[i].total,
+
+                        })
+                }
+                else {
+                    tmpData.push(data[i]);
+                }
+
+            }
+            setData(tmpData);
+        }
+        else if (key == 'ppn') {
+            let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+
+            for (let i = 0; i < data.length; i++) {
+                if (i == y) {
+
+                    tmpData.push(
+                        {
+                            id: data[i].id,
+                            product_alias_name: data[i].product_alias_name,
+                            quantity: data[i].quantity,
+                            price: data[i].price,
+                            discount_percentage: data[i].discount_percentage,
+                            fixed_discount: data[i].fixed_discount,
+                            ppn: hasil,
+                            subtotal: data[i].subtotal,
+                            pilihanDiskon: data[i].pilihanDiskon,
+                            unit: data[i].unit,
+                            total: data[i].total,
+                        })
+                }
+                else {
+                    tmpData.push(data[i]);
+                }
+
+                // }
+                setData(tmpData);
+            }
+        }
+
+        // ubah total 
+        let grandTotal;
+        let arrTotal = [];
+        console.log(tmpData)
+        for (let i = 0; i < tmpData.length; i++) {
+            if (i == y) {
+                if (tmpData[i].pilihanDiskon == 'persen') {
+                    let total = tmpData[i].quantity.replace(',', '.') * Number(tmpData[i].price);
+                    let getDiskon = (Number(total) * tmpData[i].discount_percentage.replace(',', '.')) / 100;
+
+                    let ppn = ((Number(total) - Number(getDiskon)) * tmpData[i].ppn.toString().replace(',', '.')) / 100;
+                    console.log(total)
+                    console.log(ppn)
+
+                    grandTotal = Number(total) - Number(getDiskon) + Number(ppn);
+                    console.log(grandTotal)
+                }
+                else if (tmpData[i].pilihanDiskon == 'nominal') {
+                    let total = (Number(tmpData[i].quantity.replace(',', '.')) * Number(tmpData[i].price))
+                    let getDiskon = tmpData[i].fixed_discount;
+
+                    let ppn = ((Number(total) - Number(getDiskon)) * tmpData[i].ppn.toString().replace(',', '.')) / 100;
+                    grandTotal = total - Number(getDiskon) + Number(ppn);
+                }
+                else {
+                    let total = (Number(tmpData[i].quantity.replace(',', '.')) * Number(tmpData[i].price))
+                    let ppn = (Number(total) * tmpData[i].ppn.toString().replace(',', '.')) / 100;
+                    grandTotal = total + Number(ppn);
+                }
+                arrTotal.push(
+                    {
+                        id: tmpData[i].id,
+                        product_alias_name: tmpData[i].product_alias_name,
+                        quantity: tmpData[i].quantity,
+                        price: tmpData[i].price,
+                        discount_percentage: tmpData[i].discount_percentage,
+                        fixed_discount: tmpData[i].fixed_discount,
+                        ppn: tmpData[i].ppn,
+                        subtotal: tmpData[i].subtotal,
+                        pilihanDiskon: tmpData[i].pilihanDiskon,
+                        unit: tmpData[i].unit,
+                        total: grandTotal,
+                    })
+            }
+            else {
+                arrTotal.push(tmpData[i])
+
+            }
+        }
+
+        setProduct(arrTotal)
+        calculate(arrTotal, checked);
+        setData(arrTotal)
+
+    }
+
+
 
     const calculate = (product, check_checked) => {
-        let subTotal = 0;
-        let totalDiscount = 0;
-        let totalNominalDiscount = 0;
-        let grandTotalDiscount = 0;
-        let getPpnDiscount = 0;
-        let allTotalDiscount = 0;
-        let totalPpn = 0;
+        console.log(product)
+        let totalPerProduk = 0;
         let grandTotal = 0;
-        let getPpn = 0;
         let total = 0;
-        product.map((values) => {
+        let hasilDiskon = 0;
+        let subTotal = 0;
+        let totalPpn = 0;
+        let rowDiscount = 0;
+        let subTotalDiscount = 0;
+        let totalDiscount = 0;
+        product.map((values, i) => {
+            // termasuk pajak 
             if (check_checked) {
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
+                total += (Number(values.quantity) * Number(values.price));
+                totalPerProduk = (Number(values.quantity) * Number(values.price));
 
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                subTotal += ((total - getPpnDiscount) * 100) / (100 + values.ppn);
-                allTotalDiscount += total - getPpnDiscount;
-                totalPpn = allTotalDiscount - subTotal;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
-                setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
-                setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
-            } else {
-                subTotal += (values.quantity * values.price);
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
+                if (values.pilihanDiskon == 'persen') {
+                    hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                    rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                }
+                else if (values.pilihanDiskon == 'nominal') {
+                    hasilDiskon += Number(values.fixed_discount);
+                    rowDiscount = Number(values.fixed_discount);
+                }
+                totalDiscount += ((rowDiscount * 100) / (100 + Number(values.ppn)));
+                subTotalDiscount = totalPerProduk - rowDiscount;
+                subTotal += (subTotalDiscount * 100) / (100 + Number(values.ppn));
+                totalPpn = (subTotal * Number(values.ppn)) / 100;
 
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                allTotalDiscount = total - getPpnDiscount;
-                getPpn = (allTotalDiscount * values.ppn) / 100;
-                totalPpn += getPpn;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
+
+                grandTotal = subTotal - hasilDiskon + Number(totalPpn);
+
                 setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
+                setGrandTotalDiscount(totalDiscount);
                 setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
+                setGrandTotal(grandTotal);
+            }
+
+            // tidak termasuk pajak 
+            else {
+                console.log("sndjsbfj")
+                total += (Number(values.quantity) * Number(values.price));
+                totalPerProduk = (Number(values.quantity) * Number(values.price));
+
+                if (values.pilihanDiskon == 'persen') {
+                    hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                    rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                }
+                else if (values.pilihanDiskon == 'nominal') {
+
+                    hasilDiskon += Number(values.fixed_discount);
+                    rowDiscount = Number(values.fixed_discount);
+                }
+                // console.log(hasilDiskon)
+                // totalDiscount += ((totalPerProduk * rowDiscount) / 100);
+                // totalDiscount = hasilDiskon;
+                subTotal = total - (Number(totalPerProduk) * Number(rowDiscount) / 100);
+                subTotalDiscount = totalPerProduk - rowDiscount;
+                totalPpn += (subTotalDiscount * values.ppn) / 100;
+                grandTotal = total - hasilDiskon + Number(totalPpn);
+
+                setSubTotal(total)
+                setGrandTotalDiscount(hasilDiskon);
+                setTotalPpn(totalPpn)
+                setGrandTotal(grandTotal);
             }
         })
     }
+
     const components = {
         body: {
             row: EditableRow,
@@ -527,138 +785,464 @@ const EditFaktur = () => {
         };
     });
 
-    const handleCheck = (event) => {
-        var updatedList = [...product];
-        if (event.target.checked) {
-            updatedList = [...product, event.target.value];
-        } else {
-            updatedList.splice(product.indexOf(event.target.value), 1);
+    const handleCheck = (event, index) => {
+        setLoadingTable(true)
+        let tmpData = [];
+        let tmpDataBaru = [];
+        let idTerima = [];
+
+        // pengecekan centang
+        if (sumber == 'SO') {
+            for (let i = 0; i < getDataProduct.length; i++) {
+                if (i == index) {
+                    tmpDataBaru.push({
+                        detail: getDataProduct[i].detail,
+                        statusCek: !getDataProduct[i].statusCek
+                    })
+                    // if (tmpDataBaru[i].statusCek) {
+                    //     idTerima = [...idTandaTerima, getDataProduct[i].detail.id]
+
+                    // }
+                }
+                else {
+                    tmpDataBaru.push(getDataProduct[i])
+                }
+            }
+            setGetDataProduct(tmpDataBaru)
+            // setIdTandaTerima(idTerima);
+
         }
-        setProduct(updatedList);
-        setSource(updatedList.map(p => p.delivery_note_details))
-        console.log(updatedList.map(p => p.delivery_note_details.map(prod => prod)))
+
+        else if (sumber == 'Surat') {
+            for (let i = 0; i < getDataSurat.length; i++) {
+                if (i == index) {
+                    tmpDataBaru.push({
+                        detail: getDataSurat[i].detail,
+                        statusCek: !getDataSurat[i].statusCek
+                    })
+                    // if (tmpDataBaru[i].statusCek) {
+                    //     idTerima = [...idTandaTerima, getDataProduct[i].detail.id]
+                    // }
+                }
+                else {
+                    tmpDataBaru.push(getDataSurat[i])
+                }
+            }
+            setGetDataSurat(tmpDataBaru)
+            // setIdTandaTerima(idTerima);
+        }
+
+        if (tmpDataBaru[index].statusCek) {
+            // mencari id 
+            if (sumber == 'SO') {
+                for (let i = 0; i < getDataProduct.length; i++) {
+                    if (tmpDataBaru[i].statusCek) {
+                        idTerima = [...idTandaTerima, getDataProduct[i].detail.id]
+
+                    }
+                }
+                setIdTandaTerima(new Set(idTerima));
+
+            }
+
+
+
+            else if (sumber == 'Surat') {
+                for (let i = 0; i < getDataSurat.length; i++) {
+                    if (tmpDataBaru[i].statusCek) {
+                        idTerima = [...idTandaTerima, getDataSurat[i].detail.id]
+                    }
+                }
+                setIdTandaTerima(new Set(idTerima));
+            }
+
+
+            console.log(idTerima)
+            var strParams;
+            var updatedList;
+            if (sumber == "SO") {
+                for (let i = 0; i < idTerima.length; i++) {
+                    if (i == 0) {
+                        strParams = "id_pesanan_penjualan[]=" + idTerima[i]
+                    }
+                    else {
+                        strParams = strParams + "&id_pesanan_penjualan[]=" + idTerima[i]
+                    }
+
+                }
+                axios.get(`${Url}/sales_invoices_grouped_sales_order_details?${strParams}`, {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${auth.token}`,
+                    },
+                })
+                    .then((res) => {
+                        updatedList = res.data.details;
+                    })
+                    .then(() => {
+                        for (let i = 0; i < updatedList.length; i++) {
+                            // updatedList[i].currency_name ? setMataUang(updatedList[i].currency_name) : setMataUang('Rp')
+                            tmpData.push(
+                                {
+                                    id: updatedList[i].product_id,
+                                    product_alias_name: updatedList[i].product_alias_name,
+                                    quantity: updatedList[i].quantity,
+                                    price: updatedList[i].price,
+                                    discount_percentage: updatedList[i].discount_percentage,
+                                    fixed_discount: 0,
+                                    ppn: updatedList[i].ppn,
+                                    subtotal: updatedList[i].subtotal,
+                                    pilihanDiskon: 'persen',
+                                    unit: updatedList[i].unit,
+                                    total: updatedList[i].total
+
+                                }
+                            )
+
+                        }
+
+                        setData(tmpData)
+                        calculate(tmpData)
+                    })
+            }
+
+            else if (sumber == "Surat") {
+                console.log("halloi")
+                for (let i = 0; i < idTerima.length; i++) {
+                    if (i == 0) {
+                        strParams = "id_surat_jalan[]=" + idTerima[i]
+                    }
+                    else {
+                        strParams = strParams + "&id_surat_jalan[]=" + idTerima[i]
+                    }
+
+                }
+                axios.get(`${Url}/sales_invoices_grouped_delivery_note_details?${strParams}`, {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${auth.token}`,
+                    },
+                })
+                    .then((res) => {
+                        updatedList = res.data.details;
+
+                    })
+                    .then(() => {
+                        for (let i = 0; i < updatedList.length; i++) {
+                            // updatedList[i].currency_name ? setMataUang(updatedList[i].currency_name) : setMataUang('Rp')
+                            tmpData.push(
+                                {
+                                    id: updatedList[i].product_id,
+                                    product_alias_name: updatedList[i].product_alias_name,
+                                    quantity: updatedList[i].quantity,
+                                    price: updatedList[i].price,
+                                    discount_percentage: updatedList[i].discount_percentage,
+                                    fixed_discount: 0,
+                                    subtotal: updatedList[i].subtotal,
+                                    pilihanDiskon: 'persen',
+                                    ppn: updatedList[i].ppn,
+                                    unit: updatedList[i].unit,
+                                    total: updatedList[i].total
+
+                                }
+                            )
+
+                        }
+
+                        setData(tmpData)
+                        calculate(tmpData)
+
+                    })
+            }
+            setProduct(tmpData);
+        }
+        else {
+            idTerima = [...idTandaTerima]
+
+            console.log(event.target.value.detail.id)
+            for (let i = 0; i < idTerima.length; i++) {
+                if (event.target.value.detail.id == idTerima[i]) {
+                    idTerima.splice(i, 1);
+                }
+            }
+            setIdTandaTerima(idTerima)
+            // idTerima = [...idTandaTerima]
+            console.log(idTerima)
+
+            if (sumber == "SO") {
+                for (let i = 0; i < idTerima.length; i++) {
+                    if (i == 0) {
+                        strParams = "id_pesanan_penjualan[]=" + idTerima[i]
+                    }
+                    else {
+                        strParams = strParams + "&id_pesanan_penjualan[]=" + idTerima[i]
+                    }
+
+                }
+                axios.get(`${Url}/sales_invoices_grouped_sales_order_details?${strParams}`, {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${auth.token}`,
+                    },
+                })
+                    .then((res) => {
+                        updatedList = res.data.details;
+                    })
+                    .then(() => {
+                        for (let i = 0; i < updatedList.length; i++) {
+                            // updatedList[i].currency_name ? setMataUang(updatedList[i].currency_name) : setMataUang('Rp')
+                            tmpData.push(
+                                {
+                                    id: updatedList[i].product_id,
+                                    product_alias_name: updatedList[i].product_alias_name,
+                                    quantity: updatedList[i].quantity,
+                                    price: updatedList[i].price,
+                                    discount_percentage: updatedList[i].discount_percentage,
+                                    fixed_discount: 0,
+                                    ppn: updatedList[i].ppn,
+                                    subtotal: updatedList[i].subtotal,
+                                    pilihanDiskon: 'persen',
+                                    unit: updatedList[i].unit,
+                                    total: updatedList[i].total
+
+                                }
+                            )
+
+                        }
+
+                        setData(tmpData)
+                        calculate(tmpData)
+                    })
+            }
+
+            else if (sumber == "Surat") {
+                console.log("halloi")
+                for (let i = 0; i < idTerima.length; i++) {
+                    if (i == 0) {
+                        strParams = "id_surat_jalan[]=" + idTerima[i]
+                    }
+                    else {
+                        strParams = strParams + "&id_surat_jalan[]=" + idTerima[i]
+                    }
+
+                }
+                axios.get(`${Url}/sales_invoices_grouped_delivery_note_details?${strParams}`, {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${auth.token}`,
+                    },
+                })
+                    .then((res) => {
+                        updatedList = res.data.details;
+
+                    })
+                    .then(() => {
+                        for (let i = 0; i < updatedList.length; i++) {
+                            // updatedList[i].currency_name ? setMataUang(updatedList[i].currency_name) : setMataUang('Rp')
+                            tmpData.push(
+                                {
+                                    id: updatedList[i].product_id,
+                                    product_alias_name: updatedList[i].product_alias_name,
+                                    quantity: updatedList[i].quantity,
+                                    price: updatedList[i].price,
+                                    discount_percentage: updatedList[i].discount_percentage,
+                                    fixed_discount: 0,
+                                    subtotal: updatedList[i].subtotal,
+                                    pilihanDiskon: 'persen',
+                                    ppn: updatedList[i].ppn,
+                                    unit: updatedList[i].unit,
+                                    total: updatedList[i].total
+
+                                }
+                            )
+
+                        }
+
+                        setData(tmpData)
+                        calculate(tmpData)
+
+                    })
+            }
+            setProduct(tmpData)
+        }
+
+        setLoadingTable(false)
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const userData = new URLSearchParams();
         userData.append("tanggal", date);
+        // userData.append("referensi", referensi);
         userData.append("tipe", fakturType);
+        userData.append("alamat_penerima", address);
         userData.append("penerima", customer);
         userData.append("catatan", description);
-        userData.append("alamat_penerima", address);
-        userData.append("status", "Submitted");
-        // product.map((p) => {
-        //     console.log(p);
-        //     userData.append("nama_alias_produk[]", p.alias_name);
-        //     userData.append("kuantitas[]", p.quantity);
-        //     userData.append("satuan[]", p.unit);
-        //     userData.append("harga[]", p.price);
-        //     userData.append("persentase_diskon[]", p.discount);
-        //     userData.append("diskon_tetap[]", p.nominal_disc);
-        //     userData.append("ppn[]", p.ppn);
-        // });
-        userData.append("termasuk_pajak", checked);
+        userData.append("uang_muka", uangMuka);
+        if (checked) {
+            userData.append("termasuk_pajak", 1);
 
-        for (var pair of userData.entries()) {
-            console.log(pair[0] + ', ' + pair[1]);
         }
+        else {
+            userData.append("termasuk_pajak", 0);
 
-        // axios({
-        //     method: "post",
-        //     url: `${Url}/sales_invoices`,
-        //     data: userData,
-        //     headers: {
-        //         Accept: "application/json",
-        //         Authorization: `Bearer ${auth.token}`,
-        //     },
-        // })
-        //     .then(function (response) {
-        //         //handle success
-        //         Swal.fire(
-        //             "Berhasil Ditambahkan",
-        //             ` Masuk dalam list`,
-        //             "success"
-        //         );
-        //         navigate("/pesanan");
-        //     })
-        //     .catch((err) => {
-        //         if (err.response) {
-        //             console.log("err.response ", err.response);
-        //             Swal.fire({
-        //                 icon: "error",
-        //                 title: "Oops...",
-        //                 text: err.response.data.error.nama,
-        //             });
-        //         } else if (err.request) {
-        //             console.log("err.request ", err.request);
-        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        //         } else if (err.message) {
-        //             // do something other than the other two
-        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        //         }
-        //     });
+        }
+        userData.append("status", "Draft");
+        product.map((p, i) => {
+            userData.append("nama_alias_produk[]", p.product_alias_name);
+            userData.append("kuantitas[]", p.quantity);
+            userData.append("satuan[]", p.unit);
+            userData.append("harga[]", p.price);
+            userData.append("diskon_tetap[]", p.fixed_discount);
+            userData.append("persentase_diskon[]", p.discount_percentage);
+            if (p.pilihanDiskon == 'persen') {
+                userData.append("persentase_diskon[]", p.discount_percentage);
+
+                userData.append("diskon_tetap[]", 0);
+            }
+            else if (p.pilihanDiskon == 'nominal') {
+                userData.append("diskon_tetap[]", p.fixed_discount);
+
+                userData.append("persentase_diskon[]", 0);
+            }
+            userData.append("ppn[]", p.ppn);
+        });
+
+        idTandaTerima.map((item, i) => {
+            if (sumber == 'SO') {
+                userData.append("id_pesanan_penjualan[]", item);
+
+            }
+            else {
+                userData.append("id_surat_jalan[]", item);
+
+            }
+        })
+
+        axios({
+            method: "put",
+            url: `${Url}/sales_invoices?id_faktur_penjualan=${id}`,
+            data: userData,
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        })
+            .then(function (response) {
+                //handle success
+                Swal.fire(
+                    "Berhasil Ditambahkan",
+                    ` Masuk dalam list`,
+                    "success"
+                );
+                navigate("/tallypembelian");
+            })
+            .catch((err) => {
+                if (err.response) {
+                    console.log("err.response ", err.response);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: err.response.data.error.nama,
+                    });
+                } else if (err.request) {
+                    console.log("err.request ", err.request);
+                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                } else if (err.message) {
+                    // do something other than the other two
+                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                }
+            });
     };
 
     const handleDraft = async (e) => {
         e.preventDefault();
         const userData = new URLSearchParams();
+        console.log(selectedType)
         userData.append("tanggal", date);
-        userData.append("tipe", fakturType);
+        // userData.append("referensi", referensi);
+        userData.append("tipe", selectedType.value);
+        userData.append("alamat_penerima", addressId);
         userData.append("penerima", customer);
         userData.append("catatan", description);
-        userData.append("alamat_penerima", address);
-        userData.append("status", "Draft");
-        // product.map((p) => {
-        //     console.log(p);
-        //     userData.append("nama_alias_produk[]", p.alias_name);
-        //     userData.append("kuantitas[]", p.quantity);
-        //     userData.append("satuan[]", p.unit);
-        //     userData.append("harga[]", p.price);
-        //     userData.append("persentase_diskon[]", p.discount);
-        //     userData.append("diskon_tetap[]", p.nominal_disc);
-        //     userData.append("ppn[]", p.ppn);
-        // });
-        userData.append("termasuk_pajak", checked);
+        userData.append("uang_muka", uangMuka);
+        if (checked) {
+            userData.append("termasuk_pajak", 1);
 
-        for (var pair of userData.entries()) {
-            console.log(pair[0] + ', ' + pair[1]);
         }
+        else {
+            userData.append("termasuk_pajak", 0);
 
-        // axios({
-        //     method: "post",
-        //     url: `${Url}/sales_invoices`,
-        //     data: userData,
-        //     headers: {
-        //         Accept: "application/json",
-        //         Authorization: `Bearer ${auth.token}`,
-        //     },
-        // })
-        //     .then(function (response) {
-        //         //handle success
-        //         Swal.fire(
-        //             "Berhasil Ditambahkan",
-        //             ` Masuk dalam list`,
-        //             "success"
-        //         );
-        //         navigate("/pesanan");
-        //     })
-        //     .catch((err) => {
-        //         if (err.response) {
-        //             console.log("err.response ", err.response);
-        //             Swal.fire({
-        //                 icon: "error",
-        //                 title: "Oops...",
-        //                 text: err.response.data.error.nama,
-        //             });
-        //         } else if (err.request) {
-        //             console.log("err.request ", err.request);
-        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        //         } else if (err.message) {
-        //             // do something other than the other two
-        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        //         }
-        //     });
+        }
+        userData.append("status", "Draft");
+        product.map((p, i) => {
+            userData.append("nama_alias_produk[]", p.product_alias_name);
+            userData.append("kuantitas[]", p.quantity);
+            userData.append("satuan[]", p.unit);
+            userData.append("harga[]", p.price);
+            // userData.append("diskon_tetap[]", p.fixed_discount);
+            // userData.append("persentase_diskon[]", p.discount_percentage);
+            if (p.pilihanDiskon == 'persen') {
+                userData.append("persentase_diskon[]", p.discount_percentage);
+
+                userData.append("diskon_tetap[]", 0);
+            }
+            else if (p.pilihanDiskon == 'nominal') {
+                userData.append("diskon_tetap[]", p.fixed_discount);
+
+                userData.append("persentase_diskon[]", 0);
+            }
+            userData.append("ppn[]", p.ppn);
+        });
+
+        idTandaTerima.map((item, i) => {
+            if (sumber == 'SO') {
+                userData.append("id_pesanan_penjualan[]", item);
+
+            }
+            else {
+                userData.append("id_surat_jalan[]", item);
+
+            }
+        })
+
+
+        axios({
+            method: "put",
+            url: `${Url}/sales_invoices?id_faktur_penjualan=${id}`,
+            data: userData,
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        })
+            .then(function (response) {
+                //handle success
+                Swal.fire(
+                    "Berhasil Ditambahkan",
+                    ` Masuk dalam list`,
+                    "success"
+                );
+                navigate("/tallypembelian");
+            })
+            .catch((err) => {
+                if (err.response) {
+                    console.log("err.response ", err.response);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: err.response.data.error.nama,
+                    });
+                } else if (err.request) {
+                    console.log("err.request ", err.request);
+                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                } else if (err.message) {
+                    // do something other than the other two
+                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                }
+            });
+
+
     };
 
     const optionsType = [
@@ -739,7 +1323,7 @@ const EditFaktur = () => {
                                 </div>
                             </div> : null,
             ppn: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} suffix={'%'} onKeyDown={(event) => klikEnter(event)} value={Number(item.ppn)} onChange={(e) => klikUbahData(i, e.target.value, "ppn")} />,
-            total: mataUang + ' ' + Number(data[i].total).toFixed(2).replace('.', ',')
+            total: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].total)} />,
         }))]
 
 
@@ -924,6 +1508,7 @@ const EditFaktur = () => {
                         // rowClassName={() => 'editable-row'}
                         bordered
                         pagination={false}
+                        isLoading={loadingTable}
                         dataSource={TableData}
                         columns={defaultColumns}
                         onChange={(e) => setProduct(e.target.value)}
@@ -934,7 +1519,7 @@ const EditFaktur = () => {
                         <div className="form-check">
                             <input className="form-check-input" type="checkbox" id="flexCheckDefault" onChange={handleChange} />
                             <label className="form-check-label" for="flexCheckDefault">
-                                Harga Termasuk Pajak
+                                Harga Termasuk PPN
                             </label>
                         </div>
                     </div>
@@ -942,74 +1527,97 @@ const EditFaktur = () => {
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>
                             <div className="col-sm-6">
-                                <input
+                                <CurrencyFormat prefix={'Rp '} disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(subTotal).toFixed(2).replace('.', ',')} key="total" />
+
+
+                                {/* <input
                                     defaultValue={subTotal}
                                     readOnly="true"
                                     type="number"
                                     className="form-control form-control-sm"
                                     id="colFormLabelSm"
                                 // placeholder='(Total Qty X harga) per item + ... '
-                                />
+                                /> */}
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Diskon</label>
                             <div className="col-sm-6">
-                                <input
+                                <CurrencyFormat prefix={'Rp '} disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(grandTotalDiscount).toFixed(2).replace('.', ',')} key="total" />
+
+                                {/* <input
                                     defaultValue={grandTotalDiscount}
                                     readOnly="true"
                                     type="number"
                                     className="form-control form-control-sm"
                                     id="colFormLabelSm"
                                 // placeholder='(total disc/item) ditotal semua'
-                                />
+                                /> */}
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">PPN</label>
                             <div className="col-sm-6">
-                                <input
+                                <CurrencyFormat prefix={'Rp '} disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toFixed(2).replace('.', ',')} key="total" />
+
+                                {/* <input
                                     defaultValue={totalPpn}
                                     readOnly="true"
                                     type="number"
                                     className="form-control form-control-sm"
                                     id="colFormLabelSm"
                                 // placeholder='ppn per item di total semua row'
-                                />
+                                /> */}
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Total</label>
                             <div className="col-sm-6">
-                                <input
+                                <CurrencyFormat prefix={'Rp '} disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(grandTotal).toFixed(2).replace('.', ',')} key="total" />
+
+                                {/* <input
                                     defaultValue={grandTotal}
                                     readOnly="true"
                                     type="number"
                                     className="form-control form-control-sm"
                                     id="colFormLabelSm"
                                 // placeholder='subtotal - diskon + ppn'
-                                />
+                                /> */}
                             </div>
                         </div>
                     </div>
                 </div>
                 <div className="btn-group" role="group" aria-label="Basic mixed styles example">
-                    <button
-                        type="button"
-                        className="btn btn-success rounded m-1"
-                        value="Draft"
-                        onClick={handleDraft}
-                    >
-                        Simpan
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-primary rounded m-1"
-                        value="Submitted"
-                        onClick={handleSubmit}
-                    >
-                        Submit
-                    </button>
+                    {
+                        getStatus == 'Submitted' ?
+                            <button
+                                type="button"
+                                className="btn btn-success rounded m-1"
+                                value="Draft"
+                                onClick={handleSubmit}
+                            >
+                                Simpan
+                            </button>
+                            :
+                            <>
+                                <button
+                                    type="button"
+                                    className="btn btn-success rounded m-1"
+                                    value="Draft"
+                                    onClick={handleDraft}
+                                >
+                                    Simpan
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary rounded m-1"
+                                    value="Submitted"
+                                    onClick={handleSubmit}
+                                >
+                                    Submit
+                                </button></>
+                    }
+
                     <button
                         type="button"
                         className="btn btn-warning rounded m-1">
