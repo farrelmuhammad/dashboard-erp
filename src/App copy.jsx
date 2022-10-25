@@ -152,7 +152,7 @@ function App() {
         Mutasi Stok
       </Menu.Item>
       <Menu.Item key="19">
-        <Link to="/goodsrequest" />
+        <Link to="/permintaanbarang" />
         Permintaan Barang
       </Menu.Item>
       <Menu.Item key="50">
@@ -399,7 +399,7 @@ function App() {
         Mutasi Stok
       </Menu.Item>
       <Menu.Item key="19">
-        <Link to="/goodsrequest" />
+        <Link to="/permintaanbarang" />
         Permintaan Barang
       </Menu.Item>
       <Menu.Item key="48">

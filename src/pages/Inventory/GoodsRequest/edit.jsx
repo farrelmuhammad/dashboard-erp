@@ -78,7 +78,14 @@ const EditableCell = ({
                 ]}
             >
                 {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
+                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
+    //               formatter={value => `${value.replace('.',',')}`} 
+      decimalSeparator = {','}
+    onChange={value => {
+        value = parseFloat(value.toString().replace('.', ','))
+      }}
+      
+                />
             </Form.Item>
         ) : (
             <div
@@ -274,9 +281,12 @@ const EditGoodsRequest = () => {
             width: '30%',
             align: 'center',
             editable: true,
-            render: (text) => {
-                return <>{text.toString().replace('.', ',')}</>
-
+            render(text, record) {
+                return {
+                    props: {
+                    },
+                    children: <div>{Number(text).toFixed(2).replace('.',',')}</div>
+                };
             }
         },
         {
@@ -383,7 +393,7 @@ const EditGoodsRequest = () => {
         userData.append("warehouse_destination", warehouse_destination);
         userData.append("type", type);
         userData.append("notes", notes);
-        userData.append("status", "publish");
+        userData.append("status", "Submitted");
         product.map((p) => {
             console.log(p);
             userData.append("product_id[]", p.product_id);
@@ -410,7 +420,7 @@ const EditGoodsRequest = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/goodsrequest");
+                navigate("/permintaanbarang");
             })
             .catch((err) => {
                 if (err.response) {
@@ -438,7 +448,7 @@ const EditGoodsRequest = () => {
         userData.append("warehouse_destination", warehouse_destination);
         userData.append("type", type);
         userData.append("notes", notes);
-        userData.append("status", "draft");
+        userData.append("status", "Draft");
         product.map((p) => {
             console.log(p);
             userData.append("product_id[]", p.product_id);
@@ -465,7 +475,7 @@ const EditGoodsRequest = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/goodsrequest");
+                navigate("/permintaanbarang");
             })
             .catch((err) => {
                 if (err.response) {
