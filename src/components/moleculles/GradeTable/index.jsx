@@ -236,12 +236,13 @@ const GradeTable = () => {
   return (
     <>
       <Table
+        size="small"
         loading={isLoading}
         columns={columns}
-        pagination={{ pageSize: 5 }}
         dataSource={grades}
+        pagination={{ pageSize: 10 }}
         scroll={{
-          y: 240,
+          y: 295,
         }}
       />
     </>

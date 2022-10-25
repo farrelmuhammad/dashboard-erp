@@ -38,7 +38,7 @@ const EditPajak = () => {
         //handle success
         console.log(response);
         Swal.fire("Berhasil Di Update", `${code} Masuk dalam list`, "success");
-        navigate("/grade");
+        navigate("/pajak");
       })
       .catch((err) => {
         if (err.response) {

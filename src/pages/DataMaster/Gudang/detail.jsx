@@ -172,7 +172,7 @@ const DetailGudang = () => {
               className="form-select"
               disabled
             >
-              {/* <option>{data.employee_id}</option> */}
+              <option>{data.chart_of_account.name}</option>
             </select>
           </div>
         </div>

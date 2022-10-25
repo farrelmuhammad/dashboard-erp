@@ -239,12 +239,13 @@ const PenggunaTable = () => {
   return (
     <>
       <Table
+        size="small"
         loading={isLoading}
         columns={columns}
-        pagination={{ pageSize: 5 }}
+        pagination={{ pageSize: 10 }}
         dataSource={users}
         scroll={{
-          y: 240,
+          y: 295,
         }}
       />
     </>

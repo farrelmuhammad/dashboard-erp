@@ -373,6 +373,7 @@ const PesananPembelianTable = () => {
 
         ]
     return <Table
+        size="small"
         loading={isLoading}
         columns={columns}
         dataSource={dataColumn}

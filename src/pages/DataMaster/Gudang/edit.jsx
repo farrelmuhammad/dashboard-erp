@@ -20,6 +20,7 @@ const EditGudang = () => {
   const [tipe, setTipe] = useState('');
   const [city, setCity] = useState('');
   const [chart, setChart] = useState('');
+  const [chartName, setChartName] = useState('');
   const [postal_code, setPostal_code] = useState('');
   const [phone_number, setPhone_number] = useState('');
   const [employees, setEmployees] = useState('');
@@ -87,7 +88,8 @@ const EditGudang = () => {
         setAddress(getData.address)
         setCity(getData.city)
         setTipe(getData.type)
-        // setChart()
+        setChart(getData.chart_of_account.id)
+        setChartName(getData.chart_of_account.name)
         setEmployeesName(getData.employee.name)
         setTipe(getData.type)
         setPostal_code(getData.postal_code)
@@ -323,6 +325,7 @@ const EditGudang = () => {
               placeholder="Pilih Akun..."
               cacheOptions
               defaultOptions
+              defaultInputValue={chartName}
               value={selectedValue}
               getOptionLabel={(e) => e.name}
               getOptionValue={(e) => e.id}

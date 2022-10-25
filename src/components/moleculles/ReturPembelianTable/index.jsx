@@ -373,10 +373,11 @@ const ReturPembelianTable = () => {
     }))
   ]
 
-  return <Table
+   return <Table
+    size="small"
     loading={isLoading}
     columns={columns}
-    pagination={{ pageSize: 5 }}
+    pagination={{ pageSize: 10 }}
     dataSource={dataColumn}
     scroll={{
       y: 240,
