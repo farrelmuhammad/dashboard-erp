@@ -93,10 +93,7 @@ const EditFakturPembelian = () => {
         })
             .then((res) => {
                 let getData = res.data[0]
-                // setBiaya(getData.purchase_invoice_costs)
-                // console.log(getData.purchase_invoice_costs[0])
                 setDataHeader(getData);
-                console.log(getData)
                 setSubTotal(getData.subtotal)
                 setGrandTotal(getData.total)
                 setUangMuka(getData.down_payment);

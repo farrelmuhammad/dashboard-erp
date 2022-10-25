@@ -340,7 +340,7 @@ const BuatPenerimaanBarang = () => {
             setGetDataProduct(tmpDataBaru)
         }
 
-        if (event.target.checked) {
+        if (tmpDataBaru[index].statusCek) {
             updatedList = [...product, value];
         } else {
             let jumlah = 0

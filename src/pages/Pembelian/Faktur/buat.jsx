@@ -410,9 +410,7 @@ const BuatFakturPembelian = () => {
 
         // ubah total 
         let grandTotal;
-        let dataBaru = tmpData[0]
         let arrTotal = [];
-        let tmpTotal = []
         for (let i = 0; i < tmpData.length; i++) {
             if (i == y) {
                 if (tmpData[i].pilihanDiskon == 'persen') {
@@ -661,14 +659,9 @@ const BuatFakturPembelian = () => {
             dataIndex: 'supplier_name',
         },
         {
-            title: 'Total',
+            title: 'Referensi',
             align: 'center',
-            dataIndex: 'total',
-            render: (text, record, index) => (
-                <>
-                    {getDataProduct[index].goods_receipt_details.length}
-                </>
-            )
+            dataIndex: 'reference',
         },
         {
             title: 'actions',
@@ -699,8 +692,8 @@ const BuatFakturPembelian = () => {
             align: 'center',
         },
         {
-            title: 'Catatan',
-            dataIndex: 'notes',
+            title: 'Referensi',
+            dataIndex: 'reference',
             width: '30%',
             align: 'center',
         },

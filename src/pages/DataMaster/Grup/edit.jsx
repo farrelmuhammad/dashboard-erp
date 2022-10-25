@@ -5,30 +5,34 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Url from '../../../Config';
 import './form.css'
-import SendIcon from '@mui/icons-material/Send';
-import Button from '@mui/material/Button';
 import { useSelector } from 'react-redux';
-import { PageHeader} from 'antd';
+import { Button, Checkbox, Col, Collapse, Modal, PageHeader, Row } from 'antd';
+import { PlusOutlined, SendOutlined } from "@ant-design/icons";
+const { Panel } = Collapse;
 
 const EditGrup = () => {
     // const token = jsCookie.get('auth')
     const auth = useSelector(state => state.auth);
-    const [kode, setKode] = useState();
     const [name, setName] = useState();
     const [description, setDescription] = useState();
+    const [access, setAccess] = useState([]);
     const navigate = useNavigate();
     const { id } = useParams();
 
     const [data, setData] = useState();
-    const [isLoading, setisLoading] = useState(false);
-    const [isError, setisError] = useState(false);
+    const [getModules, setGetModules] = useState();
+    const [loading, setLoading] = useState(true);
+
+
+    const [modal2Visible, setModal2Visible] = useState(false);
 
     const handleUpdate = async e => {
         e.preventDefault();
         const userData = new URLSearchParams();
-        userData.append('id', kode);
         userData.append('nama', name);
         userData.append('deskripsi', description);
+        access.map((acc) => userData.append("hak_akses[]", acc));
+
         axios({
             method: 'put',
             url: `${Url}/groups/${id}`,
@@ -75,87 +79,167 @@ const EditGrup = () => {
     }
 
     useEffect(() => {
-        setisLoading(true);
-        axios.get(`${Url}/groups?kode=${id}`, {
+        axios.get(`${Url}/groups?id=${id}`, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${auth.token}`
             }
 
         })
-            .then(function (response) {
-                setData(response.data.data);
-                setisLoading(false);
-                console.log(response.data.data);
+            .then(function (res) {
+                const getData = res.data.data[0]
+                setData(getData);
+                setAccess(getData)
+                setLoading(false)
+                console.log(getData)
             })
             .catch((err) => {
                 // Jika Gagal
-                setisError(true);
-                setisLoading(false);
             });
 
+        axios
+            .get(`${Url}/modules`, {
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            })
+            .then((res) => {
+                const getData = res.data.data
+                setGetModules(getData);
+                console.log(getData);
+            })
+            .catch((err) => {
+                // Jika Gagal
+                console.log(err);
+            });
     }, [])
 
-    if (isLoading) return <h1>Loading data</h1>;
-    else if (data && !isError)
+    const handleCheck = (event) => {
+        var updatedList = [...access];
+        if (event.target.checked) {
+            updatedList = [...access, event.target.value];
+        } else {
+            updatedList.splice(access.indexOf(event.target.value), 1);
+        }
+        setAccess(updatedList);
+    };
 
+
+    if (getModules?.length > 0) {
         return (
             <>
-           <PageHeader
-          ghost={false}
-          onBack={() => window.history.back()}
-          title="Edit Grup Pengguna">
-          </PageHeader>
-
-                <form className="  p-3 mb-3 bg-body rounded">
+                <PageHeader
+                    ghost={false}
+                    className="bg-body rounded mb-2"
+                    onBack={() => window.history.back()}
+                    title="Edit Grup Pengguna"
+                >
                     <div className="row mb-3">
-                        <label htmlFor="inputKode3" className="col-sm-2 col-form-label">Kode</label>
+                        <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
+                            Kode
+                        </label>
                         <div className="col-sm-10">
                             <input
                                 type="kode"
                                 className="form-control"
                                 id="inputKode3"
-                                value={id}
-                                onChange={e => setKode(e.target.value)} />
+                                // onChange={e => setId(e.target.value)}
+                                value={data.code}
+                                disabled
+                            />
                         </div>
                     </div>
                     <div className="row mb-3">
-                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Grup</label>
+                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+                            Nama Grup
+                        </label>
                         <div className="col-sm-10">
-                            {data?.map((data) => (
-                                <input
-                                    type="Nama"
-                                    className="form-control"
-                                    id="inputNama3"
-                                    defaultValue={data.name}
-                                    onChange={e => setName(e.target.value)}
-                                />
-                            ))}
+                            <input
+                                type="Nama"
+                                className="form-control"
+                                id="inputNama3"
+                                value={data.name}
+                                onChange={(e) => setName(e.target.value)}
+                            />
                         </div>
                     </div>
                     <div className="row mb-3">
-                        <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Keterangan</label>
+                        <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
+                            Keterangan
+                        </label>
                         <div className="col-sm-10">
-                            {data?.map((data) => (
-                                <textarea
-                                    className="form-control"
-                                    id="form4Example3"
-                                    rows="4"
-                                    defaultValue={data.description}
-                                    onChange={e => setDescription(e.target.value)}
-                                />
-                            ))}
+                            <textarea
+                                className="form-control"
+                                id="form4Example3"
+                                rows="4"
+                                value={data.description}
+                                onChange={(e) => setDescription(e.target.value)}
+                            />
                         </div>
                     </div>
-                    <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-                        {/* <button className="btn btn-success" type="button" onClick={handleUpdate}>Simpan</button> */}
-                        <Button onClick={handleUpdate} variant="contained" endIcon={<SendIcon />}>
-                            Simpan
+                    <div className="row mb-3">
+                        <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
+                            Hak Akses
+                        </label>
+                        <div className="col-sm-10">
+                            <Button
+                                type="primary"
+                                icon={<PlusOutlined />}
+                                onClick={() => setModal2Visible(true)}
+                            />
+                        </div>
+                    </div>
+                    <Modal
+                        title="Tambah Hak Akses"
+                        centered
+                        visible={modal2Visible}
+                        onCancel={() => setModal2Visible(false)}
+                        width={800}
+                        height={500}
+                        footer={null}
+                    >
+                        {getModules.map(
+                            (d) =>
+                                d.menus.map((menu) => {
+                                    return (
+                                        <Collapse>
+                                            <Panel header={menu.name} key={menu.id}>
+                                                <Checkbox.Group
+                                                    style={{
+                                                        width: '100%',
+                                                    }}
+                                                    onChange={handleCheck}
+                                                >
+                                                    <Row>
+                                                        {menu.access_rights.map((ar) => {
+                                                            return (
+                                                                <Col span={8}>
+                                                                    <Checkbox value={ar.id}>{ar.name}</Checkbox>
+                                                                </Col>
+                                                            )
+                                                        })}
+                                                    </Row>
+                                                </Checkbox.Group>
+                                            </Panel>
+                                        </Collapse>
+                                    )
+                                }))}
+                    </Modal>
+                    <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+                        <Button
+                            type="primary"
+                            icon={<SendOutlined />}
+                            size="large"
+                            onClick={handleUpdate}
+                        >
+                            Submit
                         </Button>
                     </div>
-                </form>
+                </PageHeader>
             </>
         )
+    }
 }
 
 export default EditGrup

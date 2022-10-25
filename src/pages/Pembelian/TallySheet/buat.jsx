@@ -1923,7 +1923,7 @@ const BuatTallySheet = () => {
                         arrStatus[i] = stts;
                         arrqty[i] = qty;
                         arrBox[i] = tempBox;
-                    }
+                 }
                     else {
                         arrStatus[i] = statusPO[i];
                         arrBox[i] = totalBox[i];

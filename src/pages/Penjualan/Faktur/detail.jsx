@@ -109,6 +109,7 @@ const DetailFaktur = () => {
     const [product, setProduct] = useState([]);
     const [query, setQuery] = useState("");
     const [fakturType, setFakturType] = useState("");
+    const [code, setCode] = useState('');
     const [getCode, setGetCode] = useState('');
     const navigate = useNavigate();
     const auth = useSelector(state => state.auth);
@@ -133,42 +134,99 @@ const DetailFaktur = () => {
     const [pilihanDiskon, setPilihanDiskon] = useState('');
     const [jumlahDiskon, setJumlahDiskon] = useState([]);
     const [sumber, setSumber] = useState('')
+    const [idTandaTerima, setIdTandaTerima] = useState([]);
+    const [data, setData] = useState([])
+    const [dataHeader, setDataHeader] = useState([])
+    const [selectedType, setSelectedType] = useState([])
+    const [selectedPenerima, setSelectedPenerima] = useState();
+    const [selectedAddress, setSelectedAddress] = useState([])
+    const [totalKeseluruhan, setTotalKeseluruhan] = useState("");
+    const [dataBarang, setDataBarang] = useState([])
+    const [catatan, setCatatan] = useState()
+
+    const [getStatus, setGetStatus] = useState([])
+    const [term, setTerm] = useState([])
     const [selectedSupplier, setSelectedSupplier] = useState()
     // const [sumber, setSumber] = useState('')
 
 
 
 
+
     useEffect(() => {
-        axios.get(`${Url}/sales_invoices?id=${id}`, {
+        axios.get(`${Url}/select_sales_invoices?id=${id}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
         })
             .then((res) => {
-                const getData = res.data.data[0];
-                setDate(getData.date);
-                setGetCode(getData.code);
-                // setSumber(getData.code);
-                if (getData.sales_orders) {
+                let getData = res.data[0]
+                setDataHeader(getData);
+                setDate(getData.date)
+                setCode(getData.code)
+                setSubTotal(getData.subtotal)
+                setGrandTotal(getData.total)
+                setUangMuka(getData.down_payment);
+                setTotalPpn(getData.ppn);
+                setSelectedType({
+                    value: getData.type,
+                    label: getData.type
+                });
+                setGetStatus(getData.status);
+                setGrandTotalDiscount(getData.discount);
+                setTerm(getData.term);
+                setSelectedAddress(getData.recipient_address)
+                setSelectedPenerima(getData.recipient)
+                setCustomer(getData.recipient.id)
+                setCatatan(getData.notes)
+
+                let dataSumber;
+                if (getData.sales_invoice_details) {
                     setSumber('SO')
+                    setDataBarang(getData.sales_invoice_details)
+                    dataSumber = getData.sales_invoice_details
+
                 }
                 else {
-                    setSumber('Surat')
+                    setSumber('Retur')
+                    setDataBarang(getData.sales_order_details)
+                    dataSumber = getData.sales_order_details
                 }
-                setGrandTotal(getData.total)
-                setSubTotal(getData.subtotal)
-                setTotalPpn(getData.ppn)
-                setGrandTotalDiscount(getData.discount)
-                setUangMuka(getData.down_payment)
-                setFakturType(getData.type);
-                setCustomer(getData.recipient.name);
-                setAddress(getData.recipient_address.address);
-                setDescription(getData.notes)
-                setProduct(getData.sales_invoice_details);
-                setLoading(false)
-                // console.log(getData);
+                let total = Number(getData.ppn) - Number(getData.down_payment) + Number(getData.subtotal) - Number(getData.discount)
+                setTotalKeseluruhan(total)
+
+
+                // setting data produk
+                let updatedList = dataSumber
+                let tmpData = []
+                let tmpTandaTerima = []
+                for (let i = 0; i < updatedList.length; i++) {
+                    tmpData.push(
+                        {
+                            product_alias_name: updatedList[i].product_alias_name,
+                            quantity: updatedList[i].quantity,
+                            price: updatedList[i].price,
+                            discount_percentage: updatedList[i].discount_percentage,
+                            fixed_discount: updatedList[i].fixed_discount,
+                            subtotal: updatedList[i].subtotal,
+                            pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+                            ppn: 0,
+                            unit: updatedList[i].unit,
+                            total: updatedList[i].total
+
+                        })
+                }
+                setData(tmpData);
+                setProduct(tmpData)
+                console.log(tmpData)
+
+                for (let i = 0; i < dataSumber.length; i++) {
+                    tmpTandaTerima.push(dataSumber[i].id)
+                }
+                setIdTandaTerima(tmpTandaTerima)
+
+                setLoading(false);
             })
     }, [])
 
@@ -1027,7 +1085,7 @@ const DetailFaktur = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Faktur</label>
                             <div className="col-sm-7">
                                 <input
-                                    value={getCode}
+                                    value={code}
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
@@ -1039,9 +1097,47 @@ const DetailFaktur = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pilih Transaksi</label>
                             <div className="col-sm-7">
                                 <input
-                                    value={
-                                        sumber == 'SO' ? 'Penjualan' : 'Surat Jalan'
-                                    }
+                                    value={sumber == 'SO' ? 'Penjualan' : 'Surat Jalan'}
+                                    type="Nama"
+                                    className="form-control"
+                                    id="inputNama3"
+                                    disabled
+                                />
+                            </div>
+                        </div>
+                        <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Tipe Faktur</label>
+                            <div className="col-sm-7">'
+                                <input
+                                    value={selectedType.label}
+                                    type="Nama"
+                                    className="form-control"
+                                    id="inputNama3"
+                                    disabled
+                                />
+
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col">
+                        <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
+                            <div className="col-sm-7">
+                                <input
+                                    value={selectedPenerima.name}
+                                    type="Nama"
+                                    className="form-control"
+                                    id="inputNama3"
+                                    disabled
+                                />
+
+                            </div>
+                        </div>
+                        <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Alamat</label>
+                            <div className="col-sm-7">
+                                <input
+                                    value={selectedAddress.address}
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
@@ -1051,62 +1147,26 @@ const DetailFaktur = () => {
 
                             </div>
                         </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Tipe Faktur</label>
-                            <div className="col-sm-7">
-                                <select
-                                    id="grupSelect"
-                                    className="form-select"
-                                    disabled
-                                >
-                                    <option value="">{fakturType}</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col">
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
-                            <div className="col-sm-7">
-                                <select
-                                    id="grupSelect"
-                                    className="form-select"
-                                    disabled
-                                >
-                                    <option value="">{customer}</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Alamat</label>
-                            <div className="col-sm-7">
-                                <select
-                                    id="grupSelect"
-                                    className="form-select"
-                                    disabled
-                                >
-                                    <option value="">{address}</option>
-                                </select>
-                            </div>
-                        </div>
                         <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Catatan</label>
                         <div className="col-sm-12">
+                           
                             <textarea
+                                defaultValue={catatan}
                                 className="form-control"
+                                disabled
                                 id="form4Example3"
                                 rows="2"
-                                value={description}
-                                disabled
+                                onChange={(e) => setCatatan(e.target.value)}
                             />
                         </div>
-                        {/* <div className="row mb-3">
+                        <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
                             <div className="col-sm-4 p-1">
                                 <h5>
                                     {getStatus === 'Submitted' ? <Tag color="blue">{getStatus}</Tag> : getStatus === 'Draft' ? <Tag color="orange">{getStatus}</Tag> : getStatus === 'Done' ? <Tag color="green">{getStatus}</Tag> : <Tag color="red">{getStatus}</Tag>}
                                 </h5>
                             </div>
-                        </div> */}
+                        </div>
                     </div>
                 </div>
             </PageHeader>
