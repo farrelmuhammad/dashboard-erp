@@ -23,7 +23,7 @@ const EditMerek = () => {
     const userData = new URLSearchParams();
     userData.append("nama", name);
     userData.append("deskripsi", description);
-    product.map((p) => userData.append("produk[]", p));
+    // product.map((p) => userData.append("produk[]", p));
     axios({
       method: "put",
       url: `${Url}/brands/${id}`,

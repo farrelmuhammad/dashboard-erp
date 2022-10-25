@@ -283,11 +283,12 @@ const GoodsRequestTable = () => {
         },
     ];
     return <Table
+        size="small"
         loading={isLoading}
         columns={columns}
         rowKey={(record) => record.id}
         sortDirections={["descend", "ascend"]}
-        pagination={{ pageSize: 5 }}
+        pagination={{ pageSize: 10 }}
         dataSource={getDataGoodsRequest}
         onChange={handleTableChange}
         scroll={{

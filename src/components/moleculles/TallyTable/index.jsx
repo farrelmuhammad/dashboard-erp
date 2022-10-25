@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button, Input, Space, Table, Tag } from "antd";
-import { DeleteOutlined, EditOutlined,CloseOutlined , InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, CloseOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { useSelector } from "react-redux";
 
@@ -191,11 +191,11 @@ const TallyTable = () => {
       .then(res => {
         const getData = res.data.data
         setGetDataTally(getData)
-        if(getData.supplier_id){
+        if (getData.supplier_id) {
           setSumber('Retur')
 
         }
-        else{
+        else {
           setSumber('SO')
 
 
@@ -225,7 +225,7 @@ const TallyTable = () => {
       sortDirections: ['descend', 'ascend'],
     },
     {
-      title:'Pelanggan',
+      title: 'Pelanggan',
       dataIndex: 'customer_name',
       width: '15%',
       key: 'customer',
@@ -236,7 +236,7 @@ const TallyTable = () => {
     },
     {
       title: 'Supplier',
-      dataIndex:'supplier_name',
+      dataIndex: 'supplier_name',
       width: '15%',
       key: 'customer',
       ...getColumnSearchProps('supplier_name'),
@@ -322,9 +322,10 @@ const TallyTable = () => {
     },
   ];
   return <Table
+    size="small"
     loading={isLoading}
     columns={columns}
-    pagination={{ pageSize: 5 }}
+    pagination={{ pageSize: 10 }}
     dataSource={getDataTally}
     scroll={{
       y: 240,

@@ -426,6 +426,7 @@ const BuatProduk = () => {
             <input
               type="kode"
               className="form-control"
+              defaultValue={0}
               placeholder="Masukkan Harga..."
               id="inputKode3"
               onChange={(e) => setBuy_price(e.target.value)}
@@ -440,6 +441,7 @@ const BuatProduk = () => {
             <input
               type="Nama"
               className="form-control"
+              defaultValue={0}
               placeholder="Masukkan Harga..."
               id="inputNama3"
               onChange={(e) => setSell_price(e.target.value)}
@@ -454,6 +456,7 @@ const BuatProduk = () => {
             <input
               type="Nama"
               className="form-control"
+              defaultValue={0}
               placeholder="Masukkan Diskon..."
               id="inputNama3"
               onChange={(e) => setDiscount(e.target.value)}
