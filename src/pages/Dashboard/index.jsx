@@ -14,7 +14,7 @@ const Dashboard = () => {
 
     return (
         <>
-            <Row>
+            {/* <Row>
                 <Col span={8}>
                     <Card
                         style={{
@@ -90,7 +90,7 @@ const Dashboard = () => {
                         </Row>
                     </Card>
                 </Col>
-            </Row>
+            </Row> */}
             <RaceLine />
             <ColumnChart />
             <Row>

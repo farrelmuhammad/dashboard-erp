@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from 'react';
+import './App.css';
 import {
   CopyOutlined,
   DatabaseOutlined,
@@ -13,33 +15,30 @@ import {
   BoxPlotOutlined,
   ContainerOutlined,
   ImportOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
 } from '@ant-design/icons';
-import './App.css';
-import { Avatar, Button, Col, Dropdown, Layout, Menu, Row, Space, Tooltip, Typography } from 'antd';
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import { Affix, Breadcrumb, Button, Col, Dropdown, Layout, Menu, Row, Tooltip } from 'antd';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import Url from './Config';
-import Login from './pages/Login';
-import RouteApp from './routes';
 import Swal from 'sweetalert2';
-import { toTitleCase } from './utils/helper';
-const { Header, Sider, Content } = Layout;
-const { Text } = Typography;
+import RouteApp from './routes';
+import Login from './pages/Login';
+import Search from 'antd/lib/transfer/search';
+import NotAuthorized from './pages/NotAuthorized';
+import SkeletonPage from './pages/SkeletonPage';
+import axios from 'axios';
+import Url from './Config';
+import Logo from './pages/Logo.jpeg'
 
-const App = () => {
-  const [collapsed, setCollapsed] = useState(false);
+const { Header, Content, Footer, Sider } = Layout;
 
+function App() {
   const isLoggedIn = !!useSelector(state => state.auth.token);
+  const [collapsed, setCollapsed] = useState(false);
 
   const navigate = useNavigate()
 
   const auth = useSelector(state => state.auth);
   const [isAdmin, setIsAdmin] = useState();
-  const [user, setUser] = useState();
 
   const getUser = async () => {
     axios.get(`${Url}/user`, {
@@ -49,16 +48,38 @@ const App = () => {
       }
     })
       .then(res => {
-        const user = res.data;
-        console.log(user)
-        setIsAdmin(user.is_admin)
-        setUser(user.username)
+        setIsAdmin(res.data.is_admin)
       })
   }
 
   useEffect(() => {
     getUser()
   }, [])
+
+  const handleLogout = () => {
+    // jsCookie.remove('auth')
+    localStorage.removeItem('persist:auth')
+    var toastMixin = Swal.mixin({
+      toast: true,
+      icon: 'success',
+      title: 'General Title',
+      animation: false,
+      position: 'top-right',
+      showConfirmButton: false,
+      timer: 800,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+    });
+    toastMixin.fire({
+      animation: true,
+      title: 'Logout Successfully'
+    });
+    navigate('/')
+    setTimeout(window.location.reload.bind(window.location), 500);
+  }
 
   const adminMenu = <>
     <Menu.SubMenu title="SDM" icon={<AuditOutlined />}>
@@ -203,7 +224,7 @@ const App = () => {
       <Menu.Item key="31">
         <Link to="/fakturpembelian" />
         Faktur Pembelian
-      </Menu.Item>
+      </Menu.Item> 
       <Menu.Item key="53">
         <Link to="/creditnote" />
         Credit Note
@@ -454,63 +475,48 @@ const App = () => {
     </Menu.SubMenu>
   </>
 
-  const handleLogout = () => {
-    // jsCookie.remove('auth')
-    localStorage.removeItem('persist:auth')
-    var toastMixin = Swal.mixin({
-      toast: true,
-      icon: 'success',
-      title: 'General Title',
-      animation: false,
-      position: 'top-right',
-      showConfirmButton: false,
-      timer: 800,
-      timerProgressBar: true,
-      didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer)
-        toast.addEventListener('mouseleave', Swal.resumeTimer)
-      }
-    });
-    toastMixin.fire({
-      animation: true,
-      title: 'Logout Successfully'
-    });
-    navigate('/')
-    setTimeout(window.location.reload.bind(window.location), 500);
-  };
-
   return (
     <>
       {isLoggedIn ? (
-        <Layout style={{
-          minHeight: '100vh',
+        <Layout hasSider style={{
+          height: '100vh',
+          width: 'auto',
         }}>
           <Sider
-            trigger={null}
-            collapsible
-            collapsed={collapsed}
             style={{
               overflow: 'auto',
-              width: '100%',
-              height: '100vh',
-              position: 'sticky',
+              // height: '100vh',
+              position: 'fixed',
               left: 0,
               top: 0,
               bottom: 0,
+              backgroundColor: 'rgba(255, 255, 255, 0.5)',
             }}
-            width={250}
+            width={280}
           >
-            <div className="logo" />
-            {/* <img src={Logo}
-          style={{ width: "50px" }} alt="logo" /> */}
+            <Affix offsetTop>
+              <Header
+                // className="site-layout-header"
+                style={{
+                  padding: 0,
+                  backgroundColor: "white",
+                }}
+              >
+                <div className='text-center'>
+                  <img src={Logo}
+                    style={{ width: "60px" }} alt="logo" />
+                </div>
+                {/* <img src="https://www.edwinconsultant.com/assets/img/logo.png" className='logo-header-sidebar' alt='Logo' /> */}
+              </Header>
+            </Affix>
             <Menu
-              theme="dark"
+              // theme="dark"
               defaultSelectedKeys={['1']}
               // selectedKeys={[sideBarMenuKey]}
               mode="inline"
-            // style={{
-            //   backgroundColor: 'rgba(255, 255, 255, 0.5)',
-            // }}
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.5)',
+              }}
             >
               <Menu.Item key="1" icon={<PieChartOutlined />}>
                 <Link to="/" />
@@ -521,56 +527,97 @@ const App = () => {
               }
             </Menu>
           </Sider>
-          <Layout className="site-layout" style={{ marginLeft: 1, width: '1080px' }}>
-            <Header
-              className="site-layout-background"
+          <Layout
+            className="site-layout"
+            style={{
+              marginLeft: 280,
+              width: '1080px',
+            }}
+          >
+            <Affix offsetTop>
+              <Header
+                className="site-layout-header"
+                style={{
+                  // position: 'fixed',
+                  backgroundColor: 'rgb(216, 218, 221)',
+                }}
+              >
+                <Row>
+                  <Col span={8}>
+                    <Search
+                      placeholder="input search text"
+                      allowClear
+                      enterButton="Search"
+                      size="large"
+                      onSearch={true}
+                    />
+                  </Col>
+                  <Col span={8} offset={8}>
+                    <div className='text-end'>
+                      <Dropdown overlay={
+                        <Menu>
+                          <Menu.Item key="user" icon={<SettingOutlined />}>
+                            User Setting
+                          </Menu.Item>
+                          <Menu.Item onClickCapture={handleLogout} key="logout" icon={<LogoutOutlined />}>
+                            Logout
+                          </Menu.Item>
+                        </Menu>
+                      }>
+                        <Tooltip>
+                          <Button className='icon-user' type="primary" shape="circle" icon={<UserOutlined style={{ fontSize: '20px', }} />} />
+                        </Tooltip>
+                      </Dropdown>
+                    </div>
+                  </Col>
+                </Row>
+              </Header>
+            </Affix>
+            <Content
               style={{
-                padding: 0,
+                margin: '0 16px',
+                overflow: 'auto',
               }}
             >
-              <Row align="middle" justify="space-between">
-                <Col xs={0} sm={12}>
-                  {React.createElement(collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
-                    className: 'trigger',
-                    onClick: () => setCollapsed(!collapsed),
-                  })}
-                </Col>
-                <Col>
-                  <div className='avatar'>
-                    <Text className='me-3' ellipsis strong>
-                      {/* {user?.name} */}
-                      Hello, {user}!
-                    </Text>
-                    <Dropdown overlay={
-                      <Menu>
-                        <Menu.Item key="user" icon={<SettingOutlined />}>
-                          User Setting
-                        </Menu.Item>
-                        <Menu.Item onClickCapture={handleLogout} key="logout" icon={<LogoutOutlined />}>
-                          Logout
-                        </Menu.Item>
-                      </Menu>
-                    } trigger={['click']}>
-                      <Tooltip>
-                        <Button className='icon-user' type="primary" shape="circle" icon={<UserOutlined style={{ fontSize: '20px', }} />} />
-                      </Tooltip>
-                    </Dropdown>
-                  </div>
-
-                </Col>
-              </Row>
-            </Header>
-            <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
-              <RouteApp />
+              {/* <Breadcrumb
+                style={{
+                  margin: '16px 0',
+                  // marginTop: '5.5rem'
+                }}
+              >
+                <Breadcrumb.Item>User</Breadcrumb.Item>
+                <Breadcrumb.Item>Bill</Breadcrumb.Item>
+              </Breadcrumb> */}
+              <div
+                className="site-layout-background"
+                bordered
+                style={{
+                  margin: '20px 0',
+                  padding: 4,
+                  minHeight: 360,
+                }}
+              >
+                <React.Suspense fallback={<SkeletonPage />}>
+                  <RouteApp />
+                </React.Suspense>
+              </div>
             </Content>
+            {/* <Footer
+              style={{
+                textAlign: 'center',
+              }}
+            >
+              Ant Design ©2018 Created by Ant UED
+            </Footer> */}
           </Layout>
-        </Layout>
+        </Layout >
       ) : (
         // <NotAuthorized />
         <Login />
       )
       }
     </>
-  );
-};
-export default App;
+  )
+}
+
+export default App

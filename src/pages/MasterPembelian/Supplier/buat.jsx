@@ -152,6 +152,7 @@ const BuatSupplier = () => {
       // console.log('Inactive');
     }
   };
+
   const defaultColumns = [
     {
       title: 'No.',
@@ -226,21 +227,16 @@ const BuatSupplier = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(data);
-
     const userData = new FormData();
-
     userData.append("nama", name);
     userData.append("badan_usaha", bussiness_ent);
     userData.append("grup", grup);
     userData.append("nomor_telepon", phone_number);
     userData.append("email", email);
     userData.append("npwp", npwp);
-    // userData.append("term", term);
-    // userData.append("diskon", discount);
     userData.append("status", status);
 
-    data.map((address) => {
+    dataSource.map((address) => {
       console.log(address);
       userData.append("alamat[]", address.address);
       userData.append("kota[]", address.city);
@@ -278,7 +274,7 @@ const BuatSupplier = () => {
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: err.response.data.error.nama,
+            text: err.response.data.error,
           });
         } else if (err.request) {
           console.log("err.request ", err.request);

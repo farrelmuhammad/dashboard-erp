@@ -1,29 +1,160 @@
-import './form.css'
-import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tag } from 'antd'
-import { DeleteOutlined, LoadingOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons'
-import React, { useEffect, useState } from 'react'
-import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
-import Search from 'antd/lib/transfer/search'
-import axios from 'axios'
+import './form.css';
+import React from "react";
+import jsCookie from "js-cookie";
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Url from '../../../Config';
-import { useNavigate, useParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-import ReactDataSheet from 'react-datasheet'
+import axios from 'axios';
+import AsyncSelect from "react-select/async";
+import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tabs, Tag } from 'antd'
+import { ConsoleSqlOutlined, DeleteOutlined, LoadingOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons'
+import Column from 'antd/lib/table/Column';
+import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
+import Search from 'antd/lib/transfer/search';
+import ReactDataSheet from 'react-datasheet';
+import { useSelector } from 'react-redux';
+import "react-datasheet/lib/react-datasheet.css";
+import { CreateOutlined } from '@material-ui/icons';
+import { update } from 'lodash';
+import { array } from 'yup';
 import { PageHeader } from 'antd';
+import { toTitleCase } from '../../../utils/helper';
 
 
-const EditTallySheet = () => {
+const EditableContext = createContext(null);
+
+const EditableRow = ({ index, ...props }) => {
+    const [form] = Form.useForm();
+    return (
+        <Form form={form} component={false}>
+            <EditableContext.Provider value={form}>
+                <tr {...props} />
+            </EditableContext.Provider>
+        </Form>
+    );
+};
+
+const EditableCell = ({
+    title,
+    editable,
+    children,
+    dataIndex,
+    record,
+    handleSave,
+    ...restProps
+}) => {
+    const [editing, setEditing] = useState(false);
+    const inputRef = useRef(null);
+    const form = useContext(EditableContext);
+    useEffect(() => {
+        if (editing) {
+            inputRef.current.focus();
+        }
+    }, [editing]);
+
+    const toggleEdit = () => {
+        setEditing(!editing);
+        form.setFieldsValue({
+            [dataIndex]: record[dataIndex],
+        });
+    };
+
+    const save = async () => {
+        try {
+            const values = await form.validateFields();
+            toggleEdit();
+            handleSave({ ...record, ...values });
+        } catch (errInfo) {
+            console.log('Save failed:', errInfo);
+        }
+    };
+
+    let childNode = children;
+
+    if (editable) {
+        childNode = editing ? (
+            <Form.Item
+                style={{
+                    margin: 0,
+                }}
+                name={dataIndex}
+                rules={[
+                    {
+                        required: true,
+                        message: `${title} is required.`,
+                    },
+                ]}
+            >
+                {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
+                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
+            </Form.Item>
+        ) : (
+            <div
+                className="editable-cell-value-wrap"
+                onClick={toggleEdit}
+            >
+                {children}
+            </div>
+        );
+    }
+
+    return <td {...restProps}>{childNode}</td>;
+};
+
+const EditTallyTransfer = () => {
     const { id } = useParams();
-    const navigate = useNavigate()
+    // const auth.token = jsCookie.get("auth");
     const auth = useSelector(state => state.auth);
-    const [modal2Visible, setModal2Visible] = useState(false)
-    const [query, setQuery] = useState("")
-    const [product, setProduct] = useState([]);
+    const [date, setDate] = useState(null);
+    const [catatan, setCatatan] = useState('');
     const [loading, setLoading] = useState(true);
-    const [getTallySheet, setGetTallySheet] = useState([])
+    const [productNoEdit, setProductNoEdit] = useState([]);
+    const [sheetNoEdit, setSheetNoEdit] = useState([]);
+    const [box, setBox] = useState([])
+
+    const [sumber, setSumber] = useState('PO');
+    const [referensi, setReferensi] = useState('');
+    const [description, setDescription] = useState('');
+    const [getStatus, setStatus] = useState("");
+    const [supplier, setSupplier] = useState("");
+    const [customer, setCustomer] = useState("");
+    const [warehouse, setWarehouse] = useState("");
+    const [product, setProduct] = useState([]);
+    const [productSelect, setProductSelect] = useState([]);
+    const [query, setQuery] = useState("");
+    const [getCode, setGetCode] = useState('');
+    const navigate = useNavigate();
+    const [productName, setProductName] = useState()
+    const [statusPO, setStatusPO] = useState([])
+    // const []
+    // const [tampilCek, setTampilCek]  = useState(true)
+    const [quantityPO, setQuantityPO] = useState()
+
+    const [getDataProduct, setGetDataProduct] = useState([]);
+    const [getDataFaktur, setGetDataFaktur] = useState([]);
+    const [getDataRetur, setGetDataRetur] = useState([]);
+    const [getDataDetailPO, setGetDataDetailPO] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+
+    const [subTotal, setSubTotal] = useState("");
+    const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
+    const [totalPpn, setTotalPpn] = useState("");
+    const [grandTotal, setGrandTotal] = useState("");
+    const [checked, setChecked] = useState(false);
+    const [count, setCount] = useState(0);
+
+    const [selectedSupplier, setSelectedSupplier] = useState(null);
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const [selectedWarehouse, setSelectedWarehouse] = useState(null);
+    const [selectedProduct, setSelectedProduct] = useState([]);
+    const [modal2Visible, setModal2Visible] = useState(false);
+    const [modal2Visible2, setModal2Visible2] = useState(false);
+
+    const [productPO, setProductPO] = useState([]);
     const [loadingTable, setLoadingTable] = useState(false);
     const [delIndex, setDelIndex] = useState([]);
+    const [totalTallySheet, setTotalTallySheet] = useState([]);
     const [data, setData] = useState([]);
     const [dataSheet, setDataSheet] = useState([]);
     const [loadingSpreedSheet, setLoadingSpreadSheet] = useState(false);
@@ -32,26 +163,19 @@ const EditTallySheet = () => {
     const [indexPO, setIndexPO] = useState(0);
     const [kuantitasBox, setKuantitasBox] = useState([]);
     const [idxPesanan, setIdxPesanan] = useState(0);
-    const [selectedSupplier, setSelectedSupplier] = useState(null);
-    const [selectedWarehouse, setSelectedWarehouse] = useState(null);
-    const [selectedProduct, setSelectedProduct] = useState([]);
-    const [modal2Visible2, setModal2Visible2] = useState(false);
-    const [getDataProduct, setGetDataProduct] = useState()
-    const [getDataDetailPO, setGetDataDetailPO] = useState('');
-    const [detailTallySheet, setDetailTallySheet] = useState([])
-    const [isLoading, setIsLoading] = useState(false);
-    const [getStatus, setStatus] = useState();
-    const [qty, setQty] = useState([]);
-    const [box, setBox] = useState([])
-    const [totalTallySheet, setTotalTallySheet] = useState([])
-    const [quantityPO, setQuantityPO] = useState()
-    // const [quantityTally, setQuantityPO] = useState()
+    const [getTallySheet, setGetTallySheet] = useState([])
+
+    const [modalListImpor, setModalListImpor] = useState(false);
+    const [modalListLokal, setModalListLokal] = useState(false)
+    const [modalListRetur, setModalListRetur] = useState(false)
+    const [grup, setGrup] = useState()
+    // const [checked, setChecked] = useState(false)¿
     const valueRenderer = (cell) => cell.value;
     const onContextMenu = (e, cell, i, j) =>
         cell.readOnly ? e.preventDefault() : null;
 
     useEffect(() => {
-        axios.get(`${Url}/tally_sheet_ins?id=${id}`, {
+        axios.get(`${Url}/tally_sheet_tf?id=${id}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -59,9 +183,17 @@ const EditTallySheet = () => {
         })
             .then((res) => {
                 const getData = res.data.data[0];
+                const tallySheetDetail = getData.tally_sheet_details;
                 setGetTallySheet(getData)
-                setDetailTallySheet(getData.tally_sheet_details);
+                // setDetailTallySheet(getData.tally_sheet_details);
                 setStatus(getData.status);
+                setSelectedWarehouse(getData.warehouse_name);
+                setWarehouse(getData.warehouse_id);
+                setCatatan(getData.notes)
+                setDate(getData.date);
+                setLoading(false);
+
+                let arrDataLama = [];
                 let arrData = [];
                 let tmpQty = []
                 let tmpBox = []
@@ -73,39 +205,66 @@ const EditTallySheet = () => {
 
                 if (data.length == 0) {
 
+
                     for (let i = 0; i < getData.tally_sheet_details.length; i++) {
-                        let tempData = []
-                        kuantitas = []
-                        let qtyPesanan = getData.tally_sheet_details[i].purchase_order_qty
+                        let qtyPesanan;
+                        let qtySisa;
+                        let idSumber;
+                        let codeSumber;
                         let qtyTally = getData.tally_sheet_details[i].tally_sheets_qty
-                        let qtySisa = Number(getData.tally_sheet_details[i].purchase_order_qty) - Number(getData.tally_sheet_details[i].tally_sheets_qty);
-                        console.log(qtySisa)
+                        // let qtyBox = getData.tally_sheet_details[i].boxes_quantity
+
+                         if (tallySheetDetail[i].goods_request_id) {
+                            setSelectedSupplier(getData.supplier_name);
+                            setSupplier(getData.supplier_id)
+                            idSumber = getData.tally_sheet_details[i].goods_request.id;
+                            codeSumber = getData.tally_sheet_details[i].goods_request.code
+                            qtyPesanan = getData.tally_sheet_details[i].goods_request_qty
+                            // qtySisa = Number(qtyPesanan) - Number(qtyTally)+Number(qtyBox);
+                        }
+
+                        let tempData = []
+                        let tempDataLama = []
+                        kuantitas = []
+                        qtySisa = Number(qtyPesanan) - Number(qtyTally);
+
                         tmp.push({
                             id_produk: getData.tally_sheet_details[i].product_id,
-                            id_pesanan_pembelian: getData.tally_sheet_details[i].purchase_order.id,
-                            code: getData.tally_sheet_details[i].purchase_order.code,
+                            id_sumber: idSumber,
+                            code: codeSumber,
                             boxes_quantity: getData.tally_sheet_details[i].boxes_quantity,
                             number_of_boxes: getData.tally_sheet_details[i].number_of_boxes,
                             boxes_unit: getData.tally_sheet_details[i].boxes_unit,
                             product_name: getData.tally_sheet_details[i].product_name,
-                            action: qtyTally >= qtyPesanan ? 'Done' : 'Next delivery',
-                            purchase_order_qty: qtySisa,
+                            action: getData.tally_sheet_details[i].action,
+                            transaksi_qty: qtySisa,
                             tally_sheets_qty: qtyTally,
+                            statusCek: true,
                             key: "lama"
                         })
 
+                        let jumlahBaris = (Number(getData.tally_sheet_details[i].boxes.length) / 10) + 1;
+                        let jumlahKolom = getData.tally_sheet_details[i].boxes.length;
+                        let buatKolom = 0
+                        let indexBox = 0;
+                        let statusEdit = getData.tally_sheet_details[i].editable;
+
                         tmpBox.push(getData.tally_sheet_details[i].number_of_boxes);
                         tmpTally.push(getData.tally_sheet_details[i].boxes_quantity)
-                        for (let x = 0; x <= 10; x++) {
+                        for (let x = 0; x <= jumlahBaris.toFixed(); x++) {
                             let baris = []
                             let kolom = [];
+                            let barisLama = []
+                            let kolomLama = [];
                             for (let y = 0; y <= 10; y++) {
                                 if (x == 0) {
                                     if (y == 0) {
                                         kolom.push({ readOnly: true, value: "" })
+                                        kolomLama.push({ readOnly: true, value: "" })
                                     }
                                     else {
                                         kolom.push({ value: huruf[y - 1], readOnly: true })
+                                        kolomLama.push({ value: huruf[y - 1], readOnly: true })
                                     }
 
                                 }
@@ -115,12 +274,25 @@ const EditTallySheet = () => {
                                             { readOnly: true, value: x }
 
                                         );
+                                        kolomLama.push(
+                                            { readOnly: true, value: x }
+
+                                        );
 
                                     }
-                                    else if (y <= getData.tally_sheet_details[i].boxes.length && x == 1) {
+                                    else if (buatKolom < jumlahKolom && x <= jumlahBaris.toFixed()) {
                                         kolom.push(
-                                            { value: getData.tally_sheet_details[i].boxes[y - 1].quantity.replace('.', ',') }
+                                            { value: getData.tally_sheet_details[i].boxes[indexBox].quantity.replace('.', ','), readOnly: !statusEdit }
                                         );
+                                        kolomLama.push(
+                                            { value: getData.tally_sheet_details[i].boxes[indexBox].quantity.replace('.', ','), readOnly: !statusEdit }
+                                        );
+                                        // pengecekan index box 
+                                        if (indexBox < getData.tally_sheet_details[i].boxes.length - 1) {
+                                            indexBox = indexBox + 1;
+                                        }
+                                        // penjumlahan kolom yang sudah diisi 
+                                        buatKolom = buatKolom + 1;
 
                                         kuantitas.push(getData.tally_sheet_details[i].boxes[y - 1].quantity);
 
@@ -128,28 +300,43 @@ const EditTallySheet = () => {
                                     }
                                     else {
                                         kolom.push(
-                                            { value: '' },
+                                            {
+                                                value: '',
+                                                readOnly: !statusEdit
+                                            },
+                                        );
+                                        kolomLama.push(
+                                            {
+                                                value: '',
+                                                readOnly: !statusEdit
+                                            },
                                         );
                                     }
                                     baris.push(kolom)
+                                    barisLama.push(kolomLama)
 
                                 }
 
 
                             }
                             tempData.push(kolom);
+                            tempDataLama.push(kolomLama)
                         }
                         arrKuantitas.push(kuantitas);
+                        arrDataLama.push(tempDataLama)
                         arrData.push(tempData)
                     }
                     setProduct(tmp)
+                    setProductNoEdit(tmp)
                     setKuantitasBox(arrKuantitas);
                     setTotalTallySheet(tmpTally);
                     setData(arrData);
+                    // console.log(arrData)
+                    setSheetNoEdit(arrDataLama)
                     setQty(tmpQty);
                     setBox(tmpBox)
 
-                    setLoading(false);
+                
                 }
             })
             .catch((err) => {
@@ -157,82 +344,10 @@ const EditTallySheet = () => {
             });
     }, []);
 
-    useEffect(() => {
-        console.log(getTallySheet.supplier_id)
-        const getProduct = async () => {
-            const res = await axios.get(`${Url}/tally_sheet_ins_available_purchase_orders?include_tally_sheet_purchase_orders=${id}&kode=${query}&id_pemasok=${getTallySheet.supplier_id}`, {
-                headers: {
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${auth.token}`
-                }
-            })
-            console.log(res.data.data)
-            setGetDataProduct(res.data.data);
-            setGetDataDetailPO(res.data.data.map(d => d.purchase_order_details))
-        };
-
-        if (query.length === 0 || query.length > 2) getProduct();
-    }, [query, getTallySheet])
-
-    const columns = [
-        {
-            title: 'No. Pesanan',
-            dataIndex: 'code',
-            width: '25%',
-            key: 'name',
-        },
-        {
-            title: 'Nama Product',
-            dataIndex: 'product_name',
-            width: '25%',
-            key: 'name',
-        },
-        {
-            title: 'Qty',
-            dataIndex: 'quantity',
-            width: '10%',
-            align: 'center',
-            editable: true,
-        },
-        {
-            title: 'Stn',
-            dataIndex: 'unit',
-            align: 'center',
-            width: '10%',
-            key: 'name',
-        },
-        {
-            title: 'Box',
-            dataIndex: 'box',
-            align: 'center',
-            width: '10%',
-            key: 'box',
-
-        },
-        {
-            title: 'Status',
-            dataIndex: 'status',
-            align: 'center',
-            width: '10%',
-            key: 'operation',
-
-        },
-        {
-            title: 'Action',
-            dataIndex: 'action',
-            align: 'center',
-            width: '10%',
-            key: 'operation',
-
-        },
-    ];
 
     const onCellsChanged = (changes) => {
-        // const tempGrid = [];
-        console.log(changes)
+        // console.log(sheetNoEdit)
         const newGrid = [];
-
-        // tempGrid[indexPO] = data[idxPesanan][indexPO];
         newGrid[indexPO] = data[indexPO];
 
         // menyimpan perubahan 
@@ -245,26 +360,29 @@ const EditTallySheet = () => {
 
             }
         });
+        let totTly = [];
 
         // update jumlah tally sheet 
-        let totTly = [];
         for (let x = 0; x < product.length; x++) {
             totTly[x] = 0;
             for (let a = 1; a < data[x].length; a++) {
                 for (let b = 1; b < data[x][a].length; b++) {
                     if (data[x][a][b].value != 0) {
+                        console.log(data[x][a][b])
                         totTly[x] = Number(totTly[x]) + Number(data[x][a][b].value.replace(',', '.'));
+                        console.log(totTly[x])
                     }
                 }
             }
         }
+
         setTotalTallySheet(totTly);
 
         // update pada state 
-        let tempData = [];
+        // let tempData = [];
         let arrData = [];
         for (let x = 0; x < product.length; x++) {
-            tempData = [];
+            // tempData = [];
             if (x == indexPO) {
                 arrData.push(newGrid[x]);
             }
@@ -312,14 +430,14 @@ const EditTallySheet = () => {
             if (i == indexPO) {
                 tmp.push({
                     id_produk: product[i].id_produk,
-                    id_pesanan_pembelian: product[i].id_pesanan_pembelian,
+                    id_sumber: product[i].id_sumber,
                     code: product[i].code,
-                    boxes_quantity: totTly[i].toString(),
+                    boxes_quantity: totTly[i].toFixed(2),
                     number_of_boxes: total[i],
                     boxes_unit: product[i].boxes_unit,
                     product_name: product[i].product_name,
-                    action: totTly[i] >= product[i].purchase_order_qty ? 'Done' : 'Next delivery',
-                    purchase_order_qty: product[i].purchase_order_qty,
+                    action: totTly[i] >= product[i].transaksi_qty ? 'Done' : 'Next delivery',
+                    transaksi_qty: product[i].transaksi_qty,
                     tally_sheets_qty: product[i].tally_sheets_qty,
                     key: product[i].key
                 })
@@ -330,120 +448,539 @@ const EditTallySheet = () => {
 
         }
         console.log(tmp)
+        console.log(sheetNoEdit)
         setProduct(tmp)
     };
 
-    function hapusIndexProduct(index) {
-        console.log(index)
-        setLoadingTable(true);
-        // for (let x = 0; x < dataTS.length; x++) {
-        product.splice(index, 1);
-        data.splice(index, 1);
-        setIndexPO(0)
-        console.log(product)
+    function klikTambahBaris() {
+        let hasilData = [];
+        let tmpData = [];
+        // let defaultData 
+        for (let x = 0; x < product.length; x++) {
+            if (x == indexPO) {
+                let defaultData = [
+                    { readOnly: true, value: data[x].length },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' },
+                    { value: '' }
+                ]
+                hasilData.push(...data[x], defaultData);
+            }
+            else {
+                hasilData.push(data[x]);
+            }
+            tmpData.push(hasilData);
 
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil',
-            text: 'Data berhasil dihapus',
-        }).then(() => setLoadingTable(false));
-        // }
+        }
 
-        // console.log(dataTS)
+
+        setData(tmpData);
+    }
+
+    function klikHapusBaris() {
+        // setLoadingSpreadSheet(true);
+        let hasilData = [];
+        let tmpData = [...data];
+        for (let x = 0; x < product.length; x++) {
+            if (x === indexPO) {
+
+                if (tmpData[x].length - 2 > 0) {
+                    tmpData[x].splice(tmpData[x].length - 1, 1);
+                }
+            }
+        }
+        setData(tmpData)
 
     }
 
 
-    function forceDoneProduct(index) {
-        Swal.fire({
-            title: 'Apakah Anda Yakin?',
-            text: "Status akan diubah menjadi Done",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                let newProduct = []
-                for (let i = 0; i < product.length; i++) {
+    function simpanTallySheet(i) {
+        let tmp = [];
+        let arrtmp = [];
+        let stts = [];
+        let arrStatus = []
+        let dataProduk;
+        if (sumber == 'PO') {
+            dataProduk = product[idxPesanan].goods_request_details;
+        }
 
-                    if (i == index) {
-                        newProduct.push({
-                            id_produk: product[i].id_produk,
-                            id_pesanan_pembelian: product[i].id_pesanan_pembelian,
-                            code: product[i].code,
-                            boxes_quantity: product[i].boxes_quantity,
-                            number_of_boxes: product[i].number_of_boxes,
-                            boxes_unit: product[i].boxes_unit,
-                            product_name: product[i].product_name,
-                            action: 'Done',
-                            purchase_order_qty: product[i].purchase_order_qty,
-                            tally_sheets_qty: product[i].tally_sheets_qty,
-                            key: product[i].key
-                        })
+
+        let qtyPO = dataProduk[i].quantity;
+        let qtySebelumnya = dataProduk[i].tally_sheets_qty;
+
+        for (let x = 0; x < product.length; x++) {
+            tmp = [];
+            if (x == idxPesanan) {
+                for (let i = 0; i < dataProduk.length; i++) {
+                    if (i === indexPO) {
+                        tmp[i] = 0;
+                        tmp[i] = totalTallySheet[x][i];
+
+                        if (Number(totalTallySheet[x][i]) + Number(qtySebelumnya) >= qtyPO) {
+                            stts[i] = 'Done'
+                        }
+                        else if (Number(totalTallySheet[x][i]) + Number(qtySebelumnya) < qtyPO) {
+                            stts[i] = 'Next delivery'
+                        }
+                    }
+                    else {
+                        tmp[i] = quantity[x][i];
+                        stts[i] = statusPO[x][i]
+                    }
+                }
+                arrtmp.push(tmp);
+                arrStatus.push(stts)
+            }
+            else {
+                arrtmp.push(quantity[x]);
+                arrStatus.push(statusPO[x])
+            }
+        }
+
+        setQuantity(arrtmp);
+        setStatusPO(arrStatus);
+        setModal2Visible2(false)
+    }
+
+    function hapusIndexProduct(i, idx) {
+        setLoadingTable(true)
+
+        // console.log(getDataProduct)
+
+        for (let x = 0; x < product.length; x++) {
+            let dataDetail;
+            if (sumber == 'PO') {
+                dataDetail = product[x].goods_request_details;
+            }
+
+
+            for (let y = 0; y < dataDetail.length; y++) {
+                if (x == i && y == idx) {
+
+                    if (dataDetail.length == 1) {
+
+                        // pengecekan centang 
+                        if (sumber == 'PO') {
+                            // hapus cek 
+                            let tmp = [];
+                            for (let j = 0; j < getDataProduct.length; j++) {
+                                if (getDataProduct[j].detail.code == product[x].code) {
+                                    tmp.push({
+                                        detail: getDataProduct[j].detail,
+                                        statusCek: false
+                                    })
+                                }
+                                else {
+                                    tmp.push(getDataProduct[j])
+                                }
+                            }
+                            setGetDataProduct(tmp)
+                        }
+
+                        // hapus data 
+                        data.splice(x, 1)
+                        quantity.splice(x, 1)
+                        totalBox.splice(x, 1)
+                        product.splice(x, 1);
+                        statusPO.splice(x, 1)
+
+                        setIndexPO(0)
+                        setIdxPesanan(0)
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: 'Data berhasil dihapus',
+                        }).then(() => {
+                            setLoadingTable(false)
+                        });
 
                     }
                     else {
-                        newProduct.push(product[i])
+                        data[x].splice(y, 1)
+                        statusPO[x].splice(y, 1)
+                        quantity[x].splice(y, 1)
+                        totalBox[x].splice(y, 1)
+                        dataDetail.splice(y, 1);
+                        setIndexPO(0)
+                        setIdxPesanan(0)
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: 'Data berhasil dihapus',
+                        }).then(() => {
+                            console.log(statusPO)
+                            setLoadingTable(false)
+                        });
 
                     }
 
                 }
-                setProduct(newProduct)
             }
-        })
+
+
+        }
+
+
     }
 
-    function forceNexDeliveryProduct(index) {
-        if (product[index].boxes_quantity >= product[index].purchase_order_qty) {
-            Swal.fire(
-                "Tidak bisa mengubah status",
-                `Jumlah ini sudah melebihi jumlah pesanan`,
-                "error"
-            )
-        }
-        else {
-            Swal.fire({
-                title: 'Apakah Anda Yakin?',
-                text: "Status akan diubah menjadi Next Delivery",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    let newProduct = []
-                    for (let i = 0; i < product.length; i++) {
-                        if (i == index) {
-                            newProduct.push({
-                                id_produk: product[i].id_produk,
-                                id_pesanan_pembelian: product[i].id_pesanan_pembelian,
-                                code: product[i].code,
-                                boxes_quantity: product[i].boxes_quantity,
-                                number_of_boxes: product[i].number_of_boxes,
-                                boxes_unit: product[i].boxes_unit,
-                                product_name: product[i].product_name,
-                                action: 'Next delivery',
-                                purchase_order_qty: product[i].purchase_order_qty,
-                                tally_sheets_qty: product[i].tally_sheets_qty,
-                                key: product[i].key
-                            })
-                        }
-                        else {
-                            newProduct.push(product[i])
+    const handleChangeWarehouse = (value) => {
+        setSelectedWarehouse(value);
+        setWarehouse(value.id);
+    };
+    // load options using API call
+    const loadOptionsWarehouse = (inputValue) => {
+        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}&tipe=internal`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.json());
+    };
 
-                        }
+    const columns = [
+        {
+            title: 'No. Permintaan',
+            dataIndex: 'code',
+            width: '25%',
+            key: 'name',
+        },,
+        {
+            title: 'Nama Produk',
+            dataIndex: 'product_name',
+            width: '25%',
+            key: 'name',
+        },
+        {
+            title: 'Qty',
+            dataIndex: 'quantity',
+            width: '10%',
+            align: 'center',
+            editable: true,
+        },
+        {
+            title: 'Stn',
+            dataIndex: 'unit',
+            align: 'center',
+            width: '10%',
+            key: 'name',
+        },
+        {
+            title: 'Box',
+            dataIndex: 'box',
+            align: 'center',
+            width: '10%',
+            key: 'box',
 
-                    }
-                    setProduct(newProduct)
+        },
+        // {
+        //     title: 'Status',
+        //     dataIndex: 'status',
+        //     align: 'center',
+        //     width: '10%',
+        //     key: 'status',
+
+        // },
+        {
+            title: 'Action',
+            dataIndex: 'action',
+            align: 'center',
+            width: '10%',
+            key: 'operation',
+        },
+    ];
+
+    useEffect(() => {
+        getNewCodeTally()
+    }, [date])
+
+    useEffect(() => {
+        const getProduct = async () => {
+            const res = await axios.get(`${Url}/tally_sheet_tf_available_goods_request?kode=${query}&id_pemasok=${supplier}`, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': `Bearer ${auth.token}`
                 }
             })
+            let tmp = []
+            for (let i = 0; i < res.data.data.length; i++) {
+                tmp.push({
+                    detail: res.data.data[i],
+                    statusCek: false
+                });
+            }
+            setGetDataProduct(tmp)
+
+            // setGetDataProduct(res.data.data);
+            // setGetDataDetailPO(res.data.data.map(d => d.goods_request_details))
+        };
+
+        if (query.length === 0 || query.length > 2) getProduct();
+    }, [query, supplier])
+
+    const handleCheck = (event, indexTransaksi) => {
+        console.log(data)
+        console.log(sheetNoEdit)
+        var updatedList = [...product];
+        let arrData = [];
+        let panjang;
+        let dataSumber;
+        let tmpDataBaru = []
+        const value = event.target.value.detail;
+
+        // perubahan data dan status ceked 
+        if (sumber == 'PO') {
+            for (let i = 0; i < getDataProduct.length; i++) {
+                if (i == indexTransaksi) {
+                    tmpDataBaru.push({
+                        detail: getDataProduct[i].detail,
+                        statusCek: !getDataProduct[i].statusCek
+                    })
+                }
+                else {
+                    tmpDataBaru.push(getDataProduct[i])
+                }
+            }
+            setGetDataProduct(tmpDataBaru)
+            panjang = value.goods_request_details.length;
+            dataSumber = value.goods_request_details;
         }
 
-    }
 
+        if (tmpDataBaru[indexTransaksi].statusCek) {
+
+            let tmp = [];
+            // setting baris 
+            for (let i = 0; i <= updatedList.length; i++) {
+                if (i == updatedList.length) {
+                    // console.log(dataSumber.length)
+                    for (let x = 0; x < dataSumber.length; x++) {
+                        let qtyAwal = dataSumber[x].quantity;
+                        let qtyAkhir = dataSumber[x].tally_sheets_qty;
+                        // pengecekan qty sebelumnya 
+                        for (let j = 0; j < productNoEdit.length; j++) {
+                            console.log(productNoEdit)
+                            if (value.code == productNoEdit[j].code) {
+                                tmp.push(
+                                    productNoEdit[j]
+                                )
+                            }
+                            else if (qtyAkhir < qtyAwal) {
+                                tmp.push({
+                                    id_produk: dataSumber[x].product_id,
+                                    id_sumber: value.id,
+                                    code: value.code,
+                                    boxes_quantity: 0,
+                                    number_of_boxes: 0,
+                                    boxes_unit: dataSumber[x].unit,
+                                    product_name: dataSumber[x].product_name,
+                                    action: qtyAkhir >= qtyAwal ? 'Done' : 'Next delivery',
+                                    transaksi_qty: Number(qtyAwal) - Number(qtyAkhir),
+                                    tally_sheets_qty: qtyAkhir,
+                                    key: "baru"
+                                })
+                            }
+                        }
+
+                    }
+                }
+                else (
+                    tmp.push(product[i])
+                )
+            }
+            // console.log(tmp)
+            updatedList = tmp
+
+            // setting data 
+            for (let i = 0; i < updatedList.length; i++) {
+                if (i < updatedList.length - panjang) {
+                    arrData.push(data[i])
+                }
+                else {
+                    for (let j = 0; j < productNoEdit.length; j++) {
+                        if (value.code == productNoEdit[j].code) {
+                            arrData.push(sheetNoEdit[j])
+                        }
+                        else {
+                            arrData[i] = [
+                                [
+                                    { readOnly: true, value: "" },
+                                    { value: "A", readOnly: true },
+                                    { value: "B", readOnly: true },
+                                    { value: "C", readOnly: true },
+                                    { value: "D", readOnly: true },
+                                    { value: "E", readOnly: true },
+                                    { value: "F", readOnly: true },
+                                    { value: "G", readOnly: true },
+                                    { value: "H", readOnly: true },
+                                    { value: "I", readOnly: true },
+                                    { value: "J", readOnly: true },
+                                ],
+                                [
+                                    { readOnly: true, value: 1 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ],
+                                [
+                                    { readOnly: true, value: 2 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ],
+                                [
+                                    { readOnly: true, value: 3 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ],
+                                [
+                                    { readOnly: true, value: 4 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ],
+                                [
+                                    { readOnly: true, value: 5 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ],
+                                [
+                                    { readOnly: true, value: 6 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ],
+                                [
+                                    { readOnly: true, value: 7 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ],
+                                [
+                                    { readOnly: true, value: 8 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ],
+                                [
+                                    { readOnly: true, value: 9 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ],
+                                [
+                                    { readOnly: true, value: 10 },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                    { value: '' },
+                                ]
+                            ];
+                        }
+                    }
+
+                }
+            }
+            console.log(arrData)
+            setProduct(updatedList);
+            setData(arrData);
+
+        }
+        else {
+            arrData = [...data]
+            for (let i = 0; i < updatedList.length; i++) {
+                for (let x = 0; x < dataSumber.length; x++) {
+                    if (updatedList[i].id_sumber == value.id && updatedList[i].id_produk == dataSumber[x].product_id) {
+                        updatedList.splice(i, 1);
+                        arrData.splice(i, 1);
+                        setIndexPO(0)
+                    }
+                }
+            }
+            console.log(arrData)
+            setProduct(updatedList);
+            setData(arrData)
+        }
+    };
+
+    
     const dataPurchase =
         [...product.map((item, i) => ({
             code: item.code,
@@ -467,7 +1004,7 @@ const EditTallySheet = () => {
                             <div className="row">
                                 <div className="col">
                                     <div className="row">
-                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
+                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Permintaan</label>
                                         <div className="col-sm-3">
                                             <input
                                                 value={product[indexPO].code}
@@ -477,7 +1014,7 @@ const EditTallySheet = () => {
                                                 disabled
                                             />
                                         </div>
-                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
+                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Permintaan</label>
                                         <div className="col-sm-3">
                                             <input
 
@@ -505,7 +1042,7 @@ const EditTallySheet = () => {
                                         <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
                                         <div className="col-sm-3">
                                             <input
-                                                value={product[indexPO].boxes_quantity.toString().replace('.', ',')}
+                                                value={Number(product[indexPO].boxes_quantity).toFixed(2).toString().replace('.', ',')}
                                                 type="Nama"
                                                 className="form-control"
                                                 id="inputNama3"
@@ -521,6 +1058,33 @@ const EditTallySheet = () => {
                                         onContextMenu={onContextMenu}
                                         onCellsChanged={onCellsChanged}
                                     />
+                                </div>
+                                <div className='mt-2 d-flex'>
+                                    <Button
+                                        size='small'
+                                        type="primary"
+                                        icon={<PlusOutlined />}
+                                        onClick={() => klikTambahBaris()}
+                                    />
+                                    {
+                                        data[indexPO].length - 2 > 0 ?
+                                            <Button
+                                                className='ms-2'
+                                                size='small'
+                                                type="danger"
+                                                icon={<MinusOutlined />}
+                                                onClick={() => klikHapusBaris()}
+                                            /> :
+                                            <Button
+                                                disabled
+                                                className='ms-2'
+                                                size='small'
+                                                type="danger"
+                                                icon={<MinusOutlined />}
+                                                onClick={() => klikHapusBaris()}
+                                            />
+                                    }
+
                                 </div>
                             </div>
                         </div>
@@ -538,19 +1102,18 @@ const EditTallySheet = () => {
             </Space>
 
         }))
-
         ];
 
     // Column for modal input product
     const columnsModal = [
         {
-            title: 'No. Pesanan',
+            title: 'Tanggal',
             width: '20%',
             dataIndex: 'code',
         },
         {
-            title: 'Supplier',
-            dataIndex: 'supplier_name',
+            title: 'No. Permintaan',
+            dataIndex: 'nama',
             width: '15%',
             align: 'center',
         },
@@ -562,267 +1125,87 @@ const EditTallySheet = () => {
         },
         {
             title: 'actions',
-            dataIndex: 'address',
+            dataIndex: 'action',
             width: '8%',
             align: 'center',
-            render: (_, record) => (
-                <>
-                    <Checkbox
-                        value={record}
-                        onChange={handleCheck}
-                    />
-                </>
-            )
+            // render: (_, record) => (
+            //     <>
+            //         <Checkbox
+            //             // style={{ display: tampilCek ? "block" : "none"}}
+            //             value={record}
+            //             onChange={handleCheck}
+            //         />
+            //     </>
+            // )
         },
     ];
 
-    const handleCheck = (event) => {
-        var updatedList = [...product];
-        let arrData = [];
+    const columnDataPO =
+        [...getDataProduct.map((item, i) => ({
+            code: item.detail.code,
+            nama: item.detail.code,
+            notes: item.detail.notes,
+            action:
+                <>
+                    <Checkbox
+                        // style={{ display: tampilCek ? "block" : "none"}}
+                        value={item}
+                        checked={item.statusCek}
+                        onChange={(e) => handleCheck(e, i)}
+                    />
+                </>
+        }))
 
-        if (event.target.checked) {
-            const value = event.target.value;
-            const panjang = value.purchase_order_details.length;
-
-            let tmp = [];
-            // setting baris 
-            for (let i = 0; i <= product.length; i++) {
-                if (i == product.length) {
-                    for (let x = 0; x < value.purchase_order_details.length; x++) {
-                        let qtyAwal = value.purchase_order_details[x].quantity;
-                        let qtyAkhir = value.purchase_order_details[x].tally_sheets_qty;
-                        if (qtyAkhir < qtyAwal) {
-                            tmp.push({
-                                id_produk: value.purchase_order_details[x].product_id,
-                                id_pesanan_pembelian: value.id,
-                                code: value.code,
-                                boxes_quantity: 0,
-                                number_of_boxes: 0,
-                                boxes_unit: value.purchase_order_details[x].unit,
-                                product_name: value.purchase_order_details[x].product_name,
-                                action: qtyAkhir >= qtyAwal ? 'Done' : 'Next delivery',
-                                purchase_order_qty: Number(qtyAwal) - Number(qtyAkhir),
-                                tally_sheets_qty: qtyAkhir,
-                                key: "baru"
-                            })
-                        }
-
-
-                    }
-                }
-                else (
-                    tmp.push(product[i])
-                )
-            }
-            updatedList = tmp
-
-            // setting data 
-            for (let i = 0; i < updatedList.length; i++) {
-                if (i < updatedList.length - panjang) {
-                    arrData[i] = data[i];
-                }
-                else {
-                    arrData[i] = [
-                        [
-                            { readOnly: true, value: "" },
-                            { value: "A", readOnly: true },
-                            { value: "B", readOnly: true },
-                            { value: "C", readOnly: true },
-                            { value: "D", readOnly: true },
-                            { value: "E", readOnly: true },
-                            { value: "F", readOnly: true },
-                            { value: "G", readOnly: true },
-                            { value: "H", readOnly: true },
-                            { value: "I", readOnly: true },
-                            { value: "J", readOnly: true },
-                        ],
-                        [
-                            { readOnly: true, value: 1 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ],
-                        [
-                            { readOnly: true, value: 2 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ],
-                        [
-                            { readOnly: true, value: 3 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ],
-                        [
-                            { readOnly: true, value: 4 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ],
-                        [
-                            { readOnly: true, value: 5 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ],
-                        [
-                            { readOnly: true, value: 6 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ],
-                        [
-                            { readOnly: true, value: 7 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ],
-                        [
-                            { readOnly: true, value: 8 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ],
-                        [
-                            { readOnly: true, value: 9 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ],
-                        [
-                            { readOnly: true, value: 10 },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                            { value: '' },
-                        ]
-                    ];
-                }
-
-            }
-            setProduct(updatedList);
-            setData(arrData);
-
-        }
-        else {
-            const value = event.target.value;
-            for (let i = 0; i < updatedList.length; i++) {
-                for (let x = 0; x < value.purchase_order_details.length; x++) {
-                    if (updatedList[i].id_pesanan_pembelian == value.id && updatedList[i].id_produk == value.purchase_order_details[x].product_id && updatedList[i].key == "baru") {
-                        // console.log("kehpaus")
-                        updatedList.splice(i, 1);
-                        data.splice(i, 1);
-                        setIndexPO(0)
-                    }
-                }
-            }
-        }
-        // console.log(updatedList)
-        // console.log(data);
-        setProduct(updatedList);
-    };
+        ]
+    const getNewCodeTally = async () => {
+        await axios.get(`${Url}/get_new_tally_sheet_draft_code/purchase_orders?tanggal=${date}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        })
+            .then((res) => {
+                setGetCode(res.data.data);
+            })
+            .catch((err) => {
+                // Jika Gagal
+                console.log(err);
+            });
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const tallySheetData = new URLSearchParams();
-        tallySheetData.append("tanggal", getTallySheet.date);
-        tallySheetData.append("pemasok", getTallySheet.supplier_id);
-        tallySheetData.append("gudang", getTallySheet.warehouse_id);
-        tallySheetData.append("catatan", getTallySheet.notes);
+        tallySheetData.append("tanggal", date);
+        tallySheetData.append("gudang", warehouse);
+        tallySheetData.append("catatan", catatan);
         tallySheetData.append("status", "Submitted");
+
         product.map((p, pi) => {
             tallySheetData.append("id_produk[]", p.id_produk);
             tallySheetData.append("jumlah_box[]", p.number_of_boxes);
+            tallySheetData.append("aksi[]", p.action);
             tallySheetData.append("satuan_box[]", p.boxes_unit);
             tallySheetData.append("kuantitas_box[]", p.boxes_quantity);
-            tallySheetData.append("aksi[]", p.action);
-            tallySheetData.append("id_pesanan_pembelian[]", p.id_pesanan_pembelian);
+            if (sumber == 'PO') {
+                tallySheetData.append("id_permintaan_barang[]", p.id_sumber);
+            }
         });
 
-        console.log(tallySheetData)
         let key = 0;
         for (let idx = 0; idx < kuantitasBox.length; idx++) {
             for (let x = 0; x < kuantitasBox[idx].length; x++) {
-                tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + x + "]", kuantitasBox[idx][x])
+                tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + x + "]", kuantitasBox[idx][x].toString().replace(',', '.'))
             }
             key++;
         }
 
 
 
+
         axios({
             method: "put",
-            url: `${Url}/tally_sheet_ins/${id}`,
+            url: `${Url}/tally_sheet_tf/${id}`,
             data: tallySheetData,
             headers: {
                 Accept: "application/json",
@@ -836,7 +1219,7 @@ const EditTallySheet = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/tallypembelian");
+                navigate("/tallytransfer");
             })
             .catch((err) => {
                 if (err.response) {
@@ -844,7 +1227,7 @@ const EditTallySheet = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text: err.response.data.message,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -859,33 +1242,37 @@ const EditTallySheet = () => {
     const handleDraft = async (e) => {
         e.preventDefault();
         const tallySheetData = new URLSearchParams();
-        tallySheetData.append("tanggal", getTallySheet.date);
-        tallySheetData.append("pemasok", getTallySheet.supplier_id);
-        tallySheetData.append("gudang", getTallySheet.warehouse_id);
-        tallySheetData.append("catatan", getTallySheet.notes);
+        tallySheetData.append("tanggal", date);
+        tallySheetData.append("gudang", warehouse);
+        tallySheetData.append("catatan", catatan);
         tallySheetData.append("status", "Draft");
+
         product.map((p, pi) => {
             tallySheetData.append("id_produk[]", p.id_produk);
             tallySheetData.append("jumlah_box[]", p.number_of_boxes);
             tallySheetData.append("aksi[]", p.action);
             tallySheetData.append("satuan_box[]", p.boxes_unit);
             tallySheetData.append("kuantitas_box[]", p.boxes_quantity);
-            tallySheetData.append("id_pesanan_pembelian[]", p.id_pesanan_pembelian);
+            if (sumber == 'PO') {
+                tallySheetData.append("id_permintaan_barang[]", p.id_sumber);
+            }
         });
 
-        console.log(tallySheetData)
+        // console.log(tallySheetData)
         let key = 0;
         for (let idx = 0; idx < kuantitasBox.length; idx++) {
             for (let x = 0; x < kuantitasBox[idx].length; x++) {
-                tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + x + "]", kuantitasBox[idx][x])
+                tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + x + "]", kuantitasBox[idx][x].toString().replace(',', '.'))
             }
             key++;
         }
 
-
+// for (var pair of tallySheetData.entries()) {
+//             console.log(pair[0] + ', ' + pair[1]);
+//         }
         axios({
             method: "put",
-            url: `${Url}/tally_sheet_ins/${id}`,
+            url: `${Url}/tally_sheet_tf/${id}`,
             data: tallySheetData,
             headers: {
                 Accept: "application/json",
@@ -899,7 +1286,7 @@ const EditTallySheet = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/tallypembelian");
+                navigate("/tallytransfer");
             })
             .catch((err) => {
                 if (err.response) {
@@ -920,60 +1307,70 @@ const EditTallySheet = () => {
     };
 
     function klikTampilSheet(indexPO) {
-        console.log(data)
-        // console.log(product[indexPO].purchase_order_qty)
-        // setQuantityTally(product[indexPO].boxes_quantity)
-        // console.log(product)
-        setQuantityPO(product[indexPO].purchase_order_qty.toFixed(2).toString())
+        // console.log(data)
+        console.log(product)
+        setQuantityPO(Number(product[indexPO].transaksi_qty).toFixed(2).toString())
+
         setIndexPO(indexPO);
         setModal2Visible2(true);
 
 
     }
 
-
-
     if (loading) {
         return (
             <div></div>
         )
     }
+
     return (
         <>
-            <form className="  p-3 mb-5 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <PageHeader
-                        ghost={false}
-                        onBack={() => window.history.back()}
-                        title="Edit Tally Sheet">
-                    </PageHeader>
-                    {/* <h3 className="title fw-bold">Detail Tally Sheet</h3> */}
-                </div>
+            <PageHeader
+                ghost={false}
+                onBack={() => window.history.back()}
+                title="Edit Tally Transfer">
+            </PageHeader>
+            <form className="p-3 mb-3 bg-body rounded">
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
                             <div className="col-sm-7">
-                                <input disabled="true" value={getTallySheet.date} id="startDate" className="form-control" type="date" />
+                                <input
+                                    id="startDate"
+                                    className="form-control"
+                                    type="date"
+                                    defaultValue={date}
+                                    onChange={(e) => setDate(e.target.value)}
+                                />
                             </div>
                         </div>
                         <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Pesanan</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Permintaan</label>
                             <div className="col-sm-7">
-                                <input disabled="true" value={getTallySheet.code} type="Nama" className="form-control" id="inputNama3" />
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
-                            <div className="col-sm-7">
-                                <input disabled="true" value={getTallySheet.supplier_name} id="startDate" className="form-control" type="text" />
-
+                                <input
+                                    value={getTallySheet.code}
+                                    type="Nama"
+                                    className="form-control"
+                                    id="inputNama3"
+                                    disabled
+                                />
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang</label>
                             <div className="col-sm-7">
-                                <input disabled="true" type="text" value={getTallySheet.warehouse_name} className="form-control" id="inputNama3" />
+                                <AsyncSelect
+                                    placeholder="Pilih Gudang..."
+                                    cacheOptions
+                                    defaultOptions
+                                    defaultInputValue={selectedWarehouse}
+                                    value={selectedWarehouse}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsWarehouse}
+                                    onChange={handleChangeWarehouse}
+                                />
                             </div>
                         </div>
                     </div>
@@ -981,7 +1378,13 @@ const EditTallySheet = () => {
                         <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Catatan</label>
                         <div className="row mb-3">
                             <div className="col-sm-10">
-                                <textarea disabled="true" value={getTallySheet.notes} className="form-control" id="form4Example3" rows="4" />
+                                <textarea
+                                    className="form-control"
+                                    id="form4Example3"
+                                    defaultValue={catatan}
+                                    rows="4"
+                                    onChange={(e) => setCatatan(e.target.value)}
+                                />
                             </div>
                         </div>
                         <div className="row mb-3">
@@ -997,19 +1400,21 @@ const EditTallySheet = () => {
                 <div className="text-title text-start mb-4">
                     <div className="row">
                         <div className="col">
-                            <h4 className="title fw-normal">Daftar Pesanan</h4>
+                            <h4 className="title fw-normal">Daftar Permintaan</h4>
                         </div>
                         <div className="col text-end me-2">
                             <Button
                                 type="primary"
                                 icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
+                                onClick={() => {
+                                    setModalListLokal(true)
+                                }}
                             />
                             <Modal
-                                title="Tambah Pesanan"
+                                title="Tambah Permintaan"
                                 centered
-                                visible={modal2Visible}
-                                onCancel={() => setModal2Visible(false)}
+                                visible={modalListLokal}
+                                onCancel={() => setModalListLokal(false)}
                                 width={1000}
                                 footer={null}
                             >
@@ -1017,7 +1422,7 @@ const EditTallySheet = () => {
                                     <div className="row">
                                         <div className="col mb-3">
                                             <Search
-                                                placeholder="Cari Nomor Pesanan.."
+                                                placeholder="Cari Nomor Permintaan.."
                                                 style={{
                                                     width: 400,
                                                 }}
@@ -1026,7 +1431,7 @@ const EditTallySheet = () => {
                                         </div>
                                         <Table
                                             columns={columnsModal}
-                                            dataSource={getDataProduct}
+                                            dataSource={columnDataPO}
                                             scroll={{
                                                 y: 250,
                                             }}
@@ -1043,117 +1448,43 @@ const EditTallySheet = () => {
                         bordered
                         pagination={false}
                         dataSource={dataPurchase}
-                        // expandable={{ expandedRowRender }}
-                        // defaultExpandAllRows
                         columns={columns}
                         onChange={(e) => setProduct(e.target.value)}
                     />
                 </div>
 
                 <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
-
-                    {
-                        getStatus != "Submitted" ? <>
-                            <button
-                                type="button"
-                                className="btn btn-success rounded m-1"
-                                value="Draft"
-                                onChange={(e) => setStatus(e.target.value)}
-                                onClick={handleDraft}
-                                width="100px"
-                            >
-                                Simpan
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-primary rounded m-1"
-                                value="Submitted"
-                                onChange={(e) => setStatus(e.target.value)}
-                                onClick={handleSubmit}
-                                width="100px"
-                            >
-                                Submit
-                            </button></>
-                            : <>
-                                <button
-                                    type="button"
-                                    className="btn btn-success rounded m-1"
-                                    value="Draft"
-                                    onChange={(e) => setStatus(e.target.value)}
-                                    onClick={handleSubmit}
-                                    width="100px"
-                                >
-                                    Simpan
-                                </button></>
-                    }
                     <button
                         type="button"
-                        width="100px"
+                        className="btn btn-success rounded m-1"
+                        value="Draft"
+                        onChange={(e) => setStatus(e.target.value)}
+                        onClick={handleDraft}
+                        style={{ width: '100px' }}
+                    >
+                        Simpan
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-primary rounded m-1"
+                        value="Submitted"
+                        onChange={(e) => setStatus(e.target.value)}
+                        onClick={handleSubmit}
+                        style={{ width: '100px' }}
+                    >
+                        Submit
+                    </button>
+                    <button
+                        type="button"
+                        style={{ width: '100px' }}
                         className="btn btn-warning rounded m-1">
                         Cetak
                     </button>
                 </div>
                 <div style={{ clear: 'both' }}></div>
             </form>
-            {/* <form className="  p-3 mb-5 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <div className="row">
-                        <div className="col">
-                            <h4 className="title fw-normal">Cari Produk</h4>
-                        </div>
-                        <div className="col-sm-3 me-5">
-                        <div className="input-group">
-                            <input type="text" className="form-control" id="inlineFormInputGroupUsername" placeholder="Type..."/>
-                            <div className="input-group-text">Search</div>
-                        </div>
-                        </div>
-                    </div>
-                <ProdukPesananTable />
-                </div>
-            <div className="row p-0">
-                <div className="col ms-5">
-                    <div className="form-check">
-                        <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault"/>
-                        <label className="form-check-label" for="flexCheckDefault">
-                            Harga Termasuk Pajak
-                        </label>
-                    </div>
-                </div>
-                <div className="col">
-                    <div className="row mb-3">
-                        <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>
-                        <div className="col-sm-6">
-                            <input type="email" className="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                    <div className="row mb-3">
-                        <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Diskon</label>
-                        <div className="col-sm-6">
-                            <input type="email" className="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                    <div className="row mb-3">
-                        <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">PPN</label>
-                        <div className="col-sm-6">
-                            <input type="email" className="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                    <div className="row mb-3">
-                        <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Total</label>
-                        <div className="col-sm-6">
-                            <input type="email" className="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="btn-group" role="group" aria-label="Basic mixed styles example">
-                <button type="button" className="btn btn-success rounded m-1">Simpan</button>
-                <button type="button" className="btn btn-primary rounded m-1">Submit</button>
-                <button type="button" className="btn btn-warning rounded m-1">Cetak</button>
-            </div>
-            </form> */}
         </>
     )
 }
 
-export default EditTallySheet
+export default EditTallyTransfer
