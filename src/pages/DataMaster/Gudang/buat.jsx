@@ -48,7 +48,7 @@ const BuatGudang = () => {
 
   const handleChangeEmployee = (value) => {
     setSelectedEmployee(value);
-    setEmployee(value.id);
+    setEmployees(value.id);
     // console.log(value)
   };
   // load options using API call

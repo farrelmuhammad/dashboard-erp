@@ -79,10 +79,7 @@ const EditGudang = () => {
       },
     })
       .then(function (response) {
-        setData(response.data.data[0]);
-        console.log(response.data.data[0]);
         const getData = response.data.data[0];
-        console.log(getData)
         setCode(getData.code)
         setName(getData.name)
         setAddress(getData.address)
