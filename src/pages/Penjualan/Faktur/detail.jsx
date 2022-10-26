@@ -867,7 +867,7 @@ const DetailFaktur = () => {
 
                                         <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold" }}>
                                             <div style={{ fontSize: "16px", textDecoration: "underline", textAlign: 'center' }}>FAKTUR PENJUALAN</div>
-                                            <div style={{ fontSize: "10px", textAlign: 'center' }}>NO. {getCode}</div>
+                                            <div style={{ fontSize: "10px", textAlign: 'center' }}>NO. {code}</div>
                                         </div>
 
                                         <div className='mt-3 mb-2 col d-flex justify-content-start ps-4 pe-4' style={{ fontSize: "12px" }}>
@@ -1107,7 +1107,7 @@ const DetailFaktur = () => {
                         </div>
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Tipe Faktur</label>
-                            <div className="col-sm-7">'
+                            <div className="col-sm-7">
                                 <input
                                     value={selectedType.label}
                                     type="Nama"

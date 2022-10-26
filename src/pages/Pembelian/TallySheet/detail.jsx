@@ -207,6 +207,7 @@ export const DetailTallySheet = () => {
             width: '10%',
             align: 'center',
             editable: true,
+            
         },
         {
             title: 'Stn',

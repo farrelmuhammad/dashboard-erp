@@ -10,6 +10,8 @@ import { Button, Form, Input, PageHeader, Popconfirm, Skeleton, Switch, Table } 
 import { DeleteOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
 import ReactSelect from "react-select";
 
+import Select from 'react-select';
+
 const EditableContext = React.createContext(null);
 
 const EditableRow = ({ index, ...props }) => {
@@ -107,19 +109,20 @@ const EditPelanggan = () => {
   const [dataSource, setDataSource] = useState([]);
   const navigate = useNavigate();
   const { id } = useParams();
+  const [loading, setLoading] = useState(true);
 
   // const [address, setAddress] = useState([]);
 
   const [count, setCount] = useState(2);
 
   const [checked, setChecked] = useState(false);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     const userData = new URLSearchParams();
     userData.append("nama", name);
-    userData.append("badan_usaha", bussiness_ent);
+    userData.append("badan_usaha", bussinessName);
     userData.append("nomor_telepon", phone_number);
     userData.append("email", email);
     userData.append("npwp", npwp);
@@ -193,7 +196,7 @@ const EditPelanggan = () => {
     })
       .then((res) => {
         const getData = res.data.data[0];
-        setLoading(false)
+        //setLoading(false)
         setCode(getData.code);
         setName(getData.name);
         setBussinessName(getData.business_entity);
@@ -205,6 +208,8 @@ const EditPelanggan = () => {
         setStatus(getData.status);
         setDataSource(getData.customer_addresses)
         console.log(getData);
+        console.log(bussinessName)
+        setLoading(false)
       })
       .catch((err) => {
         // Jika Gagal
@@ -326,9 +331,23 @@ const EditPelanggan = () => {
     }
   ];
 
-  const handleSingleChange = (e) => {
-    setBussiness_ent(e.value);
-  };
+  
+  const options = [
+    { value: 'PT', label: 'PT' },
+    { value: 'CV', label: 'CV' },
+    { value: 'Lainnya...', label: 'Lainnya...' },
+  ];
+
+
+  // const handleSingleChange = (e) => {
+  //   setBussiness_ent(e.value);
+  // };
+
+  const handleSingleChange = (value) => {
+    //setSupplierId(value.id);
+    setBussiness_ent(value);
+    // setBussinessName(value)
+};
 
   if (loading) {
     return (
@@ -426,15 +445,38 @@ const EditPelanggan = () => {
             Badan Usaha
           </label>
           <div className="col-sm-10">
-            <ReactSelect
+                  <Select
+                placeholder="Pilih Badan Usaha..."
+                className="basic-single"
+                classNamePrefix="select"
+                //defaultInputValue={bussinessName}
+                value={{value: bussinessName, label:bussinessName}}
+                // isDisabled={isDisabled}
+                // isLoading={isLoading}
+                // isClearable={isClearable}
+                // isRtl={isRtl}
+                isSearchable
+                name="color"
+                options={options}
+                onChange={(item) => {
+                  console.log(item);
+                
+                  // set item instead of item.value
+                  setBussinessName(item.value);
+                }}
+                // onChange={handleSingleChange}
+                // getOptionValue={(e) => e.name}
+              />
+
+            {/* <Select
               className="basic-single"
               placeholder="Pilih Badan Usaha..."
               classNamePrefix="select"
               isSearchable
-              defaultInputValue={bussinessName}
+              value={bussinessName}
               onChange={handleSingleChange}
-              options={optionsBussiness}
-            />
+              options={options}
+            /> */}
           </div>
         </div>
         <div className="row mb-3">
