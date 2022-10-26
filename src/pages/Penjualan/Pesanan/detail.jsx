@@ -101,7 +101,7 @@ export const DetailPesanan = () => {
                     props: {
                         style: { borderWidth: "0px", textAlign: 'center' }
                     },
-                    children: <div style={{ borderWidth: "0px" }}>{Number(text).toFixed(2).replace('.', ',')}</div>
+                    children: <div style={{ borderWidth: "0px" }}>< CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.', ',')} key="diskon" /></div>
                 };
             }
         },
