@@ -71,6 +71,15 @@ export const DetailPesananPembelian = () => {
         </>
     }
 
+    const convertToRupiah2 = (angka) => {
+        return <>
+        {
+            namaMataUang === 'Rp' ? 
+                  < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "50px", fontSize: "10px!important" }}  thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm"  className="form-control form-control-sm"/>}  />
+                  :< CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "50px", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true"  id="colFormLabelSm"  className="form-control form-control-sm"/>} />
+        }
+        </>
+    }
     
 
     
@@ -138,7 +147,11 @@ export const DetailPesananPembelian = () => {
                                 <div className="input-group-prepend">
                                     <input style={{ width: "50px" }} readOnly type="text" className="form-control" aria-label="Small" defaultValue={namaMataUang} aria-describedby="inputGroup-sizing-sm" />
                                 </div>
-                                <input style={{ width: "30px" }} readOnly type="text" className="form-control" aria-label="Small" defaultValue={dataPO[0].purchase_order_details[index].discount_percentage} aria-describedby="inputGroup-sizing-sm" />
+                                {
+                                    namaMataUang === 'Rp'?
+                                    convertToRupiah2(dataPO[0].purchase_order_details[index].discount_percentage) :
+                                    convertToRupiah2(dataPO[0].purchase_order_details[index].discount_percentage)
+                                }
                             </>
 
                     }
@@ -364,7 +377,9 @@ export const DetailPesananPembelian = () => {
             desc: item.product_name,
             qty: Number(item.quantity).toFixed(2),
             stn:item.unit,
-            disc: item.fixed_discount != null ? <>{namaMataUang + ' ' + Number(item.fixed_discount).toFixed(2)}</> : <>{item.discount_percentage + '%'}</>,
+            disc: item.fixed_discount != null ? <>{
+                namaMataUang + ' ' + Number(item.fixed_discount).toFixed(2)
+                }</> : <>{item.discount_percentage + '%'}</>,
             prc: namaMataUang + ' ' + Number(item.price).toFixed(2).toLocaleString('id'),
             total: namaMataUang + ' ' + Number(item.total).toFixed(2).toLocaleString('id')
         }))

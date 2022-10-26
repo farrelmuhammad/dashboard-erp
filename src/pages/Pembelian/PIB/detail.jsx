@@ -360,7 +360,7 @@ export const DetailPIB = () => {
                                 <label className='col-6'><b> Total :</b></label>
                                
                                 <div width="100%">{
-                                  < CurrencyFormat type='danger' disabled className=' text-center editable-input edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(Number(dataHeader.ppn) + Number(dataHeader.pph) + Number(dataHeader.import_duty)).toFixed(2).replace('.' , ',')} key="diskon" />
+                                  < CurrencyFormat type='danger' disabled className=' text-center editable-input edit-disabled' style={{fontWeight:"bold", width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(Number(dataHeader.ppn) + Number(dataHeader.pph) + Number(dataHeader.import_duty)).toFixed(2).replace('.' , ',')} key="diskon" />
                                }  </div>
                                 <div>
                                 </div>

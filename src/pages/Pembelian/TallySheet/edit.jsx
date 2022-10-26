@@ -795,7 +795,7 @@ const EditTallySheet = () => {
         [...product.map((item, i) => ({
             code: item.code,
             product_name: item.product_name,
-            quantity: item.boxes_quantity.toString().replace('.', ','),
+            quantity: Number(item.boxes_quantity).toFixed(2).replace('.', ','),
             unit: item.boxes_unit,
             box:
                 <>

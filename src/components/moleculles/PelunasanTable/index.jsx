@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import AsyncSelect from "react-select/async";
 import ReactSelect from 'react-select';
 import { useSelector } from 'react-redux';
+import CurrencyFormat from 'react-currency-format';
 
 const PelunasanTable = () => {
     const [searchText, setSearchText] = useState('');
@@ -273,6 +274,9 @@ const PelunasanTable = () => {
             key: 'total',
             width: '15%',
             ...getColumnSearchProps('total'),
+              render: (text) => {
+                return < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.', ',')} key="diskon" />
+            }
         },
         {
             title: 'Status',

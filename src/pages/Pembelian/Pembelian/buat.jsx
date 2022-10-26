@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
 import { PageHeader } from 'antd';
+import CurrencyFormat from 'react-currency-format';
 
 const EditableContext = createContext(null);
 
@@ -78,7 +79,13 @@ const EditableCell = ({
                     },
                 ]}
             >
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
+                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
+                    decimalSeparator = {','}
+                    onChange={value => {
+                        value = parseFloat(value.toString().replace('.', ','))
+                      }}
+                      
+                />
             </Form.Item>
         ) : (
             <div
@@ -399,9 +406,12 @@ const BuatPesananPembelian = () => {
             width: '10%',
             align: 'center',
             editable: true,
-            render: (text) => {
-                return text.toLocaleString('id');
-
+            render(text, record) {
+                return {
+                    props: {
+                    },
+                    children: <div>{Number(text).toFixed(2).replace('.',',')}</div>
+                };
             }
         },
         {
@@ -421,11 +431,11 @@ const BuatPesananPembelian = () => {
         {
             title: 'Harga',
             dataIndex: 'purchase_price',
-            width: '10%',
+            width: '20%',
             align: 'center',
             editable: true,
             render: (text) => {
-                return namaMataUang + ' ' + Number(text).toLocaleString('id');
+                return convertToRupiahTabel(text)
             }
 
         },
@@ -436,14 +446,14 @@ const BuatPesananPembelian = () => {
             align: 'center',
             render: (text, record, index) => {
                 return <div className="input-group input-group-sm mb-3">
-                    <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} value={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
+                    <input style={{ width: "25px" }} type="text" className="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} value={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
                     <div className="input-group-prepend">
                         <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
                             <select
                                 onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
                                 id="grupSelect"
                                 className="form-select select-diskon"
-                                style={{ width: "70px" }}
+                                style={{ width: "60px" }}
                             >
                                 {/* <option value="pilih" >
                             Pilih
@@ -480,7 +490,7 @@ const BuatPesananPembelian = () => {
                     else {
                         grandTotal = record.quantity * Number(record.purchase_price);
                     }
-                    let hasil = namaMataUang + ' ' + grandTotal.toLocaleString('id');
+                    let hasil = convertToRupiahTabel(grandTotal);
 
                     return {
                         props: {
@@ -494,18 +504,41 @@ const BuatPesananPembelian = () => {
     ];
 
 
+    // const convertToRupiah = (angka) => {
+    //     // let rupiah = '';
+    //     // let angkarev = angka.toString().split('').reverse().join('');
+    //     // for (let i = 0; i < angkarev.length; i++) if (i % 3 == 0) rupiah += angkarev.substr(i, 3) + '.';
+    //     let hasil = namaMataUang + ' ' + angka.toLocaleString('id')
+    //     return <input
+    //         value={hasil}
+    //         readOnly="true"
+    //         className="form-control form-control-sm"
+    //         id="colFormLabelSm"
+    //     />
+    // }
+
     const convertToRupiah = (angka) => {
-        // let rupiah = '';
-        // let angkarev = angka.toString().split('').reverse().join('');
-        // for (let i = 0; i < angkarev.length; i++) if (i % 3 == 0) rupiah += angkarev.substr(i, 3) + '.';
-        let hasil = namaMataUang + ' ' + angka.toLocaleString('id')
-        return <input
-            value={hasil}
-            readOnly="true"
-            className="form-control form-control-sm"
-            id="colFormLabelSm"
-        />
+        return <>
+        {
+            namaMataUang === 'Rp' ? 
+                  < CurrencyFormat  className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm"  className="form-control form-control-sm"/>}  />
+                  :< CurrencyFormat  className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true"  id="colFormLabelSm"  className="form-control form-control-sm"/>} />
+        }
+        </>
     }
+
+    const convertToRupiahTabel = (angka) => {
+        return <>
+        {
+            namaMataUang === 'Rp' ? 
+            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon" />
+            :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" />
+            
+        }
+        </>
+        }
+
+
 
     const handleSave = (row) => {
         const newData = [...product];

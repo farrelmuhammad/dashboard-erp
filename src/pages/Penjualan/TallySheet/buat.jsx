@@ -1130,7 +1130,7 @@ const BuatTally = () => {
                                                 <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
                                                 <div className="col-sm-3">
                                                     <input
-                                                        value={totalTallySheet[idxPesanan][indexPO]}
+                                                        value={Number(totalTallySheet[idxPesanan][indexPO]).toFixed(2).replace('.',',')}
                                                         type="Nama"
                                                         className="form-control"
                                                         id="inputNama3"
