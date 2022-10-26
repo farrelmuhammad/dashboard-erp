@@ -188,8 +188,8 @@ const AdjustmentTable = () => {
         {
             title: 'Tanggal',
             dataIndex: 'adjustment_date',
-            // key: 'adjustment_date',
-            width: '15%',
+            key: 'adjustment_date',
+            width: '25%',
             ...getColumnSearchProps('adjustment_date'),
             sorter: (a, b) => a.adjustment_date.length - b.adjustment_date.length,
             sortDirections: ['descend', 'ascend'],
@@ -198,7 +198,7 @@ const AdjustmentTable = () => {
             title: 'No. Penyesuaian',
             dataIndex: 'code',
             key: 'code',
-            width: '20%',
+            width: '25%',
             ...getColumnSearchProps('code'),
             sorter: (a, b) => a.code.length - b.code.length,
             sortDirections: ['descend', 'ascend'],
@@ -207,22 +207,22 @@ const AdjustmentTable = () => {
             title: 'Gudang',
             dataIndex: 'warehouse_name',
             key: 'warehouse_name',
+            width: '25%',
             ...getColumnSearchProps('warehouse_name'),
             sorter: (a, b) => a.warehouse_name.length - b.warehouse_name.length,
             sortDirections: ['descend', 'ascend'],
-            // sorter: (a, b) => a.warehouse_name.length - b.warehouse_name.length,
-            // sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Status',
             dataIndex: 'status',
-            // key: 'status',
+            key: 'status',
             align: 'center',
             width: '20%',
+            sorter: (a, b) => a.status.length - b.status.length,
+            sortDirections: ['descend', 'ascend'],
             render: (_, { status }) => (
                 <>
-                    {status === 'publish' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
-
+                    {status === 'Submitted' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'Draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
                 </>
             ),
             ...getColumnSearchProps('status'),
@@ -233,7 +233,7 @@ const AdjustmentTable = () => {
             align: 'center',
             render: (_, record) => (
                 <>
-                    {record.status === 'publish' ? (
+                    {record.status === 'Done' ? (
                         <Space size="middle">
                         <Link to={`/adjustment/detail/${record.id}`}>
                             <Button
@@ -276,12 +276,12 @@ const AdjustmentTable = () => {
         loading={isLoading}
         columns={columns}
         rowKey={(record) => record.id}
-        // sortDirections={["descend", "ascend"]}
-        // pagination={{ pageSize: 10 }}
+        sortDirections={["descend", "ascend"]}
+        pagination={{ pageSize: 10 }}
         dataSource={getDataAdjustment}
         onChange={handleTableChange}
         scroll={{
-            y: 240,
+            y: 300,
         }}
     />;
 };

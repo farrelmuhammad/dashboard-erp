@@ -28,7 +28,7 @@ const BuatProduk = () => {
   const [discount, setDiscount] = useState('');
   const [taxes_id, setTaxes_id] = useState('');
   const [status, setStatus] = useState('');
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(true);
   const navigate = useNavigate();
 
   const [getProduct, setGetProduct] = useState();
@@ -249,9 +249,7 @@ const BuatProduk = () => {
               type="kode"
               className="form-control"
               id="inputKode3"
-              // value={getProduct}
-              // readOnly={getProduct}
-              value="Otomatis"
+              value={getProduct}
               disabled
             />
           </div>
@@ -286,19 +284,6 @@ const BuatProduk = () => {
         </div>
         <div className="row mb-3">
           <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-            Grup
-          </label>
-          <div className="col-sm-10">
-            <select onChange={e => setGroup(e.target.value)} id="Typeselect" className="form-select">
-              <option>Pilih Grup</option>
-              <option value="Lokal">Lokal</option>
-              <option value="Impor">Impor</option>
-              <option value="Meatshop">Meatshop</option>
-            </select>
-          </div>
-        </div>
-        <div className="row mb-3">
-          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
             Bagian
           </label>
           <div className="col-sm-10">
@@ -312,6 +297,24 @@ const BuatProduk = () => {
               getOptionValue={(e) => e.id}
               loadOptions={loadOptionsPieces}
               onChange={handleChangePieces}
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            Merek
+          </label>
+          <div className="col-sm-10">
+            <AsyncSelect
+              placeholder="Pilih Merek..."
+              cacheOptions
+              defaultOptions
+              isClearable
+              value={selectedValue5}
+              getOptionLabel={(e) => e.name}
+              getOptionValue={(e) => e.id}
+              loadOptions={loadOptionsBrands}
+              onChange={handleChangeBrands}
             />
           </div>
         </div>
@@ -331,6 +334,19 @@ const BuatProduk = () => {
               loadOptions={loadOptionsCategory}
               onChange={handleChangeCategory}
             />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            Grup
+          </label>
+          <div className="col-sm-10">
+            <select onChange={e => setGroup(e.target.value)} id="Typeselect" className="form-select">
+              <option>Pilih Grup</option>
+              <option value="Lokal">Lokal</option>
+              <option value="Impor">Impor</option>
+              <option value="Meatshop">Meatshop</option>
+            </select>
           </div>
         </div>
         <div className="row mb-3">
@@ -366,24 +382,6 @@ const BuatProduk = () => {
               getOptionValue={(e) => e.id}
               loadOptions={loadOptionsTypes}
               onChange={handleChangeTypes}
-            />
-          </div>
-        </div>
-        <div className="row mb-3">
-          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-            Merek
-          </label>
-          <div className="col-sm-10">
-            <AsyncSelect
-              placeholder="Pilih Merek..."
-              cacheOptions
-              defaultOptions
-              isClearable
-              value={selectedValue5}
-              getOptionLabel={(e) => e.name}
-              getOptionValue={(e) => e.id}
-              loadOptions={loadOptionsBrands}
-              onChange={handleChangeBrands}
             />
           </div>
         </div>
@@ -455,23 +453,18 @@ const BuatProduk = () => {
           </div>
         </div>
         <div className="row mb-3">
-          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-            Diskon
-          </label>
-          <div className="col-sm-5">
-            <input
-              type="Nama"
-              className="form-control"
-              defaultValue={0}
-              placeholder="Masukkan Diskon..."
-              id="inputNama3"
-              onChange={(e) => setDiscount(e.target.value)}
-            />
-          </div>
-          <div className="col-sm-1">
-            <span className="input-group-text" id="addon-wrapping">
-              %
-            </span>
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Diskon</label>
+          <div className="col-sm-2">
+            <div className="input-group">
+              <input
+                type="text"
+                className="form-control"
+                aria-label="Dollar amount (with dot and two decimal places)"
+                defaultValue={0}
+                onChange={(e) => setDiscount(e.target.value)}
+              />
+              <span className="input-group-text">%</span>
+            </div>
           </div>
         </div>
         <div className="row mb-3">

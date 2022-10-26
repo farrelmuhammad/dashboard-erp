@@ -583,7 +583,7 @@ const BuatSuratJalan = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Pesanan</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Surat Jalan</label>
                             <div className="col-sm-7">
                                 <input
                                     value="Otomatis"
@@ -604,13 +604,11 @@ const BuatSuratJalan = () => {
                                 >
                                     <option value="">Pilih Transaksi</option>
                                     <option value="SO">
-                                        Pesanan Penjualan
+                                        Penjualan
                                     </option>
                                     <option value="Retur" >
                                         Retur Pembelian
                                     </option>
-
-
                                 </select>
                             </div>
                         </div>

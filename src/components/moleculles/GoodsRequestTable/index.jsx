@@ -182,7 +182,7 @@ const GoodsRequestTable = () => {
             key: 'date',
             width: '15%',
             ...getColumnSearchProps('date'),
-            sorter: true,
+            sorter: (a, b) => a.date.length - b.date.length,
             sortDirections: ['descend', 'ascend'],
         },
         {
@@ -191,7 +191,7 @@ const GoodsRequestTable = () => {
             key: 'code',
             width: '20%',
             ...getColumnSearchProps('code'),
-            sorter: true,
+            sorter: (a, b) => a.code.length - b.code.length,
             sortDirections: ['descend', 'ascend'],
         },
         {
@@ -200,7 +200,7 @@ const GoodsRequestTable = () => {
             key: 'warehouse_source_name',
             width: '20%',
             ...getColumnSearchProps('warehouse_source_name'),
-            sorter: true,
+            sorter: (a, b) => a.warehouse_source_name.length - b.warehouse_source_name.length,
             sortDirections: ['descend', 'ascend'],
         },
         {
@@ -209,7 +209,7 @@ const GoodsRequestTable = () => {
             key: 'warehouse_destination_name',
             width: '20%',
             ...getColumnSearchProps('warehouse_destination_name'),
-            sorter: true,
+            sorter: (a, b) => a.warehouse_destination_name.length - b.warehouse_destination_name.length,
             sortDirections: ['descend', 'ascend'],
         },
         {
@@ -218,15 +218,15 @@ const GoodsRequestTable = () => {
             key: 'status',
             align: 'center',
             width: '20%',
+            ...getColumnSearchProps('status'),
+            sorter: (a, b) => a.status.length - b.status.length,
+            sortDirections: ['descend', 'ascend'],
             render: (_, { status }) => (
                 <>
                     {status === 'Submitted' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'Draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
 
                 </>
             ),
-            ...getColumnSearchProps('status'),
-            sorter: true,
-            sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Actions',
@@ -283,15 +283,16 @@ const GoodsRequestTable = () => {
         },
     ];
     return <Table
+        size="small"
         loading={isLoading}
         columns={columns}
         rowKey={(record) => record.id}
         sortDirections={["descend", "ascend"]}
-        pagination={{ pageSize: 5 }}
+        pagination={{ pageSize: 10 }}
         dataSource={getDataGoodsRequest}
         onChange={handleTableChange}
         scroll={{
-            y: 240,
+            y: 300,
         }}
     />;
 };

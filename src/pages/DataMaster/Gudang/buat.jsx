@@ -48,7 +48,7 @@ const BuatGudang = () => {
 
   const handleChangeEmployee = (value) => {
     setSelectedEmployee(value);
-    setEmployee(value.id);
+    setEmployees(value.id);
     // console.log(value)
   };
   // load options using API call
@@ -207,6 +207,7 @@ const BuatGudang = () => {
                 placeholder="Pilih Tipe Gudang..."
                 classNamePrefix="select"
                 isSearchable
+                isClearable
                 onChange={handleSingleChangeType}
                 options={optionsType}
               />
@@ -277,6 +278,7 @@ const BuatGudang = () => {
                 placeholder="Pilih Karyawan..."
                 cacheOptions
                 defaultOptions
+                isClearable
                 value={selectedValue2}
                 getOptionLabel={(e) => e.name}
                 getOptionValue={(e) => e.id}
@@ -294,6 +296,7 @@ const BuatGudang = () => {
                 placeholder="Pilih Akun..."
                 cacheOptions
                 defaultOptions
+                isClearable
                 value={selectedValue}
                 getOptionLabel={(e) => e.name}
                 getOptionValue={(e) => e.id}

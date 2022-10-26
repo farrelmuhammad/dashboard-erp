@@ -325,6 +325,57 @@ const EditProduk = () => {
                     </div>
                 </div>
                 <div className="row mb-3">
+                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Bagian</label>
+                    <div className="col-sm-10">
+                        <AsyncSelect
+                            placeholder="Pilih Bagian..."
+                            cacheOptions
+                            defaultOptions
+                            isClearables
+                            defaultInputValue={pieces_name}
+                            value={selectedValue}
+                            getOptionLabel={(e) => e.name}
+                            getOptionValue={(e) => e.id}
+                            loadOptions={loadOptionsPieces}
+                            onChange={handleChangePieces}
+                        />
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Merek</label>
+                    <div className="col-sm-10">
+                        <AsyncSelect
+                            placeholder="Pilih Merek..."
+                            cacheOptions
+                            defaultOptions
+                            isClearable
+                            defaultInputValue={brands_name}
+                            value={selectedValue5}
+                            getOptionLabel={(e) => e.name}
+                            getOptionValue={(e) => e.id}
+                            loadOptions={loadOptionsBrands}
+                            onChange={handleChangeBrands}
+                        />
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Kategori</label>
+                    <div className="col-sm-10">
+                        <AsyncSelect
+                            placeholder="Pilih Kategori..."
+                            cacheOptions
+                            defaultOptions
+                            isClearable
+                            defaultInputValue={category_name}
+                            value={selectedValue2}
+                            getOptionLabel={(e) => e.name}
+                            getOptionValue={(e) => e.id}
+                            loadOptions={loadOptionsCategory}
+                            onChange={handleChangeCategory}
+                        />
+                    </div>
+                </div>
+                <div className="row mb-3">
                     <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Grup</label>
                     <div className="col-sm-10">
                         <select onChange={e => setGroup(e.target.value)} id="Typeselect" className="form-select">
@@ -336,44 +387,13 @@ const EditProduk = () => {
                     </div>
                 </div>
                 <div className="row mb-3">
-                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Bagian</label>
-                    <div className="col-sm-10">
-                        <AsyncSelect
-                            placeholder="Pilih Bagian..."
-                            cacheOptions
-                            defaultOptions
-                            defaultInputValue={pieces_name}
-                            value={selectedValue}
-                            getOptionLabel={(e) => e.name}
-                            getOptionValue={(e) => e.id}
-                            loadOptions={loadOptionsPieces}
-                            onChange={handleChangePieces}
-                        />
-                    </div>
-                </div>
-                <div className="row mb-3">
-                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Kategori</label>
-                    <div className="col-sm-10">
-                        <AsyncSelect
-                            placeholder="Pilih Kategori..."
-                            cacheOptions
-                            defaultOptions
-                            defaultInputValue={category_name}
-                            value={selectedValue2}
-                            getOptionLabel={(e) => e.name}
-                            getOptionValue={(e) => e.id}
-                            loadOptions={loadOptionsCategory}
-                            onChange={handleChangeCategory}
-                        />
-                    </div>
-                </div>
-                <div className="row mb-3">
                     <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Grade</label>
                     <div className="col-sm-10">
                         <AsyncSelect
                             placeholder="Pilih Grade..."
                             cacheOptions
                             defaultOptions
+                            isClearable
                             defaultInputValue={grade_name}
                             value={selectedValue3}
                             getOptionLabel={(e) => e.name}
@@ -390,28 +410,13 @@ const EditProduk = () => {
                             placeholder="Pilih Tipe..."
                             cacheOptions
                             defaultOptions
+                            isClearable
                             defaultInputValue={type_name}
                             value={selectedValue4}
                             getOptionLabel={(e) => e.name}
                             getOptionValue={(e) => e.id}
                             loadOptions={loadOptionsTypes}
                             onChange={handleChangeTypes}
-                        />
-                    </div>
-                </div>
-                <div className="row mb-3">
-                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Merek</label>
-                    <div className="col-sm-10">
-                        <AsyncSelect
-                            placeholder="Pilih Merek..."
-                            cacheOptions
-                            defaultOptions
-                            defaultInputValue={brands_name}
-                            value={selectedValue5}
-                            getOptionLabel={(e) => e.name}
-                            getOptionValue={(e) => e.id}
-                            loadOptions={loadOptionsBrands}
-                            onChange={handleChangeBrands}
                         />
                     </div>
                 </div>
@@ -435,6 +440,7 @@ const EditProduk = () => {
                             placeholder="Pilih..."
                             cacheOptions
                             defaultOptions
+                            isClearable
                             defaultInputValue={packaging_id}
                             value={selectedValue7}
                             getOptionLabel={(e) => e.name}
@@ -476,17 +482,18 @@ const EditProduk = () => {
                 </div>
                 <div className="row mb-3">
                     <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Diskon</label>
-                    <div className="col-sm-5">
-                        <input
-                            type="Nama"
-                            className="form-control"
-                            id="inputNama3"
-                            defaultValue={discount}
-                            onChange={e => setDiscount(e.target.value)}
-                        />
-                    </div>
-                    <div className="col-sm-1">
-                        <span className="input-group-text" id="addon-wrapping">%</span>
+                    <div className="col-sm-2">
+                        <div className="input-group">
+                            <input
+                                type="text"
+                                className="form-control"
+                                aria-label="Dollar amount (with dot and two decimal places)"
+                                defaultValue={0}
+                                value={discount}
+                                onChange={(e) => setDiscount(e.target.value)}
+                            />
+                            <span className="input-group-text">%</span>
+                        </div>
                     </div>
                 </div>
                 <div className="row mb-3">
@@ -496,6 +503,7 @@ const EditProduk = () => {
                             placeholder="Pilih Pajak..."
                             cacheOptions
                             defaultOptions
+                            isClearable
                             defaultInputValue={taxes_name}
                             value={selectedValue6}
                             getOptionLabel={(e) => e.type}
