@@ -31,7 +31,7 @@ const Merek = () => {
       <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
         <div className="row">
           <div className="col text-title text-start">
-            <h5 className="title fw-bold">Daftar Merek</h5>
+            <h5 className="title fw-bold">Daftar Merek Produk</h5>
           </div>
           {userAccess?.map(d => {
             if (d.ability_name === "create-brand") {

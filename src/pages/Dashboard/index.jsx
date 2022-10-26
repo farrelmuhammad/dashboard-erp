@@ -1,5 +1,5 @@
 import { HomeOutlined, PlusOutlined } from '@ant-design/icons'
-import { Button, Card, Col, Row } from 'antd'
+import { Button, Card, Col, Row, Skeleton } from 'antd'
 import React, { useEffect, useState } from 'react'
 import RaceLine from './RaceLine'
 import DashboardTable from '../../components/moleculles/DashboardTable'
@@ -10,7 +10,30 @@ import Url from '../../Config'
 import { useSelector } from 'react-redux'
 
 const Dashboard = () => {
-    
+    const [data, setData] = useState([]);
+
+    useEffect(() => {
+        asyncFetch();
+        asyncFetchLine();
+    }, []);
+
+    const asyncFetch = () => {
+        fetch('https://gw.alipayobjects.com/os/antfincdn/8elHX%26irfq/stack-column-data.json')
+            .then((response) => response.json())
+            .then((json) => setData(json))
+            .catch((error) => {
+                console.log('fetch data failed', error);
+            });
+    };
+
+    const asyncFetchLine = () => {
+        fetch('https://gw.alipayobjects.com/os/bmw-prod/e00d52f4-2fa6-47ee-a0d7-105dd95bde20.json')
+            .then((response) => response.json())
+            .then((json) => setData(json))
+            .catch((error) => {
+                console.log('fetch data failed', error);
+            });
+    };
 
     return (
         <>
@@ -91,8 +114,8 @@ const Dashboard = () => {
                     </Card>
                 </Col>
             </Row> */}
-            <RaceLine />
-            <ColumnChart />
+            <RaceLine data={data} />
+            <ColumnChart data={data} />
             <Row>
                 <Col span={12}>
                     <div className="container p-3 me-2 mb-2 bg-body rounded d-flex flex-column">

@@ -32,7 +32,7 @@ const Grade = () => {
       <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
         <div className="row">
           <div className="col text-title text-start">
-            <h5 className="title fw-bold">Daftar Grade</h5>
+            <h5 className="title fw-bold">Daftar Grade Produk</h5>
           </div>
           {userAccess?.map(d => {
             if (d.ability_name === "create-grade") {
