@@ -90,15 +90,15 @@ const App = () => {
     <Menu.SubMenu title="Produk" icon={<CopyOutlined />}>
       <Menu.Item key="9">
         <Link to="/grade" />
-        Grade
+        Grade Produk
       </Menu.Item>
       <Menu.Item key="10">
         <Link to="/kategori" />
-        Kategori
+        Kategori Produk
       </Menu.Item>
       <Menu.Item key="11">
         <Link to="/bagian" />
-        Bagian
+        Bagian Produk
       </Menu.Item>
       <Menu.Item key="12">
         <Link to="/tipe" />
@@ -106,7 +106,7 @@ const App = () => {
       </Menu.Item>
       <Menu.Item key="13">
         <Link to="/merek" />
-        Merk Produk
+        Merek Produk
       </Menu.Item>
       <Menu.Item key="14">
         <Link to="/produk" />
@@ -225,7 +225,7 @@ const App = () => {
     <Menu.SubMenu title="Akuntansi" icon={<LineChartOutlined />}>
       <Menu.Item key="32">
         <Link to="/coa" />
-        Chart Of Accounts
+        Chart of Accounts
       </Menu.Item>
       <Menu.Item key="33">
         <Link to="/accountmapping" />
@@ -337,15 +337,15 @@ const App = () => {
     <Menu.SubMenu title="Produk" icon={<CopyOutlined />}>
       <Menu.Item key="9">
         <Link to="/grade" />
-        Grade
+        Grade Produk
       </Menu.Item>
       <Menu.Item key="10">
         <Link to="/kategori" />
-        Kategori
+        Kategori Produk
       </Menu.Item>
       <Menu.Item key="11">
         <Link to="/bagian" />
-        Bagian
+        Bagian Produk
       </Menu.Item>
       <Menu.Item key="12">
         <Link to="/tipe" />
@@ -353,7 +353,7 @@ const App = () => {
       </Menu.Item>
       <Menu.Item key="13">
         <Link to="/merek" />
-        Merk Produk
+        Merek Produk
       </Menu.Item>
       <Menu.Item key="14">
         <Link to="/produk" />

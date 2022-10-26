@@ -26,6 +26,13 @@ const BagianTable = () => {
 
   const { id } = useParams();
 
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -106,29 +113,32 @@ const BagianTable = () => {
         setTimeout(() => searchInput.current?.select(), 100);
       }
     },
-    // render: (text) =>
-    //   searchedColumn === dataIndex ? (
-    //     <Highlighter
-    //       highlightStyle={{
-    //         backgroundColor: '#ffc069',
-    //         padding: 0,
-    //       }}
-    //       searchWords={[searchText]}
-    //       autoEscape
-    //       textToHighlight={text ? text.toString() : ''}
-    //     />
-    //   ) : (
-    //     text
-    //   ),
   });
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+});
+
 
   const columns = [
     {
       title: 'Kode',
       dataIndex: 'code',
       key: 'code',
-      width: '10%',
+      width: '15%',
       ...getColumnSearchProps('code'),
+      sorter: (a, b) => a.code.length - b.code.length,
+      sortDirections: ['ascend', 'descend'],
     },
     {
       title: 'Bagian',
@@ -136,14 +146,14 @@ const BagianTable = () => {
       key: 'name',
       width: '30%',
       ...getColumnSearchProps('name'),
-      sorter: true,
-      sortDirections: ['descend', 'ascend'],
+      sorter: (a, b) => a.name.length - b.name.length,
+      sortDirections: ['ascend', 'descend'],
     },
     {
       title: 'Keterangan',
       dataIndex: 'description',
       key: 'description',
-      ...getColumnSearchProps('description'),
+       ...getColumnSearchProps('description'),
       render: (text) => (
         <Text
           style={

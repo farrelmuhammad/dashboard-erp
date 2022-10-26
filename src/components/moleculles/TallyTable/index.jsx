@@ -15,6 +15,7 @@ const TallyTable = () => {
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = React.useRef(null);
   const [getDataTally, setGetDataTally] = useState([]);
+  const [dataTampil, setDataTampil] = useState([]);
   const [status, setStatus] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [code, setCode] = useState('');
@@ -91,7 +92,7 @@ const TallyTable = () => {
     setSearchText('');
   };
 
-  const getColumnSearchProps = (dataIndex) => ({
+  const getColumnSearchProps = (dataIndex, title) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div
         style={{
@@ -100,7 +101,7 @@ const TallyTable = () => {
       >
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
+          placeholder={`Search ${title}`}
           value={selectedKeys[0]}
           onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
           onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
@@ -153,32 +154,53 @@ const TallyTable = () => {
         }}
       />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
       }
     },
-    // render: (text) =>
-    //   searchedColumn === dataIndex ? (
-    //     <Highlighter
-    //       highlightStyle={{
-    //         backgroundColor: '#ffc069',
-    //         padding: 0,
-    //       }}
-    //       searchWords={[searchText]}
-    //       autoEscape
-    //       textToHighlight={text ? text.toString() : ''}
-    //     />
-    //   ) : (
-    //     text
-    //   ),
   });
 
   useEffect(() => {
     getTallySheet()
   }, [])
+
+  function handleTableChange(dataIndex) {
+    console.log(dataIndex)
+    axios.get(`${Url}/tally_sheets?tipe=Sales`, {
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${auth.token}`
+      }
+    })
+      .then(res => {
+        const getData = res.data.data
+        setGetDataTally(getData)
+        if (getData.supplier_id) {
+          setSumber('Retur')
+        }
+        else {
+          setSumber('SO')
+        }
+
+        // agar bisa di search 
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+            id: getData[i].id,
+            can: getData[i].can,
+            code: getData[i].code,
+            customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+            supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+            date: getData[i].date,
+            status: getData[i].status,
+            warehouse: getData[i].warehouse.name
+          })
+        }
+        setDataTampil(tmp)
+      })
+  }
 
   const getTallySheet = async (params = {}) => {
     setIsLoading(true);
@@ -193,17 +215,27 @@ const TallyTable = () => {
         setGetDataTally(getData)
         if (getData.supplier_id) {
           setSumber('Retur')
-
         }
         else {
           setSumber('SO')
-
-
         }
-        // setCode(getData.code)
-        // setStatus(getData.map(d => d.status))
+
+        // agar bisa di search 
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+            id: getData[i].id,
+            can: getData[i].can,
+            code: getData[i].code,
+            customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+            supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+            date: getData[i].date,
+            status: getData[i].status,
+            warehouse: getData[i].warehouse.name
+          })
+        }
+        setDataTampil(tmp)
         setIsLoading(false);
-        console.log(getData)
       })
   }
 
@@ -213,23 +245,29 @@ const TallyTable = () => {
       dataIndex: 'date',
       key: 'date',
       width: '15%',
-      ...getColumnSearchProps('date'),
+      sorter: true,
+      // sortDirections: ['descend', 'ascend'],
+      ...getColumnSearchProps('date', 'Tanggal'),
     },
     {
       title: 'No. Transaksi',
       dataIndex: 'code',
       key: 'code',
       width: '20%',
-      ...getColumnSearchProps('code'),
+      ...getColumnSearchProps('code', 'No. Transaksi'),
+      // defaultSortOrder: 'descend',
+      // sorter: (a, b) => a.code - b.code,
+      // sorter: (a, b) => a.code.length - b.code.length,
+      // sortOrder: sortedInfo.columnKey === 'code' ? sortedInfo.order : null,
       sorter: true,
       sortDirections: ['descend', 'ascend'],
     },
     {
-      title: 'Pelanggan',
+      title: 'Customer',
       dataIndex: 'customer_name',
       width: '15%',
-      key: 'customer',
-      ...getColumnSearchProps('customer_name'),
+      key: 'customer_name',
+      ...getColumnSearchProps('customer_name', 'Customer'),
       // render: (customer) => customer.name
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
       // sortDirections: ['descend', 'ascend'],
@@ -238,8 +276,8 @@ const TallyTable = () => {
       title: 'Supplier',
       dataIndex: 'supplier_name',
       width: '15%',
-      key: 'customer',
-      ...getColumnSearchProps('supplier_name'),
+      key: 'supplier_name',
+      ...getColumnSearchProps('supplier_name', 'Supplier'),
       // render: (customer) => customer.name
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
       // sortDirections: ['descend', 'ascend'],
@@ -249,8 +287,8 @@ const TallyTable = () => {
       dataIndex: 'warehouse',
       key: 'warehouse',
       width: '15%',
-      ...getColumnSearchProps('warehouse'),
-      render: (warehouse) => warehouse.name
+      ...getColumnSearchProps('warehouse', 'Gudang'),
+      // render: (warehouse) => warehouse.name
     },
     {
       title: 'Status',
@@ -326,7 +364,7 @@ const TallyTable = () => {
     loading={isLoading}
     columns={columns}
     pagination={{ pageSize: 10 }}
-    dataSource={getDataTally}
+    dataSource={dataTampil}
     scroll={{
       y: 240,
     }}

@@ -1,21 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Line } from '@ant-design/plots';
 
-const Dashboard = () => {
-    const [data, setData] = useState([]);
-
-    useEffect(() => {
-        asyncFetch();
-    }, []);
-
-    const asyncFetch = () => {
-        fetch('https://gw.alipayobjects.com/os/bmw-prod/e00d52f4-2fa6-47ee-a0d7-105dd95bde20.json')
-            .then((response) => response.json())
-            .then((json) => setData(json))
-            .catch((error) => {
-                console.log('fetch data failed', error);
-            });
-    };
+const RaceLine = ({ data }) => {
     const config = {
         data,
         xField: 'year',
@@ -53,4 +39,4 @@ const Dashboard = () => {
     );
 };
 
-export default Dashboard;
+export default RaceLine;

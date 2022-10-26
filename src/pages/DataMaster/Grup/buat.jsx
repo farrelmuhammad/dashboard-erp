@@ -7,6 +7,7 @@ import Url from "../../../Config";
 import { useSelector } from "react-redux";
 import { Button, Checkbox, Col, Collapse, Modal, PageHeader, Row } from 'antd';
 import { PlusOutlined, SendOutlined } from "@ant-design/icons";
+import { array } from "yup";
 const { Panel } = Collapse;
 
 const BuatGrup = () => {
@@ -29,66 +30,56 @@ const BuatGrup = () => {
     userData.append("deskripsi", description);
     access.map((acc) => userData.append("hak_akses[]", acc));
 
-    for (var pair of userData.entries()) {
-      console.log(pair[0] + ", " + pair[1]);
-    }
+    // for (var pair of userData.entries()) {
+    //   console.log(pair[0] + ", " + pair[1]);
+    // }
 
-    // axios({
-    //   method: "post",
-    //   url: `${Url}/groups`,
-    //   data: userData,
-    //   headers: {
-    //     Accept: "application/json",
-    //     Authorization: `Bearer ${auth.token}`,
-    //   },
-    // })
-    //   .then(function (response) {
-    //     //handle success
-    //     console.log(response);
-    //     Swal.fire(
-    //       "Berhasil Di Update",
-    //       `${getGroup} Masuk dalam list`,
-    //       "success"
-    //     );
-    //     navigate("/grup");
-    //   })
-    //   .catch((err) => {
-    //     if (err.response) {
-    //       console.log("err.response ", err.response);
-    //       Swal.fire({
-    //         icon: "error",
-    //         title: "Oops...",
-    //         text: err.response.data.error.nama,
-    //       });
-    //     } else if (err.request) {
-    //       console.log("err.request ", err.request);
-    //       Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-    //     } else if (err.message) {
-    //       // do something other than the other two
-    //       Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-    //     }
-    //   });
+    axios({
+      method: "post",
+      url: `${Url}/groups`,
+      data: userData,
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    })
+      .then(function (response) {
+        //handle success
+        console.log(response);
+        Swal.fire(
+          "Berhasil Di Update",
+          `${getGroup} Masuk dalam list`,
+          "success"
+        );
+        navigate("/grup");
+      })
+      .catch((err) => {
+        if (err.response) {
+          console.log("err.response ", err.response);
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: err.response.data.error.nama,
+          });
+        } else if (err.request) {
+          console.log("err.request ", err.request);
+          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+        } else if (err.message) {
+          // do something other than the other two
+          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+        }
+      });
   };
 
   const handleCheck = (event) => {
-    // console.log(event)
-    let updatedList = []
-    for(let i = 0; i < event.length; i++){
-      console.log(event[i])
-      // updatedList == event[i]
-      // updatedList.push(event[i])
+    var updatedList = [...access];
+    if (event.target) {
+      updatedList = [...access, event.target.value];
+    } else {
+      updatedList.splice(access.indexOf(event.target.value), 1);
     }
-
-    // console.log(updatedList)
-    // console.log(event.target.value)
-    // var updatedList = [...access];
-    // if (event.target) {
-    //   updatedList = [...access, event.target.value];
-    // } else {
-    //   updatedList.splice(access.indexOf(event.target.value), 1);
-    // }
-    // setAccess(updatedList);
-    // console.log(updatedList);
+    setAccess(updatedList);
+    console.log(updatedList);
   };
 
   useEffect(() => {
@@ -201,22 +192,30 @@ const BuatGrup = () => {
                   return (
                     <Collapse>
                       <Panel header={menu.name} key={menu.id}>
-                        <Checkbox.Group
+                        {/* <Checkbox.Group
                           style={{
                             width: '100%',
                           }}
                           onChange={handleCheck}
-                        >
-                          <Row>
-                            {menu.access_rights.map((ar) => {
-                              return (
-                                <Col span={8}>
-                                  <Checkbox value={ar.id}>{ar.name}</Checkbox>
-                                </Col>
-                              )
-                            })}
-                          </Row>
-                        </Checkbox.Group>
+                        > */}
+                        <Row>
+                          {menu.access_rights.map((ar) => {
+                            return (
+                              <Col span={8}>
+                                {/* <Checkbox value={ar.id}>{ar.name}</Checkbox> */}
+                                <Checkbox
+                                  value={ar.id}
+                                  // checked={ar.id == access}
+                                  checked={ar[1].id}
+                                  onChange={handleCheck}
+                                >
+                                  {ar.name}
+                                </Checkbox>
+                              </Col>
+                            )
+                          })}
+                        </Row>
+                        {/* </Checkbox.Group> */}
                       </Panel>
                     </Collapse>
                   )
