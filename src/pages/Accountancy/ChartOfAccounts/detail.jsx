@@ -8,6 +8,7 @@ import { Switch, Table } from 'antd'
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 import { Code } from '@mui/icons-material';
+import { PageHeader } from 'antd';
 
 const DetailCoa = () => {
     // const auth.token = jsCookie.get("auth");
@@ -96,8 +97,11 @@ const DetailCoa = () => {
                 setAccountCategory(getData.chart_of_account_category_id)
                 setAccountCategoryname(getData.chart_of_account_category.name)
                 setAccountName(getData.name)
-                setMasterAcc(getData.parent.id)
-                setMasterAccountName(getData.parent.name)
+                if(getData.parent){
+                    setMasterAcc(getData.parent.id)
+                    setMasterAccountName(getData.parent.name)
+                }
+                
                 setCurrency(getData.currency.id)
                 setCurrencyName(getData.currency.name)
                 setExchangeRate(getData.exchange_rate)
@@ -264,9 +268,14 @@ const DetailCoa = () => {
     return (
         <>
             <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
+            <PageHeader
+                ghost={false}
+                onBack={() => window.history.back()}
+                title="Detail COA">
+            </PageHeader>
+                {/* <div className="text-title text-start mb-4">
                     <h5 className="title fw-bold">Detail COA</h5>
-                </div>
+                </div> */}
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">

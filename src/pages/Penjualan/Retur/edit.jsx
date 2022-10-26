@@ -512,15 +512,16 @@ const BuatRetur = () => {
 
     return (
         <>
-        <PageHeader
-                className="bg-body rounded mb-2"
-                onBack={() => window.history.back()}
-                title="Edit Retur Penjualan"
-            ></PageHeader>
+      
             <form className="p-3 mb-3 bg-body rounded">
                 {/* <div className="text-title text-start mb-4">
                     <h3 className="title fw-bold">Edit Retur Penjualan</h3>
                 </div> */}
+                  <PageHeader
+                className="bg-body rounded mb-2"
+                onBack={() => window.history.back()}
+                title="Edit Retur Penjualan"
+            ></PageHeader>
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">

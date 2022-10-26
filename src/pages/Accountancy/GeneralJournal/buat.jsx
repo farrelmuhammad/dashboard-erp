@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, InputNumber, Modal, Space, Typography, Table } from 'antd'
+import { Button, Checkbox, Form, InputNumber, Modal, Space, Typography, Table, PageHeader } from 'antd'
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
@@ -488,9 +488,14 @@ const BuatGeneralJournal = () => {
     return (
         <>
             <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
+            <PageHeader
+                ghost={false}
+                onBack={() => window.history.back()}
+                title="Buat Jurnal Umum">
+            </PageHeader>
+                {/* <div className="text-title text-start mb-4">
                     <h4 className="title fw-bold">Buat Jurnal Umum</h4>
-                </div>
+                </div> */}
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -696,7 +701,7 @@ const BuatGeneralJournal = () => {
                         <label for="colFormLabelSm" className="col-sm-12 col-form-label col-form-label-sm">Total Credit</label>
                     </div>
                 </div> */}
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:"right", position:"relative"}}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -714,6 +719,7 @@ const BuatGeneralJournal = () => {
                         Publish
                     </button>
                 </div>
+                <div style={{clear:"both"}}></div>
             </form>
         </>
     )

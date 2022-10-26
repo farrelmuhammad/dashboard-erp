@@ -46,7 +46,7 @@ const DetailSupplier = () => {
   if(data) {
       return (
         <>
-          <form className="  p-3 mb-3 bg-body rounded">
+          <form className="  p-2 mb-2 bg-body rounded">
             <div className="text-title text-start mb-4">
                       <PageHeader
                         ghost={false}

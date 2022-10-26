@@ -409,7 +409,7 @@ const BuatPIB = () => {
     const dataProduk =
         [...tampilProduk.map((item, i) => ({
             nama: item.product_name,
-            qty: item.quantity.replace('.', ','),
+            qty: Number(item.quantity).toFixed(2).replace('.', ','),
             // hrg: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.price} key="total" />,
             dsc: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.price} key="total" />,
             uangasing: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.total.replace('.', ',')} key="total" />,
@@ -789,14 +789,14 @@ const BuatPIB = () => {
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={6} className="text-end">Sub Total</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp ' disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={subTotal} key="pay" />
+                                            <CurrencyFormat prefix='Rp ' disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(subTotal).toFixed(2).replace('.',',')} key="pay" />
 
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={6} className="text-end">Bea Masuk</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp ' className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={totalBea} key="pay" onKeyDown={(event) => klikEnter(event)} onChange={(e) => klikTambahBea(e.target.value, totalRupiah)} />
+                                            <CurrencyFormat prefix='Rp ' className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalBea)} key="pay" onKeyDown={(event) => klikEnter(event)} onChange={(e) => klikTambahBea(e.target.value, totalRupiah)} />
 
 
                                         </Table.Summary.Cell>
@@ -804,21 +804,22 @@ const BuatPIB = () => {
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={6} className="text-end">PPh 22</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp ' className='text-center editable-input' onKeyDown={(event) => klikEnter(event)} thousandSeparator={'.'} decimalSeparator={','} value={totalPpn} onChange={(e) => klikUbahPPn(e.target.value)} key="pay" />
+                                            <CurrencyFormat prefix='Rp ' className='text-center editable-input' onKeyDown={(event) => klikEnter(event)} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn)} onChange={(e) => klikUbahPPn(e.target.value)} key="pay" />
 
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={6} className="text-end">PPN</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp ' className='text-center editable-input' onKeyDown={(event) => klikEnter(event)} thousandSeparator={'.'} decimalSeparator={','} value={totalPph} onChange={(e) => klikUbahPPh(e.target.value)} key="pay" />
+                                            <CurrencyFormat prefix='Rp ' className='text-center editable-input' onKeyDown={(event) => klikEnter(event)} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPph)} onChange={(e) => klikUbahPPh(e.target.value)} key="pay" 
+                                            />
 
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={6} className="text-end">Total (Rp)</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp ' disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={totalAkhir} key="pay" />
+                                            <CurrencyFormat prefix='Rp ' disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toFixed(2).replace('.',',')} key="pay" />
 
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>
@@ -848,12 +849,12 @@ const BuatPIB = () => {
                     >
                         Submit
                     </button>
-                    <button
+                    {/* <button
                         type="button"
                         width="100px"
                         className="btn btn-warning rounded m-1">
                         Cetak
-                    </button>
+                    </button> */}
                 </div>
                 <div style={{ clear: 'both' }}></div>
             </form>
