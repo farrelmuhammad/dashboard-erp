@@ -306,6 +306,7 @@ const BuatProduk = () => {
               placeholder="Pilih Bagian..."
               cacheOptions
               defaultOptions
+              isClearable
               value={selectedValue}
               getOptionLabel={(e) => e.name}
               getOptionValue={(e) => e.id}
@@ -323,6 +324,7 @@ const BuatProduk = () => {
               placeholder="Pilih Kategori..."
               cacheOptions
               defaultOptions
+              isClearable
               value={selectedValue2}
               getOptionLabel={(e) => e.name}
               getOptionValue={(e) => e.id}
@@ -340,6 +342,7 @@ const BuatProduk = () => {
               placeholder="Pilih Grade..."
               cacheOptions
               defaultOptions
+              isClearable
               value={selectedValue3}
               getOptionLabel={(e) => e.name}
               getOptionValue={(e) => e.id}
@@ -357,6 +360,7 @@ const BuatProduk = () => {
               placeholder="Pilih Tipe..."
               cacheOptions
               defaultOptions
+              isClearable
               value={selectedValue4}
               getOptionLabel={(e) => e.name}
               getOptionValue={(e) => e.id}
@@ -374,6 +378,7 @@ const BuatProduk = () => {
               placeholder="Pilih Merek..."
               cacheOptions
               defaultOptions
+              isClearable
               value={selectedValue5}
               getOptionLabel={(e) => e.name}
               getOptionValue={(e) => e.id}
@@ -404,6 +409,7 @@ const BuatProduk = () => {
               placeholder="Pilih..."
               cacheOptions
               defaultOptions
+              isClearable
               value={selectedValue7}
               getOptionLabel={(e) => e.name}
               getOptionValue={(e) => e.id}
@@ -426,6 +432,7 @@ const BuatProduk = () => {
             <input
               type="kode"
               className="form-control"
+              defaultValue={0}
               placeholder="Masukkan Harga..."
               id="inputKode3"
               onChange={(e) => setBuy_price(e.target.value)}
@@ -440,6 +447,7 @@ const BuatProduk = () => {
             <input
               type="Nama"
               className="form-control"
+              defaultValue={0}
               placeholder="Masukkan Harga..."
               id="inputNama3"
               onChange={(e) => setSell_price(e.target.value)}
@@ -454,6 +462,7 @@ const BuatProduk = () => {
             <input
               type="Nama"
               className="form-control"
+              defaultValue={0}
               placeholder="Masukkan Diskon..."
               id="inputNama3"
               onChange={(e) => setDiscount(e.target.value)}
@@ -474,6 +483,7 @@ const BuatProduk = () => {
               placeholder="Pilih Pajak..."
               cacheOptions
               defaultOptions
+              isClearable
               value={selectedValue6}
               getOptionLabel={(e) => e.type}
               getOptionValue={(e) => e.id}

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import 'antd/dist/antd.css';
-import { DeleteOutlined, EditOutlined, InfoCircleOutlined,CloseOutlined , FileSyncOutlined, SearchOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, InfoCircleOutlined, CloseOutlined, FileSyncOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Tag } from 'antd';
 import axios from 'axios';
 import Url from '../../../Config';
@@ -108,7 +108,7 @@ const FakturPembelianTable = () => {
     })
 
   };
-  
+
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -258,9 +258,9 @@ const FakturPembelianTable = () => {
       dataIndex: 'total',
       key: 'total',
       width: '15%',
-    //   render: (text) => {
-    //     return Number(text).toFixed(2).replace('.', ',')
-    // },
+      //   render: (text) => {
+      //     return Number(text).toFixed(2).replace('.', ',')
+      // },
       ...getColumnSearchProps('total'),
     },
     {
@@ -289,7 +289,7 @@ const FakturPembelianTable = () => {
     },
     {
       title: 'Actions',
-      dataIndex:'action',
+      dataIndex: 'action',
       width: '10%',
       align: 'center',
       // render: (_, record) => (
@@ -322,21 +322,21 @@ const FakturPembelianTable = () => {
   ];
 
   const dataColumn = [
-    ...getDataFaktur.map((item,i) => ({
+    ...getDataFaktur.map((item, i) => ({
       date: item.date,
       code: item.code,
-      supplier:item.supplier.name,
-      total: item.supplier._group == 'Lokal' ? 
-      < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" />
-       :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={item.purchase_invoice_details[0].currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />,
+      supplier: item.supplier.name,
+      total: item.supplier._group == 'Lokal' ?
+        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.', ',')} key="diskon" />
+        : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={item.purchase_invoice_details[0].currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />,
 
-      type:item.supplier._group,
-      status:  <>
-      {item.status === 'Submitted' ? <Tag color="blue">{item.status}</Tag> : item.status === 'Draft' ? <Tag color="orange">{item.status}</Tag> : item.status === 'Done' ? <Tag color="green">{item.status}</Tag> : item.status === 'Cancelled' ? <Tag color="red">{item.status}</Tag> : item.status === 'Processed' ? <Tag color="purple">{item.status}</Tag> : null
-      }
-  </>,  
+      type: item.supplier._group,
+      status: <>
+        {item.status === 'Submitted' ? <Tag color="blue">{item.status}</Tag> : item.status === 'Draft' ? <Tag color="orange">{item.status}</Tag> : item.status === 'Done' ? <Tag color="green">{item.status}</Tag> : item.status === 'Cancelled' ? <Tag color="red">{item.status}</Tag> : item.status === 'Processed' ? <Tag color="purple">{item.status}</Tag> : null
+        }
+      </>,
       action:
-      <>
+        <>
           <Space size="middle">
             {item.can['read-purchase_invoice'] ? (
               <Link to={`/fakturpembelian/detail/${item.id}`}>
@@ -382,7 +382,7 @@ const FakturPembelianTable = () => {
                 </Link>
               ) : null
             }
-             {
+            {
               item.can['submitted_to_draft-purchase_invoice'] ? (
                 <Space size="middle">
                   <Button
@@ -395,18 +395,19 @@ const FakturPembelianTable = () => {
               ) : null
             }
           </Space>
-      </>
+        </>
 
-    }) )
+    }))
   ]
   return <Table
+    size="small"
     loading={isLoading}
     columns={columns}
-    pagination={{ pageSize: 5 }}
+    pagination={{ pageSize: 10 }}
     dataSource={dataColumn}
-    // scroll={{
-    //   y: 240,
-    // }}
+  // scroll={{
+  //   y: 240,
+  // }}
   />;
 };
 

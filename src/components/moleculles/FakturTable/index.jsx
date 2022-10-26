@@ -20,15 +20,15 @@ const FakturTable = () => {
   // const token = jsCookie.get('auth')
   const auth = useSelector(state => state.auth);
 
-  const deleteSalesFaktur = async (id) => {
-    await axios.delete(`${Url}/sales_orders/${id}`, {
+  const deleteSalesFaktur = async (id, code) => {
+    await axios.delete(`${Url}/sales_invoices?id_faktur_penjualan=${id}`, {
       headers: {
         Accept: "application/json",
         Authorization: `Bearer ${auth.token}`,
       },
     });
     getFaktur()
-    Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+    Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
   };
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -233,7 +233,7 @@ const FakturTable = () => {
               size='small'
               type="danger"
               icon={<DeleteOutlined />}
-              onClick={() => deleteSalesFaktur(record.id)}
+              onClick={() => deleteSalesFaktur(record.id, record.code)}
             />
           </Space>
         </>
@@ -244,12 +244,13 @@ const FakturTable = () => {
   return (
     <>
       <Table
+        size="small"
         loading={isLoading}
         columns={columns}
-        pagination={{ pageSize: 5 }}
+        pagination={{ pageSize: 10 }}
         dataSource={getDataFaktur}
         scroll={{
-          y: 240,
+          y: 295,
         }}
       />
     </>

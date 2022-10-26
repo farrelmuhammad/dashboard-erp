@@ -220,7 +220,7 @@ const GoodsRequestTable = () => {
             width: '20%',
             render: (_, { status }) => (
                 <>
-                    {status === 'publish' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
+                    {status === 'Submitted' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'Draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
 
                 </>
             ),
@@ -234,9 +234,9 @@ const GoodsRequestTable = () => {
             align: 'center',
             render: (_, record) => (
                 <>
-                    {record.status === 'publish' ? (
+                    {record.status === 'Submitted' ? (
                         <Space size="middle">
-                        <Link to={`/goodsrequest/detail/${record.id}`}>
+                        <Link to={`/permintaanbarang/detail/${record.id}`}>
                             <Button
                                 size='small'
                                 type="primary"
@@ -244,9 +244,9 @@ const GoodsRequestTable = () => {
                             />
                         </Link>
                     </Space>
-                    ):record.status === 'done'? (
+                    ):record.status === 'Done'? (
                         <Space size="middle">
-                        <Link to={`/goodsrequest/detail/${record.id}`}>
+                        <Link to={`/permintaanbarang/detail/${record.id}`}>
                             <Button
                                 size='small'
                                 type="primary"
@@ -256,14 +256,14 @@ const GoodsRequestTable = () => {
                     </Space>
                     ) : (
                         <Space size="middle">
-                        <Link to={`/goodsrequest/detail/${record.id}`}>
+                        <Link to={`/permintaanbarang/detail/${record.id}`}>
                             <Button
                                 size='small'
                                 type="primary"
                                 icon={<InfoCircleOutlined />}
                             />
                         </Link>
-                        <Link to={`/goodsrequest/edit/${record.id}`}>
+                        <Link to={`/permintaanbarang/edit/${record.id}`}>
                             <Button
                                 size='small'
                                 type="success"

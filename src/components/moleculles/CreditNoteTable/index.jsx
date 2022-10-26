@@ -361,10 +361,11 @@ const CreditNoteTable = () => {
       ),
     },
   ];
-  return <Table
+   return <Table
+    size="small"
     loading={isLoading}
     columns={columns}
-    pagination={{ pageSize: 5 }}
+    pagination={{ pageSize: 10 }}
     dataSource={creditNote}
   />;
 };

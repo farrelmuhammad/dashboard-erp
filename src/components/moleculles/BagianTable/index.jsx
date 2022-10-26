@@ -156,12 +156,12 @@ const BagianTable = () => {
           ellipsis={
             ellipsis
               ? {
-                tooltip: toTitleCase(text),
+                tooltip: text,
               }
               : false
           }
         >
-          {toTitleCase(text)}
+          {text}
         </Text>
       )
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
@@ -235,12 +235,13 @@ const BagianTable = () => {
   return (
     <>
       <Table
+        size="small"
         loading={isLoading}
         columns={columns}
-        pagination={{ pageSize: 5 }}
         dataSource={pieces}
+        pagination={{ pageSize: 10 }}
         scroll={{
-          y: 240,
+          y: 295,
         }}
       />
     </>

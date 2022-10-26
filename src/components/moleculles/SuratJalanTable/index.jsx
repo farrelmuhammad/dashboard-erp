@@ -398,7 +398,7 @@ const SuratJalanTable = () => {
             render: (_, record) => (
                 <>
                     {
-                        record.can['delivered-delivery-note'] ? (
+                        record.can['delivered-delivery_note'] ? (
                             <Space size="middle">
                                 <Button
                                     size='small'
@@ -870,9 +870,10 @@ const SuratJalanTable = () => {
     // }
 
     return <Table
+        size="small"
         loading={isLoading}
         columns={columns}
-        pagination={{ pageSize: 5 }}
+        pagination={{ pageSize: 10 }}
         dataSource={getDataSO}
         scroll={{
             y: 240,

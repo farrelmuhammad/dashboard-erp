@@ -234,12 +234,13 @@ const DepartemenTable = () => {
   return (
     <>
       <Table
+        size="small"
         loading={isLoading}
         columns={columns}
-        pagination={{ pageSize: 5 }}
+        pagination={{ pageSize: 10 }}
         dataSource={departments}
         scroll={{
-          y: 240,
+          y: 295,
         }}
       />
     </>

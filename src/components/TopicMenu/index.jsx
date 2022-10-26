@@ -100,7 +100,7 @@ const TopicMenu = ({ topics, selectedKey, changeSelectedKey }) => {
                     Mutasi Stok
                 </Menu.Item>
                 <Menu.Item key="18" onClick={changeSelectedKey}>
-                    <Link to="/goodsrequest" />
+                    <Link to="/permintaanbarang" />
                     Permintaan Barang
                 </Menu.Item>
             </Menu.SubMenu>

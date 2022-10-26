@@ -131,7 +131,7 @@ const App = () => {
         Mutasi Stok
       </Menu.Item>
       <Menu.Item key="19">
-        <Link to="/goodsrequest" />
+        <Link to="/permintaanbarang" />
         Permintaan Barang
       </Menu.Item>
       <Menu.Item key="50">
@@ -378,7 +378,7 @@ const App = () => {
         Mutasi Stok
       </Menu.Item>
       <Menu.Item key="19">
-        <Link to="/goodsrequest" />
+        <Link to="/permintaanbarang" />
         Permintaan Barang
       </Menu.Item>
       <Menu.Item key="48">
@@ -497,6 +497,7 @@ const App = () => {
               left: 0,
               top: 0,
               bottom: 0,
+              backgroundColor: 'rgba(255, 255, 255, 0.5)',
             }}
             width={250}
           >
@@ -504,13 +505,13 @@ const App = () => {
             {/* <img src={Logo}
           style={{ width: "50px" }} alt="logo" /> */}
             <Menu
-              theme="dark"
+              // theme="dark"
               defaultSelectedKeys={['1']}
               // selectedKeys={[sideBarMenuKey]}
               mode="inline"
-            // style={{
-            //   backgroundColor: 'rgba(255, 255, 255, 0.5)',
-            // }}
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.5)',
+              }}
             >
               <Menu.Item key="1" icon={<PieChartOutlined />}>
                 <Link to="/" />

@@ -19,15 +19,6 @@ const DetailSupplier = () => {
   const [data, setData] = useState([]);
   const [address, setAddress] = useState([]);
 
-  const columns = [
-    { title: "ID", field: "customer_id" },
-    { title: "Alamat", field: "address" },
-    { title: "Kelurahan", field: "urban_village" },
-    { title: "Kecamatan", field: "sub_district" },
-    { title: "Kota", field: "city" },
-    { title: "Kode Pos", field: "postal_code" },
-  ];
-
   useEffect(() => {
     getDetailSupplier()
   }, []);

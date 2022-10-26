@@ -387,7 +387,7 @@ const CreateProduction = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/goodsrequest");
+                navigate("/permintaanbarang");
             })
             .catch((err) => {
                 if (err.response) {
@@ -440,7 +440,7 @@ const CreateProduction = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/goodsrequest");
+                navigate("/permintaanbarang");
             })
             .catch((err) => {
                 if (err.response) {
