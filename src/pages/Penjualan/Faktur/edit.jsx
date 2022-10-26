@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, PageHeader } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
@@ -80,7 +80,12 @@ const EditableCell = ({
                 ]}
             >
                 {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
+                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} 
+                  decimalSeparator = {','}
+                  onChange={value => {
+                      value = parseFloat(value.toString().replace('.', ','))
+                    }}
+                />
             </Form.Item>
         ) : (
             <div
@@ -404,6 +409,13 @@ const EditFaktur = () => {
             width: '10%',
             align: 'center',
             editable: true,
+            render(text, record) {
+                return {
+                    props: {
+                    },
+                    children: <div>{Number(text).toFixed(2).replace('.',',')}</div>
+                };
+            }
         },
         {
             title: 'Stn',
@@ -1260,9 +1272,11 @@ const EditFaktur = () => {
         [...product.map((item, i) => ({
             no: i + 1,
             product_alias_name: item.product_alias_name,
-            quantity: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].quantity)} onChange={(e) => klikUbahData(i, e.target.value, "qty")} key="qty" />,
+            quantity: item.quantity,
+            // quantity: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].quantity).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "qty")} key="qty" />,
             unit: item.unit,
-            price: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang} onKeyDown={(event) => klikEnter(event)} value={Number(item.price)} onChange={(e) => klikUbahData(i, e.target.value, "price")} />,
+            price:
+             <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang} onKeyDown={(event) => klikEnter(event)} value={Number(item.price)} onChange={(e) => klikUbahData(i, e.target.value, "price")} />,
             discount:
                 data[i].pilihanDiskon == 'noDisc' ?
                     <div className='d-flex p-1' style={{ height: "100%" }}>
@@ -1334,9 +1348,14 @@ const EditFaktur = () => {
     return (
         <>
             <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
+            <PageHeader
+                className="bg-body rounded mb-2"
+                onBack={() => window.history.back()}
+                title="Edit Faktur Penjualan"
+            >
+                {/* <div className="text-title text-start mb-4">
                     <h3 className="title fw-bold">Edit Faktur</h3>
-                </div>
+                </div> */}
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -1447,6 +1466,7 @@ const EditFaktur = () => {
                         </div>
                     </div>
                 </div>
+                </PageHeader>
             </form>
             <form className="p-3 mb-5 bg-body rounded">
                 <div className="text-title text-start mb-4">
@@ -1587,7 +1607,7 @@ const EditFaktur = () => {
                         </div>
                     </div>
                 </div>
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:"right", position:"relative"}}>
                     {
                         getStatus == 'Submitted' ?
                             <button
@@ -1618,12 +1638,13 @@ const EditFaktur = () => {
                                 </button></>
                     }
 
-                    <button
+                    {/* <button
                         type="button"
                         className="btn btn-warning rounded m-1">
                         Cetak
-                    </button>
+                    </button> */}
                 </div>
+                <div style={{clear:"both"}}></div>
             </form>
         </>
     )

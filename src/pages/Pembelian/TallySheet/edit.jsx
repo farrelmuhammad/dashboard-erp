@@ -192,10 +192,10 @@ const EditTallySheet = () => {
                                     }
                                     else if (buatKolom < jumlahKolom && x <= jumlahBaris.toFixed()) {
                                         kolom.push(
-                                            { value: getData.tally_sheet_details[i].boxes[indexBox].quantity.replace('.', ','), readOnly: !statusEdit }
+                                            { value: Number(getData.tally_sheet_details[i].boxes[indexBox].quantity).toFixed(2).replace('.', ','), readOnly: !statusEdit }
                                         );
                                         kolomLama.push(
-                                            { value: getData.tally_sheet_details[i].boxes[indexBox].quantity.replace('.', ','), readOnly: !statusEdit }
+                                            { value: Number(getData.tally_sheet_details[i].boxes[indexBox].quantity).toFixed(2).replace('.', ','), readOnly: !statusEdit }
                                         );
                                         // pengecekan index box 
                                         if (indexBox < getData.tally_sheet_details[i].boxes.length - 1) {

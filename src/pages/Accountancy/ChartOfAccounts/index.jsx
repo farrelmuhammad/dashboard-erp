@@ -33,7 +33,7 @@ const ChartOfAccounts = () => {
         <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
           <div className="row">
             <div className="col text-title text-start">
-              <h4 className="title fw-bold">Chart of accounts</h4>
+              <h4 className="title fw-bold">Daftar Chart of Accounts</h4>
             </div>
             {userAccess?.map(d => {
               if (d.ability_name === "create-sales_order") {
