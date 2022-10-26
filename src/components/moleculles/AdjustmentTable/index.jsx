@@ -23,7 +23,7 @@ const AdjustmentTable = () => {
     const [tableParams, setTableParams] = useState({
         pagination: {
             current: 1,
-            pageSize: 10,
+            pageSize: 1,
         },
     });
 
@@ -121,6 +121,10 @@ const AdjustmentTable = () => {
     });
 
     const handleTableChange = (pagination, filters, sorter) => {
+        console.log(sorter)
+        console.log(filters)
+        console.log(pagination)
+
         setTableParams({
             pagination,
             filters,
@@ -156,6 +160,7 @@ const AdjustmentTable = () => {
 
     const fetchData = () => {
         setIsLoading(true);
+        console.log(qs.stringify(getParams(tableParams)))
         fetch(`${Url}/adjustments?${qs.stringify(getParams(tableParams))}`, {
             headers: {
                 Accept: "application/json",

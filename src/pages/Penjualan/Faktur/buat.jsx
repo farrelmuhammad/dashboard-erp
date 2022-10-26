@@ -1016,7 +1016,7 @@ const BuatFaktur = () => {
 
                     }
                 }
-                setIdTandaTerima(new Set(idTerima));
+                setIdTandaTerima(idTerima);
 
             }
 
@@ -1028,7 +1028,7 @@ const BuatFaktur = () => {
                         idTerima = [...idTandaTerima, getDataSurat[i].detail.id]
                     }
                 }
-                setIdTandaTerima(new Set(idTerima));
+                setIdTandaTerima(idTerima);
             }
 
 
@@ -1283,6 +1283,7 @@ const BuatFaktur = () => {
             }
             userData.append("ppn[]", p.ppn);
         });
+        console.log(idTandaTerima)
 
         idTandaTerima.map((item, i) => {
             if (sumber == 'SO') {
@@ -1294,6 +1295,7 @@ const BuatFaktur = () => {
 
             }
         })
+
 
         axios({
             method: "post",
@@ -1355,9 +1357,9 @@ const BuatFaktur = () => {
             userData.append("kuantitas[]", p.quantity);
             userData.append("satuan[]", p.unit);
             userData.append("harga[]", p.price);
-            // userData.append("diskon_tetap[]", p.fixed_discount);
-            // userData.append("persentase_diskon[]", fixed_discount);
-            if (p.pilihanDiskon == 'percent') {
+            userData.append("diskon_tetap[]", p.fixed_discount);
+            userData.append("persentase_diskon[]", p.discount_percentage);
+            if (p.pilihanDiskon == 'persen') {
                 userData.append("persentase_diskon[]", p.discount_percentage);
 
                 userData.append("diskon_tetap[]", 0);
@@ -1369,6 +1371,7 @@ const BuatFaktur = () => {
             }
             userData.append("ppn[]", p.ppn);
         });
+        console.log(idTandaTerima)
 
         idTandaTerima.map((item, i) => {
             if (sumber == 'SO') {

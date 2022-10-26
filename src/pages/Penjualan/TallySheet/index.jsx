@@ -34,7 +34,7 @@ const TallySheet = () => {
             return (
               <PageHeader
                 ghost={false}
-                title="Daftar Tally Sheet"
+                title="Daftar Tally Sheet Out"
                 extra={[
                   <Link to="/tally/buat">
                     <Button

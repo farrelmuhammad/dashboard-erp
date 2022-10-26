@@ -111,7 +111,7 @@ const BuatKategori = () => {
         ghost={false}
         className="bg-body rounded mb-2"
         onBack={() => window.history.back()}
-        title="Buat Kategori"
+        title="Buat Kategori Produk"
       >
         <div className="row mb-3">
           <label htmlFor="inputKode3" className="col-sm-2 col-form-label">

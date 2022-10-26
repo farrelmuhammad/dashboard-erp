@@ -344,7 +344,7 @@ export const DetailSuratJalan = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Pesanan</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Surat Jalan</label>
                             <div className="col-sm-7">
                                 <input
                                     disabled="true"

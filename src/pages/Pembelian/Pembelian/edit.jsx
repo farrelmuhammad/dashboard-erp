@@ -467,7 +467,7 @@ const EditPesananPembelian = () => {
             dataIndex: 'price',
             width: '18%',
             align: 'center',
-            editable: true,
+            //editable: true,
             render(text, record) {
                 return {
                     children: convertToRupiahTabel(text)

@@ -89,9 +89,9 @@ const EditGrup = () => {
             .then(function (res) {
                 const getData = res.data.data[0]
                 setData(getData);
-                setAccess(getData)
+                setAccess(getData.group_access_rights.map((d) => d.id))
                 setLoading(false)
-                console.log(getData)
+                // console.log(getData.group_access_rights.map((d) => d.id))
             })
             .catch((err) => {
                 // Jika Gagal
@@ -107,7 +107,6 @@ const EditGrup = () => {
             .then((res) => {
                 const getData = res.data.data
                 setGetModules(getData);
-                console.log(getData);
             })
             .catch((err) => {
                 // Jika Gagal

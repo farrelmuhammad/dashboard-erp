@@ -121,7 +121,7 @@ const BuatTally = () => {
 
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [selectedValue2, setSelectedWarehouse] = useState(null);
-    const [selectedValue3, setSelectedProduct] = useState([]);
+    const [selectedProduct, setSelectedProduct] = useState([]);
     const [modal2Visible, setModal2Visible] = useState(false);
     const [modal2Visible2, setModal2Visible2] = useState(false);
 
@@ -221,7 +221,7 @@ const BuatTally = () => {
     };
 
     const handleChangeProduct = (value, record, idx) => {
-        // console.log(selectedValue3)
+        // console.log(selectedProduct)
         let idKey = [];
         let key = [];
         let store = [];
@@ -236,14 +236,14 @@ const BuatTally = () => {
                         store.push(value)
                     } else {
                         idKey.push(productSelect[x][y])
-                        store.push(selectedValue3[x][y])
+                        store.push(selectedProduct[x][y])
                     }
                 }
                 key.push(idKey)
                 store2.push(store)
             } else {
                 key.push(productSelect[x])
-                store2.push(selectedValue3[x])
+                store2.push(selectedProduct[x])
             }
         }
         setSelectedProduct(store2);
@@ -1004,7 +1004,7 @@ const BuatTally = () => {
                         qtyStore.push(quantity[x][y - 1])
                         boxStore.push(totalBox[x][y - 1])
                         tempData.push(data[x][y - 1])
-                        valueStore.push(selectedValue3[x][y - 1])
+                        valueStore.push(selectedProduct[x][y - 1])
                         idStore.push(productSelect[x][y - 1])
                         statusStore.push(statusSO[x][y - 1])
                         qtyPesStore.push(qtyPesanan[x][y - 1])
@@ -1015,7 +1015,7 @@ const BuatTally = () => {
                         boxStore.push(totalBox[x][y])
                         qtyPesStore.push(qtyPesanan[x][y])
                         tempData.push(data[x][y])
-                        valueStore.push(selectedValue3[x][y])
+                        valueStore.push(selectedProduct[x][y])
                         idStore.push(productSelect[x][y])
                         statusStore.push(statusSO[x][y])
                         temp_qtyBox.push(kuantitasBox[x][y])
@@ -1092,7 +1092,7 @@ const BuatTally = () => {
                 box.push(totalBox[x])
                 temp.push(data[x])
                 id.push(productSelect[x])
-                value.push(selectedValue3[x])
+                value.push(selectedProduct[x])
                 status.push(statusSO[x])
                 qtyPes.push(qtyPesanan[x])
                 qtyBox_tmp.push(kuantitasBox[x])
@@ -1103,6 +1103,7 @@ const BuatTally = () => {
         setTotalBox(box)
         setData(temp)
         setSelectedProduct(value)
+        console.log(value)
         setProductSelect(id)
         setStatusSO(status)
         setKuantitasBox(qtyBox_tmp)
@@ -1202,7 +1203,7 @@ const BuatTally = () => {
                             placeholder="Pilih Produk..."
                             cacheOptions
                             defaultOptions
-                            value={selectedValue3[record.key][i]}
+                            value={selectedProduct[record.key][i]}
                             getOptionLabel={(e) => e.name}
                             getOptionValue={(e) => e.id}
                             loadOptions={(value) => loadOptionsProduct(value, item.product_alias_name)}
@@ -1261,7 +1262,7 @@ const BuatTally = () => {
                                                 <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
                                                 <div className="col-sm-3">
                                                     <input
-                                                        value={selectedValue3[idxPesanan][indexPO] == "" ? "" : selectedValue3[idxPesanan][indexPO].name}
+                                                        value={selectedProduct[idxPesanan][indexPO] == "" ? "" : selectedProduct[idxPesanan][indexPO].name}
                                                         type="Nama"
                                                         className="form-control"
                                                         id="inputNama3"
@@ -1404,7 +1405,7 @@ const BuatTally = () => {
                                                 <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
                                                 <div className="col-sm-3">
                                                     <input
-                                                        value={sumber == 'Retur' ? product[idxPesanan].purchase_return_details[indexPO].product_name : selectedValue3[idxPesanan][indexPO] == "" ? "" : selectedValue3[idxPesanan][indexPO].name}
+                                                        value={sumber == 'Retur' ? product[idxPesanan].purchase_return_details[indexPO].product_name : selectedProduct[idxPesanan][indexPO] == "" ? "" : selectedProduct[idxPesanan][indexPO].name}
                                                         type="Nama"
                                                         className="form-control"
                                                         id="inputNama3"
@@ -1913,7 +1914,7 @@ const BuatTally = () => {
                     }
                     else {
                         arrKuantitas[i] = kuantitasBox[i]
-                        idValues.push(selectedValue3[i])
+                        idValues.push(selectedProduct[i])
                         valuesId.push(productSelect[i])
                         arrStatus.push(statusSO[i])
                         arrQtyPesanan.push(qtyPesanan[i])
@@ -1938,7 +1939,15 @@ const BuatTally = () => {
                         for (let x = 0; x < dataSumber.length; x++) {
                             qty.push(0);
                             tempBox.push(0);
-                            tempStts.push("");
+                            if (dataSumber[x].tally_sheets_qty >= dataSumber[x].quantity) {
+                                tempStts.push('Done')
+                            }
+                            else if (dataSumber[x].tally_sheets_qty < dataSumber[x].quantity) {
+                                tempStts.push('Next delivery')
+
+                            }
+
+                            // tempStts.push("");
                         }
                         arrqty[i] = qty;
                         arrBox[i] = tempBox;
@@ -2136,8 +2145,8 @@ const BuatTally = () => {
             // console.log(event.target.value.detail)
 
             for (let i = 0; i < updatedList.length; i++) {
-
-                if (updatedList[i] == event.target.value.detail) {
+                
+                if (updatedList[i].code == event.target.value.detail.code) {
                     updatedList.splice(i, 1);
                     kuantitasBox.splice(i, 1);
                     data.splice(i, 1);
@@ -2145,16 +2154,12 @@ const BuatTally = () => {
                     quantity.splice(i, 1);
                     statusSO.splice(i, 1);
                     qtyPesanan.splice(i, 1);
-                    // console.log("test")
 
                 }
             }
-            // console.log(updatedList)
             setIdxPesanan(0)
-            // setGetDataDetailSO(updatedList.map(d => d.sales_order_details))
 
         }
-        // console.log(updatedList)
         setProduct(updatedList);
     };
 

@@ -125,14 +125,14 @@ const BuatPesananPembelian = () => {
     const [modal2Visible, setModal2Visible] = useState(false);
     const [dataSupplier, setDataSupplier] = useState([]);
     const [dataMataUang, setDataMataUang] = useState([]);
-    const [matauang, setMataUang] = useState();
+    const [matauang, setMataUang] = useState('');
     const [namaMataUang, setNamaMataUang] = useState('Rp');
     const [pilihanDiskon, setPilihanDiskon] = useState([]);
     const [jumlahDiskon, setJumlahDiskon] = useState([]);
     const [PIC, setPIC] = useState('')
     const [namaPenerima, setNamaPenerima] = useState('Dhany Saputra')
-    const [tanggalAwal, setTanggalAwal] = useState();
-    const [tanggalAkhir, setTanggalAkhir] = useState()
+    const [tanggalAwal, setTanggalAwal] = useState('');
+    const [tanggalAkhir, setTanggalAkhir] = useState('')
 
     const handleChangeSupplier = (value) => {
         setSelectedSupplier(value);
