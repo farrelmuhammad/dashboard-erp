@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Url from "../../../Config";;
 import axios from 'axios';
+import ReactSelect from 'react-select';
 import AsyncSelect from "react-select/async";
 import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, PageHeader, Select, Space, Table, Tag } from 'antd'
 import { DeleteOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons'
@@ -102,7 +103,7 @@ const BuatTally = () => {
     const [customer, setCustomer] = useState("");
     const [warehouse, setWarehouse] = useState("");
     const [product, setProduct] = useState([]);
-    const [productSelect, setProductSelect] = useState([]);
+    const [idProductSelect, setIdProductSelect] = useState([]);
     const [query, setQuery] = useState("");
     const [getCode, setGetCode] = useState('');
     const navigate = useNavigate();
@@ -122,6 +123,7 @@ const BuatTally = () => {
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [selectedValue2, setSelectedWarehouse] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState([]);
+    const [optionsProduct, setOptionsProduct] = useState([]);
     const [modal2Visible, setModal2Visible] = useState(false);
     const [modal2Visible2, setModal2Visible2] = useState(false);
 
@@ -221,46 +223,44 @@ const BuatTally = () => {
     };
 
     const handleChangeProduct = (value, record, idx) => {
-        // console.log(selectedProduct)
-        let idKey = [];
-        let key = [];
-        let store = [];
-        let store2 = [];
-        // console.log(value);
-
-        for (let x = 0; x < data.length; x++) {
-            if (x == record) {
-                for (let y = 0; y < data[x].length; y++) {
-                    if (y == idx) {
-                        idKey.push(value.id)
-                        store.push(value)
-                    } else {
-                        idKey.push(productSelect[x][y])
-                        store.push(selectedProduct[x][y])
-                    }
-                }
-                key.push(idKey)
-                store2.push(store)
-            } else {
-                key.push(productSelect[x])
-                store2.push(selectedProduct[x])
+        let status = ''
+        for (let i = 0; i < idProductSelect[record].length; i++) {
+            if (idProductSelect[record][i] == value.value) {
+                status = 'ada'
+                Swal.fire("Data Sudah Ada!", `${value.label} sudah ada di baris ${i + 1}`, "error");
             }
         }
-        setSelectedProduct(store2);
-        setProductSelect(key);
-        // console.log(store2)
-    };
-    const loadOptionsProduct = (inputValue, alias) => {
-        // console.log(inputValue)
-        // console.log(namaAlias)
-        return fetch(`${Url}/select_products?limit=10&nama=${inputValue}&nama_alias=${alias}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        }).then((res) => res.json());
-    };
 
+        // jika data belum dipilih sebelumnya 
+        if (status != 'ada') {
+            let idKey = [];
+            let key = [];
+            let store = [];
+            let store2 = [];
+
+            for (let x = 0; x < data.length; x++) {
+                if (x == record) {
+                    for (let y = 0; y < data[x].length; y++) {
+                        if (y == idx) {
+                            idKey.push(value.value)
+                            store.push(value)
+                        } else {
+                            idKey.push(idProductSelect[x][y])
+                            store.push(selectedProduct[x][y])
+                        }
+                    }
+                    key.push(idKey)
+                    store2.push(store)
+                } else {
+                    key.push(idProductSelect[x])
+                    store2.push(selectedProduct[x])
+                }
+            }
+            setSelectedProduct(store2);
+            setIdProductSelect(key);
+        }
+    };
+ 
     const valueRenderer = (cell) => cell.value;
 
     const onCellsChanged = (changes) => {
@@ -761,12 +761,18 @@ const BuatTally = () => {
                     setGetDataProduct(tmp)
                 }
 
+                optionsProduct.splice(idx, 1)
+                selectedProduct.splice(idx, 1)
+                idProductSelect.splice(idx, 1)
                 product.splice(idx, 1);
                 data.splice(idx, 1)
                 statusSO.splice(idx, 1)
                 quantity.splice(idx, 1)
                 totalBox.splice(idx, 1)
             } else {
+                optionsProduct[idx].splice(i, 1)
+                selectedProduct[idx].splice(i, 1)
+                idProductSelect[idx].splice(i, 1)
                 dataSumber.splice(i, 1);
                 data[idx].splice(i, 1)
                 statusSO[idx].splice(i, 1)
@@ -806,8 +812,6 @@ const BuatTally = () => {
             }
         }
 
-        // console.log('cek')
-
         let tmp = [];
         let qty = [];
         let box = [];
@@ -815,6 +819,7 @@ const BuatTally = () => {
         let temp = [];
         let id = [];
         let value = [];
+        let option = []
         let qtyPes = [];
         let status = [];
         let qtyBox_tmp = [];
@@ -823,6 +828,7 @@ const BuatTally = () => {
         let tempData = [];
         let idStore = [];
         let valueStore = [];
+        let optionStore = [];
         let statusStore = [];
         let temp_qtyBox = [];
         let qtyPesStore = [];
@@ -840,11 +846,28 @@ const BuatTally = () => {
             if (x == idx) {
                 for (let y = 0; y <= dataSumber.length; y++) {
                     if (y == i + 1) {
-                        // console.log(qtyPesanan[x][i]);
-                        // console.log(quantity[x][i]);
                         qtyStore.push(0)
                         boxStore.push(0)
                         idStore.push("")
+
+                        // ngambil jenis produk 
+                        let dataOption = []
+                        axios.get(`${Url}/select_products?nama_alias=${dataSumber[i].product_alias_name}`, {
+                            headers: {
+                                Accept: "application/json",
+                                Authorization: `Bearer ${auth.token}`,
+                            },
+                        }).then((res) => {
+                            console.log(res.data)
+                            for (let idxProduk = 0; idxProduk < res.data.length; idxProduk++) {
+                                dataOption.push({
+                                    value: res.data[idxProduk].id,
+                                    label: res.data[idxProduk].name
+                                })
+                            }
+
+                        });
+                        optionStore.push(dataOption)
                         valueStore.push("")
                         temp_qtyBox.push(0)
                         if (quantity[x][i] + dataSumber[i].tally_sheets_qty >= dataSumber[i].quantity) {
@@ -853,7 +876,6 @@ const BuatTally = () => {
                         else if (quantity[x][i] + dataSumber[i].tally_sheets_qty < dataSumber[i].quantity) {
                             statusStore.push('Next delivery')
                         }
-                        // statusStore.push()
                         qtyPesStore.push(qtyPesanan[x][i] - quantity[x][i])
                         tempData.push([
                             [
@@ -1004,8 +1026,9 @@ const BuatTally = () => {
                         qtyStore.push(quantity[x][y - 1])
                         boxStore.push(totalBox[x][y - 1])
                         tempData.push(data[x][y - 1])
+                        optionStore.push(optionsProduct[x][y - 1])
                         valueStore.push(selectedProduct[x][y - 1])
-                        idStore.push(productSelect[x][y - 1])
+                        idStore.push(idProductSelect[x][y - 1])
                         statusStore.push(statusSO[x][y - 1])
                         qtyPesStore.push(qtyPesanan[x][y - 1])
                         temp_qtyBox.push(kuantitasBox[x][y - 1])
@@ -1015,8 +1038,9 @@ const BuatTally = () => {
                         boxStore.push(totalBox[x][y])
                         qtyPesStore.push(qtyPesanan[x][y])
                         tempData.push(data[x][y])
+                        optionStore.push(optionsProduct[x][y])
                         valueStore.push(selectedProduct[x][y])
-                        idStore.push(productSelect[x][y])
+                        idStore.push(idProductSelect[x][y])
                         statusStore.push(statusSO[x][y])
                         temp_qtyBox.push(kuantitasBox[x][y])
                     }
@@ -1026,6 +1050,7 @@ const BuatTally = () => {
                 temp.push(tempData)
                 qtyPes.push(qtyPesStore)
                 id.push(idStore)
+                option.push(optionStore)
                 value.push(valueStore)
                 status.push(statusStore)
                 qtyBox_tmp.push(temp_qtyBox)
@@ -1091,7 +1116,8 @@ const BuatTally = () => {
                 qty.push(quantity[x])
                 box.push(totalBox[x])
                 temp.push(data[x])
-                id.push(productSelect[x])
+                id.push(idProductSelect[x])
+                option.push(optionsProduct[x])
                 value.push(selectedProduct[x])
                 status.push(statusSO[x])
                 qtyPes.push(qtyPesanan[x])
@@ -1102,21 +1128,15 @@ const BuatTally = () => {
         setQuantity(qty)
         setTotalBox(box)
         setData(temp)
+        setOptionsProduct(option)
+        console.log(option)
         setSelectedProduct(value)
-        console.log(value)
-        setProductSelect(id)
+        setIdProductSelect(id)
         setStatusSO(status)
         setKuantitasBox(qtyBox_tmp)
-        // console.log(qtyBox_tmp);
-        // console.log(statusSO);
         setQtyPesanan(qtyPes)
         setProduct(tmp)
         setLoadingTable(false)
-        // Swal.fire({
-        //     icon: 'success',
-        //     title: 'Berhasil',
-        //     text: 'Data berhasil ditambah',
-        // }).then(() => );
     }
 
     function klikTampilSheet(indexProduct, indexPO) {
@@ -1199,14 +1219,22 @@ const BuatTally = () => {
                 [...product[record.key].sales_order_details.map((item, i) => ({
                     product_alias_name: item.product_alias_name,
                     product_name: <>
-                        <AsyncSelect
+                        <ReactSelect
+                            className="basic-single"
                             placeholder="Pilih Produk..."
-                            cacheOptions
-                            defaultOptions
+                            classNamePrefix="select"
                             value={selectedProduct[record.key][i]}
-                            getOptionLabel={(e) => e.name}
-                            getOptionValue={(e) => e.id}
-                            loadOptions={(value) => loadOptionsProduct(value, item.product_alias_name)}
+                            isLoading={isLoading}
+                            isSearchable
+                            options={optionsProduct[record.key][i]}
+                            //  onChange={handleChangeTipe}
+                            // placeholder="Pilih Produk..."
+                            // cacheOptions
+                            // defaultOptions
+                            // value={selectedProduct[record.key][i]}
+                            // getOptionLabel={(e) => e.name}
+                            // getOptionValue={(e) => e.id}
+                            // loadOptions={optionsProduct}
                             onChange={(value) => handleChangeProduct(value, record.key, i)}
                         />
                     </>,
@@ -1273,7 +1301,7 @@ const BuatTally = () => {
                                                 <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
                                                 <div className="col-sm-3">
                                                     <input
-                                                        value={Number(totalTallySheet[idxPesanan][indexPO]).toFixed(2).replace('.',',')}
+                                                        value={Number(totalTallySheet[idxPesanan][indexPO]).toFixed(2).replace('.', ',')}
                                                         type="Nama"
                                                         className="form-control"
                                                         id="inputNama3"
@@ -1859,7 +1887,25 @@ const BuatTally = () => {
                         tempKuantitas.push(0);
                         qty.push(0);
                         tempBox.push(0);
-                        values.push("")
+
+                        // ngambil jenis produk 
+                        let dataOption = []
+                        axios.get(`${Url}/select_products?nama_alias=${dataSumber[x].product_alias_name}`, {
+                            headers: {
+                                Accept: "application/json",
+                                Authorization: `Bearer ${auth.token}`,
+                            },
+                        }).then((res) => {
+                            console.log(res.data)
+                            for (let idxProduk = 0; idxProduk < res.data.length; idxProduk++) {
+                                dataOption.push({
+                                    value: res.data[idxProduk].id,
+                                    label: res.data[idxProduk].name
+                                })
+                            }
+
+                        });
+                        values.push(dataOption)
                         id.push("")
                         qtyPesanan.push(dataSumber[x].quantity)
                     }
@@ -1880,6 +1926,7 @@ const BuatTally = () => {
                     let tempId = [];
                     let tempStatus = [];
                     let tempQtyPesanan = [];
+
                     // pengecekan transaksi 
                     let dataSumber = [];
                     if (sumber == 'Retur') {
@@ -1893,9 +1940,27 @@ const BuatTally = () => {
                     if (i == updatedList.length - 1) {
                         for (let x = 0; x < dataSumber.length; x++) {
                             tempKuantitas.push(0);
-                            tempValues.push("");
+
+                            // ngambil jenis produk 
+                            let dataOption = []
+                            axios.get(`${Url}/select_products?nama_alias=${dataSumber[x].product_alias_name}`, {
+                                headers: {
+                                    Accept: "application/json",
+                                    Authorization: `Bearer ${auth.token}`,
+                                },
+                            }).then((res) => {
+                                console.log(res.data)
+                                for (let idxProduk = 0; idxProduk < res.data.length; idxProduk++) {
+                                    dataOption.push({
+                                        value: res.data[idxProduk].id,
+                                        label: res.data[idxProduk].name
+                                    })
+                                }
+
+                            });
+                            tempValues.push(dataOption)
+
                             tempId.push("");
-                            // tempStatus.push("");
                             if (dataSumber[x].tally_sheets_qty >= dataSumber[x].quantity) {
                                 tempStatus.push('Done')
                             }
@@ -1907,6 +1972,8 @@ const BuatTally = () => {
                             tempQtyPesanan.push(dataSumber[x].quantity)
                         }
                         arrKuantitas[i] = tempKuantitas;
+
+
                         idValues.push(tempValues)
                         valuesId.push(tempId)
                         arrStatus.push(tempStatus)
@@ -1915,7 +1982,7 @@ const BuatTally = () => {
                     else {
                         arrKuantitas[i] = kuantitasBox[i]
                         idValues.push(selectedProduct[i])
-                        valuesId.push(productSelect[i])
+                        valuesId.push(idProductSelect[i])
                         arrStatus.push(statusSO[i])
                         arrQtyPesanan.push(qtyPesanan[i])
                     }
@@ -2134,18 +2201,18 @@ const BuatTally = () => {
             setQuantity(arrqty);
             setQtyPesanan(arrQtyPesanan);
             setStatusSO(arrStatus)
-            console.log(arrStatus)
             setGetDataDetailSO(updatedList.map(d => d.sales_order_details))
-            setSelectedProduct(idValues)
-            setProductSelect(valuesId)
-            // console.log(arrQtyPesanan);
-        }
-        else {
-            // console.log(updatedList)
-            // console.log(event.target.value.detail)
 
+            // product pilihan 
+            setOptionsProduct(idValues)
+            setSelectedProduct(valuesId)
+            setIdProductSelect(valuesId)
+        }
+
+        // non cek 
+        else {
             for (let i = 0; i < updatedList.length; i++) {
-                
+
                 if (updatedList[i].code == event.target.value.detail.code) {
                     updatedList.splice(i, 1);
                     kuantitasBox.splice(i, 1);
@@ -2175,7 +2242,7 @@ const BuatTally = () => {
                 p.sales_order_details.map((po, i) => {
                     userData.append("pelanggan", customer);
                     userData.append("id_pesanan_penjualan[]", p.id);
-                    userData.append("id_produk[]", productSelect[pi][i]);
+                    userData.append("id_produk[]", idProductSelect[pi][i]);
                     userData.append("aksi[]", statusSO[pi][i]);
                     userData.append("jumlah_box[]", totalBox[pi][i]);
                     userData.append("satuan_box[]", po.unit);
@@ -2258,7 +2325,7 @@ const BuatTally = () => {
                 p.sales_order_details.map((po, i) => {
                     userData.append("pelanggan", customer);
                     userData.append("id_pesanan_penjualan[]", p.id);
-                    userData.append("id_produk[]", productSelect[pi][i]);
+                    userData.append("id_produk[]", idProductSelect[pi][i]);
                     userData.append("aksi[]", statusSO[pi][i]);
                     userData.append("jumlah_box[]", totalBox[pi][i]);
                     userData.append("satuan_box[]", po.unit);

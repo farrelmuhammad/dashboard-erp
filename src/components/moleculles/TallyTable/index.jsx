@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { Button, Input, Space, Table, Tag } from "antd";
 import { DeleteOutlined, EditOutlined, CloseOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import axios from "axios";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 import { useSelector } from "react-redux";
 
 const TallyTable = () => {
@@ -23,6 +24,46 @@ const TallyTable = () => {
   const [supplierName, setSupplierName] = useState()
   const [sumber, setSumber] = useState()
   const [customer, setCustomer] = useState()
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    console.log(qs.stringify(getParams(tableParams)))
+    fetch(`${Url}/tally_sheets?tipe=Sales&${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+        setGetDataTally(data);
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+
 
   const deleteTallySheet = async (id, code) => {
     Swal.fire({
@@ -154,7 +195,7 @@ const TallyTable = () => {
         }}
       />
     ),
-    onFilter: (value, record) => record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    // onFilter: (value, record) => record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -162,45 +203,45 @@ const TallyTable = () => {
     },
   });
 
-  useEffect(() => {
-    getTallySheet()
-  }, [])
+  // useEffect(() => {
+  //   getTallySheet()
+  // }, [])
 
-  function handleTableChange(dataIndex) {
-    console.log(dataIndex)
-    axios.get(`${Url}/tally_sheets?tipe=Sales`, {
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${auth.token}`
-      }
-    })
-      .then(res => {
-        const getData = res.data.data
-        setGetDataTally(getData)
-        if (getData.supplier_id) {
-          setSumber('Retur')
-        }
-        else {
-          setSumber('SO')
-        }
+  // function handleTableChange(dataIndex) {
+  //   console.log(dataIndex)
+  //   axios.get(`${Url}/tally_sheets?tipe=Sales`, {
+  //     headers: {
+  //       'Accept': 'application/json',
+  //       'Authorization': `Bearer ${auth.token}`
+  //     }
+  //   })
+  //     .then(res => {
+  //       const getData = res.data.data
+  //       setGetDataTally(getData)
+  //       if (getData.supplier_id) {
+  //         setSumber('Retur')
+  //       }
+  //       else {
+  //         setSumber('SO')
+  //       }
 
-        // agar bisa di search 
-        let tmp = []
-        for (let i = 0; i < getData.length; i++) {
-          tmp.push({
-            id: getData[i].id,
-            can: getData[i].can,
-            code: getData[i].code,
-            customer_name: getData[i].customer_name ? getData[i].customer_name : '',
-            supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
-            date: getData[i].date,
-            status: getData[i].status,
-            warehouse: getData[i].warehouse.name
-          })
-        }
-        setDataTampil(tmp)
-      })
-  }
+  //       // agar bisa di search 
+  //       let tmp = []
+  //       for (let i = 0; i < getData.length; i++) {
+  //         tmp.push({
+  //           id: getData[i].id,
+  //           can: getData[i].can,
+  //           code: getData[i].code,
+  //           customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+  //           supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+  //           date: getData[i].date,
+  //           status: getData[i].status,
+  //           warehouse: getData[i].warehouse.name
+  //         })
+  //       }
+  //       setDataTampil(tmp)
+  //     })
+  // }
 
   const getTallySheet = async (params = {}) => {
     setIsLoading(true);
@@ -220,24 +261,33 @@ const TallyTable = () => {
           setSumber('SO')
         }
 
-        // agar bisa di search 
-        let tmp = []
-        for (let i = 0; i < getData.length; i++) {
-          tmp.push({
-            id: getData[i].id,
-            can: getData[i].can,
-            code: getData[i].code,
-            customer_name: getData[i].customer_name ? getData[i].customer_name : '',
-            supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
-            date: getData[i].date,
-            status: getData[i].status,
-            warehouse: getData[i].warehouse.name
-          })
-        }
-        setDataTampil(tmp)
+        // // agar bisa di search 
+        // let tmp = []
+        // for (let i = 0; i < getData.length; i++) {
+        //   tmp.push({
+        //     id: getData[i].id,
+        //     can: getData[i].can,
+        //     code: getData[i].code,
+        //     customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+        //     supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+        //     date: getData[i].date,
+        //     status: getData[i].status,
+        //     warehouse: getData[i].warehouse.name
+        //   })
+        // }
+        // setDataTampil(tmp)
         setIsLoading(false);
       })
   }
+
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
 
   const columns = [
     {
@@ -245,7 +295,9 @@ const TallyTable = () => {
       dataIndex: 'date',
       key: 'date',
       width: '15%',
-      sorter: true,
+      // sorter: true,
+      sorter: (a, b) => a.date.length - b.date.length,
+      sortDirections: ['descend', 'ascend'],
       // sortDirections: ['descend', 'ascend'],
       ...getColumnSearchProps('date', 'Tanggal'),
     },
@@ -254,12 +306,13 @@ const TallyTable = () => {
       dataIndex: 'code',
       key: 'code',
       width: '20%',
+      sorter: (a, b) => a.code.length - b.code.length,
+      sortDirections: ['descend', 'ascend'],
       ...getColumnSearchProps('code', 'No. Transaksi'),
       // defaultSortOrder: 'descend',
       // sorter: (a, b) => a.code - b.code,
       // sorter: (a, b) => a.code.length - b.code.length,
       // sortOrder: sortedInfo.columnKey === 'code' ? sortedInfo.order : null,
-      sorter: true,
       sortDirections: ['descend', 'ascend'],
     },
     {
@@ -267,27 +320,27 @@ const TallyTable = () => {
       dataIndex: 'customer_name',
       width: '15%',
       key: 'customer_name',
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
       ...getColumnSearchProps('customer_name', 'Customer'),
-      // render: (customer) => customer.name
-      // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
-      // sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Supplier',
       dataIndex: 'supplier_name',
       width: '15%',
       key: 'supplier_name',
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
       ...getColumnSearchProps('supplier_name', 'Supplier'),
-      // render: (customer) => customer.name
-      // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
-      // sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Gudang',
-      dataIndex: 'warehouse',
-      key: 'warehouse',
+      dataIndex: 'warehouse_name',
+      key: 'warehouse_name',
       width: '15%',
-      ...getColumnSearchProps('warehouse', 'Gudang'),
+      sorter: (a, b) => a.warehouse_name.length - b.warehouse_name.length,
+      sortDirections: ['descend', 'ascend'],
+      ...getColumnSearchProps('warehouse_name', 'Gudang'),
       // render: (warehouse) => warehouse.name
     },
     {
@@ -296,6 +349,8 @@ const TallyTable = () => {
       key: 'status',
       align: 'center',
       width: '15%',
+      sorter: (a, b) => a.status.length - b.status.length,
+      sortDirections: ['descend', 'ascend'],
       render: (_, { status }) => (
         <>
           {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="volcano">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Processed' ? <Tag color="orange">{status}</Tag> : <Tag color="red">{status}</Tag>}
@@ -363,8 +418,9 @@ const TallyTable = () => {
     size="small"
     loading={isLoading}
     columns={columns}
-    pagination={{ pageSize: 10 }}
-    dataSource={dataTampil}
+    // pagination={{ pageSize: 10 }}
+    onChange={handleTableChange}
+    dataSource={getDataTally}
     scroll={{
       y: 240,
     }}
