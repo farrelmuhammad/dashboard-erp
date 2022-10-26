@@ -233,6 +233,7 @@ const EditGudang = () => {
               placeholder="Pilih Tipe Gudang..."
               classNamePrefix="select"
               isSearchable
+              isClearable
               defaultInputValue={tipe}
               onChange={handleSingleChangeType}
               options={optionsType}
@@ -304,6 +305,7 @@ const EditGudang = () => {
               placeholder="Pilih Karyawan..."
               cacheOptions
               defaultOptions
+              isClearable
               defaultInputValue={employeesName}
               value={selectedValue2}
               getOptionLabel={(e) => e.name}
@@ -322,6 +324,7 @@ const EditGudang = () => {
               placeholder="Pilih Akun..."
               cacheOptions
               defaultOptions
+              isClearable
               defaultInputValue={chartName}
               value={selectedValue}
               getOptionLabel={(e) => e.name}
