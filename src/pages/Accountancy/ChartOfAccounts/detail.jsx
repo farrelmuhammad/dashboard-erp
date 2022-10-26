@@ -96,8 +96,10 @@ const DetailCoa = () => {
                 setAccountCategory(getData.chart_of_account_category_id)
                 setAccountCategoryname(getData.chart_of_account_category.name)
                 setAccountName(getData.name)
-                setMasterAcc(getData.parent.id)
-                setMasterAccountName(getData.parent.name)
+                if(getData.parent){
+                    setMasterAcc(getData.parent.id)
+                    setMasterAccountName(getData.parent.name)
+                }
                 setCurrency(getData.currency.id)
                 setCurrencyName(getData.currency.name)
                 setExchangeRate(getData.exchange_rate)

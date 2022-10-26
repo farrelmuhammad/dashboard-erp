@@ -41,7 +41,7 @@ const BuatPIB = () => {
 
     const [selectedBank, setSelectedBank] = useState()
     const [bankId, setBankId] = useState()
-    const [totalAkhir, setTotalAkhir] = useState('-');
+    const [totalAkhir, setTotalAkhir] = useState('');
     const [sisaAkhir, setSisaAkhir] = useState('-')
     const [kurs, setKurs] = useState(0);
     const [referensi, setReferensi] = useState()
