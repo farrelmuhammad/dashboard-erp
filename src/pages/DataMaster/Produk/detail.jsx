@@ -129,14 +129,6 @@ export const DetailProduk = () => {
                     </div>
                 </div>
                 <div className="row mb-3">
-                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Grup</label>
-                    <div className="col-sm-10">
-                        <select disabled="true" id="GrupSelect" className="form-select">
-                            <option>{group}</option>
-                        </select>
-                    </div>
-                </div>
-                <div className="row mb-3">
                     <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Bagian</label>
                     <div className="col-sm-10">
                         <select disabled="true" id="BagianSelect" className="form-select">
@@ -153,6 +145,22 @@ export const DetailProduk = () => {
                     </div>
                 </div>
                 <div className="row mb-3">
+                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Merek</label>
+                    <div className="col-sm-10">
+                        <select disabled="true" id="MerekSelect" className="form-select">
+                            <option>{brands}</option>
+                        </select>
+                    </div>
+                </div>
+                <div className="row mb-3">
+                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Grup</label>
+                    <div className="col-sm-10">
+                        <select disabled="true" id="GrupSelect" className="form-select">
+                            <option>{group}</option>
+                        </select>
+                    </div>
+                </div>
+                <div className="row mb-3">
                     <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Grade</label>
                     <div className="col-sm-10">
                         <select disabled="true" id="GradeSelect" className="form-select">
@@ -165,14 +173,6 @@ export const DetailProduk = () => {
                     <div className="col-sm-10">
                         <select disabled="true" id="TipeSelect" className="form-select">
                             <option>{type}</option>
-                        </select>
-                    </div>
-                </div>
-                <div className="row mb-3">
-                    <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Merek</label>
-                    <div className="col-sm-10">
-                        <select disabled="true" id="MerekSelect" className="form-select">
-                            <option>{brands}</option>
                         </select>
                     </div>
                 </div>
@@ -228,17 +228,17 @@ export const DetailProduk = () => {
                 </div>
                 <div className="row mb-3">
                     <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Diskon</label>
-                    <div className="col-sm-5">
-                        <input
-                            disabled="true"
-                            type="Nama"
-                            className="form-control"
-                            id="inputNama3"
-                            value={discount}
-                        />
-                    </div>
-                    <div className="col-sm-1">
-                        <span className="input-group-text" id="addon-wrapping">%</span>
+                    <div className="col-sm-2">
+                        <div className="input-group">
+                            <input
+                                type="text"
+                                className="form-control"
+                                aria-label="Dollar amount (with dot and two decimal places)"
+                                value={discount}
+                                disabled
+                            />
+                            <span className="input-group-text">%</span>
+                        </div>
                     </div>
                 </div>
                 <div className="row mb-3">

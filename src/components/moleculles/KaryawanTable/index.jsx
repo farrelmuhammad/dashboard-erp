@@ -23,6 +23,8 @@ const KaryawanTable = () => {
   const [searchedColumn, setSearchedColumn] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [ellipsis, setEllipsis] = useState(true);
+  const [getDataTally, setGetDataTally] = useState([]);
+  const [dataTampil, setDataTampil] = useState([]);
 
   const { id } = useParams();
 
@@ -147,7 +149,7 @@ const KaryawanTable = () => {
       ...getColumnSearchProps('department'),
       sorter: true,
       sortDirections: ['descend', 'ascend'],
-      render: (department) => department.name,
+      //render: (department) => department.name,
     },
     {
       title: 'Posisi',
@@ -157,7 +159,7 @@ const KaryawanTable = () => {
       ...getColumnSearchProps('position'),
       sorter: true,
       sortDirections: ['descend', 'ascend'],
-      render: (position) => position.name,
+      //render: (position) => position.name,
 
     },
     {
@@ -197,8 +199,9 @@ const KaryawanTable = () => {
     getEmployees();
   }, []);
 
-  const getEmployees = async () => {
-    axios
+  const getEmployees = async (params = {}) => {
+    setIsLoading(true);
+     await axios
       .get(`${Url}/employees`, {
         headers: {
           Accept: "application/json",
@@ -206,12 +209,48 @@ const KaryawanTable = () => {
         },
       })
       .then(res => {
+
         const getData = res.data.data
-        setEmployees(getData)
-        // setDepartment(getData.department.name)
-        // setStatus(getData.map(d => d.status))
+        setGetDataTally(getData)
+        // if (getData.supplier_id) {
+        //   setSumber('Retur')
+        // }
+        // else {
+        //   setSumber('SO')
+        // }
+
+        // agar bisa di search 
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+            id: getData[i].id,
+            can: getData[i].can,
+            code: getData[i].code,
+            name:getData[i].name,
+            department : getData[i].department.name ,
+            position: getData[i].position.name,
+            // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+            // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+            // date: getData[i].date,
+            // status: getData[i].status,
+            // warehouse: getData[i].warehouse.name
+          })
+        }
+        setDataTampil(tmp)
         setIsLoading(false);
-        // console.log(getData)
+
+
+
+
+
+
+
+        // const getData = res.data.data
+        // setEmployees(getData)
+        // // setDepartment(getData.department.name)
+        // // setStatus(getData.map(d => d.status))
+        // setIsLoading(false);
+        // // console.log(getData)
       })
   };
 
@@ -233,7 +272,7 @@ const KaryawanTable = () => {
         loading={isLoading}
         columns={columns}
         pagination={{ pageSize: 10 }}
-        dataSource={employees}
+        dataSource={dataTampil}
         scroll={{
           y: 295,
         }}

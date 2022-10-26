@@ -135,7 +135,7 @@ const BagianTable = () => {
       title: 'Kode',
       dataIndex: 'code',
       key: 'code',
-      width: '10%',
+      width: '15%',
       ...getColumnSearchProps('code'),
       sorter: (a, b) => a.code.length - b.code.length,
       sortDirections: ['ascend', 'descend'],
@@ -153,7 +153,7 @@ const BagianTable = () => {
       title: 'Keterangan',
       dataIndex: 'description',
       key: 'description',
-      // ...getColumnSearchProps('description'),
+       ...getColumnSearchProps('description'),
       render: (text) => (
         <Text
           style={

@@ -69,7 +69,7 @@ const DetailMataUang = () => {
             </div>
             <div className="row mb-3">
               <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-                Nama Pelanggan
+                Nama Mata Uang
               </label>
               <div className="col-sm-10">
                 {data.map((d) => (

@@ -16,6 +16,8 @@ const DetailBiayaImport = () => {
   const auth = useSelector(state => state.auth);
   const { id } = useParams();
   const [data, setData] = useState([]);
+  const [idKategori, setIDKategori] = useState('')
+  const [namaKategori, setNamaKategori] = useState([])
 
   useEffect(() => {
     getBiayaImport()
@@ -30,7 +32,12 @@ const DetailBiayaImport = () => {
     })
     .then((res) => {
       setData(res.data.data);
-      console.log(res.data.data);
+      console.log(data.name);
+      // console.log(data.category.chart_of_account_id
+      //   );
+      setIDKategori(data.chart_of_account_id
+        );
+      //console.log(idKategori)
       // setAddress(res.data.data[0].supplier_addresses);
       // console.log(res.data.data[0].customer_addresses)
     })
@@ -39,6 +46,40 @@ const DetailBiayaImport = () => {
       console.log(err);
     });
   }
+
+  const getNamaKategori = async (inputValue) => {
+    await axios.get(`${Url}/costs?chart_of_account_id=${inputValue}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    })
+    .then((res) => {
+      // setData(res.data.data);
+       //console.log(res.data.data);
+       setNamaKategori(res.data.data)
+       console.log(namaKategori)
+      // setAddress(res.data.data[0].supplier_addresses);
+      // console.log(res.data.data[0].customer_addresses)
+    })
+    .catch((err) => {
+      // Jika Gagal
+      console.log(err);
+    });
+  }
+
+  useEffect(() => {
+    getNamaKategori()
+  }, []);
+
+  const loadOptionsCategory = (inputValue) => {
+    return fetch(`${Url}/select_costs?limit=10&nama=${inputValue}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json());
+  };
 
 
   if(data) {
@@ -113,7 +154,7 @@ const DetailBiayaImport = () => {
                     className="form-control"
                     id="inputNama3"
                     disabled
-                    value={d.chart_of_account.name}
+                     value={d.chart_of_account.name}
                   />
               ))}
               </div>

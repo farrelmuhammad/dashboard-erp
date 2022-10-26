@@ -339,7 +339,7 @@ const CreateAdjustment = () => {
         userData.append("adjustment_date", adjustment_date);
         userData.append("warehouse_id", warehouse_id);
         userData.append("notes", notes);
-        userData.append("status", "publish");
+        userData.append("status", "Done");
         product.map((p) => {
             console.log(p);
             userData.append("product_id[]", p.product_id);
@@ -393,7 +393,7 @@ const CreateAdjustment = () => {
         userData.append("adjustment_date", adjustment_date);
         userData.append("warehouse_id", warehouse_id);
         userData.append("notes", notes);
-        userData.append("status", "draft");
+        userData.append("status", "Draft");
         product.map((p) => {
             console.log(p);
             userData.append("product_id[]", p.product_id);

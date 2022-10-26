@@ -21,6 +21,8 @@ const ProdukTable = () => {
   const [searchedColumn, setSearchedColumn] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [ellipsis, setEllipsis] = useState(true);
+  const [dataTampil, setDataTampil] = useState([]);
+
 
   const { id } = useParams();
 
@@ -132,7 +134,7 @@ const ProdukTable = () => {
       title: 'Bagian',
       dataIndex: 'name',
       key: 'name',
-      width: '22%',
+      width: '30%',
       ...getColumnSearchProps('name'),
       sorter: true,
       sortDirections: ['descend', 'ascend'],
@@ -141,7 +143,7 @@ const ProdukTable = () => {
       title: 'Grup',
       dataIndex: '_group',
       key: '_group',
-      width: '22%',
+      width: '15%',
       ...getColumnSearchProps('_group'),
       sorter: true,
       sortDirections: ['descend', 'ascend'],
@@ -151,7 +153,7 @@ const ProdukTable = () => {
       dataIndex: 'category',
       key: 'category',
       ...getColumnSearchProps('category'),
-      render: (category) => category.name
+      //render: (category) => category.name
       // render: (text) => (
       //   <Text
       //     style={
@@ -212,8 +214,9 @@ const ProdukTable = () => {
     getProducts();
   }, []);
 
-  const getProducts = async () => {
-    axios
+  const getProducts = async (params = {}) => {
+    setIsLoading(true);
+    await axios
       .get(`${Url}/products`, {
         headers: {
           Accept: "application/json",
@@ -223,9 +226,31 @@ const ProdukTable = () => {
       .then(res => {
         const getData = res.data.data
         setProducts(getData)
+
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+            id: getData[i].id,
+            can: getData[i].can,
+            code: getData[i].code,
+            name:getData[i].name,
+            _group:getData[i]._group,
+            category:getData[i].category.name,
+            // department : getData[i].department.name ,
+            // position: getData[i].position.name,
+            // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+            // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+            // date: getData[i].date,
+            // status: getData[i].status,
+            // warehouse: getData[i].warehouse.name
+          })
+        }
+
         // setStatus(getData.map(d => d.status))
+        setDataTampil(tmp)
         setIsLoading(false);
-        console.log(getData)
+
+        //console.log(getData)
       })
   };
 
@@ -247,7 +272,7 @@ const ProdukTable = () => {
         loading={isLoading}
         columns={columns}
         pagination={{ pageSize: 10 }}
-        dataSource={products}
+        dataSource={dataTampil}
         scroll={{
           y: 295,
         }}

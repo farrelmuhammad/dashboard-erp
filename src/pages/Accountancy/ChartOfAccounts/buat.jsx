@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Switch } from 'antd'
+import { Switch, PageHeader } from 'antd'
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 
@@ -143,9 +143,14 @@ const BuatCoa = () => {
     return (
         <>
             <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
+            <PageHeader
+                ghost={false}
+                onBack={() => window.history.back()}
+                title="Buat COA">
+            </PageHeader>
+                {/* <div className="text-title text-start mb-4">
                     <h4 className="title fw-bold">Buat COA</h4>
-                </div>
+                </div> */}
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">

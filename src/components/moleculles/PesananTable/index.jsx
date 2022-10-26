@@ -20,6 +20,7 @@ const PesananTable = () => {
     const [isLoading, setIsLoading] = useState(false);
     // const token = jsCookie.get('auth');
     const auth = useSelector(state => state.auth);
+    const [dataTampil, setDataTampil] = useState([]);
 
 
     const { id } = useParams();
@@ -158,8 +159,36 @@ const PesananTable = () => {
                 const getData = res.data.data
                 setGetDataSO(getData)
                 setStatus(getData.map(d => d.status))
+
+
+                
+            let tmp = []
+            for (let i = 0; i < getData.length; i++) {
+            tmp.push({
+                id: getData[i].id,
+                can: getData[i].can,
+                date:getData[i].date,
+                code: getData[i].code,
+                customer:getData[i].customer.name,
+                status:getData[i].status,
+                // name:getData[i].name,
+                total: 
+                //  < CurrencyFormat  className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].total).toFixed(2).replace('.' , ',')} key="diskon" />,
+                 getData[i].total,
+                // _group:getData[i]._group,
+                // category:getData[i].category.name,
+                // department : getData[i].department.name ,
+                // position: getData[i].position.name,
+                // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+                // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+                // date: getData[i].date,
+                // status: getData[i].status,
+                // warehouse: getData[i].warehouse.name
+            })
+            }
+                setDataTampil(tmp)
                 setIsLoading(false);
-                console.log(getData)
+                //console.log(getData)
             })
     }
 
@@ -196,7 +225,8 @@ const PesananTable = () => {
             width: '20%',
             align:'center',
             ...getColumnSearchProps('total'),
-            // render: (text) => <div>{formatRupiah(text)}</div>
+             render: (text) => 
+             < CurrencyFormat  className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.' , ',')} key="diskon" />,
         },
         {
             title: 'Status',
@@ -204,11 +234,11 @@ const PesananTable = () => {
             key: 'status',
             align: 'center',
             width: '12%',
-            // render: (_, { status }) => (
-            //     <>
-            //         {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="volcano">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Processed' ? <Tag color="orange">{status}</Tag> : <Tag color="red">{status}</Tag>}
-            //     </>
-            // ),
+            render: (_, { status }) => (
+                <>
+                     {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="volcano">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Processed' ? <Tag color="orange">{status}</Tag> : <Tag color="red">{status}</Tag>}
+                </>
+            ),
             ...getColumnSearchProps('status'),
         },
         {
@@ -216,70 +246,70 @@ const PesananTable = () => {
             width: '20%',
             align: 'center',
             dataIndex:'action',
-            // render: (_, record) => (
-            //     <>
-            //         {record.status === 'Submitted' ? (
-            //             <Space size="middle">
-            //                 <Button
-            //                     size='small'
-            //                     type="danger"
-            //                     icon={<CloseOutlined />}
-            //                     onClick={() => cancelSalesOrder(record.id)}
-            //                 />
-            //                 <Link to={`/pesanan/detail/${record.id}`}>
-            //                     <Button
-            //                         size='small'
-            //                         type="primary"
-            //                         icon={<InfoCircleOutlined />}
-            //                     />
-            //                 </Link>
-            //                 <Link to={`/pesanan/edit/${record.id}`}>
-            //                     <Button
-            //                         size='small'
-            //                         type="success"
-            //                         icon={<EditOutlined />}
-            //                     />
-            //                 </Link>
-            //             </Space>
-            //         ) : record.status === 'Draft' ? (
-            //             <Space size="middle">
-            //                 <Link to={`/pesanan/detail/${record.id}`}>
-            //                     <Button
-            //                         size='small'
-            //                         type="primary"
-            //                         icon={<InfoCircleOutlined />}
-            //                     />
-            //                 </Link>
-            //                 <Link to={`/pesanan/edit/${record.id}`}>
-            //                     <Button
-            //                         size='small'
-            //                         type="success"
-            //                         icon={<EditOutlined />}
-            //                     />
-            //                 </Link>
-            //                 <Button
-            //                     size='small'
-            //                     type="danger"
-            //                     icon={<DeleteOutlined />}
-            //                     onClick={() => deleteSalesOrder(record.id)}
-            //                 />
-            //             </Space>
-            //         ) : record.status === 'Done' ? (
-            //             <Space size="middle">
-            //                 <Link to={`/pesanan/detail/${record.id}`}>
-            //                     <Button
-            //                         size='small'
-            //                         type="primary"
-            //                         icon={<InfoCircleOutlined />}
-            //                     />
-            //                 </Link>
-            //             </Space>
-            //         ) : (
-            //             <>
-            //             </>
-            //         )}
-            //     </>
-            // ),
+            render: (_, record) => (
+                <>
+                {record.status === 'Submitted' ? (
+                <Space size="middle">
+                    <Button
+                        size='small'
+                        type="danger"
+                        icon={<CloseOutlined />}
+                        onClick={() => cancelSalesOrder(record.id)}
+                    />
+                    <Link to={`/pesanan/detail/${record.id}`}>
+                        <Button
+                            size='small'
+                            type="primary"
+                            icon={<InfoCircleOutlined />}
+                        />
+                    </Link>
+                    <Link to={`/pesanan/edit/${record.id}`}>
+                        <Button
+                            size='small'
+                            type="success"
+                            icon={<EditOutlined />}
+                        />
+                    </Link>
+                </Space>
+            ) : record.status === 'Draft' ? (
+                <Space size="middle">
+                    <Link to={`/pesanan/detail/${record.id}`}>
+                        <Button
+                            size='small'
+                            type="primary"
+                            icon={<InfoCircleOutlined />}
+                        />
+                    </Link>
+                    <Link to={`/pesanan/edit/${record.id}`}>
+                        <Button
+                            size='small'
+                            type="success"
+                            icon={<EditOutlined />}
+                        />
+                    </Link>
+                    <Button
+                        size='small'
+                        type="danger"
+                        icon={<DeleteOutlined />}
+                        onClick={() => deleteSalesOrder(record.id)}
+                    />
+                </Space>
+            ) : record.status === 'Done' ? (
+                <Space size="middle">
+                    <Link to={`/pesanan/detail/${record.id}`}>
+                        <Button
+                            size='small'
+                            type="primary"
+                            icon={<InfoCircleOutlined />}
+                        />
+                    </Link>
+                </Space>
+            ) : (
+                <>
+                </>
+            )}
+                </>
+            ),
         },
     ];
 
@@ -363,7 +393,7 @@ const PesananTable = () => {
         loading={isLoading}
         columns={columns}
         pagination={{ pageSize: 10 }}
-        dataSource={dataColumn}
+        dataSource={dataTampil}
         scroll={{
             y: 240,
         }}

@@ -1678,7 +1678,7 @@ const BuatFakturPembelian = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label" >Ctn</label>
                             <div className="col-sm-7">
                                 <input
-                                    type="Nama"
+                                    type="number"
                                     className="form-control"
                                     id="inputNama3"
                                     onChange={(e) => setCtn(e.target.value)}

@@ -8,6 +8,7 @@ import { Switch } from 'antd'
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 import { Code } from '@mui/icons-material';
+import { PageHeader } from 'antd';
 
 const EditCoa = () => {
     // const auth.token = jsCookie.get("auth");
@@ -195,9 +196,14 @@ const EditCoa = () => {
     return (
         <>
             <form className="p-3 mb-3 bg-body rounded">
-                <div className="text-title text-start mb-4">
+            <PageHeader
+                ghost={false}
+                onBack={() => window.history.back()}
+                title="Edit COA">
+            </PageHeader>
+                {/* <div className="text-title text-start mb-4">
                     <h4 className="title fw-bold">Edit COA</h4>
-                </div>
+                </div> */}
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">

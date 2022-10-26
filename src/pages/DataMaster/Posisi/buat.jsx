@@ -100,7 +100,7 @@ const BuatPosisi = () => {
 
   useEffect(() => {
     axios
-      .get(`${Url}/get_new_position_id`, {
+      .get(`${Url}/get_new_position_code`, {
         headers: {
           Accept: "application/json",
           Authorization: `Bearer ${auth.token}`,
@@ -161,7 +161,8 @@ const BuatPosisi = () => {
                 id="inputKode3"
                 // onChange={e => setId(e.target.value)}
                 value={getPosition}
-                readOnly={getPosition}
+                disabled
+                // readOnly={getPosition}
               />
             </div>
           </div>
