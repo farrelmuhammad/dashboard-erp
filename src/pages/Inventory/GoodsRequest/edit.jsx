@@ -12,6 +12,7 @@ import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
+import { toTitleCase } from '../../../utils/helper';
 
 const EditableContext = createContext(null);
 
@@ -110,6 +111,7 @@ const EditGoodsRequest = () => {
     const [notes, setNotes] = useState('');
     const [date, setDate] = useState(null);
     const [type, setType] = useState('');
+    const [status, setStatus] = useState(null);
     const [warehouseSourceName, setWarehouseSourceName] = useState(null);
     const [warehouse_source, setWarehouseSource] = useState('');
     const [selectedWarehouseSource, setSelectedWarehouseSource] = useState(null);
@@ -162,6 +164,7 @@ const EditGoodsRequest = () => {
                 setWarehouseDestination(getData.whdestination.id);
                 setWarehouseDestinationName(getData.whdestination.name);
                 setNotes(getData.notes);
+                setStatus(getData.status);
                 setLoading(false);
             })
             .catch((err) => {
@@ -368,15 +371,7 @@ const EditGoodsRequest = () => {
     const handleCheck = (event) => {
         var updatedList = [...product];
         if (event.target.checked) {
-            updatedList.map((item) => {
-                // if(item.product_id === event.target.value.product_id){
-                //     alert("product sudah ada")
-                //     updatedList = [...product,];
-                // }else{
-                //     // alert("product tidak ada")
-                //     updatedList = [...product, event.target.value];
-                // }
-            })
+            updatedList = [...product, event.target.value];
         } else {
             updatedList.splice(product.indexOf(event.target.value), 1);
         }
@@ -558,14 +553,6 @@ const EditGoodsRequest = () => {
                                         </div>
                                     </div>
                                     <div className="form-group row mb-1">
-                                        <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
-                                        <div className="col-sm-8">
-                                            <h3 className="badge bg-danger text-center m-1">
-                                                Draft
-                                            </h3>
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
                                         <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Tujuan</label>
                                         <div className="col-sm-8">
                                             <AsyncSelect
@@ -579,6 +566,15 @@ const EditGoodsRequest = () => {
                                                 loadOptions={loadOptionsWarehouse}
                                                 onChange={handleChangeWarehouseDestination}
                                             />
+                                        </div>
+                                    </div>
+                                    <div className="form-group row mb-1">
+                                        <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
+                                        <div className="col-sm-8">
+                                            {/* <h3 className="badge bg-danger text-center m-1">
+                                                Draft
+                                            </h3> */}
+                                            {status === 'Submitted' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'Draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
                                         </div>
                                     </div>
                                 </div>

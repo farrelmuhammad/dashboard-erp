@@ -309,7 +309,7 @@ const RouteApp = () => {
         <Route path="/permintaanbarang" exact element={<GoodsRequest />} />
         <Route path="/permintaanbarang/create" exact element={<CreateGoodsRequest />} />
         <Route path="/permintaanbarang/edit/:id" exact element={<EditGoodsRequest />} />
-        <Route path="/permintaanbarang/detail" exact element={<DetailGoodsRequest />} />
+        <Route path="/permintaanbarang/detail/:id" exact element={<DetailGoodsRequest />} />
 
         <Route path="/tallytransfer" exact element={<TallyTransfer />} />
         <Route path="/tallytransfer/create" exact element={<CreateTallyTransfer />} />
@@ -515,7 +515,7 @@ const RouteApp = () => {
         <Route path="/permintaanbarang" exact element={<GoodsRequest />} />
         <Route path="/permintaanbarang/create" exact element={<CreateGoodsRequest />} />
         <Route path="/permintaanbarang/edit/:id" exact element={<EditGoodsRequest />} />
-        <Route path="/permintaanbarang/detail" exact element={<DetailGoodsRequest />} />
+        <Route path="/permintaanbarang/detail/:id" exact element={<DetailGoodsRequest />} />
 
         <Route path="/tallytransfer" exact element={<TallyTransfer />} />
         <Route path="/tallytransfer/create" exact element={<CreateTallyTransfer />} />
