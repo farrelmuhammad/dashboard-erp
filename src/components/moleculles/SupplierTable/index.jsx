@@ -18,6 +18,7 @@ const SupplierTable = () => {
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [dataTampil, setDataTampil] = useState([]);
 
   const { id } = useParams();
 
@@ -109,7 +110,7 @@ const SupplierTable = () => {
       title: 'Kode.',
       dataIndex: 'code',
       key: 'code',
-      width: '10%',
+      width: '15%',
       ...getColumnSearchProps('code'),
       sorter: true,
       sortDirections: ['descend', 'ascend'],
@@ -194,6 +195,37 @@ const SupplierTable = () => {
       .then(res => {
         const getData = res.data.data
         setSuppliers(getData)
+
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+            id: getData[i].id,
+            can: getData[i].can,
+            code: getData[i].code,
+            date:getData[i].date,
+            phone_number: getData[i].phone_number ? getData[i].phone_number : <div>-</div>,
+            // customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
+            // total : getData[i].total,
+            // type : getData[i].type,
+            status : getData[i].status,
+            
+            name:getData[i].name,
+            // _group:getData[i]._group,
+            // category:getData[i].category.name,
+            // department : getData[i].department.name ,
+            // position: getData[i].position.name,
+            // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+            // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+            // date: getData[i].date,
+            // status: getData[i].status,
+            // warehouse: getData[i].warehouse.name
+          })
+        }
+
+        setDataTampil(tmp)
+
+
+
         // setStatus(getData.map(d => d.status))
         setIsLoading(false);
         console.log(getData)
@@ -218,7 +250,7 @@ const SupplierTable = () => {
         loading={isLoading}
         columns={columns}
         pagination={{ pageSize: 10 }}
-        dataSource={suppliers}
+        dataSource={dataTampil}
         scroll={{
           y: 295,
         }}

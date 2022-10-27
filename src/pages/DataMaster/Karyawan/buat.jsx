@@ -40,7 +40,7 @@ const BuatKaryawan = () => {
   const [kode_pos, setKode_pos] = useState("");
   const [date_of_birth, setDate_of_birth] = useState(null);
   const [start_date, setStart_date] = useState(null);
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("Active");
   const [warehouses, setWarehouses] = useState([]);
   const navigate = useNavigate();
 
@@ -86,15 +86,17 @@ const BuatKaryawan = () => {
 
   const [checked, setChecked] = useState(true);
   const onChange = () => {
-    checked ? setChecked(false) : setChecked(true)
-
-    if (checked === false) {
-      setStatus("Active");
-      // console.log('Active');
-    } else {
-      setStatus("Inactive");
-      // console.log('Inactive');
-    }
+    setChecked(!checked)
+    // checked ? setChecked(true) : setChecked(false)
+    checked ? setStatus('Active') : setStatus ('NonActive')
+    console.log(status)
+    // if (checked === true) {
+    //   setStatus("Active");
+    //   // console.log('Active');
+    // } else {
+    //   setStatus("Inactive");
+    //   // console.log('Inactive');
+    // }
   };
 
   // useEffect(()=>{
@@ -497,11 +499,11 @@ const BuatKaryawan = () => {
           <div className="row mb-3">
             <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
             <div className="col-sm-7">
-              <Switch defaultChecked={status} onChange={onChange} />
+              <Switch defaultChecked={checked} onChange={onChange} />
               <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
                 {
-                  checked ? "Nonaktif"
-                    : "Aktif"
+                  checked ? "Aktif"
+                    : "NonAktif"
                 }
               </label>
             </div>

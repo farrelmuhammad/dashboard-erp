@@ -158,7 +158,7 @@ const BiayaImportTable = () => {
               size='small'
               type="danger"
               icon={<DeleteOutlined />}
-              onClick={() => deleteBiayaImport(record.id)}
+              onClick={() => deleteBiayaImport(record.id, record.code)}
             />
           </Space>
         </>
@@ -187,15 +187,41 @@ const BiayaImportTable = () => {
       })
   };
 
-  const deleteBiayaImport = async (id) => {
-    await axios.delete(`${Url}/costs/${id}`, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    });
-    getBiayaImport();
-    Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+  // const deleteBiayaImport = async (id) => {
+  //   await axios.delete(`${Url}/costs/${id}`, {
+  //     headers: {
+  //       Accept: "application/json",
+  //       Authorization: `Bearer ${auth.token}`,
+  //     },
+  //   });
+  //   getBiayaImport();
+  //   Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+  // };
+
+  
+  const deleteBiayaImport = async (id, code) => {
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Data ini akan dihapus",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.delete(`${Url}/costs/${id}`, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${auth.token}`,
+          },
+        });
+        getBiayaImport()
+        Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+
+      }
+    })
+
   };
 
   return (

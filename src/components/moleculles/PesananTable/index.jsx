@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import 'antd/dist/antd.css';
 import { CloseOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, Input, Space, Table, Tag } from 'antd';
+import { Button, Input, Space, Table, Tag , Tooltip} from 'antd';
 import axios from 'axios';
 import Url from '../../../Config';
 import jsCookie from 'js-cookie'
@@ -25,16 +25,42 @@ const PesananTable = () => {
 
     const { id } = useParams();
 
-    const deleteSalesOrder = async (id) => {
-        await axios.delete(`${Url}/sales_orders/${id}`, {
-            headers: {
+    // const deleteSalesOrder = async (id) => {
+    //     await axios.delete(`${Url}/sales_orders/${id}`, {
+    //         headers: {
+    //             Accept: "application/json",
+    //             Authorization: `Bearer ${auth.token}`,
+    //         },
+    //     });
+    //     getSalesOrder()
+    //     Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+    // };
+
+    
+    const deleteSalesOrder = async (id, code) => {
+        Swal.fire({
+          title: 'Apakah Anda Yakin?',
+          text: "Data ini akan dihapus",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Ya'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            axios.delete(`${Url}/sales_orders/${id}`, {
+              headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
-            },
-        });
-        getSalesOrder()
-        Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
-    };
+              },
+            });
+            getSalesOrder()
+            Swal.fire("Berhasil Dihapus!", `Data ${code} Berhasil hapus`, "success");
+    
+          }
+        })
+    
+      };
 
     const cancelSalesOrder = async (id) => {
         await axios.patch(`${Url}/sales_orders/cancel/${id}`, {
@@ -210,7 +236,7 @@ const PesananTable = () => {
             sortDirections: ['descend', 'ascend'],
         },
         {
-            title: 'Pelanggan',
+            title: 'Customer',
             dataIndex: 'customer',
             key: 'customer',
             ...getColumnSearchProps('customer'),
@@ -225,8 +251,8 @@ const PesananTable = () => {
             width: '20%',
             align:'center',
             ...getColumnSearchProps('total'),
-             render: (text) => 
-             < CurrencyFormat  className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.' , ',')} key="diskon" />,
+            render: (text) => 
+            < CurrencyFormat  className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.' , ',')} key="diskon" />,
         },
         {
             title: 'Status',
@@ -250,29 +276,37 @@ const PesananTable = () => {
                 <>
                 {record.status === 'Submitted' ? (
                 <Space size="middle">
+                  
+                  <Tooltip title="Detail" placement="bottom">
+                    <Link to={`/pesanan/detail/${record.id}`}>
+                        <Button
+                            size='small'
+                            type="primary"
+                            icon={<InfoCircleOutlined />}
+                        />
+                    </Link>
+                    </Tooltip>
+                    <Tooltip title="Edit" placement="bottom">
+                    <Link to={`/pesanan/edit/${record.id}`}>
+                        <Button
+                            size='small'
+                            type="success"
+                            icon={<EditOutlined />}
+                        />
+                    </Link>
+                    </Tooltip>
+                    <Tooltip title="Cancel" placement="bottom">
                     <Button
                         size='small'
                         type="danger"
                         icon={<CloseOutlined />}
                         onClick={() => cancelSalesOrder(record.id)}
                     />
-                    <Link to={`/pesanan/detail/${record.id}`}>
-                        <Button
-                            size='small'
-                            type="primary"
-                            icon={<InfoCircleOutlined />}
-                        />
-                    </Link>
-                    <Link to={`/pesanan/edit/${record.id}`}>
-                        <Button
-                            size='small'
-                            type="success"
-                            icon={<EditOutlined />}
-                        />
-                    </Link>
+                    </Tooltip>
                 </Space>
             ) : record.status === 'Draft' ? (
                 <Space size="middle">
+                    <Tooltip title="Detail" placement="bottom">
                     <Link to={`/pesanan/detail/${record.id}`}>
                         <Button
                             size='small'
@@ -280,6 +314,8 @@ const PesananTable = () => {
                             icon={<InfoCircleOutlined />}
                         />
                     </Link>
+                    </Tooltip>
+                    <Tooltip title="Edit" placement="bottom">
                     <Link to={`/pesanan/edit/${record.id}`}>
                         <Button
                             size='small'
@@ -287,15 +323,19 @@ const PesananTable = () => {
                             icon={<EditOutlined />}
                         />
                     </Link>
+                    </Tooltip>
+                    <Tooltip title="Delete" placement="bottom">
                     <Button
                         size='small'
                         type="danger"
                         icon={<DeleteOutlined />}
-                        onClick={() => deleteSalesOrder(record.id)}
+                        onClick={() => deleteSalesOrder(record.id, record.code)}
                     />
+                    </Tooltip>
                 </Space>
             ) : record.status === 'Done' ? (
                 <Space size="middle">
+                    <Tooltip title="Detail" placement="bottom">
                     <Link to={`/pesanan/detail/${record.id}`}>
                         <Button
                             size='small'
@@ -303,6 +343,7 @@ const PesananTable = () => {
                             icon={<InfoCircleOutlined />}
                         />
                     </Link>
+                    </Tooltip>
                 </Space>
             ) : (
                 <>
@@ -367,7 +408,7 @@ const PesananTable = () => {
                         size='small'
                         type="danger"
                         icon={<DeleteOutlined />}
-                        onClick={() => deleteSalesOrder(item.id)}
+                        onClick={() => deleteSalesOrder(item.id, item.code)}
                     />
                 </Space>
             ) : item.status === 'Done' ? (

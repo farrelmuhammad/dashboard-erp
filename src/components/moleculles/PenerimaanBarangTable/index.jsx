@@ -20,6 +20,7 @@ const PenerimaanBarangTable = () => {
   const [code, setCode] = useState('');
   // const token = jsCookie.get('auth')
   const auth = useSelector(state => state.auth);
+  const [dataTampil, setDataTampil] = useState([]);
 
 
   const deletePenerimaan = async (id, code) => {
@@ -192,6 +193,35 @@ const PenerimaanBarangTable = () => {
         const getData = res.data.data;
         setGetPenerimaanBarang(getData)
         setCode(getData.code)
+
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+            id: getData[i].id,
+            can: getData[i].can,
+            code: getData[i].code,
+            date:getData[i].date,
+           // phone_number: getData[i].phone_number ? getData[i].phone_number : <div>-</div>,
+            // customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
+            // total : getData[i].total,
+            // type : getData[i].type,
+            status : getData[i].status,
+            
+            // name:getData[i].name,
+            // _group:getData[i]._group,
+            // category:getData[i].category.name,
+            // department : getData[i].department.name ,
+            // position: getData[i].position.name,
+            // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+             supplier_name: getData[i].supplier_name ? getData[i].supplier_name : <div className="text-center">-</div>,
+            // date: getData[i].date,
+            // status: getData[i].status,
+             warehouse_name: getData[i].warehouse_name ? getData[i].warehouse_name : <div className="text-center">-</div>,
+          })
+        }
+
+        setDataTampil(tmp)
+
         // setStatus(getData.map(d => d.status))
         setIsLoading(false);
         console.log(getData)
@@ -229,7 +259,7 @@ const PenerimaanBarangTable = () => {
       dataIndex: 'warehouse_name',
       key: 'warehouse_name',
       width: '15%',
-      ...getColumnSearchProps('total'),
+      ...getColumnSearchProps('warehouse_name'),
     },
     {
       title: 'Status',
@@ -345,7 +375,7 @@ const PenerimaanBarangTable = () => {
     loading={isLoading}
     columns={columns}
     pagination={{ pageSize: 10 }}
-    dataSource={getPenerimaanBarang}
+    dataSource={dataTampil}
   />;
 };
 

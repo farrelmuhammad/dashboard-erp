@@ -382,7 +382,7 @@ export const DetailTallySheet = () => {
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
         copyStyles: true,
-        pageStyle: pageStyle
+        //pageStyle: pageStyle
     })
 
     if (loading) {
@@ -443,7 +443,7 @@ export const DetailTallySheet = () => {
          
           <div className="page-header-space"></div>
           <div className="page-header">
-          <div className='d-flex' style={{position:"fixed", height:"100px", top:"0"}}>
+          <div className='mt-4 d-flex' style={{position:"fixed", height:"100px", top:"0"}}>
                       
                       <div><img src={logo} width="60px"></img></div>
                       <div className='ms-2' >
@@ -510,7 +510,7 @@ export const DetailTallySheet = () => {
                     <div className="d-flex justify-content-center" style={{width:"100%", height:"100%"}}>
                     <br/>
                     <textarea
-                                    className="col-12"
+                                    className="col-12 class-catatan-cetak"
                                     id="form4Example3"
                                     rows="3"
                                     cols="100"

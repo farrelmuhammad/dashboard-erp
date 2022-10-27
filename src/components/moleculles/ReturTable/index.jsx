@@ -22,6 +22,7 @@ const ReturTable = () => {
     const [isLoading, setIsLoading] = useState(false);
     // const auth.token = jsCookie.get('auth')
     const auth = useSelector(state => state.auth);
+    const [dataTampil, setDataTampil] = useState([])
 
 
     const [visible, setVisible] = useState(false);
@@ -236,6 +237,36 @@ const ReturTable = () => {
             .then(res => {
                 const getData = res.data.data
                 setGetDataSO(getData)
+
+                let tmp = []
+                for (let i = 0; i < getData.length; i++) {
+                  tmp.push({
+                    id: getData[i].id,
+                    can: getData[i].can,
+                    code: getData[i].code,
+                    date:getData[i].date,
+                    customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
+                    total : getData[i].total,
+                    // type : getData[i].type,
+                    status : getData[i].status
+                    
+                    // name:getData[i].name,
+                    // _group:getData[i]._group,
+                    // category:getData[i].category.name,
+                    // department : getData[i].department.name ,
+                    // position: getData[i].position.name,
+                    // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+                    // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+                    // date: getData[i].date,
+                    // status: getData[i].status,
+                    // warehouse: getData[i].warehouse.name
+                  })
+                }
+        
+                setDataTampil(tmp)
+
+
+
                 setStatus(getData.map(d => d.status))
                 setIsLoading(false);
                 console.log(getData)
@@ -265,7 +296,7 @@ const ReturTable = () => {
             key: 'customer',
             width: '15%',
             ...getColumnSearchProps('customer'),
-            render: (customer) => customer.name
+            // render: (customer) => customer.name
             // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
             // sortDirections: ['descend', 'ascend'],
         },
@@ -386,7 +417,7 @@ const ReturTable = () => {
         loading={isLoading}
         columns={columns}
         pagination={{ pageSize: 10 }}
-        dataSource={getDataSO}
+        dataSource={dataTampil}
         scroll={{
             y: 240,
         }}

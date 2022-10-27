@@ -956,10 +956,10 @@ const BuatPesanan = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pelanggan</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
                             <div className="col-sm-7">
                                 <AsyncSelect
-                                    placeholder="Pilih Pelanggan..."
+                                    placeholder="Pilih Customer..."
                                     cacheOptions
                                     defaultOptions
                                     value={selectedValue}

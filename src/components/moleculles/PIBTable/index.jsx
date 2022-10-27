@@ -22,6 +22,7 @@ const PIBTable = () => {
   // const token = jsCookie.get('auth')
   const [pib, setPIB] = useState([])
   const auth = useSelector(state => state.auth);
+  const [dataTampil, setDataTampil] = useState([]);
 
 
   const deletePIB = async (id, code) => {
@@ -193,6 +194,41 @@ const PIBTable = () => {
       .then(res => {
         const getData = res.data.data;
         setPIB(getData)
+
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+            id: getData[i].id,
+            can: getData[i].can,
+            code: getData[i].code,
+            date:getData[i].date,
+           // phone_number: getData[i].phone_number ? getData[i].phone_number : <div>-</div>,
+            // customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
+            //  total : 
+            //  getData[i].currency_name == null ? 
+            //  < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].paid).toFixed(2).replace('.' , ',')} key="diskon" />
+            //   :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={getData[i].currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].paid).toLocaleString('id')} key="diskon" />,
+
+            //type : getData[i].supplier._group,
+            status : getData[i].status,
+            
+            // name:getData[i].name,
+            // _group:getData[i]._group,
+            // category:getData[i].category.name,
+            // department : getData[i].department.name ,
+            // position: getData[i].position.name,
+             //customer_id: getData[i].supplier.name ? getData[i].supplier.name : <div className='text-center'>-</div>,
+             supplier_name: getData[i].supplier.name ? getData[i].supplier.name : <div className="text-center">-</div>,
+            ship_name : getData[i].ship_name ? getData[i].ship_name : <div className="text-center">-</div>,
+             // date: getData[i].date,
+            // status: getData[i].status,
+            // warehouse_name: getData[i].warehouse_name ? getData[i].warehouse_name : <div className="text-center">-</div>,
+          })
+        }
+
+        setDataTampil(tmp)
+
+
         console.log(getData)
         setIsLoading(false);
       })
@@ -221,9 +257,9 @@ const PIBTable = () => {
       key: 'supplier_name',
       width: '20%',
       ...getColumnSearchProps('supplier_name'),
-      render: (_, record) => (
-        <>{record.supplier.name}</>
-      )
+      // render: (_, record) => (
+      //   <>{record.supplier.name}</>
+      // )
     },
     {
       title: 'Nama Kapal',
@@ -307,7 +343,7 @@ const PIBTable = () => {
     loading={isLoading}
     columns={columns}
     pagination={{ pageSize: 10 }}
-    dataSource={pib}
+    dataSource={dataTampil}
   />;
 };
 

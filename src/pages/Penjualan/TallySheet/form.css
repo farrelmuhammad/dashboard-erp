@@ -3,3 +3,13 @@
     width: 100%;
     margin-top: 2rem;
 }
+
+.data-grid-container .data-grid .cell.read-only{
+    background: white!important;
+color: black!important;
+}
+
+.class-catatan-cetak{
+    background: white!important;
+    color: black!important;
+}

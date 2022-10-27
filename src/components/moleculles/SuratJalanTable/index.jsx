@@ -38,6 +38,8 @@ const SuratJalanTable = () => {
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [selectedAddress, setSelectedAddress] = useState(null);
 
+    const [dataTampil, setDataTampil] = useState([]);
+
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
         setCustomer(value.id);
@@ -152,16 +154,41 @@ const SuratJalanTable = () => {
 
     };
 
+    // const deleteDeliveryNotes = async (id) => {
+    //     await axios.delete(`${Url}/delivery_notes/${id}`, {
+    //         headers: {
+    //             Accept: "application/json",
+    //             Authorization: `Bearer ${auth.token}`,
+    //         },
+    //     });
+    //     getDeliveryNotes()
+    //     Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+    // };
+
     const deleteDeliveryNotes = async (id) => {
-        await axios.delete(`${Url}/delivery_notes/${id}`, {
-            headers: {
+        Swal.fire({
+          title: 'Apakah Anda Yakin?',
+          text: "Data ini akan dihapus",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Ya'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            axios.delete(`${Url}/delivery_notes/${id}`, {
+              headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
-            },
-        });
-        getDeliveryNotes()
-        Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
-    };
+              },
+            });
+            getDeliveryNotes()
+            Swal.fire("Berhasil Dihapus!", `Data dengan ID ${id} Berhasil hapus`, "success");
+    
+          }
+        })
+    
+      };
 
     const cancelDeliveryNote = async (id, code) => {
         Swal.fire({
@@ -272,12 +299,19 @@ const SuratJalanTable = () => {
             />
         ),
         onFilter: (value, record) =>
-            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-        onFilterDropdownVisibleChange: (visible) => {
-            if (visible) {
-                setTimeout(() => searchInput.current?.select(), 100);
-            }
-        },
+        record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      onFilterDropdownVisibleChange: (visible) => {
+        if (visible) {
+          setTimeout(() => searchInput.current?.select(), 100);
+        }
+      },
+        // onFilter: (value, record) =>
+        //     record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+        // onFilterDropdownVisibleChange: (visible) => {
+        //     if (visible) {
+        //         setTimeout(() => searchInput.current?.select(), 100);
+        //     }
+        // },
         // render: (text) =>
         //   searchedColumn === dataIndex ? (
         //     <Highlighter
@@ -310,6 +344,31 @@ const SuratJalanTable = () => {
             .then(res => {
                 const getData = res.data.data
                 setGetDataSO(getData)
+
+                let tmp = []
+                for (let i = 0; i < getData.length; i++) {
+                  tmp.push({
+                    id: getData[i].id,
+                    can: getData[i].can,
+                    date: getData[i].date,
+                    code: getData[i].code,
+                    customer_name: getData[i].customer_name ? getData[i].customer_name : <div className='text-center'>-</div>,
+                    supplier_name: getData[i].supplier_name ? getData[i].supplier_name : <div className='text-center'>-</div>,
+                    vehicle : getData[i].vehicle,
+                    //name:getData[i].name,
+                    // _group:getData[i]._group,
+                    // category:getData[i].category.name,
+                    // department : getData[i].department.name ,
+                    // position: getData[i].position.name,
+                    // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+                    // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+                    // date: getData[i].date,
+                    status: getData[i].status,
+                    // warehouse: getData[i].warehouse.name
+                  })
+                }
+
+                setDataTampil(tmp)
                 setStatus(getData.map(d => d.status))
                 // setGetCustomer(getData.map(d => d.customer_id))
                 // setGetAddress(getData.map(d => d.customer_address_id))
@@ -340,15 +399,15 @@ const SuratJalanTable = () => {
             dataIndex: 'customer_name',
             key: 'customer',
             width: '15%',
-            ...getColumnSearchProps('customer'),
-            render: (_, record) => {
-                if (record.customer_name) {
-                    return <>{record.customer_name}</>
-                }
-                else {
-                    return <div className='text-center'>-</div>
-                }
-            },
+            ...getColumnSearchProps('customer_name'),
+            // render: (_, record) => {
+            //     if (record.customer_name) {
+            //         return <>{record.customer_name}</>
+            //     }
+            //     else {
+            //         return <div className='text-center'>-</div>
+            //     }
+            // },
             // render: (customer) => customer.name
             // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
             // sortDirections: ['descend', 'ascend'],
@@ -358,14 +417,14 @@ const SuratJalanTable = () => {
             dataIndex: 'supplier_name',
             width: '15%',
             key: 'supplier',
-            render: (_, record) => {
-                if (record.supplier_name) {
-                    return <>{record.supplier_name}</>
-                }
-                else {
-                    return <div className='text-center'>-</div>
-                }
-            },
+            // render: (_, record) => {
+            //     if (record.supplier_name) {
+            //         return <>{record.supplier_name}</>
+            //     }
+            //     else {
+            //         return <div className='text-center'>-</div>
+            //     }
+            // },
             ...getColumnSearchProps('supplier_name'),
             // render: (customer) => customer.name
             // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
@@ -874,7 +933,7 @@ const SuratJalanTable = () => {
         loading={isLoading}
         columns={columns}
         pagination={{ pageSize: 10 }}
-        dataSource={getDataSO}
+        dataSource={dataTampil}
         scroll={{
             y: 240,
         }}

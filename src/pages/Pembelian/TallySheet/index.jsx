@@ -5,7 +5,7 @@ import Url from '../../../Config'
 import axios from 'axios'
 import TallyTable from '../../../components/moleculles/TallyTable'
 import { PlusOutlined } from '@ant-design/icons'
-import { Button } from 'antd'
+import { Button, PageHeader } from 'antd'
 import TallyPembelianTable from '../../../components/moleculles/TallyPembelianTable'
 import { useSelector } from 'react-redux'
 
@@ -29,30 +29,48 @@ const TallySheetPembelian = () => {
 
   if (userAccess) {
     return (
-      <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
-        <div className="row">
-          <div className="col text-title text-start">
-            <h3 className="title fw-bold">Tally Sheet Pembelian</h3>
-          </div>
-          {userAccess?.map(d => {
-            if (d.ability_name === "create-tax") {
-              return (
-                <div className="col button-add text-end me-3">
+   <>
+         {userAccess?.map(d => {
+          if (d.ability_name === "create-tax") {
+            return (
+              <PageHeader
+                ghost={false}
+                title="Daftar Tally Sheet In"
+                extra={[
                   <Link to="/tallypembelian/buat">
                     <Button
                       type="primary"
                       icon={<PlusOutlined />}
                     />
-                  </Link>
-                </div>
-              )
+                  </Link>,
+                ]}
+              >
+                <TallyPembelianTable />
+              </PageHeader>
+            )
+          }
+        })}
+   </>
+          // {userAccess?.map(d => {
+          //   if (d.ability_name === "create-tax") {
+          //     return (
+          //       <div className="col button-add text-end me-3">
+          //         <Link to="/tallypembelian/buat">
+          //           <Button
+          //             type="primary"
+          //             icon={<PlusOutlined />}
+          //           />
+          //         </Link>
+          //       </div>
+          //     )
 
               
-            }
-          })}
-        </div>
-        <TallyPembelianTable />
-      </div>
+          //   }
+        //   })}
+          
+       
+        // <TallyPembelianTable />
+    
     )
   } else {
     <div>

@@ -48,9 +48,10 @@ export const DetailPesanan = () => {
     const columns = [
         {
             title: 'No.',
-            dataIndex: 'id',
+            dataIndex: 'index',
             width: '5%',
             align: 'center',
+            render: (text, record, index) => index + 1,
         },
         {
             title: 'Nama Produk',
@@ -158,7 +159,7 @@ export const DetailPesanan = () => {
                 else {
                     setNamaMataUang(getData[0].currency.name);
                 }
-                console.log(res.data.data[0].tax_included)
+                console.log(res.data.data[0])
                 // console.log(res.data.data.map(d => d.sales_order_details));
                 // console.log(getData.map(d => d.sales_order_details));
             })
@@ -530,7 +531,7 @@ export const DetailPesanan = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pelanggan</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
                             <div className="col-sm-7">
                                 <select disabled="true" id="PelangganSelect" className="form-select">
                                     <option>{customer}</option>
