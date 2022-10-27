@@ -17,6 +17,9 @@ const PesananPembelianTable = () => {
     const [status, setStatus] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [namaMataUang, setNamaMataUang] = useState();
+    const [dataTampil, setDataTampil] = useState([]);
+    const [getData1, setGetData1] = useState([])
+
     // const token = jsCookie.get('auth')
     const auth = useSelector(state => state.auth);
 
@@ -222,6 +225,41 @@ const PesananPembelianTable = () => {
             .then(res => {
                 const getData = res.data.data
                 setPesananPembelian(getData)
+
+                let tmp = []
+                for (let i = 0; i < getData.length; i++) {
+                  tmp.push({
+                    id: getData[i].id,
+                    can: getData[i].can,
+                    code: getData[i].code,
+                    date:getData[i].date,
+                    //phone_number: getData[i].phone_number ? getData[i].phone_number : <div>-</div>,
+                    // customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
+                     total : namaMataUang[i] === 'Rp ' ? 
+                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={namaMataUang[i] + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].total).toFixed(2).replace('.' , ',')} key="diskon" />
+                    :   < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={namaMataUang[i] + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].total).toLocaleString('id')} key="diskon" />,
+                    // type : getData[i].type,
+                    status : getData[i].status,
+                    
+                    name:getData[i].name,
+                    // _group:getData[i]._group,
+                    // category:getData[i].category.name,
+                    // department : getData[i].department.name ,
+                    // position: getData[i].position.name,
+                    // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+                    supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+                    // date: getData[i].date,
+                    // status: getData[i].status,
+                    // warehouse: getData[i].warehouse.name
+                  })
+                }
+        
+                setDataTampil(tmp)
+
+
+
+
+
                 setStatus(getData.map(d => d.status))
                 let mataUang = [];
                 let varnull = null;
@@ -239,8 +277,10 @@ const PesananPembelianTable = () => {
                 }
                 setNamaMataUang(mataUang);
                 console.log(mataUang)
+                console.log(namaMataUang)
                 setIsLoading(false);
                 console.log(getData[0].can)
+                setGetData1(getData)
             })
     }
 
@@ -274,7 +314,7 @@ const PesananPembelianTable = () => {
             title: 'Total',
             dataIndex: 'total',
             key: 'total',
-            width: '18%',
+            width: '20%',
             // render(text, record, index) {
             //     return {
             //       props: {
@@ -283,7 +323,14 @@ const PesananPembelianTable = () => {
             //       children: <div>{ Number(text).toLocaleString('id')}</div> 
             //     };
             // },
-            ...getColumnSearchProps('total'),
+            //...getColumnSearchProps('currency_name'),
+            //...getColumnSearchProps('total'),
+            // render: (text) => {
+            //     for (let i = 0; i < getData1.length; i++) {
+            //         < CurrencyFormat  className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang[i] + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.' , ',')} key="diskon" />
+            //     }
+            // }
+
         },
         {
             title: 'Status',
@@ -291,11 +338,11 @@ const PesananPembelianTable = () => {
             key: 'status',
             align: 'center',
             width: '15%',
-            // render: (_, { status }) => (
-            //     <>
-            //         {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Cancelled' ? <Tag color="red">{status}</Tag> : status === 'Processed' ? <Tag color="purple">{status}</Tag> : null}
-            //     </>
-            // ),
+            render: (_, { status }) => (
+                <>
+                    {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Cancelled' ? <Tag color="red">{status}</Tag> : status === 'Processed' ? <Tag color="purple">{status}</Tag> : null}
+                </>
+            ),
             ...getColumnSearchProps('status'),
         },
         {
@@ -303,7 +350,54 @@ const PesananPembelianTable = () => {
             dataIndex: 'action',
             width: '20%',
             align: 'center',
-           
+            render: (_, record) => (
+                <>
+                <Space size="middle">
+                    {record.can['read-purchase_order'] ? (
+                        <Link to={`/pesananpembelian/detail/${record.id}`}>
+                            <Button
+                                size='small'
+                                type="primary"
+                                icon={<InfoCircleOutlined />}
+                            />
+                        </Link>
+                    ) : null}
+                    {
+                        record.can['cancel-purchase_order'] ? (
+
+                            <Button
+                                size='small'
+                                type="danger"
+                                icon={<CloseOutlined />}
+                                onClick={() => cancelPurchaseOrders(record.id, record.code)}
+                            />
+
+                        ) : null
+                    }
+                    {
+                        record.can['delete-purchase_order'] ? (
+                                <Button
+                                    size='small'
+                                    type="danger"
+                                    icon={<DeleteOutlined />}
+                                    onClick={() => deletePurchaseOrders(record.id, record.code)}
+                                />
+                        ) : null
+                    }
+                    {
+                        record.can['update-purchase_order'] ? (
+                            <Link to={`/pesananpembelian/edit/${record.id}`}>
+                                <Button
+                                    size='small'
+                                    type="success"
+                                    icon={<EditOutlined />}
+                                />
+                            </Link>
+                        ) : null
+                    }
+                </Space>
+            </>
+            )
         },
     ];
 
@@ -312,6 +406,7 @@ const PesananPembelianTable = () => {
             date: item.date,
             code: item.code,
             supplier_name: item.supplier_name,
+            // currency_name:namaMataUang,
             total: item.supplier._group == 'Lokal' ? 
             < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" />
              :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang[i] + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />,
@@ -376,7 +471,7 @@ const PesananPembelianTable = () => {
         size="small"
         loading={isLoading}
         columns={columns}
-        dataSource={dataColumn}
+        dataSource={dataTampil}
         pagination=
         {
             pesananPembelian.length < 50 ? { pageSize: 5 } : null

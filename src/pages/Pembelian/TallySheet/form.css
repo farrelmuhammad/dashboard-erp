@@ -18,3 +18,13 @@
     height: 100%!important;
 }
 
+.data-grid-container .data-grid .cell.read-only{
+    background: white!important;
+color: black!important;
+}
+
+.class-catatan-cetak{
+    background: white!important;
+    color: black!important;
+}
+

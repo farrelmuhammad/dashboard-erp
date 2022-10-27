@@ -19,6 +19,7 @@ const FakturTable = () => {
   const [isLoading, setIsLoading] = useState(false);
   // const token = jsCookie.get('auth')
   const auth = useSelector(state => state.auth);
+  const [dataTampil, setDataTampil] = useState([]);
 
   const deleteSalesFaktur = async (id, code) => {
     Swal.fire({
@@ -219,6 +220,33 @@ const FakturTable = () => {
       .then(res => {
         const getData = res.data.data
         setGetDataFaktur(getData)
+
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+            id: getData[i].id,
+            can: getData[i].can,
+            code: getData[i].code,
+            date:getData[i].date,
+            recipient: getData[i].recipient.name ? getData[i].recipient.name : <div className='text-center'>'-'</div>,
+            total : getData[i].total,
+            type : getData[i].type,
+            status : getData[i].status
+            
+            // name:getData[i].name,
+            // _group:getData[i]._group,
+            // category:getData[i].category.name,
+            // department : getData[i].department.name ,
+            // position: getData[i].position.name,
+            // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+            // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+            // date: getData[i].date,
+            // status: getData[i].status,
+            // warehouse: getData[i].warehouse.name
+          })
+        }
+
+        setDataTampil(tmp)
         setStatus(getData.map(d => d.status))
         setIsLoading(false);
         console.log(getData)
@@ -247,8 +275,8 @@ const FakturTable = () => {
       dataIndex: 'recipient',
       width: '15%',
       key: 'recipient',
-      ...getColumnSearchProps('customer_id'),
-      render: (recipient) => recipient.name,
+      ...getColumnSearchProps('recipient'),
+      //render: (recipient) => recipient.name,
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
       // sortDirections: ['descend', 'ascend'],
     },
@@ -256,7 +284,7 @@ const FakturTable = () => {
       title: 'Total',
       dataIndex: 'total',
       key: 'total',
-      width: '10%',
+      width: '15%',
       ...getColumnSearchProps('total'),
       render(text, record) {
         return <div>{
@@ -388,7 +416,7 @@ const FakturTable = () => {
         loading={isLoading}
         columns={columns}
         pagination={{ pageSize: 10 }}
-        dataSource={getDataFaktur}
+        dataSource={dataTampil}
         scroll={{
           y: 295,
         }}

@@ -31,6 +31,7 @@ const PembayaranPembelianTable = () => {
     const [address, setAddress] = useState("");
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [selectedValue2, setSelectedAddress] = useState(null);
+    const [dataTampil, setDataTampil] = useState([])
 
 
 
@@ -236,6 +237,41 @@ const PembayaranPembelianTable = () => {
             .then(res => {
                 const getData = res.data.data
                 setDataPembayaran(getData)
+
+
+                  
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+            id: getData[i].id,
+            can: getData[i].can,
+            code: getData[i].code,
+            date:getData[i].date,
+           // phone_number: getData[i].phone_number ? getData[i].phone_number : <div>-</div>,
+            // customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
+             total : 
+             getData[i].currency_name == null ? 
+             < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].paid).toFixed(2).replace('.' , ',')} key="diskon" />
+              :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={getData[i].currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].paid).toLocaleString('id')} key="diskon" />,
+
+            //type : getData[i].supplier._group,
+            status : getData[i].status,
+            
+            // name:getData[i].name,
+            // _group:getData[i]._group,
+            // category:getData[i].category.name,
+            // department : getData[i].department.name ,
+            // position: getData[i].position.name,
+             customer_id: getData[i].supplier.name ? getData[i].supplier.name : <div className='text-center'>-</div>,
+             //supplier: getData[i].supplier.name ? getData[i].supplier.name : <div className="text-center">-</div>,
+            // date: getData[i].date,
+            // status: getData[i].status,
+            // warehouse_name: getData[i].warehouse_name ? getData[i].warehouse_name : <div className="text-center">-</div>,
+          })
+        }
+
+        setDataTampil(tmp)
+
                 setStatus(getData.map(d => d.status))
                 setIsLoading(false);
                 console.log(getData)
@@ -275,7 +311,7 @@ const PembayaranPembelianTable = () => {
             dataIndex: 'total',
             key: 'total',
             width: '20%',
-            ...getColumnSearchProps('total'),
+            //...getColumnSearchProps('total'),
             // render: (text) => {
             //     return Number(text).toFixed(2).replace('.', ',')
             // }
@@ -286,12 +322,12 @@ const PembayaranPembelianTable = () => {
             key: 'status',
             align: 'center',
             width: '15%',
-            // render: (_, { status }) => (
-            //     <>
-            //         {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
+            render: (_, { status }) => (
+                <>
+                    {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
 
-            //     </>
-            // ),
+                </>
+            ),
             ...getColumnSearchProps('status'),
         },
         {
@@ -299,32 +335,32 @@ const PembayaranPembelianTable = () => {
             width: '20%',
             dataIndex:'action',
             align: 'center',
-            // render: (_, record) => (
-            //     <>
-            //         <Space size="middle">
-            //             <Link to={`/pembayaranpembelian/detail/${record.id}`}>
-            //                 <Button
-            //                     size='small'
-            //                     type="primary"
-            //                     icon={<InfoCircleOutlined />}
-            //                 />
-            //             </Link>
-            //             <Link to={`/pembayaranpembelian/edit/${record.id}`}>
-            //                 <Button
-            //                     size='small'
-            //                     type="success"
-            //                     icon={<EditOutlined />}
-            //                 />
-            //             </Link>
-            //             <Button
-            //                 size='small'
-            //                 type="danger"
-            //                 icon={<DeleteOutlined />}
-            //                 onClick={() => deletePembayaran(record.id, record.code)}
-            //             />
-            //         </Space>
-            //     </>
-            // ),
+            render: (_, record) => (
+                <>
+                    <Space size="middle">
+                        <Link to={`/pembayaranpembelian/detail/${record.id}`}>
+                            <Button
+                                size='small'
+                                type="primary"
+                                icon={<InfoCircleOutlined />}
+                            />
+                        </Link>
+                        <Link to={`/pembayaranpembelian/edit/${record.id}`}>
+                            <Button
+                                size='small'
+                                type="success"
+                                icon={<EditOutlined />}
+                            />
+                        </Link>
+                        <Button
+                            size='small'
+                            type="danger"
+                            icon={<DeleteOutlined />}
+                            onClick={() => deletePembayaran(record.id, record.code)}
+                        />
+                    </Space>
+                </>
+            ),
         },
     ];
 
@@ -372,7 +408,7 @@ const dataColumn = [
         loading={isLoading}
         columns={columns}
         pagination={{ pageSize: 10 }}
-        dataSource={dataColumn}
+        dataSource={dataTampil}
         scroll={{
             y: 240,
         }}

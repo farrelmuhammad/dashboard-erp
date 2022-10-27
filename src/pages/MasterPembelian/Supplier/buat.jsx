@@ -96,7 +96,7 @@ const BuatSupplier = () => {
   // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [name, setName] = useState('');
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(true);
   const [bussiness_ent, setBussiness_ent] = useState('');
 
   const [grup, setGrup] = useState('');
@@ -105,7 +105,7 @@ const BuatSupplier = () => {
   const [npwp, setNpwp] = useState('');
   // const [term, setTerm] = useState('');
   // const [discount, setDiscount] = useState('');
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState('Active');
   const navigate = useNavigate();
   const [dataSource, setDataSource] = useState([]);
   const [count, setCount] = useState(2);
@@ -142,15 +142,17 @@ const BuatSupplier = () => {
   };
 
   const onChange = () => {
-    checked ? setChecked(false) : setChecked(true)
+    setChecked(!checked)
+    checked ? setStatus('Active') : setStatus ('NonActive')
+   // checked ? setChecked(false) : setChecked(true)
 
-    if (checked === false) {
-      setStatus("Active");
-      // console.log('Active');
-    } else {
-      setStatus("Inactive");
-      // console.log('Inactive');
-    }
+    // if (checked === false) {
+    //   setStatus("Active");
+    //   // console.log('Active');
+    // } else {
+    //   setStatus("Inactive");
+    //   // console.log('Inactive');
+    // }
   };
 
   const defaultColumns = [
