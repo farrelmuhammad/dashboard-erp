@@ -511,6 +511,7 @@ const BuatTally = () => {
 
 
     function simpanTallySheet(i) {
+        console.log(i)
         let tmp = [];
         let arrtmp = [];
         let stts = [];
@@ -519,16 +520,19 @@ const BuatTally = () => {
         let qtySebelumnya
         // pengecekan transaksi 
         let dataSumber = [];
+        qtySO = qtyPesanan[idxPesanan][i]
         if (sumber == 'Retur') {
 
-            qtySO = product[idxPesanan].purchase_return_details[i].quantity;
+            // qtySO = product[idxPesanan].purchase_return_details[i].quantity;
             qtySebelumnya = product[idxPesanan].purchase_return_details[i].tally_sheets_qty;
         }
         else if (sumber == 'SO') {
-            qtySO = product[idxPesanan].sales_order_details[i].quantity;
+            // qtySO = product[idxPesanan].sales_order_details[i].quantity;
             qtySebelumnya = product[idxPesanan].sales_order_details[i].tally_sheets_qty;
         }
 
+        console.log(qtySO)
+        console.log(qtySebelumnya)
 
         for (let x = 0; x < product.length; x++) {
             tmp = [];
@@ -539,18 +543,18 @@ const BuatTally = () => {
             else if (sumber == 'SO') {
                 dataSumber = product[x].sales_order_details;
             }
-
-
             if (x == idxPesanan) {
                 for (let i = 0; i < dataSumber.length; i++) {
                     if (i === indexPO) {
                         tmp[i] = 0;
                         tmp[i] = totalTallySheet[x][i];
 
-                        if (Number(totalTallySheet[x][i]) + Number(qtySebelumnya) >= qtySO) {
+                        // console.log(totalTallySheet[x][i])
+                        if (Number(totalTallySheet[x][i]) + Number(qtySebelumnya) >= Number(qtySO)) {
                             stts[i] = 'Done'
+                            // console.log("cek")
                         }
-                        else if (Number(totalTallySheet[x][i]) + Number(qtySebelumnya) < qtySO) {
+                        else if (Number(totalTallySheet[x][i]) + Number(qtySebelumnya) < Number(qtySO)) {
                             stts[i] = 'Next delivery'
                         }
                     }
@@ -567,7 +571,32 @@ const BuatTally = () => {
                 arrStatus.push(statusSO[x]);
             }
         }
-        // console.log(arrStatus)
+
+        console.log(product)
+        // pengecekan status atasnya 
+        for (let x = 0; x < product.length; x++) {
+            tmp = [];
+            let dataSumber = [];
+            if (sumber == 'Retur') {
+                dataSumber = product[x].purchase_return_details;
+            }
+            else if (sumber == 'SO') {
+                dataSumber = product[x].sales_order_details;
+            }
+            if (product[x].code == product[idxPesanan].code) {
+                for (let i = 0; i < dataSumber.length; i++) {
+                    if (dataSumber[i].product_alias_name === dataSumber[indexPO].product_alias_name) {
+                        stts[i] = stts[indexPO]
+                    }
+                    else {
+                        stts[i] = statusSO[x][i];
+                    }
+                }
+            }
+            else {
+                arrStatus.push(statusSO[x]);
+            }
+        }
         setQuantity(arrtmp);
         setStatusSO(arrStatus);
         setModal2Visible2(false)
@@ -807,12 +836,6 @@ const BuatTally = () => {
             setLoadingTable(false)
 
         }
-        // Swal.fire({
-        //     icon: 'success',
-        //     title: 'Berhasil',
-        //     text: 'Data berhasil dihapus',
-        // }).then(() => setLoadingTable(false));
-        // console.log(selectedProduct)
     }
 
     function tambahIndexProduct(kolom, baris) {
@@ -825,7 +848,6 @@ const BuatTally = () => {
             dataSumber = product[baris].sales_order_details;
         }
 
-        // console.log(dataSumber)
         const oldArray = dataSumber;
         const newArray = dataSumber[kolom];
         let arr = [];
@@ -840,20 +862,12 @@ const BuatTally = () => {
         }
 
         for (let r = arr.length ; r <= oldArray.length; r++) {
-            // if (r == kolom + 1) {
-            //     arr.push(newArray)
-            // } else if (r == oldArray.length) {
             arr.push(oldArray[r - 1])
-            // }
-            // else {
-            //     arr.push(oldArray[r])
-            // }
         }
 
         let tmp = [];
         let qty = [];
         let box = [];
-        // let qtyBox = [];
         let temp = [];
         let id = [];
         let value = [];
@@ -1062,18 +1076,6 @@ const BuatTally = () => {
                             ]
                         ]);
                     }
-
-                    // else if (y == oldArray.length) {
-                    //     qtyStore.push(quantity[x][y - 1])
-                    //     boxStore.push(totalBox[x][y - 1])
-                    //     tempData.push(data[x][y - 1])
-                    //     optionStore.push(optionsProduct[x][y - 1])
-                    //     valueStore.push(selectedProduct[x][y - 1])
-                    //     idStore.push(idProductSelect[x][y - 1])
-                    //     statusStore.push(statusSO[x][y - 1])
-                    //     qtyPesStore.push(qtyPesanan[x][y - 1])
-                    //     temp_qtyBox.push(kuantitasBox[x][y - 1])
-                    // }
                     else {
                         qtyStore.push(quantity[x][y])
                         boxStore.push(totalBox[x][y])
@@ -1334,7 +1336,7 @@ const BuatTally = () => {
                                                 <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
                                                 <div className="col-sm-3">
                                                     <input
-                                                        value={qtyPesanan[idxPesanan][indexPO]}
+                                                        value={Number(qtyPesanan[idxPesanan][indexPO]).toFixed(2).toString().replace('.', ',')}
                                                         type="Nama"
                                                         className="form-control"
                                                         id="inputNama3"
@@ -1482,7 +1484,7 @@ const BuatTally = () => {
                                                 <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
                                                 <div className="col-sm-3">
                                                     <input
-                                                        value={qtyPesanan[idxPesanan][indexPO].toString().replace('.', ',')}
+                                                        value={Number(qtyPesanan[idxPesanan][indexPO]).toFixed(2).toString().replace('.', ',')}
                                                         type="Nama"
                                                         className="form-control"
                                                         id="inputNama3"
