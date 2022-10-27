@@ -18,7 +18,7 @@ export default function Login() {
   // const isLoggedIn = jsCookie.get('auth')
   const isLoggedIn = !!useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
-  const eye = <FontAwesomeIcon icon={faEye} />;
+  // const eye = <FontAwesomeIcon icon={faEye} />;
   const [passwordShown, setPasswordShown] = useState(false);
 
   const onFinish = (values) => {
@@ -121,13 +121,13 @@ export default function Login() {
                           <Input.Password
                             placeholder="input password"
                             size="large"
-                            iconRender={(visible) =>
-                              visible ? (
-                                <EyeTwoTone />
-                              ) : (
-                                <EyeInvisibleOutlined />
-                              )
-                            }
+                            // iconRender={(visible) =>
+                            //   visible ? (
+                            //     <EyeTwoTone />
+                            //   ) : (
+                            //     <EyeInvisibleOutlined />
+                            //   )
+                            // }
                             onChange={(e) => setPassword(e.target.value)}
                           />
                           {/* <input
