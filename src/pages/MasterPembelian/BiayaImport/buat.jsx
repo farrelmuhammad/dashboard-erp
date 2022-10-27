@@ -21,7 +21,7 @@ const BuatBiayaImport = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [getBiayaImport, setGetBiayaImport] = useState();
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState('Active');
 
   const [category_id, setCategory_id] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -29,7 +29,7 @@ const BuatBiayaImport = () => {
   const [account_id, setAccount_id] = useState('');
   const [selectedAccount, setSelectedAccount] = useState(null);
 
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(true);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -113,15 +113,17 @@ const BuatBiayaImport = () => {
     };
 
     const onChange = () => {
-      checked ? setChecked(false) : setChecked(true)
+      setChecked(!checked)
+      checked ? setStatus('Active') : setStatus ('NonActive')
+      // checked ? setChecked(false) : setChecked(true)
   
-      if (checked === false) {
-        setStatus("Active");
-        // console.log('Active');
-      } else {
-        setStatus("Inactive");
-        // console.log('Inactive');
-      }
+      // if (checked === false) {
+      //   setStatus("Active");
+      //   // console.log('Active');
+      // } else {
+      //   setStatus("Inactive");
+      //   // console.log('Inactive');
+      // }
     };
 
   useEffect(() => {

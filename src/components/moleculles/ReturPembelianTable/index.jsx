@@ -20,6 +20,7 @@ const ReturPembelianTable = () => {
   // const token = jsCookie.get('auth')
   const auth = useSelector(state => state.auth);
   const [mataUang, setMataUang] = useState('Rp.');
+  const [dataTampil, setDataTampil] = useState([]);
 
   const deletePurchaseRetur = async (id, code) => {
     Swal.fire({
@@ -189,6 +190,39 @@ const ReturPembelianTable = () => {
       .then(res => {
         const getData = res.data.data
         setGetDataFaktur(getData)
+
+
+        
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+            id: getData[i].id,
+            can: getData[i].can,
+            code: getData[i].code,
+            date:getData[i].date,
+           // phone_number: getData[i].phone_number ? getData[i].phone_number : <div>-</div>,
+            // customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
+             total : 
+             <CurrencyFormat className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} value={Number(getData[i].total).toFixed(2).replace('.' , ',')} />,
+            //type : getData[i].supplier._group,
+            status : getData[i].status,
+            
+            // name:getData[i].name,
+            // _group:getData[i]._group,
+            // category:getData[i].category.name,
+            // department : getData[i].department.name ,
+            // position: getData[i].position.name,
+            // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+             supplier: getData[i].supplier.name ? getData[i].supplier.name : <div className="text-center">-</div>,
+            // date: getData[i].date,
+            // status: getData[i].status,
+            // warehouse_name: getData[i].warehouse_name ? getData[i].warehouse_name : <div className="text-center">-</div>,
+          })
+        }
+
+        setDataTampil(tmp)
+
+
         setStatus(getData.map(d => d.status))
         setIsLoading(false);
         console.log(getData)
@@ -233,7 +267,7 @@ const ReturPembelianTable = () => {
       dataIndex: 'total',
       key: 'total',
       width: '12%',
-      ...getColumnSearchProps('total'),
+      //...getColumnSearchProps('total'),
     //   render: (text) => {
     //     return Number(text).toFixed(2).replace('.', ',')
     // },
@@ -245,12 +279,12 @@ const ReturPembelianTable = () => {
       key: 'status',
       align: 'center',
       width: '10%',
-      // render: (_, { status }) => (
-      //   <>
-      //     {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
+      render: (_, { status }) => (
+        <>
+          {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
 
-      //   </>
-      // ),
+        </>
+      ),
       ...getColumnSearchProps('status'),
     },
     {
@@ -258,58 +292,58 @@ const ReturPembelianTable = () => {
       width: '10%',
       dataIndex:'action',
       align: 'center',
-      // render: (_, record) => (
-      //   <>
-      //     <Space size="middle">
-      //       {record.can['read-purchase_return'] ? (
-      //         <Link to={`/returpembelian/detail/${record.id}`}>
-      //           <Button
-      //             size='small'
-      //             type="primary"
-      //             icon={<InfoCircleOutlined />}
-      //           />
-      //         </Link>
-      //       ) : null}
-      //       {
-      //         record.can['cancel-purchase_return'] ? (
+      render: (_, record) => (
+        <>
+          <Space size="middle">
+            {record.can['read-purchase_return'] ? (
+              <Link to={`/returpembelian/detail/${record.id}`}>
+                <Button
+                  size='small'
+                  type="primary"
+                  icon={<InfoCircleOutlined />}
+                />
+              </Link>
+            ) : null}
+            {
+              record.can['cancel-purchase_return'] ? (
 
-      //           <Button
-      //             size='small'
-      //             type="danger"
-      //             icon={<CloseOutlined />}
-      //             onClick={() => cancelPurchaseRetur(record.id, record.code)}
-      //           />
+                <Button
+                  size='small'
+                  type="danger"
+                  icon={<CloseOutlined />}
+                  onClick={() => cancelPurchaseRetur(record.id, record.code)}
+                />
 
-      //         ) : null
-      //       }
-      //       {
-      //         record.can['delete-purchase_return'] ? (
-      //           // <Space size="middle">
-      //           <Button
-      //             size='small'
-      //             type="danger"
-      //             icon={<DeleteOutlined />}
-      //             onClick={() => deletePurchaseRetur(record.id, record.code)}
-      //           />
-      //           // </Space>
-      //         ) : null
-      //       }
-      //       {
-      //         record.can['update-purchase_return'] ? (
-      //           <Link to={`/returpembelian/edit/${record.id}`}>
-      //             <Button
-      //               size='small'
-      //               type="success"
-      //               icon={<EditOutlined />}
-      //             />
-      //           </Link>
-      //         ) : null
-      //       }
-      //     </Space>
-      //   </>
+              ) : null
+            }
+            {
+              record.can['delete-purchase_return'] ? (
+                // <Space size="middle">
+                <Button
+                  size='small'
+                  type="danger"
+                  icon={<DeleteOutlined />}
+                  onClick={() => deletePurchaseRetur(record.id, record.code)}
+                />
+                // </Space>
+              ) : null
+            }
+            {
+              record.can['update-purchase_return'] ? (
+                <Link to={`/returpembelian/edit/${record.id}`}>
+                  <Button
+                    size='small'
+                    type="success"
+                    icon={<EditOutlined />}
+                  />
+                </Link>
+              ) : null
+            }
+          </Space>
+        </>
 
 
-      // ),
+      ),
     },
   ];
 
@@ -378,7 +412,7 @@ const ReturPembelianTable = () => {
     loading={isLoading}
     columns={columns}
     pagination={{ pageSize: 10 }}
-    dataSource={dataColumn}
+    dataSource={dataTampil}
     scroll={{
       y: 240,
     }}

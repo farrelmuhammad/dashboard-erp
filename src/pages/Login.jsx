@@ -9,6 +9,10 @@ import { useDispatch } from 'react-redux';
 import { setData } from '../redux/slices/authSlice';
 import { useSelector } from 'react-redux';
 import { Button, Checkbox, Col, Form, Input, Row } from 'antd';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
+
+
 
 export default function Login() {
   const [username, setUserName] = useState();
@@ -17,6 +21,8 @@ export default function Login() {
   // const isLoggedIn = jsCookie.get('auth')
   const isLoggedIn = !!useSelector(state => state.auth.token);
   const dispatch = useDispatch();
+  const eye = <FontAwesomeIcon icon={faEye} />;
+  const [passwordShown, setPasswordShown] = useState(false);
 
   const onFinish = (values) => {
     console.log('Success:', values);
@@ -24,6 +30,12 @@ export default function Login() {
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
+  };
+
+  const togglePassword = () => {
+    // When the handler is invoked
+    // inverse the boolean state of passwordShown
+    setPasswordShown(passwordShown ? false : true);
   };
 
   const handleSubmit = async e => {
@@ -111,12 +123,23 @@ export default function Login() {
                         </div>
 
                         <div className="form-outline mb-2">
+                          <div className='row'>
+                          <div className="col-10">
                           <input
-                            type="password"
+                            type= {passwordShown ? "text" : "password"}
                             id="form2Example22"
                             className="form-control"
                             onChange={e => setPassword(e.target.value)}
-                          />
+                          /> 
+                          </div>
+
+                          <div className='col-2'>
+                          <i onClick={togglePassword}>{eye}</i>
+                          {/* <button onClick={togglePassword}> { passwordType==="password"? <i className="bi bi-eye-slash"></i> :<i className="bi bi-eye"></i> }</button> */}
+                          </div>
+                          </div>
+                     
+                          
                           <label className="form-label" for="form2Example22">Password</label>
                         </div>
 

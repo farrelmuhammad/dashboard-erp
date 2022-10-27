@@ -23,6 +23,8 @@ const CreditNoteTable = () => {
   const [creditNote, setCreditNote] = useState([])
   const auth = useSelector(state => state.auth);
 
+  const [dataTampil, setDataTampil] = useState([]);
+
 
   const deleteCredit = async (id, code) => {
     Swal.fire({
@@ -193,6 +195,40 @@ const CreditNoteTable = () => {
       .then(res => {
         const getData = res.data.data;
         setCreditNote(getData)
+
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+            id: getData[i].id,
+            can: getData[i].can,
+            code: getData[i].code,
+            date:getData[i].date,
+           // phone_number: getData[i].phone_number ? getData[i].phone_number : <div>-</div>,
+            // customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
+             nominal : 
+             getData[i].currency.name == 'Rp' || getData[i].currency.name == 'IDR' ?
+        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={getData[i].currency.name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].nominal).toFixed(2).replace('.', ',')} key="diskon" />
+        : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={getData[i].currency.name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].nominal).toLocaleString('id')} key="diskon" />,
+            //type : getData[i].supplier._group,
+            status : getData[i].status,
+            
+            // name:getData[i].name,
+            // _group:getData[i]._group,
+            // category:getData[i].category.name,
+            // department : getData[i].department.name ,
+            // position: getData[i].position.name,
+            // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+             supplier_name: getData[i].supplier_name ? getData[i].supplier_name : <div className="text-center">-</div>,
+            // date: getData[i].date,
+            // status: getData[i].status,
+            // warehouse_name: getData[i].warehouse_name ? getData[i].warehouse_name : <div className="text-center">-</div>,
+          })
+        }
+
+        setDataTampil(tmp)
+
+
+
         // setGetPenerimaanBarang(getData)
         // setCode(getData.code)
         // setStatus(getData.map(d => d.status))
@@ -233,23 +269,23 @@ const CreditNoteTable = () => {
       dataIndex: 'nominal',
       key: 'nominal',
       width: '15%',
-      ...getColumnSearchProps('total'),
-      render(text, record, index) {
-        return {
-          children: <CurrencyFormat
-            style={{
-              width: "100%",
-              border: "none",
-              backgroundColor: "transparent "
+      //...getColumnSearchProps('nominal'),
+      // render(text, record, index) {
+      //   return {
+      //     children: <CurrencyFormat
+      //       style={{
+      //         width: "100%",
+      //         border: "none",
+      //         backgroundColor: "transparent "
               
-            }}
-            disabled
-            thousandSeparator={'.'}
-            decimalSeparator={','}
-            value={text}
-            prefix={creditNote[index].currency.name + ' '} />
-        }
-      }
+      //       }}
+      //       disabled
+      //       thousandSeparator={'.'}
+      //       decimalSeparator={','}
+      //       value={text}
+      //       prefix={creditNote[index].currency.name + ' '} />
+      //   }
+      // }
     },
 
     {
@@ -366,7 +402,7 @@ const CreditNoteTable = () => {
     loading={isLoading}
     columns={columns}
     pagination={{ pageSize: 10 }}
-    dataSource={creditNote}
+    dataSource={dataTampil}
   />;
 };
 
