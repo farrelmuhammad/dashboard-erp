@@ -284,7 +284,7 @@ export const DetailTally = () => {
                                         <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
                                         <div className="col-sm-3">
                                             <input
-                                                value={Number(quantityPO)}
+                                                value={Number(quantityPO).toFixed(2).toString().replace('.', ',')}
                                                 type="Nama"
                                                 className="form-control"
                                                 id="inputNama3"

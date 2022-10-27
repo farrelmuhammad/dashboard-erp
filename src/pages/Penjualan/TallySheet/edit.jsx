@@ -1268,7 +1268,7 @@ const EditTally = () => {
                                         <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
                                         <div className="col-sm-3">
                                             <input
-                                                value={quantityPO ? quantityPO.toString().replace('.', ',') : null}
+                                                value={quantityPO ? Number(quantityPO).toFixed(2).toString().replace('.', ',') : null}
                                                 type="Nama"
                                                 className="form-control"
                                                 id="inputNama3"

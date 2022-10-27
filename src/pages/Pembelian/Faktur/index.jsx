@@ -4,7 +4,7 @@ import jsCookie from 'js-cookie'
 import Url from '../../../Config'
 import axios from 'axios'
 import FakturTable from '../../../components/moleculles/FakturTable'
-import { Button } from 'antd'
+import { Button , PageHeader} from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import FakturPembelianTable from '../../../components/moleculles/FakturPembelianTable'
 import { useSelector } from 'react-redux'
@@ -29,34 +29,57 @@ const FakturPembelian = () => {
 
   if (userAccess) {
     return (
-      <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
-        <div className="row">
-          <div className="col text-title text-start">
-            <h3 className="title fw-bold">Daftar Faktur</h3>
-          </div>
-          {userAccess?.map(d => {
-            if (d.ability_name === "create-sales_order") {
-              return (
-                <div className="col button-add text-end me-3">
-                  <Link to="/fakturpembelian/buat">
-                    <Button
-                      type="primary"
-                      icon={<PlusOutlined />}
-                    />
-                  </Link>
-                </div>
-              )
-            }
-          })}
-        </div>
-        {userAccess?.map(d => {
-          if (d.ability_name === "create-piece") {
-            return (
-              <FakturPembelianTable />
-            )
-          }
-        })}
-      </div>
+      <>
+      {userAccess?.map(d => {
+       if (d.ability_name === "create-tax") {
+         return (
+           <PageHeader
+             ghost={false}
+             title="Daftar Faktur Pembelian"
+             extra={[
+               <Link to="/fakturpembelian/buat">
+                 <Button
+                   type="primary"
+                   icon={<PlusOutlined />}
+                 />
+               </Link>,
+             ]}
+           >
+             <FakturPembelianTable />
+           </PageHeader>
+         )
+       }
+     })}
+</>
+
+      // <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
+      //   <div className="row">
+      //     <div className="col text-title text-start">
+      //       <h3 className="title fw-bold">Daftar Faktur </h3>
+      //     </div>
+      //     {userAccess?.map(d => {
+      //       if (d.ability_name === "create-sales_order") {
+      //         return (
+      //           <div className="col button-add text-end me-3">
+      //             <Link to="/fakturpembelian/buat">
+      //               <Button
+      //                 type="primary"
+      //                 icon={<PlusOutlined />}
+      //               />
+      //             </Link>
+      //           </div>
+      //         )
+      //       }
+      //     })}
+      //   </div>
+      //   {userAccess?.map(d => {
+      //     if (d.ability_name === "create-piece") {
+      //       return (
+      //         <FakturPembelianTable />
+      //       )
+      //     }
+      //   })}
+      // </div>
     )
   } else {
     <div>
