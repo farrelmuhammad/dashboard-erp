@@ -830,15 +830,24 @@ const BuatTally = () => {
         const newArray = dataSumber[kolom];
         let arr = [];
 
-        for (let r = 0; r <= oldArray.length; r++) {
+        for (let r = 0; r <= kolom + 1; r++) {
             if (r == kolom + 1) {
                 arr.push(newArray)
-            } else if (r == oldArray.length) {
-                arr.push(oldArray[r - 1])
             }
             else {
                 arr.push(oldArray[r])
             }
+        }
+
+        for (let r = arr.length ; r <= oldArray.length; r++) {
+            // if (r == kolom + 1) {
+            //     arr.push(newArray)
+            // } else if (r == oldArray.length) {
+            arr.push(oldArray[r - 1])
+            // }
+            // else {
+            //     arr.push(oldArray[r])
+            // }
         }
 
         let tmp = [];
@@ -1080,17 +1089,17 @@ const BuatTally = () => {
 
                 // loop setelah data baru 
                 for (let y = kolom + 1; y <= dataSumber.length; y++) {
-                        qtyStore.push(quantity[x][y - 1])
-                        boxStore.push(totalBox[x][y - 1])
-                        tempData.push(data[x][y - 1])
-                        optionStore.push(optionsProduct[x][y - 1])
-                        valueStore.push(selectedProduct[x][y - 1])
-                        idStore.push(idProductSelect[x][y - 1])
-                        statusStore.push(statusSO[x][y - 1])
-                        qtyPesStore.push(qtyPesanan[x][y - 1])
-                        temp_qtyBox.push(kuantitasBox[x][y - 1])
+                    qtyStore.push(quantity[x][y - 1])
+                    boxStore.push(totalBox[x][y - 1])
+                    tempData.push(data[x][y - 1])
+                    optionStore.push(optionsProduct[x][y - 1])
+                    valueStore.push(selectedProduct[x][y - 1])
+                    idStore.push(idProductSelect[x][y - 1])
+                    statusStore.push(statusSO[x][y - 1])
+                    qtyPesStore.push(qtyPesanan[x][y - 1])
+                    temp_qtyBox.push(kuantitasBox[x][y - 1])
                 }
-                
+
                 qty.push(qtyStore)
                 box.push(boxStore)
                 temp.push(tempData)
@@ -1101,6 +1110,7 @@ const BuatTally = () => {
                 status.push(statusStore)
                 qtyBox_tmp.push(temp_qtyBox)
                 console.log(product)
+
                 if (sumber == 'SO') {
                     tmp.push({
                         code: product[x].code,
