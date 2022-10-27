@@ -815,22 +815,23 @@ const BuatTally = () => {
         // console.log(selectedProduct)
     }
 
-    function tambahIndexProduct(i, idx) {
+    function tambahIndexProduct(kolom, baris) {
         setLoadingTable(true);
         let dataSumber = [];
         if (sumber == 'Retur') {
-            dataSumber = product[idx].purchase_return_details;
+            dataSumber = product[baris].purchase_return_details;
         }
         else if (sumber == 'SO') {
-            dataSumber = product[idx].sales_order_details;
+            dataSumber = product[baris].sales_order_details;
         }
 
+        // console.log(dataSumber)
         const oldArray = dataSumber;
-        const newArray = dataSumber[i];
+        const newArray = dataSumber[kolom];
         let arr = [];
 
         for (let r = 0; r <= oldArray.length; r++) {
-            if (r == i + 1) {
+            if (r == kolom + 1) {
                 arr.push(newArray)
             } else if (r == oldArray.length) {
                 arr.push(oldArray[r - 1])
@@ -843,7 +844,7 @@ const BuatTally = () => {
         let tmp = [];
         let qty = [];
         let box = [];
-        let qtyBox = [];
+        // let qtyBox = [];
         let temp = [];
         let id = [];
         let value = [];
@@ -871,16 +872,17 @@ const BuatTally = () => {
                 dataSumber = product[x].sales_order_details;
             }
 
-            if (x == idx) {
-                for (let y = 0; y <= dataSumber.length; y++) {
-                    if (y == i + 1) {
+            if (x == baris) {
+                for (let y = 0; y <= kolom + 1; y++) {
+                    // data baru 
+                    if (y == kolom + 1) {
                         qtyStore.push(0)
                         boxStore.push(0)
                         idStore.push("")
 
                         // ngambil jenis produk 
                         let dataOption = []
-                        axios.get(`${Url}/select_products?nama_alias=${dataSumber[i].product_alias_name}`, {
+                        axios.get(`${Url}/select_products?nama_alias=${dataSumber[kolom].product_alias_name}`, {
                             headers: {
                                 Accept: "application/json",
                                 Authorization: `Bearer ${auth.token}`,
@@ -898,13 +900,13 @@ const BuatTally = () => {
                         optionStore.push(dataOption)
                         valueStore.push("")
                         temp_qtyBox.push(0)
-                        if (quantity[x][i] + dataSumber[i].tally_sheets_qty >= dataSumber[i].quantity) {
+                        if (quantity[x][kolom] + dataSumber[kolom].tally_sheets_qty >= dataSumber[kolom].quantity) {
                             statusStore.push('Done')
                         }
-                        else if (quantity[x][i] + dataSumber[i].tally_sheets_qty < dataSumber[i].quantity) {
+                        else if (quantity[x][kolom] + dataSumber[kolom].tally_sheets_qty < dataSumber[kolom].quantity) {
                             statusStore.push('Next delivery')
                         }
-                        qtyPesStore.push(qtyPesanan[x][i] - quantity[x][i])
+                        qtyPesStore.push(qtyPesanan[x][kolom] - quantity[x][kolom])
                         tempData.push([
                             [
                                 { readOnly: true, value: "" },
@@ -1050,17 +1052,19 @@ const BuatTally = () => {
                                 { value: '' },
                             ]
                         ]);
-                    } else if (y == oldArray.length) {
-                        qtyStore.push(quantity[x][y - 1])
-                        boxStore.push(totalBox[x][y - 1])
-                        tempData.push(data[x][y - 1])
-                        optionStore.push(optionsProduct[x][y - 1])
-                        valueStore.push(selectedProduct[x][y - 1])
-                        idStore.push(idProductSelect[x][y - 1])
-                        statusStore.push(statusSO[x][y - 1])
-                        qtyPesStore.push(qtyPesanan[x][y - 1])
-                        temp_qtyBox.push(kuantitasBox[x][y - 1])
                     }
+
+                    // else if (y == oldArray.length) {
+                    //     qtyStore.push(quantity[x][y - 1])
+                    //     boxStore.push(totalBox[x][y - 1])
+                    //     tempData.push(data[x][y - 1])
+                    //     optionStore.push(optionsProduct[x][y - 1])
+                    //     valueStore.push(selectedProduct[x][y - 1])
+                    //     idStore.push(idProductSelect[x][y - 1])
+                    //     statusStore.push(statusSO[x][y - 1])
+                    //     qtyPesStore.push(qtyPesanan[x][y - 1])
+                    //     temp_qtyBox.push(kuantitasBox[x][y - 1])
+                    // }
                     else {
                         qtyStore.push(quantity[x][y])
                         boxStore.push(totalBox[x][y])
@@ -1073,6 +1077,20 @@ const BuatTally = () => {
                         temp_qtyBox.push(kuantitasBox[x][y])
                     }
                 }
+
+                // loop setelah data baru 
+                for (let y = kolom + 1; y <= dataSumber.length; y++) {
+                        qtyStore.push(quantity[x][y - 1])
+                        boxStore.push(totalBox[x][y - 1])
+                        tempData.push(data[x][y - 1])
+                        optionStore.push(optionsProduct[x][y - 1])
+                        valueStore.push(selectedProduct[x][y - 1])
+                        idStore.push(idProductSelect[x][y - 1])
+                        statusStore.push(statusSO[x][y - 1])
+                        qtyPesStore.push(qtyPesanan[x][y - 1])
+                        temp_qtyBox.push(kuantitasBox[x][y - 1])
+                }
+                
                 qty.push(qtyStore)
                 box.push(boxStore)
                 temp.push(tempData)
