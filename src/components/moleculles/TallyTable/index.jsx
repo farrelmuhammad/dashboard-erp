@@ -47,7 +47,23 @@ const TallyTable = () => {
       },
     }).then((res) => res.json())
       .then(({ data }) => {
-        setGetDataTally(data);
+        // setGetDataTally(data);
+         // agar bisa di search 
+        let tmp = []
+        for (let i = 0; i < data.length; i++) {
+          tmp.push({
+            id: data[i].id,
+            can: data[i].can,
+            code: data[i].code,
+            customer_name: data[i].customer_name ? data[i].customer_name : '',
+            supplier_name: data[i].supplier_name ? data[i].supplier_name : '',
+            date: data[i].date,
+            status: data[i].status,
+            warehouse_name: data[i].warehouse.name
+          })
+        }
+        setGetDataTally(tmp)
+
         setIsLoading(false);
         setTableParams({
           ...tableParams,
@@ -195,7 +211,7 @@ const TallyTable = () => {
         }}
       />
     ),
-    // onFilter: (value, record) => record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
