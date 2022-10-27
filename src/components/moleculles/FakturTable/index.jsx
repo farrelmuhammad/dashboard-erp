@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import 'antd/dist/antd.css';
-import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, InfoCircleOutlined, CloseOutlined, SearchOutlined, FileSyncOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Tag } from 'antd';
 import axios from 'axios';
 import Url from '../../../Config';
@@ -21,14 +21,91 @@ const FakturTable = () => {
   const auth = useSelector(state => state.auth);
 
   const deleteSalesFaktur = async (id, code) => {
-    await axios.delete(`${Url}/sales_invoices?id_faktur_penjualan=${id}`, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    });
-    getFaktur()
-    Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Data akan dihapus",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.delete(`${Url}/sales_invoices?id_faktur_penjualan=${id}`, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${auth.token}`,
+          },
+        });
+        getFaktur()
+        Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+
+      }
+    })
+  };
+
+  const cancelSalesFaktur = async (id, code) => {
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Status data akan diubah ",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        try {
+          axios({
+            method: "patch",
+            url: `${Url}/sales_invoices/cancel/${id}`,
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          })
+
+          getFaktur();
+          Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
+        }
+        catch (err) {
+          console.log(err);
+        }
+      }
+    })
+
+  };
+
+  const ubahToDraft = async (id, code) => {
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Status data akan diubah ",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        try {
+          axios({
+            method: "patch",
+            url: `${Url}/sales_invoices/submitted_to_draft?id_faktur_penjualan=${id}`,
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          })
+
+          getFaktur();
+          Swal.fire("Berhasil Diubah!", `${code} Menjadi Draft`, "success");
+        }
+        catch (err) {
+          console.log(err);
+        }
+      }
+    })
+
   };
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -183,9 +260,9 @@ const FakturTable = () => {
       ...getColumnSearchProps('total'),
       render(text, record) {
         return <div>{
-          <CurrencyFormat className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp. '} value={Number(text).toFixed(2).replace('.' , ',')} />
-          }</div>
-    }
+          <CurrencyFormat className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp. '} value={Number(text).toFixed(2).replace('.', ',')} />
+        }</div>
+      }
     },
     {
       title: 'Tipe',
@@ -215,28 +292,91 @@ const FakturTable = () => {
       render: (_, record) => (
         <>
           <Space size="middle">
-            <Link to={`/faktur/detail/${record.id}`}>
-              <Button
-                size='small'
-                type="primary"
-                icon={<InfoCircleOutlined />}
-              />
-            </Link>
-            <Link to={`/faktur/edit/${record.id}`}>
-              <Button
-                size='small'
-                type="success"
-                icon={<EditOutlined />}
-              />
-            </Link>
-            <Button
-              size='small'
-              type="danger"
-              icon={<DeleteOutlined />}
-              onClick={() => deleteSalesFaktur(record.id, record.code)}
-            />
+            {record.can['read-sales_invoice'] ? (
+              <Link to={`/faktur/detail/${record.id}`}>
+                <Button
+                  size='small'
+                  type="primary"
+                  icon={<InfoCircleOutlined />}
+                />
+              </Link>
+            ) : null}
+
+
+            {
+              record.can['update-sales_invoice'] ? (
+                <Link to={`/faktur/edit/${record.id}`}>
+                  <Button
+                    size='small'
+                    type="success"
+                    icon={<EditOutlined />}
+                  />
+                </Link>
+              ) : null
+            }
+            {
+              record.can['delete-sales_invoice'] ? (
+                <Space size="middle">
+                  <Button
+                    size='small'
+                    type="danger"
+                    icon={<DeleteOutlined />}
+                    onClick={() => deleteSalesFaktur(record.id, record.code)}
+                  />
+                </Space>
+              ) : null
+            }
+            {
+              record.can['cancel-sales_invoice'] ? (
+
+                <Button
+                  size='small'
+                  type="danger"
+                  icon={<CloseOutlined />}
+                  onClick={() => cancelSalesFaktur(record.id, record.code)}
+                />
+
+              ) : null
+            }
+            {
+              record.can['submitted_to_draft-sales_invoice'] ? (
+                <Space size="middle">
+                  <Button
+                    size='small'
+                    type="danger"
+                    icon={<FileSyncOutlined />}
+                    onClick={() => ubahToDraft(record.id, record.code)}
+                  />
+                </Space>
+              ) : null
+            }
           </Space>
         </>
+
+        // <>
+        //   <Space size="middle">
+        //     <Link to={`/faktur/detail/${record.id}`}>
+        //       <Button
+        //         size='small'
+        //         type="primary"
+        //         icon={<InfoCircleOutlined />}
+        //       />
+        //     </Link>
+        //     <Link to={`/faktur/edit/${record.id}`}>
+        //       <Button
+        //         size='small'
+        //         type="success"
+        //         icon={<EditOutlined />}
+        //       />
+        //     </Link>
+        //     <Button
+        //       size='small'
+        //       type="danger"
+        //       icon={<DeleteOutlined />}
+        //       onClick={() => deleteSalesFaktur(record.id, record.code)}
+        //     />
+        //   </Space>
+        // </>
       ),
     },
   ];

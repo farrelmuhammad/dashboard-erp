@@ -2486,7 +2486,7 @@ const BuatTally = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Pesanan</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Tally Sheet</label>
                             <div className="col-sm-7">
                                 <input
                                     value="Otomatis"
@@ -2621,7 +2621,7 @@ const BuatTally = () => {
                             <div className="row">
                                 <div className="col mb-3">
                                     <Search
-                                        placeholder="Cari Produk..."
+                                        placeholder= {sumber == 'SO' ? 'Cari Pesanan Penjualan...' : 'Cari Retur Pembelian...' }
                                         style={{
                                             width: 400,
                                         }}

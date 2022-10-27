@@ -142,7 +142,7 @@ const BuatRetur = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_sales_invoices?nama_alias=${query}`, {
+            const res = await axios.get(`${Url}/sales_returns_available_sales_invoices?nama_alias=${query}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`

@@ -1914,7 +1914,7 @@ const EditTally = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Pesanan</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Tally Sheet</label>
                             <div className="col-sm-7">
                                 <input
                                     value={getTallySheet.code}
@@ -2018,7 +2018,7 @@ const EditTally = () => {
                         onClick={() => setModal2Visible(true)}
                     />,
                     <Modal
-                        title="Tambah Pesanan"
+                        title="Tambah Pesanan Penjualan"
                         centered
                         visible={modal2Visible}
                         onCancel={() => setModal2Visible(false)}
@@ -2029,7 +2029,7 @@ const EditTally = () => {
                             <div className="row">
                                 <div className="col mb-3">
                                     <Search
-                                        placeholder="Cari Nomor Pesanan.."
+                                        placeholder={sumber == 'SO' ? 'Cari Pesanan Penjualan...' : 'Cari Retur Pembelian...' }
                                         style={{
                                             width: 400,
                                         }}
