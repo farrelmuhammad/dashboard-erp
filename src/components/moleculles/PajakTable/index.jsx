@@ -6,20 +6,25 @@ import Swal from "sweetalert2";
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Button, Input, Space, Table, Typography } from "antd";
+import { Button, Input, Popconfirm, Space, Table, Typography } from "antd";
 import { useRef } from "react";
-import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  InfoCircleOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import { toTitleCase } from "../../../utils/helper";
 const { Text } = Typography;
 
 const PajakTable = () => {
   // const token = jsCookie.get("auth");
-  const auth = useSelector(state => state.auth);
+  const auth = useSelector((state) => state.auth);
   const [taxes, setTaxes] = useState();
 
   const searchInput = useRef(null);
-  const [searchText, setSearchText] = useState('');
-  const [searchedColumn, setSearchedColumn] = useState('');
+  const [searchText, setSearchText] = useState("");
+  const [searchedColumn, setSearchedColumn] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [ellipsis, setEllipsis] = useState(true);
 
@@ -33,11 +38,16 @@ const PajakTable = () => {
 
   const handleReset = (clearFilters) => {
     clearFilters();
-    setSearchText('');
+    setSearchText("");
   };
 
   const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+    }) => (
       <div
         style={{
           padding: 8,
@@ -47,11 +57,13 @@ const PajakTable = () => {
           ref={searchInput}
           placeholder={`Search ${dataIndex}`}
           value={selectedKeys[0]}
-          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
           onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
           style={{
             marginBottom: 8,
-            display: 'block',
+            display: "block",
           }}
         />
         <Space>
@@ -94,7 +106,7 @@ const PajakTable = () => {
     filterIcon: (filtered) => (
       <SearchOutlined
         style={{
-          color: filtered ? '#1890ff' : undefined,
+          color: filtered ? "#1890ff" : undefined,
         }}
       />
     ),
@@ -123,57 +135,58 @@ const PajakTable = () => {
 
   const columns = [
     {
-      title: 'Kode',
-      dataIndex: 'code',
-      key: 'code',
-      width: '15%',
-      ...getColumnSearchProps('code'),
+      title: "Kode",
+      dataIndex: "code",
+      key: "code",
+      width: "15%",
+      ...getColumnSearchProps("code"),
     },
     {
-      title: 'Nama Pajak',
-      dataIndex: 'type',
-      key: 'type',
-      width: '30%',
-      ...getColumnSearchProps('type'),
-      sorter: true,
-      sortDirections: ['descend', 'ascend'],
+      title: "Nama Pajak",
+      dataIndex: "type",
+      key: "type",
+      width: "30%",
+      ...getColumnSearchProps("type"),
+      sorter: (a, b) => a.type.length - b.type.length,
+      sortDirections: ["ascend", "descend"],
     },
     {
-      title: 'Persentase',
-      dataIndex: 'rate',
-      key: 'rate',
-      ...getColumnSearchProps('rate'),
-      render: (text) => <div>{text} %</div>
+      title: "Persentase",
+      dataIndex: "rate",
+      key: "rate",
+      ...getColumnSearchProps("rate"),
+      render: (text) => <div>{text} %</div>,
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
       // sortDirections: ['descend', 'ascend'],
     },
     {
-      title: 'Actions',
-      width: '20%',
-      align: 'center',
+      title: "Actions",
+      width: "20%",
+      align: "center",
       render: (_, record) => (
         <>
           <Space size="middle">
             <Link to={`/pajak/detail/${record.id}`}>
               <Button
-                size='small'
+                size="small"
                 type="primary"
                 icon={<InfoCircleOutlined />}
               />
             </Link>
             <Link to={`/pajak/edit/${record.id}`}>
-              <Button
-                size='small'
-                type="success"
-                icon={<EditOutlined />}
-              />
+              <Button size="small" type="success" icon={<EditOutlined />} />
             </Link>
-            <Button
-              size='small'
-              type="danger"
-              icon={<DeleteOutlined />}
-              onClick={() => deleteTaxes(record.id)}
-            />
+            <Popconfirm
+              title="Yakin hapus?"
+              onConfirm={() => deleteTaxes(record.id)}
+            >
+              <Button
+                size="small"
+                type="danger"
+                icon={<DeleteOutlined />}
+                // onClick={() => deleteTaxes(record.id)}
+              />
+            </Popconfirm>
           </Space>
         </>
       ),
@@ -192,13 +205,13 @@ const PajakTable = () => {
           Authorization: `Bearer ${auth.token}`,
         },
       })
-      .then(res => {
-        const getData = res.data.data
-        setTaxes(getData)
+      .then((res) => {
+        const getData = res.data.data;
+        setTaxes(getData);
         // setStatus(getData.map(d => d.status))
         setIsLoading(false);
-        console.log(getData)
-      })
+        console.log(getData);
+      });
   };
 
   const deleteTaxes = async (id) => {
@@ -226,6 +239,6 @@ const PajakTable = () => {
       />
     </>
   );
-}
+};
 
 export default PajakTable;

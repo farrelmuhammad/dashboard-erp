@@ -80,10 +80,10 @@ const EditableCell = ({
                 ]}
             >
                 {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} 
-                  decimalSeparator = {','}
-                  onChange={value => {
-                      value = parseFloat(value.toString().replace('.', ','))
+                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
+                    decimalSeparator={','}
+                    onChange={value => {
+                        value = parseFloat(value.toString().replace('.', ','))
                     }}
                 />
             </Form.Item>
@@ -125,6 +125,7 @@ const EditFaktur = () => {
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState("");
     const [uangMuka, setUangMuka] = useState()
+    const [statusDelvery, setStatusDelivery] = useState()
 
     const navigate = useNavigate();
 
@@ -207,9 +208,13 @@ const EditFaktur = () => {
 
     useEffect(() => {
         // getSalesOrderDetails()
-        getCodeFaktur()
+        // getCodeFaktur()
         getDataFaktur()
     }, [])
+
+    useEffect(() => {
+        setGrandTotal(Number(subTotal) - Number(grandTotalDiscount) + Number(totalPpn) - Number(uangMuka));
+    }, [totalPpn, uangMuka]);
 
     const getDataFaktur = async () => {
         await axios.get(`${Url}/select_sales_invoices?id=${id}`, {
@@ -221,7 +226,9 @@ const EditFaktur = () => {
             .then((res) => {
                 let getData = res.data[0]
                 setDataHeader(getData);
+                setCode(getData.code)
                 setDate(getData.date)
+                setStatusDelivery()
                 setSubTotal(getData.subtotal)
                 setGrandTotal(getData.total)
                 setUangMuka(getData.down_payment);
@@ -294,21 +301,21 @@ const EditFaktur = () => {
 
 
 
-    const getCodeFaktur = async () => {
-        await axios.get(`${Url}/get_new_standard_sales_invoice_code?tanggal=${date}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then((res) => {
-                setCode(res.data.data);
-            })
-            .catch((err) => {
-                // Jika Gagal
-                console.log(err);
-            });
-    }
+    // const getCodeFaktur = async () => {
+    //     await axios.get(`${Url}/get_new_standard_sales_invoice_code?tanggal=${date}`, {
+    //         headers: {
+    //             Accept: "application/json",
+    //             Authorization: `Bearer ${auth.token}`,
+    //         },
+    //     })
+    //         .then((res) => {
+    //             setCode(res.data.data);
+    //         })
+    //         .catch((err) => {
+    //             // Jika Gagal
+    //             console.log(err);
+    //         });
+    // }
 
 
     useEffect(() => {
@@ -413,7 +420,7 @@ const EditFaktur = () => {
                 return {
                     props: {
                     },
-                    children: <div>{Number(text).toFixed(2).replace('.',',')}</div>
+                    children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
                 };
             }
         },
@@ -471,6 +478,12 @@ const EditFaktur = () => {
         let check_checked = checked;
         calculate(product, check_checked);
     };
+
+    function tambahUangMuka(value) {
+        let hasil = value.toString().replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+        setUangMuka(hasil);
+
+    }
 
     function klikUbahData(y, value, key) {
         let tmpData = [];
@@ -1087,7 +1100,8 @@ const EditFaktur = () => {
         userData.append("tanggal", date);
         // userData.append("referensi", referensi);
         userData.append("tipe", fakturType);
-        userData.append("alamat_penerima", address);
+        userData.append("alamat_penerima", addressId);
+        // userData.append("alamat_penerima", address);
         userData.append("penerima", customer);
         userData.append("catatan", description);
         userData.append("uang_muka", uangMuka);
@@ -1099,11 +1113,12 @@ const EditFaktur = () => {
             userData.append("termasuk_pajak", 0);
 
         }
-        userData.append("status", "Draft");
+        userData.append("status", "Submitted");
         product.map((p, i) => {
             userData.append("nama_alias_produk[]", p.product_alias_name);
             userData.append("kuantitas[]", p.quantity);
             userData.append("satuan[]", p.unit);
+            userData.append("tipe", selectedType.value);
             userData.append("harga[]", p.price);
             userData.append("diskon_tetap[]", p.fixed_discount);
             userData.append("persentase_diskon[]", p.discount_percentage);
@@ -1147,7 +1162,7 @@ const EditFaktur = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/tallypembelian");
+                navigate("/faktur");
             })
             .catch((err) => {
                 if (err.response) {
@@ -1178,6 +1193,7 @@ const EditFaktur = () => {
         userData.append("penerima", customer);
         userData.append("catatan", description);
         userData.append("uang_muka", uangMuka);
+        userData.append("is_delivered", statusDelvery)
         if (checked) {
             userData.append("termasuk_pajak", 1);
 
@@ -1235,7 +1251,7 @@ const EditFaktur = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/tallypembelian");
+                navigate("/faktur");
             })
             .catch((err) => {
                 if (err.response) {
@@ -1276,7 +1292,7 @@ const EditFaktur = () => {
             // quantity: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].quantity).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "qty")} key="qty" />,
             unit: item.unit,
             price:
-             <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang} onKeyDown={(event) => klikEnter(event)} value={Number(item.price)} onChange={(e) => klikUbahData(i, e.target.value, "price")} />,
+                <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang} onKeyDown={(event) => klikEnter(event)} value={Number(item.price)} onChange={(e) => klikUbahData(i, e.target.value, "price")} />,
             discount:
                 data[i].pilihanDiskon == 'noDisc' ?
                     <div className='d-flex p-1' style={{ height: "100%" }}>
@@ -1348,124 +1364,124 @@ const EditFaktur = () => {
     return (
         <>
             <form className="p-3 mb-3 bg-body rounded">
-            <PageHeader
-                className="bg-body rounded mb-2"
-                onBack={() => window.history.back()}
-                title="Edit Faktur Penjualan"
-            >
-                {/* <div className="text-title text-start mb-4">
+                <PageHeader
+                    className="bg-body rounded mb-2"
+                    onBack={() => window.history.back()}
+                    title="Edit Faktur Penjualan"
+                >
+                    {/* <div className="text-title text-start mb-4">
                     <h3 className="title fw-bold">Edit Faktur</h3>
                 </div> */}
-                <div className="row">
-                    <div className="col">
-                        <div className="row mb-3">
-                            <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
-                            <div className="col-sm-7">
-                                <input
-                                    id="startDate"
-                                    className="form-control"
-                                    type="date"
-                                    value={date}
-                                    onChange={(e) => setDate(e.target.value)}
-                                />
+                    <div className="row">
+                        <div className="col">
+                            <div className="row mb-3">
+                                <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
+                                <div className="col-sm-7">
+                                    <input
+                                        id="startDate"
+                                        className="form-control"
+                                        type="date"
+                                        value={date}
+                                        onChange={(e) => setDate(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                            <div className="row mb-3">
+                                <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Faktur</label>
+                                <div className="col-sm-7">
+                                    <input
+                                        value={code}
+                                        type="Nama"
+                                        className="form-control"
+                                        id="inputNama3"
+                                        disabled
+                                    />
+                                </div>
+                            </div>
+                            <div className="row mb-3">
+                                <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pilih Transaksi</label>
+                                <div className="col-sm-7">
+                                    <input
+                                        value={sumber == 'SO' ? 'Penjualan' : 'Surat Jalan'}
+                                        type="Nama"
+                                        className="form-control"
+                                        id="inputNama3"
+                                        disabled
+                                    />
+                                </div>
+                            </div>
+                            <div className="row mb-3">
+                                <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Tipe Faktur</label>
+                                <div className="col-sm-7">
+                                    <ReactSelect
+                                        className="basic-single"
+                                        placeholder="Pilih Tipe Faktur..."
+                                        classNamePrefix="select"
+                                        defaultInputValue={selectedType.label}
+                                        value={selectedType}
+                                        getOptionLabel={(e) => e.label}
+                                        getOptionValue={(e) => e.value}
+                                        options={optionsType}
+                                        onChange={handleChangeTipe}
+                                    // options={optionsType}
+                                    // onChange={handleChangeTipe}
+                                    />
+                                </div>
                             </div>
                         </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Faktur</label>
-                            <div className="col-sm-7">
-                                <input
-                                    value={code}
-                                    type="Nama"
+                        <div className="col">
+                            <div className="row mb-3">
+                                <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
+                                <div className="col-sm-7">
+                                    <AsyncSelect
+                                        placeholder="Pilih Penerima..."
+                                        cacheOptions
+                                        defaultOptions
+                                        defaultInputValue={selectedPenerima.name}
+                                        value={selectedPenerima}
+                                        getOptionLabel={(e) => e.name}
+                                        getOptionValue={(e) => e.id}
+                                        loadOptions={loadOptionsCustomer}
+                                        onChange={handleChangeCustomer}
+                                    />
+                                </div>
+                            </div>
+                            <div className="row mb-3">
+                                <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Alamat</label>
+                                <div className="col-sm-7">
+                                    <ReactSelect
+                                        placeholder="Pilih Alamat..."
+                                        cacheOptions
+                                        defaultOptions
+                                        defaultInputValue={selectedAddress.address}
+                                        value={selectedAddress}
+                                        getOptionLabel={(e) => e.address}
+                                        getOptionValue={(e) => e.id}
+                                        options={address}
+                                        onChange={handleChangeAddress}
+                                    />
+                                </div>
+                            </div>
+                            <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Catatan</label>
+                            <div className="col-sm-12">
+                                <textarea
+                                    defaultValue={catatan}
                                     className="form-control"
-                                    id="inputNama3"
-                                    disabled
+                                    id="form4Example3"
+                                    rows="2"
+                                    onChange={(e) => setCatatan(e.target.value)}
                                 />
                             </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pilih Transaksi</label>
-                            <div className="col-sm-7">
-                                <input
-                                    value={sumber == 'SO' ? 'Penjualan' : 'Surat Jalan'}
-                                    type="Nama"
-                                    className="form-control"
-                                    id="inputNama3"
-                                    disabled
-                                />
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Tipe Faktur</label>
-                            <div className="col-sm-7">
-                                <ReactSelect
-                                    className="basic-single"
-                                    placeholder="Pilih Tipe Faktur..."
-                                    classNamePrefix="select"
-                                    defaultInputValue={selectedType.label}
-                                    value={selectedType}
-                                    getOptionLabel={(e) => e.label}
-                                    getOptionValue={(e) => e.value}
-                                    options={optionsType}
-                                    onChange={handleChangeTipe}
-                                // options={optionsType}
-                                // onChange={handleChangeTipe}
-                                />
+                            <div className="row mb-3">
+                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
+                                <div className="col-sm-4 p-1">
+                                    <h5>
+                                        {getStatus === 'Submitted' ? <Tag color="blue">{getStatus}</Tag> : getStatus === 'Draft' ? <Tag color="orange">{getStatus}</Tag> : getStatus === 'Done' ? <Tag color="green">{getStatus}</Tag> : <Tag color="red">{getStatus}</Tag>}
+                                    </h5>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div className="col">
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
-                            <div className="col-sm-7">
-                                <AsyncSelect
-                                    placeholder="Pilih Penerima..."
-                                    cacheOptions
-                                    defaultOptions
-                                    defaultInputValue={selectedPenerima.name}
-                                    value={selectedPenerima}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsCustomer}
-                                    onChange={handleChangeCustomer}
-                                />
-                            </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Alamat</label>
-                            <div className="col-sm-7">
-                                <ReactSelect
-                                    placeholder="Pilih Alamat..."
-                                    cacheOptions
-                                    defaultOptions
-                                    defaultInputValue={selectedAddress.address}
-                                    value={selectedAddress}
-                                    getOptionLabel={(e) => e.address}
-                                    getOptionValue={(e) => e.id}
-                                    options={address}
-                                    onChange={handleChangeAddress}
-                                />
-                            </div>
-                        </div>
-                        <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Catatan</label>
-                        <div className="col-sm-12">
-                            <textarea
-                                defaultValue={catatan}
-                                className="form-control"
-                                id="form4Example3"
-                                rows="2"
-                                onChange={(e) => setCatatan(e.target.value)}
-                            />
-                        </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
-                            <div className="col-sm-4 p-1">
-                                <h5>
-                                    {getStatus === 'Submitted' ? <Tag color="blue">{getStatus}</Tag> : getStatus === 'Draft' ? <Tag color="orange">{getStatus}</Tag> : getStatus === 'Done' ? <Tag color="green">{getStatus}</Tag> : <Tag color="red">{getStatus}</Tag>}
-                                </h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 </PageHeader>
             </form>
             <form className="p-3 mb-5 bg-body rounded">
@@ -1579,15 +1595,19 @@ const EditFaktur = () => {
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">PPN</label>
                             <div className="col-sm-6">
                                 <CurrencyFormat prefix={'Rp '} disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toFixed(2).replace('.', ',')} key="total" />
-
-                                {/* <input
-                                    defaultValue={totalPpn}
-                                    readOnly="true"
-                                    type="number"
-                                    className="form-control form-control-sm"
-                                    id="colFormLabelSm"
-                                // placeholder='ppn per item di total semua row'
-                                /> */}
+                            </div>
+                        </div>
+                        <div className="row mb-3">
+                            <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Uang Muka</label>
+                            <div className="col-sm-6">
+                                <CurrencyFormat
+                                    className='form-control form-control-sm'
+                                    thousandSeparator={'.'}
+                                    decimalSeparator={','}
+                                    prefix={'Rp '}
+                                    onKeyDown={(event) => klikEnter(event)}
+                                    value={uangMuka}
+                                    onChange={(e) => tambahUangMuka(e.target.value)} />
                             </div>
                         </div>
                         <div className="row mb-3">
@@ -1607,7 +1627,7 @@ const EditFaktur = () => {
                         </div>
                     </div>
                 </div>
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:"right", position:"relative"}}>
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: "right", position: "relative" }}>
                     {
                         getStatus == 'Submitted' ?
                             <button
@@ -1644,7 +1664,7 @@ const EditFaktur = () => {
                         Cetak
                     </button> */}
                 </div>
-                <div style={{clear:"both"}}></div>
+                <div style={{ clear: "both" }}></div>
             </form>
         </>
     )

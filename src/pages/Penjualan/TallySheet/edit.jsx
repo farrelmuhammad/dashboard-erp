@@ -138,7 +138,7 @@ const EditTally = () => {
                             product_name: dataTallySheet[i].product_name,
                             action: dataTallySheet[i].action,
                             number_order_qty: number_order_qty,
-                            tally_sheets_qty: dataTallySheet[i].tally_sheets_qty + dataTallySheet[i].boxes_quantity,
+                            tally_sheets_qty: Number(dataTallySheet[i].tally_sheets_qty) + Number(dataTallySheet[i].boxes_quantity),
                             tally_sheets_qty_NoEdit: dataTallySheet[i].tally_sheets_qty,
                             key: "lama"
                         })
@@ -468,6 +468,93 @@ const EditTally = () => {
         },
     ];
 
+    function simpanTallySheet(index) {
+
+        // mencari jumlah qty dan total box 
+        let total = [];
+        let kuantitas = [];
+        let arrKuantitas = [];
+
+        for (let x = 0; x < product.length; x++) {
+            kuantitas = [];
+            if (x == index) {
+                total[x] = 0;
+                for (let a = 1; a < data[x].length; a++) {
+                    for (let b = 1; b < data[x][a].length; b++) {
+                        if (data[x][a][b].value != 0) {
+                            kuantitas.push(data[x][a][b].value);
+
+                            total[x] = Number(total[x]) + Number(1);
+                        }
+                    }
+                }
+                arrKuantitas.push(kuantitas)
+
+            }
+            else {
+                total.push(box[x]);
+                console.log(box[x])
+                arrKuantitas.push(kuantitasBox[x]);
+            }
+        }
+        setBox(total);
+        setKuantitasBox(arrKuantitas);
+
+        let tmp = []
+        for (let i = 0; i < product.length; i++) {
+            if (i == indexSO) {
+                console.log(product[i].tally_sheets_qty)
+                console.log(totalTallySheet[i])
+                console.log(product[i].number_order_qty)
+                tmp.push({
+                    id_produk: product[i].id_produk,
+                    id_pesanan_pembelian: product[i].id_pesanan_pembelian,
+                    code: product[i].code,
+                    boxes_quantity: totalTallySheet[i].toString(),
+                    number_of_boxes: total[i],
+                    boxes_unit: product[i].boxes_unit,
+                    product_alias_name: product[i].product_alias_name,
+                    product_name: product[i].product_name,
+                    action: product[i].key == 'lama' ? Number(totalTallySheet[i]) + Number(product[i].tally_sheets_qty_NoEdit) >= product[i].number_order_qty ? 'Done' : 'Next delivery' : Number(totalTallySheet[i]) + Number(product[i - 1].tally_sheets_qty) >= product[i].number_order_qty ? 'Done' : 'Next delivery',
+                    number_order_qty: product[i].number_order_qty,
+                    tally_sheets_qty: product[i].key == 'lama' ? totalTallySheet[i].toString() : Number(totalTallySheet[i]) + Number(product[i - 1].tally_sheets_qty),
+                    tally_sheets_qty_NoEdit: product[i].tally_sheets_qty_NoEdit,
+                    key: product[i].key
+                })
+            }
+            else {
+                tmp.push(product[i])
+            }
+        }
+
+        // pengecekan status yang alias dan id nya sama 
+        let tmpAKhir = []
+        for (let i = 0; i < tmp.length; i++) {
+            if (tmp[i].id_pesanan_pembelian == tmp[index].id_pesanan_pembelian && tmp[i].product_alias_name == tmp[index].product_alias_name) {
+                tmpAKhir.push({
+                    id_produk: tmp[i].id_produk,
+                    id_pesanan_pembelian: tmp[i].id_pesanan_pembelian,
+                    code: tmp[i].code,
+                    boxes_quantity: tmp[i].boxes_quantity,
+                    number_of_boxes: tmp[i].number_of_boxes,
+                    boxes_unit: tmp[i].boxes_unit,
+                    product_alias_name: tmp[i].product_alias_name,
+                    product_name: tmp[i].product_name,
+                    action: tmp[indexSO].action,
+                    number_order_qty: tmp[i].number_order_qty,
+                    tally_sheets_qty: tmp[i].tally_sheets_qty,
+                    tally_sheets_qty_NoEdit: tmp[i].tally_sheets_qty_NoEdit,
+                    key: tmp[i].key
+                })
+            }
+            else {
+                tmpAKhir.push(tmp[i])
+            }
+        }
+        setProduct(tmpAKhir)
+        console.log(sheetNoEdit)
+        setModal2Visible2(false)
+    }
     const onCellsChanged = (changes) => {
         console.log(sheetNoEdit)
         const newGrid = [];
@@ -514,90 +601,89 @@ const EditTally = () => {
         }
         setData(arrData);
 
-
-        // mencari jumlah qty dan total box 
-        let total = [];
-        let kuantitas = [];
-        let arrKuantitas = [];
-
-        for (let x = 0; x < product.length; x++) {
-            kuantitas = [];
-            if (x == indexSO) {
-                total[x] = 0;
-                for (let a = 1; a < data[x].length; a++) {
-                    for (let b = 1; b < data[x][a].length; b++) {
-                        if (data[x][a][b].value != 0) {
-                            kuantitas.push(data[x][a][b].value);
-
-                            total[x] = Number(total[x]) + Number(1);
-                        }
-                    }
-                }
-                arrKuantitas.push(kuantitas)
-
-            }
-            else {
-                total.push(box[x]);
-                console.log(box[x])
-                arrKuantitas.push(kuantitasBox[x]);
-            }
-        }
-        setBox(total);
-        setKuantitasBox(arrKuantitas);
-
-        let tmp = []
-        for (let i = 0; i < product.length; i++) {
-            if (i == indexSO) {
-                console.log(product[i].tally_sheets_qty)
-                console.log(totTly[i])
-                console.log(product[i].number_order_qty)
-                tmp.push({
-                    id_produk: product[i].id_produk,
-                    id_pesanan_pembelian: product[i].id_pesanan_pembelian,
-                    code: product[i].code,
-                    boxes_quantity: totTly[i].toString(),
-                    number_of_boxes: total[i],
-                    boxes_unit: product[i].boxes_unit,
-                    product_alias_name: product[i].product_alias_name,
-                    product_name: product[i].product_name,
-                    action: product[i].key == 'lama' ? Number(totTly[i]) + Number(product[i].tally_sheets_qty_NoEdit) >= product[i].number_order_qty ? 'Done' : 'Next delivery' : Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty) >= product[i].number_order_qty ? 'Done' : 'Next delivery',
-                    number_order_qty: product[i].number_order_qty,
-                    tally_sheets_qty: product[i].key == 'lama' ? totTly[i].toString() : Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty),
-                    tally_sheets_qty_NoEdit: product[i].tally_sheets_qty_NoEdit,
-                    key: product[i].key
-                })
-            }
-            else {
-                tmp.push(product[i])
-            }
-        }
-
-        // pengecekan status yang alias dan id nya sama 
-        let tmpAKhir = []
-        for (let i = 0; i < tmp.length; i++) {
-            if (tmp[i].id_pesanan_pembelian == tmp[indexSO].id_pesanan_pembelian && tmp[i].product_alias_name == tmp[indexSO].product_alias_name) {
-                tmpAKhir.push({
-                    id_produk: tmp[i].id_produk,
-                    id_pesanan_pembelian: tmp[i].id_pesanan_pembelian,
-                    code: tmp[i].code,
-                    boxes_quantity: tmp[i].boxes_quantity,
-                    number_of_boxes: tmp[i].number_of_boxes,
-                    boxes_unit: tmp[i].boxes_unit,
-                    product_alias_name: tmp[i].product_alias_name,
-                    product_name: tmp[i].product_name,
-                    action: tmp[indexSO].action,
-                    number_order_qty: tmp[i].number_order_qty,
-                    tally_sheets_qty: tmp[i].tally_sheets_qty,
-                    tally_sheets_qty_NoEdit: tmp[i].tally_sheets_qty_NoEdit,
-                    key: tmp[i].key
-                })
-            }
-            else {
-                tmpAKhir.push(tmp[i])
-            }
-        }
-        setProduct(tmpAKhir)
-        console.log(sheetNoEdit)
+          // mencari jumlah qty dan total box 
+          let total = [];
+          let kuantitas = [];
+          let arrKuantitas = [];
+  
+          for (let x = 0; x < product.length; x++) {
+              kuantitas = [];
+              if (x == indexSO) {
+                  total[x] = 0;
+                  for (let a = 1; a < data[x].length; a++) {
+                      for (let b = 1; b < data[x][a].length; b++) {
+                          if (data[x][a][b].value != 0) {
+                              kuantitas.push(data[x][a][b].value);
+  
+                              total[x] = Number(total[x]) + Number(1);
+                          }
+                      }
+                  }
+                  arrKuantitas.push(kuantitas)
+  
+              }
+              else {
+                  total.push(box[x]);
+                  console.log(box[x])
+                  arrKuantitas.push(kuantitasBox[x]);
+              }
+          }
+          setBox(total);
+          setKuantitasBox(arrKuantitas);
+  
+          let tmp = []
+          for (let i = 0; i < product.length; i++) {
+              if (i == indexSO) {
+                  console.log(product[i].tally_sheets_qty)
+                  console.log(totTly[i])
+                  console.log(product[i].number_order_qty)
+                  tmp.push({
+                      id_produk: product[i].id_produk,
+                      id_pesanan_pembelian: product[i].id_pesanan_pembelian,
+                      code: product[i].code,
+                      boxes_quantity: totTly[i].toString(),
+                      number_of_boxes: total[i],
+                      boxes_unit: product[i].boxes_unit,
+                      product_alias_name: product[i].product_alias_name,
+                      product_name: product[i].product_name,
+                      action: product[i].key == 'lama' ? Number(totTly[i]) + Number(product[i].tally_sheets_qty_NoEdit) >= product[i].number_order_qty ? 'Done' : 'Next delivery' : Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty) >= product[i].number_order_qty ? 'Done' : 'Next delivery',
+                      number_order_qty: product[i].number_order_qty,
+                      tally_sheets_qty: product[i].key == 'lama' ? totTly[i].toString() : Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty),
+                      tally_sheets_qty_NoEdit: product[i].tally_sheets_qty_NoEdit,
+                      key: product[i].key
+                  })
+              }
+              else {
+                  tmp.push(product[i])
+              }
+          }
+  
+          // pengecekan status yang alias dan id nya sama 
+          let tmpAKhir = []
+          for (let i = 0; i < tmp.length; i++) {
+              if (tmp[i].id_pesanan_pembelian == tmp[indexSO].id_pesanan_pembelian && tmp[i].product_alias_name == tmp[indexSO].product_alias_name) {
+                  tmpAKhir.push({
+                      id_produk: tmp[i].id_produk,
+                      id_pesanan_pembelian: tmp[i].id_pesanan_pembelian,
+                      code: tmp[i].code,
+                      boxes_quantity: tmp[i].boxes_quantity,
+                      number_of_boxes: tmp[i].number_of_boxes,
+                      boxes_unit: tmp[i].boxes_unit,
+                      product_alias_name: tmp[i].product_alias_name,
+                      product_name: tmp[i].product_name,
+                      action: tmp[indexSO].action,
+                      number_order_qty: tmp[i].number_order_qty,
+                      tally_sheets_qty: tmp[i].tally_sheets_qty,
+                      tally_sheets_qty_NoEdit: tmp[i].tally_sheets_qty_NoEdit,
+                      key: tmp[i].key
+                  })
+              }
+              else {
+                  tmpAKhir.push(tmp[i])
+              }
+          }
+          setProduct(tmpAKhir)
+          console.log(sheetNoEdit)
 
     };
 
@@ -1152,7 +1238,17 @@ const EditTally = () => {
                         centered
                         visible={modal2Visible2}
                         onCancel={() => setModal2Visible2(false)}
-                        onOk={() => setModal2Visible2(false)}
+                        footer={[
+                            <Button
+                                key="submit"
+                                type="primary"
+                                style={{ background: "green", borderColor: "white" }}
+                                onClick={() => setModal2Visible2(false)}
+                            >
+                                Ok
+                            </Button>,
+                        ]}
+                        // onOk={() => setModal2Visible2(false)}
                         width={1000}
                     >
                         <div className="text-title text-start">
@@ -1818,7 +1914,7 @@ const EditTally = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Pesanan</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Tally Sheet</label>
                             <div className="col-sm-7">
                                 <input
                                     value={getTallySheet.code}
@@ -1922,7 +2018,7 @@ const EditTally = () => {
                         onClick={() => setModal2Visible(true)}
                     />,
                     <Modal
-                        title="Tambah Pesanan"
+                        title="Tambah Pesanan Penjualan"
                         centered
                         visible={modal2Visible}
                         onCancel={() => setModal2Visible(false)}
@@ -1933,7 +2029,7 @@ const EditTally = () => {
                             <div className="row">
                                 <div className="col mb-3">
                                     <Search
-                                        placeholder="Cari Nomor Pesanan.."
+                                        placeholder={sumber == 'SO' ? 'Cari Pesanan Penjualan...' : 'Cari Retur Pembelian...' }
                                         style={{
                                             width: 400,
                                         }}
@@ -1977,7 +2073,7 @@ const EditTally = () => {
                     columns={columns}
                     onChange={(e) => setProduct(e.target.value)}
                 />
-                <br/>
+                <br />
                 <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
 
                     {

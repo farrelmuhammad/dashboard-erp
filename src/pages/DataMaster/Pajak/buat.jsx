@@ -5,17 +5,17 @@ import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
 import { useSelector } from "react-redux";
-import { Button, PageHeader } from 'antd';
+import { Button, Input, InputNumber, PageHeader } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 
 const BuatPajak = () => {
-  const auth = useSelector(state => state.auth);
-  const [type, setType] = useState('');
-  const [rate, setRate] = useState('');
+  const auth = useSelector((state) => state.auth);
+  const [type, setType] = useState("");
+  const [rate, setRate] = useState("");
   const [product, setProduct] = useState([]);
   const navigate = useNavigate();
 
-  const [getTaxes, setGetTaxes] = useState('');
+  const [getTaxes, setGetTaxes] = useState("");
 
   const [getProduct, setGetProduct] = useState();
 
@@ -87,6 +87,10 @@ const BuatPajak = () => {
       });
   }, []);
 
+  const onChange = (value) => {
+    // console.log('changed', value);
+    setRate(value)
+  };
 
   return (
     <>
@@ -101,13 +105,22 @@ const BuatPajak = () => {
             Kode
           </label>
           <div className="col-sm-10">
-            <input
+            <Input
+              size="large"
+              value={getTaxes}
+              style={{
+                fontWeight: "bold",
+              }}
+              disabled
+              // onChange={(e) => setType(e.target.value)}
+            />
+            {/* <input
               type="text"
               className="form-control"
               id="inputKode3"
               value={getTaxes}
               disabled
-            />
+            /> */}
           </div>
         </div>
         <div className="row mb-3">
@@ -115,31 +128,45 @@ const BuatPajak = () => {
             Nama Pajak
           </label>
           <div className="col-sm-10">
-            <input
+            <Input
+              size="large"
+              placeholder="Masukkan Nama Pajak"
+              onChange={(e) => setType(e.target.value)}
+            />
+            {/* <input
               type="Nama"
               className="form-control"
               id="inputNama3"
               onChange={(e) => setType(e.target.value)}
-            />
+            /> */}
           </div>
         </div>
         <div className="row mb-3">
           <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
             Persentase
           </label>
-          <div className="col-sm-5">
-            <input
-              type="number"
-              step="any"
-              className="form-control"
-              id="inputNama3"
-              onChange={(e) => setRate(e.target.value)}
-            />
-          </div>
-          <div className="col-sm-1">
-            <span className="input-group-text" id="addon-wrapping">
-              %
-            </span>
+          <div className="col-sm-2">
+            <div className="input-group">
+              <InputNumber
+                size="large"
+                defaultValue={0}
+                formatter={(value) =>
+                  `${value} %`.replace(/\B(?=(\d{2})+(?!\d))/g, ",")
+                }
+                // parser={(value) => value.replace(/\%\s?|(,*)/g, "")}
+                // onChange={(e) => setRate(e.target.value)}
+                onChange={onChange}
+              />
+              {/* <input
+                type="number"
+                className="form-control"
+                aria-label="Dollar amount (with dot and two decimal places)"
+                defaultValue={0}
+                pattern="/\B(?=(\d{2})+(?!\d))/g"
+                onChange={(e) => setRate(e.target.value)}
+              />
+              <span className="input-group-text">%</span> */}
+            </div>
           </div>
         </div>
         <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2">

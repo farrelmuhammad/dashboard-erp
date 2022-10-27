@@ -6,19 +6,24 @@ import Swal from "sweetalert2";
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Button, Input, Space, Table, Typography } from "antd";
-import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
+import { Button, Input, Popconfirm, Space, Table, Typography } from "antd";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  InfoCircleOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import { toTitleCase } from "../../../utils/helper";
 const { Text } = Typography;
 
 const DepartemenTable = () => {
   // const token = jsCookie.get("auth");
-  const auth = useSelector(state => state.auth);
+  const auth = useSelector((state) => state.auth);
   const [departments, setDepartments] = useState();
 
   const searchInput = React.useRef(null);
-  const [searchText, setSearchText] = useState('');
-  const [searchedColumn, setSearchedColumn] = useState('');
+  const [searchText, setSearchText] = useState("");
+  const [searchedColumn, setSearchedColumn] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [ellipsis, setEllipsis] = useState(true);
 
@@ -32,11 +37,16 @@ const DepartemenTable = () => {
 
   const handleReset = (clearFilters) => {
     clearFilters();
-    setSearchText('');
+    setSearchText("");
   };
 
   const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+    }) => (
       <div
         style={{
           padding: 8,
@@ -46,11 +56,13 @@ const DepartemenTable = () => {
           ref={searchInput}
           placeholder={`Search ${dataIndex}`}
           value={selectedKeys[0]}
-          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
           onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
           style={{
             marginBottom: 8,
-            display: 'block',
+            display: "block",
           }}
         />
         <Space>
@@ -93,7 +105,7 @@ const DepartemenTable = () => {
     filterIcon: (filtered) => (
       <SearchOutlined
         style={{
-          color: filtered ? '#1890ff' : undefined,
+          color: filtered ? "#1890ff" : undefined,
         }}
       />
     ),
@@ -122,76 +134,77 @@ const DepartemenTable = () => {
 
   const columns = [
     {
-      title: 'Kode',
-      dataIndex: 'code',
-      key: 'code',
-      width: '10%',
-      ...getColumnSearchProps('code'),
+      title: "Kode",
+      dataIndex: "code",
+      key: "code",
+      width: "10%",
+      ...getColumnSearchProps("code"),
     },
     {
-      title: 'Departemen',
-      dataIndex: 'name',
-      key: 'name',
-      width: '30%',
-      ...getColumnSearchProps('name'),
-      sorter: true,
-      sortDirections: ['descend', 'ascend'],
+      title: "Departemen",
+      dataIndex: "name",
+      key: "name",
+      width: "30%",
+      ...getColumnSearchProps("name"),
+      sorter: (a, b) => a.name.length - b.name.length,
+      sortDirections: ["ascend", "descend"],
     },
     {
-      title: 'Keterangan',
-      dataIndex: 'description',
-      key: 'description',
-      ...getColumnSearchProps('description'),
+      title: "Keterangan",
+      dataIndex: "description",
+      key: "description",
+      ...getColumnSearchProps("description"),
       render: (text) => (
         <Text
           style={
             ellipsis
               ? {
-                width: 500,
-              }
+                  width: 500,
+                }
               : undefined
           }
           ellipsis={
             ellipsis
               ? {
-                tooltip: text,
-              }
+                  tooltip: text,
+                }
               : false
           }
         >
           {text}
         </Text>
-      )
+      ),
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
       // sortDirections: ['descend', 'ascend'],
     },
     {
-      title: 'Actions',
-      width: '20%',
-      align: 'center',
+      title: "Actions",
+      width: "20%",
+      align: "center",
       render: (_, record) => (
         <>
           <Space size="middle">
             <Link to={`/departemen/detail/${record.id}`}>
               <Button
-                size='small'
+                size="small"
                 type="primary"
                 icon={<InfoCircleOutlined />}
               />
             </Link>
             <Link to={`/departemen/edit/${record.id}`}>
-              <Button
-                size='small'
-                type="success"
-                icon={<EditOutlined />}
-              />
+              <Button size="small" type="success" icon={<EditOutlined />} />
             </Link>
-            <Button
-              size='small'
-              type="danger"
-              icon={<DeleteOutlined />}
-              onClick={() => deleteDepartments(record.id)}
-            />
+            <Popconfirm
+              title="Yakin hapus?"
+              onConfirm={() => deleteDepartments(record.id)}
+            >
+              <Button
+                size="small"
+                type="danger"
+                icon={<DeleteOutlined />}
+                // onClick={() => deleteDepartments(record.id)}
+              />
+            </Popconfirm>
           </Space>
         </>
       ),
@@ -210,13 +223,13 @@ const DepartemenTable = () => {
           Authorization: `Bearer ${auth.token}`,
         },
       })
-      .then(res => {
-        const getData = res.data.data
-        setDepartments(getData)
+      .then((res) => {
+        const getData = res.data.data;
+        setDepartments(getData);
         // setStatus(getData.map(d => d.status))
         setIsLoading(false);
-        console.log(getData)
-      })
+        console.log(getData);
+      });
   };
 
   const deleteDepartments = async (id) => {
@@ -229,7 +242,6 @@ const DepartemenTable = () => {
     getDepartments();
     Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
   };
-
 
   return (
     <>
@@ -245,6 +257,6 @@ const DepartemenTable = () => {
       />
     </>
   );
-}
+};
 
 export default DepartemenTable;

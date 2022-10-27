@@ -206,7 +206,7 @@ const BuatGrup = () => {
                                 <Checkbox
                                   value={ar.id}
                                   // checked={ar.id == access}
-                                  checked={ar[1].id}
+                                  // checked={ar.id}
                                   onChange={handleCheck}
                                 >
                                   {ar.name}
