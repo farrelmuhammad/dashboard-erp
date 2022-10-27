@@ -1088,7 +1088,7 @@ const BuatTally = () => {
                 }
 
                 // loop setelah data baru 
-                for (let y = kolom + 1; y <= dataSumber.length; y++) {
+                for (let y = tempData.length ; y <= dataSumber.length; y++) {
                     qtyStore.push(quantity[x][y - 1])
                     boxStore.push(totalBox[x][y - 1])
                     tempData.push(data[x][y - 1])
