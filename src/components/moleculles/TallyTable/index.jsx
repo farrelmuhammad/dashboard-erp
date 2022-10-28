@@ -323,7 +323,6 @@ const TallyTable = () => {
       key: 'code',
       width: '20%',
       sorter: (a, b) => a.code.length - b.code.length,
-      sortDirections: ['descend', 'ascend'],
       ...getColumnSearchProps('code', 'No. Transaksi'),
       // defaultSortOrder: 'descend',
       // sorter: (a, b) => a.code - b.code,
