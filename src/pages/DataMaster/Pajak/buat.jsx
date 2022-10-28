@@ -7,6 +7,7 @@ import "./form.css";
 import { useSelector } from "react-redux";
 import { Button, Input, InputNumber, PageHeader } from "antd";
 import { SendOutlined } from "@ant-design/icons";
+import CurrencyFormat from "react-currency-format";
 
 const BuatPajak = () => {
   const auth = useSelector((state) => state.auth);
@@ -89,8 +90,18 @@ const BuatPajak = () => {
 
   const onChange = (value) => {
     // console.log('changed', value);
-    setRate(value)
+    // value = parseFloat(value.toString().replace('.', ','))
+    setRate(value.toString().replace('.', ','))
   };
+
+  const convertToRupiahTabel = (angka) => {
+    return <>
+      {
+        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} />
+
+      }
+    </>
+  }
 
   return (
     <>
@@ -112,7 +123,7 @@ const BuatPajak = () => {
                 fontWeight: "bold",
               }}
               disabled
-              // onChange={(e) => setType(e.target.value)}
+            // onChange={(e) => setType(e.target.value)}
             />
             {/* <input
               type="text"
@@ -149,12 +160,10 @@ const BuatPajak = () => {
             <div className="input-group">
               <InputNumber
                 size="large"
+                addonAfter="%"
                 defaultValue={0}
-                formatter={(value) =>
-                  `${value} %`.replace(/\B(?=(\d{2})+(?!\d))/g, ",")
-                }
-                // parser={(value) => value.replace(/\%\s?|(,*)/g, "")}
-                // onChange={(e) => setRate(e.target.value)}
+                decimalSeparator = {','}
+                formatter={(value) => { convertToRupiahTabel(value) }}
                 onChange={onChange}
               />
               {/* <input

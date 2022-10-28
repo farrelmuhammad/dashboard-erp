@@ -667,16 +667,22 @@ const EditGoodsRequest = () => {
                         value="Draft"
                         onClick={handleDraft}
                     >
-                        Simpan
+                        Update
                     </button>
-                    <button
-                        type="button"
-                        className="btn btn-primary rounded m-1"
-                        value="Submitted"
-                        onClick={handleSubmit}
-                    >
-                        Submit
-                    </button>
+                    {
+                        status != "Submitted"?
+                            <button
+                                type="button"
+                                className="btn btn-primary rounded m-1"
+                                value="Submitted"
+                                onChange={(e) => setStatus(e.target.value)}
+                                onClick={handleSubmit}
+                                width="100px"
+                            >
+                                Submit
+                            </button>
+                            : null
+                    }
                 </div>
             </form>
         </>

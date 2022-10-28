@@ -16,8 +16,6 @@ const GrupTable = () => {
   // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [groups, setGroups] = useState();
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const searchInput = React.useRef(null);
   const [searchText, setSearchText] = useState('');
@@ -157,12 +155,12 @@ const GrupTable = () => {
           ellipsis={
             ellipsis
               ? {
-                tooltip: toTitleCase(text),
+                tooltip: text,
               }
               : false
           }
         >
-          {toTitleCase(text)}
+          {text}
         </Text>
       )
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
@@ -193,7 +191,7 @@ const GrupTable = () => {
               size='small'
               type="danger"
               icon={<DeleteOutlined />}
-              onClick={() => deleteGroups(record.id)}
+              onClick={() => deleteGroups(record.id, record.code)}
             />
           </Space>
         </>
@@ -223,28 +221,32 @@ const GrupTable = () => {
   };
 
   const deleteGroups = async (id) => {
-    await axios.delete(`${Url}/groups/${id}`, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    });
-    getGroups();
-    Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Data akan dihapus",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    })
+      .then((result) => {
+        if (result.isConfirmed) {
+          axios.delete(`${Url}/groups/${id}`, {
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          });
+          getGroups();
+          Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+        }
+      })
   };
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(event.target.value);
-    setPage(0);
-  };
-
-    return (
-      <>
-        <Table
+  return (
+    <>
+      <Table
         size="small"
         loading={isLoading}
         columns={columns}
@@ -254,9 +256,9 @@ const GrupTable = () => {
           y: 295,
         }}
       />
-      </>
-    );
-  }
+    </>
+  );
+}
 
 
 export default GrupTable;

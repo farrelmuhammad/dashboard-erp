@@ -28,15 +28,30 @@ const ProductionTable = () => {
         },
       });
 
-    const deleteProduction= async (id) => {
-        await axios.delete(`${Url}/productions/${id}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        });
-        getProduction()
-        Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+    const deleteProduction = async (id) => {
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Data ini akan dihapus",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios.delete(`${Url}/productions/${id}`, {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${auth.token}`,
+                    },
+                });
+                getProduction()
+                Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+
+            }
+        })
+
+
     };
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -220,7 +235,7 @@ const ProductionTable = () => {
             width: '20%',
             render: (_, { status }) => (
                 <>
-                    {status === 'publish' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
+                    {status === 'Submitted' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'Draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
 
                 </>
             ),
@@ -234,9 +249,9 @@ const ProductionTable = () => {
             align: 'center',
             render: (_, record) => (
                 <>
-                    {record.status === 'publish' ? (
+                    {record.status === 'Done' || record.status === 'Submitted' || record.status === 'Processed'? (
                         <Space size="middle">
-                        <Link to={`/production/detail/${record.id}`}>
+                        <Link to={`/produksi/detail/${record.id}`}>
                             <Button
                                 size='small'
                                 type="primary"
@@ -246,14 +261,14 @@ const ProductionTable = () => {
                     </Space>
                     ) : (
                         <Space size="middle">
-                        <Link to={`/production/detail/${record.id}`}>
+                        <Link to={`/produksi/detail/${record.id}`}>
                             <Button
                                 size='small'
                                 type="primary"
                                 icon={<InfoCircleOutlined />}
                             />
                         </Link>
-                        <Link to={`/production/edit/${record.id}`}>
+                        <Link to={`/produksi/edit/${record.id}`}>
                             <Button
                                 size='small'
                                 type="success"

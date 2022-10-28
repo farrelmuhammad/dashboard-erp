@@ -1,16 +1,3 @@
-// import Paper from "@mui/material/Paper";
-// import Table from "@mui/material/Table";
-// import TableBody from "@mui/material/TableBody";
-// import TableCell from "@mui/material/TableCell";
-// import TableContainer from "@mui/material/TableContainer";
-// import TableHead from "@mui/material/TableHead";
-// import TablePagination from "@mui/material/TablePagination";
-// import TableRow from "@mui/material/TableRow";
-// import SendIcon from "@mui/icons-material/Send";
-// import Button from "@mui/material/Button";
-// import InfoIcon from '@mui/icons-material/Info';
-// import EditIcon from '@mui/icons-material/Edit';
-// import DeleteIcon from '@mui/icons-material/Delete';
 import axios from "axios";
 import jsCookie from "js-cookie";
 import { useEffect, useState } from "react";
@@ -39,9 +26,9 @@ const DetailPosisi = () => {
         },
       })
       .then((res) => {
+        const getData = res.data.data[0]
         setLoading(false)
-        setData(res.data.data);
-        setGetEmployee(res.data.data[0].employees);
+        setData(getData);
         // console.log(res.data.data);
         // console.log(res.data.data[0].employees)
       })
@@ -71,64 +58,56 @@ const DetailPosisi = () => {
     )
   }
 
-  if (getEmployee.length > 0) {
-    return (
-      <>
-        <PageHeader
-          ghost={false}
-          onBack={() => window.history.back()}
-          title="Detail Posisi">
-          <div className="row mb-3">
-            <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
-              Kode
-            </label>
-            <div className="col-sm-10">
-              {data?.map((d) => (
-                <input
-                  disabled="true"
-                  type="kode"
-                  className="form-control"
-                  id="inputKode3"
-                  value={d.code}
-                />
-              ))}
-            </div>
+  return (
+    <>
+      <PageHeader
+        ghost={false}
+        onBack={() => window.history.back()}
+        title="Detail Posisi">
+        <div className="row mb-3">
+          <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
+            Kode
+          </label>
+          <div className="col-sm-10">
+            <input
+              disabled="true"
+              type="kode"
+              className="form-control"
+              id="inputKode3"
+              value={data.code}
+            />
           </div>
-          <div className="row mb-3">
-            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-              Nama Posisi
-            </label>
-            <div className="col-sm-10">
-              {data?.map((d) => (
-                <input
-                  type="Nama"
-                  className="form-control"
-                  defaultValue={d.name}
-                  disabled
-                />
-              ))}
-            </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            Nama Posisi
+          </label>
+          <div className="col-sm-10">
+            <input
+              type="Nama"
+              className="form-control"
+              defaultValue={data.name}
+              disabled
+            />
           </div>
-          <div className="row mb-3">
-            <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
-              Keterangan
-            </label>
-            <div className="col-sm-10">
-              {data?.map((d) => (
-                <textarea
-                  className="form-control"
-                  rows="4"
-                  type="Nama"
-                  defaultValue={d.description}
-                  disabled
-                />
-              ))}
-            </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
+            Keterangan
+          </label>
+          <div className="col-sm-10">
+            <textarea
+              className="form-control"
+              rows="4"
+              type="Nama"
+              defaultValue={data.description}
+              disabled
+            />
           </div>
-        </PageHeader>
-      </>
-    );
-  }
+        </div>
+      </PageHeader>
+    </>
+  );
 };
 
 export default DetailPosisi;

@@ -158,12 +158,12 @@ const GudangTable = () => {
           ellipsis={
             ellipsis
               ? {
-                tooltip: toTitleCase(text),
+                tooltip: text,
               }
               : false
           }
         >
-          {toTitleCase(text)}
+          {text}
         </Text>
       )
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
@@ -194,7 +194,7 @@ const GudangTable = () => {
               size='small'
               type="danger"
               icon={<DeleteOutlined />}
-              onClick={() => deleteWarehouses(record.id)}
+              onClick={() => deleteWarehouses(record.id, record.code)}
             />
           </Space>
         </>
@@ -223,15 +223,28 @@ const GudangTable = () => {
       })
   };
 
-  const deleteWarehouses = async (id) => {
-    await axios.delete(`${Url}/warehouses/${id}`, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    });
-    getWarehouses();
-    Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+  const deleteWarehouses = async (id, code) => {
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Data akan dihapus",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    })
+      .then((result) => {
+        if (result.isConfirmed) {
+          axios.delete(`${Url}/warehouses/${id}`, {
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          });
+          getWarehouses();
+          Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+        }
+      })
   };
 
   return (

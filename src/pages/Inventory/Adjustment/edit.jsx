@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
 import CurrencyFormat from 'react-currency-format';
+import { toTitleCase } from '../../../utils/helper';
 
 const EditableContext = createContext(null);
 
@@ -101,6 +102,7 @@ const EditAdjustment = () => {
     const [product, setProduct] = useState([]);
     const [query, setQuery] = useState("");
     const [getCode, setGetCode] = useState('');
+    const [status, setStatus] = useState("");
 
     const [notes, setAdjustmentNotes] = useState('');
     const [adjustment_date, setAdjustmentDate] = useState(null);
@@ -140,6 +142,7 @@ const EditAdjustment = () => {
                 setAdjustmentNotes(getData.notes);
                 setWarehouse(getData.warehouse_id);
                 setWarehouseName(getData.warehouse_name);
+                setStatus(getData.status);
                 // setProduct(getData.adjustmentdetails);
                 setLoading(false);
             })
@@ -489,9 +492,7 @@ const EditAdjustment = () => {
                                     <div className="form-group row mb-1">
                                         <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
                                         <div className="col-sm-8">
-                                            <h3 className="badge bg-danger text-center m-1">
-                                                Draft
-                                            </h3>
+                                        {status === 'Submitted' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'Draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
                                         </div>
                                     </div>
                                     <div className="form-group row mb-1">
@@ -580,24 +581,31 @@ const EditAdjustment = () => {
                         </div>
                     </div>
                 </div>
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
                         value="Draft"
                         onClick={handleDraft}
                     >
-                        Simpan
+                        Update
                     </button>
-                    <button
-                        type="button"
-                        className="btn btn-primary rounded m-1"
-                        value="Submitted"
-                        onClick={handleSubmit}
-                    >
-                        Submit
-                    </button>
+                    {
+                        status != "Done" ?
+                            <button
+                                type="button"
+                                className="btn btn-primary rounded m-1"
+                                value="Done"
+                                onChange={(e) => setStatus(e.target.value)}
+                                onClick={handleSubmit}
+                                width="100px"
+                            >
+                                Submit
+                            </button>
+                            : null
+                    }
                 </div>
+                <div style={{ clear: 'both' }}></div>
             </div>
         </>
     )

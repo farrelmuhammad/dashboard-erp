@@ -14,22 +14,51 @@ const DetailGudang = () => {
   // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const { id } = useParams();
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [code, setCode] = useState('');
+  const [name, setName] = useState('');
+  const [address, setAddress] = useState('');
+  const [tipe, setTipe] = useState('');
+  const [city, setCity] = useState('');
+  const [chart, setChart] = useState('');
+  const [chartName, setChartName] = useState('');
+  const [postal_code, setPostal_code] = useState('');
+  const [phone_number, setPhone_number] = useState('');
+  const [employees, setEmployees] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    axios.get(`${Url}/warehouses?id=${id}`, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    })
-      .then((res) => {
-        const getData = res.data.data[0]
-        setData(getData)
-        setLoading(false)
-      });
+    fetchWarehouse()
   }, []);
+
+  const fetchWarehouse = async () => {
+    try {
+      setLoading(true)
+      const res = await axios.get(`${Url}/warehouses?id=${id}`, {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${auth.token}`,
+        },
+      })
+      const getData = res.data.data[0];
+      setCode(getData.code)
+      setName(getData.name)
+      setAddress(getData.address)
+      setCity(getData.city)
+      setTipe(getData.type)
+      setChart(getData.chart_of_account.id)
+      setChartName(getData.chart_of_account.name)
+      setEmployees(getData.employee.id)
+      setEmployeesName(getData.employee.name)
+      setTipe(getData.type)
+      setPostal_code(getData.postal_code)
+      setPhone_number(getData.phone_number)
+    }
+    catch (err) {
+      // setError(err)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -58,7 +87,7 @@ const DetailGudang = () => {
               type="kode"
               className="form-control"
               id="inputKode3"
-              value={data.code}
+              value={code}
               disabled
             />
           </div>
@@ -73,7 +102,7 @@ const DetailGudang = () => {
               type="Nama"
               className="form-control"
               id="inputNama3"
-              defaultValue={data.name}
+              defaultValue={name}
               disabled
             />
           </div>
@@ -88,7 +117,7 @@ const DetailGudang = () => {
               className="form-select"
               disabled
             >
-              <option>{data.type}</option>
+              <option>{tipe}</option>
             </select>
           </div>
         </div>
@@ -101,7 +130,7 @@ const DetailGudang = () => {
               className="form-control"
               id="form4Example3"
               rows="4"
-              defaultValue={data.address}
+              defaultValue={address}
               disabled
             />
           </div>
@@ -115,7 +144,7 @@ const DetailGudang = () => {
               type="Nama"
               className="form-control"
               id="inputNama3"
-              defaultValue={data.city}
+              defaultValue={city}
               disabled
             />
           </div>
@@ -129,7 +158,7 @@ const DetailGudang = () => {
               type="Nama"
               className="form-control"
               id="inputNama3"
-              defaultValue={data.postal_code}
+              defaultValue={postal_code}
               disabled
             />
           </div>
@@ -143,7 +172,7 @@ const DetailGudang = () => {
               type="Nama"
               className="form-control"
               id="inputNama3"
-              defaultValue={data.phone_number}
+              defaultValue={phone_number}
               disabled
             />
           </div>
@@ -158,7 +187,7 @@ const DetailGudang = () => {
               className="form-select"
               disabled
             >
-              <option>{data.employee_id}</option>
+              <option>{employees}</option>
             </select>
           </div>
         </div>
@@ -172,7 +201,7 @@ const DetailGudang = () => {
               className="form-select"
               disabled
             >
-              <option>{data.chart_of_account.name}</option>
+              <option>{chartName}</option>
             </select>
           </div>
         </div>

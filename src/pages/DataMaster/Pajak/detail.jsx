@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Url from '../../../Config';
 import { useSelector } from 'react-redux';
-import { PageHeader, Skeleton } from 'antd';
+import { Input, InputNumber, PageHeader, Skeleton } from 'antd';
 
 export const DetailPajak = () => {
     const auth = useSelector(state => state.auth);
@@ -53,40 +53,62 @@ export const DetailPajak = () => {
                 <div className="row mb-3">
                     <label htmlFor="inputKode3" className="col-sm-2 col-form-label">Kode</label>
                     <div className="col-sm-10">
-                        <input
+                        <Input
+                            size="large"
+                            value={data.code}
+                            style={{
+                                fontWeight: "bold",
+                            }}
+                            disabled
+                        />
+                        {/* <input
                             disabled="true"
                             type="kode"
                             className="form-control"
                             id="inputKode3"
                             value={data.code}
-                        />
+                        /> */}
                     </div>
                 </div>
                 <div className="row mb-3">
                     <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Pajak</label>
                     <div className="col-sm-10">
-                        <input
+                        <Input
+                            size="large"
+                            value={data.type}
+                            style={{
+                                fontWeight: "bold",
+                            }}
+                            disabled
+                        />
+                        {/* <input
                             disabled="true"
                             type="Nama"
                             className="form-control"
                             id="inputNama3"
                             value={data.type}
-                        />
+                        /> */}
                     </div>
                 </div>
                 <div className="row mb-3">
                     <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Persentase</label>
                     <div className="col-sm-5">
-                        <input
+                        <InputNumber
+                            size="large"
+                            addonAfter="%"
+                            defaultValue={0}
+                            value={data.rate}
+                            disabled
+                        // formatter={(value) => { convertToRupiahTabel(`${value} %`) }}
+                        // onChange={onChange}
+                        />
+                        {/* <input
                             disabled="true"
                             type="Nama"
                             className="form-control"
                             id="inputNama3"
                             value={data.rate}
-                        />
-                    </div>
-                    <div className="col-sm-1">
-                        <span className="input-group-text" id="addon-wrapping">%</span>
+                        /> */}
                     </div>
                 </div>
             </PageHeader>

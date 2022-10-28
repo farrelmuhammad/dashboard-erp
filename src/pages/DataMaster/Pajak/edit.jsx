@@ -7,6 +7,7 @@ import "./form.css";
 import { useSelector } from "react-redux";
 import { Button, Input, InputNumber, PageHeader, Skeleton } from "antd";
 import { SendOutlined } from "@ant-design/icons";
+import CurrencyFormat from "react-currency-format";
 
 const EditPajak = () => {
   // const auth.token = jsCookie.get("auth");
@@ -71,6 +72,7 @@ const EditPajak = () => {
         setCode(getData.code);
         setType(getData.type);
         setRate(getData.rate);
+        console.log(getData.rate);
         setLoading(false);
       })
       .catch((err) => {
@@ -80,8 +82,17 @@ const EditPajak = () => {
 
   const onChange = (value) => {
     // console.log('changed', value);
-    setRate(value)
+    setRate(value.toString().replace('.', ','))
   };
+
+  const convertToRupiahTabel = (angka) => {
+    return <>
+      {
+        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} />
+
+      }
+    </>
+  }
 
   if (loading) {
     return (
@@ -113,7 +124,7 @@ const EditPajak = () => {
                 fontWeight: "bold",
               }}
               disabled
-              // onChange={(e) => setType(e.target.value)}
+            // onChange={(e) => setType(e.target.value)}
             />
             {/* <input
               type="kode"
@@ -152,6 +163,14 @@ const EditPajak = () => {
             <div className="input-group">
               <InputNumber
                 size="large"
+                addonAfter="%"
+                defaultValue={rate}
+                decimalSeparator = {','}
+                // formatter={(value) => { convertToRupiahTabel(value) }}
+                onChange={onChange}
+              />
+              {/* <InputNumber
+                size="large"
                 defaultValue={rate}
                 formatter={(value) =>
                   `${value} %`.replace(/\B(?=(\d{2})+(?!\d))/g, ",")
@@ -159,7 +178,7 @@ const EditPajak = () => {
                 // parser={(value) => value.replace(/\%\s?|(,*)/g, "")}
                 // onChange={(e) => setRate(e.target.value)}
                 onChange={onChange}
-              />
+              /> */}
               {/* <input
                 type="number"
                 className="form-control"

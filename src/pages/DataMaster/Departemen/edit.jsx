@@ -1,18 +1,4 @@
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import SendIcon from "@mui/icons-material/Send";
-import Button from "@mui/material/Button";
-// import InfoIcon from "@mui/icons-material/Info";
-// import EditIcon from "@mui/icons-material/Edit";
-// import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
-import jsCookie from "js-cookie";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -21,24 +7,19 @@ import Url from "../../../Config";
 import "./form.css";
 import { Checkbox } from "@mui/material";
 import { useSelector } from "react-redux";
-import { PageHeader, Skeleton } from "antd";
+import { Button, PageHeader, Skeleton } from "antd";
+import { SendOutlined } from "@ant-design/icons";
 
 const EditDepartemen = () => {
   // const token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [nama, setNama] = useState('');
-  const [deskripsi, setDeskripsi] = useState('');
-  const [employee, setEmployee] = useState([]);
+  const [deskripsi, setDeskripsi] = useState(null || '');
   const [data, setData] = useState([]);
   const navigate = useNavigate();
   const { id } = useParams();
 
   const [loading, setLoading] = useState(true);
-
-  const [getEmployee, setGetEmployee] = useState([]);
-
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     fetchDepartment()
@@ -69,7 +50,7 @@ const EditDepartemen = () => {
     const userData = new URLSearchParams();
     userData.append("nama", nama);
     userData.append("deskripsi", deskripsi);
-    employee.map((emp) => userData.append("karyawan[]", emp));
+
     axios({
       method: "put",
       url: `${Url}/departments/${id}`,
@@ -117,6 +98,7 @@ const EditDepartemen = () => {
     <>
       <PageHeader
         ghost={false}
+        className="bg-body rounded mb-2"
         onBack={() => window.history.back()}
         title="Edit Departemen">
         <div className="row mb-3">
@@ -161,13 +143,14 @@ const EditDepartemen = () => {
             />
           </div>
         </div>
-        <div className="d-grid gap-2 d-md-flex justify-content-md-end">
+        <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
           <Button
+            type="primary"
+            icon={<SendOutlined />}
+            size="large"
             onClick={handleUpdate}
-            variant="contained"
-            endIcon={<SendIcon />}
           >
-            Simpan
+            Submit
           </Button>
         </div>
       </PageHeader>

@@ -12,7 +12,8 @@ import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
-import { formatQuantity, formatRupiah } from '../../../utils/helper';
+import CurrencyFormat from 'react-currency-format';
+import { toTitleCase } from '../../../utils/helper';
 
 const EditableContext = createContext(null);
 
@@ -80,8 +81,13 @@ const EditableCell = ({
                     },
                 ]}
             >
-                {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
+                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
+                    decimalSeparator = {','}
+                    onChange={value => {
+                        value = parseFloat(value.toString().replace('.', ','))
+                      }}
+                      
+                />
             </Form.Item>
         ) : (
             <div
@@ -235,12 +241,8 @@ const CreateProduction = () => {
             width: '30%',
             align: 'center',
             editable: true,
-            render(text, record) {
-                return {
-                    props: {
-                    },
-                    children: <div>{formatQuantity(text)}</div>
-                };
+            render: (text) => {
+                return convertToRupiahTabel(text)
             }
         },
         {
@@ -258,6 +260,14 @@ const CreateProduction = () => {
             }
         },
     ];
+    const convertToRupiahTabel = (angka) => {
+        return <>
+        {
+            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} />
+            
+        }
+        </>
+    }
     const handleSave = (row,type_production) => {
         console.log(row,type_production)
         if (type_production === 'input') {
@@ -387,7 +397,7 @@ const CreateProduction = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/permintaanbarang");
+                navigate("/produksi");
             })
             .catch((err) => {
                 if (err.response) {
@@ -440,7 +450,7 @@ const CreateProduction = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/permintaanbarang");
+                navigate("/produksi");
             })
             .catch((err) => {
                 if (err.response) {
@@ -536,9 +546,7 @@ const CreateProduction = () => {
                                     <div className="form-group row mb-1">
                                         <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
                                         <div className="col-sm-8">
-                                            <h3 className="badge bg-danger text-center m-1">
-                                                Draft
-                                            </h3>
+                                            <Tag color="orange">{toTitleCase("Draft")}</Tag>
                                         </div>
                                     </div>
                                 </div>
@@ -682,7 +690,7 @@ const CreateProduction = () => {
                         </div>
                     </div>
                 </div>
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -700,6 +708,7 @@ const CreateProduction = () => {
                         Submit
                     </button>
                 </div>
+                <div style={{ clear: 'both' }}></div>
             </form>
         </>
     )

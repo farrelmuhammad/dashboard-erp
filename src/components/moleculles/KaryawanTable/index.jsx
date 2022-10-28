@@ -190,17 +190,12 @@ const KaryawanTable = () => {
             <Link to={`/karyawan/edit/${record.id}`}>
               <Button size="small" type="success" icon={<EditOutlined />} />
             </Link>
-            <Popconfirm
-              title="Yakin hapus?"
-              onConfirm={() => deleteEmployees(record.id)}
-            >
-              <Button
-                size="small"
-                type="danger"
-                icon={<DeleteOutlined />}
-                // onClick={() => deleteEmployees(record.id)}
-              />
-            </Popconfirm>
+            <Button
+              size="small"
+              type="danger"
+              icon={<DeleteOutlined />}
+              onClick={() => deleteEmployees(record.id, record.code)}
+            />
           </Space>
         </>
       ),
@@ -259,15 +254,28 @@ const KaryawanTable = () => {
       });
   };
 
-  const deleteEmployees = async (id) => {
-    await axios.delete(`${Url}/employees/${id}`, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    });
-    getEmployees();
-    Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+  const deleteEmployees = async (id, code) => {
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Data akan dihapus",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    })
+      .then((result) => {
+        if (result.isConfirmed) {
+          axios.delete(`${Url}/employees/${id}`, {
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          });
+          getEmployees();
+          Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+        }
+      })
   };
 
   return (

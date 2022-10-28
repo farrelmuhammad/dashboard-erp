@@ -159,15 +159,15 @@ const PosisiTable = () => {
           style={
             ellipsis
               ? {
-                  width: 500,
-                }
+                width: 500,
+              }
               : undefined
           }
           ellipsis={
             ellipsis
               ? {
-                  tooltip: text,
-                }
+                tooltip: text,
+              }
               : false
           }
         >
@@ -194,18 +194,12 @@ const PosisiTable = () => {
             <Link to={`/posisi/edit/${record.id}`}>
               <Button size="small" type="success" icon={<EditOutlined />} />
             </Link>
-            <Popconfirm
-              title="Yakin hapus?"
-              onConfirm={() => deletePositions(record.id)}
-            >
-              <Button
-                size="small"
-                type="danger"
-                icon={<DeleteOutlined />}
-                // onClick={() => deletePositions(record.id)}
-              />
-              {/* <a>Delete</a> */}
-            </Popconfirm>
+            <Button
+              size="small"
+              type="danger"
+              icon={<DeleteOutlined />}
+              onClick={() => deletePositions(record.id, record.code)}
+            />
           </Space>
         </>
       ),
@@ -233,15 +227,28 @@ const PosisiTable = () => {
       });
   };
 
-  const deletePositions = async (id) => {
-    await axios.delete(`${Url}/positions/${id}`, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    });
-    getPositions();
-    Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+  const deletePositions = async (id, code) => {
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Data akan dihapus",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    })
+      .then((result) => {
+        if (result.isConfirmed) {
+          axios.delete(`${Url}/positions/${id}`, {
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          });
+          getPositions();
+          Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+        }
+      })
   };
 
   return (
