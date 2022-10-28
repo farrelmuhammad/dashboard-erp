@@ -25,6 +25,16 @@ const BuatKategori = () => {
 
 
   const handleSubmit = async (e) => {
+
+    if(!name){
+      Swal.fire({
+        icon:"error",
+        title:"Oops...",
+        text:"Data Nama kosong, Silahkan lengkapi datanya"
+      })
+    }
+    else {
+
     e.preventDefault();
     const userData = new FormData();
     // userData.append("id", id);
@@ -70,7 +80,7 @@ const BuatKategori = () => {
           Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
         }
       });
-  };
+  }};
 
   useEffect(() => {
     axios

@@ -28,6 +28,16 @@ const BuatPosisi = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if(!name){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Nama kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else{
+
     const userData = new FormData();
     // userData.append('id', id);
     userData.append("nama", name);
@@ -73,7 +83,7 @@ const BuatPosisi = () => {
           Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
         }
       });
-  };
+   } };
 
   const handleCheck = (event) => {
     var updatedList = [...employee];

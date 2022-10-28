@@ -126,7 +126,7 @@ const GrupTable = () => {
       title: 'Kode',
       dataIndex: 'code',
       key: 'code',
-      width: '10%',
+      width: '15%',
       ...getColumnSearchProps('code'),
     },
     {

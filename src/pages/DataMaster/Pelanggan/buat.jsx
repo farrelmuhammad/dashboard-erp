@@ -227,6 +227,71 @@ const BuatPelanggan = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if(!name){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Nama kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    // else if(!phone_number){
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Nomor Telepon kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
+    else if(phone_number.length > 20){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Nomor Telepon maksimal 20 karakter, Silahkan periksa kembali ",
+      });
+    }
+    // else if(!email){
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Email kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
+    // else if(!npwp){
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data NPWP kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
+    else if(npwp.length > 25){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "NPWP maksimal 25 karakter, Silahkan periksa kembali ",
+      });
+    }
+    else if(!term){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Termin kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!bussiness_ent){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Badan Usaha kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!discount){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Diskon kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else{
+
     const userData = new FormData();
 
     userData.append("nama", name);
@@ -286,7 +351,7 @@ const BuatPelanggan = () => {
           Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
         }
       });
-  };
+  }};
 
   useEffect(() => {
     axios
@@ -432,7 +497,7 @@ const BuatPelanggan = () => {
           </label>
           <div className="col-sm-10">
             <input
-              type="Nama"
+              type="number"
               className="form-control"
               id="inputNama3"
               onChange={(e) => setDiscount(e.target.value)}

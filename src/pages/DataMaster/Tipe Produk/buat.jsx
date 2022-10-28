@@ -22,6 +22,17 @@ const BuatTipeProduk = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    
+    if(!name){
+      Swal.fire({
+        icon:"error",
+        title:"Oops...",
+        text:"Data nama kosong, Silahkan lengkapi datanya"
+      })
+    }
+    else{
+
     const userData = new FormData();
     // userData.append("id", id);
     userData.append("nama", name);
@@ -68,7 +79,7 @@ const BuatTipeProduk = () => {
       });
 
     addType(name, description, product)
-  };
+   } };
 
   // const handleCheck = (event) => {
   //   var updatedList = [...product];

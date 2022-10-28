@@ -15,6 +15,7 @@ const BuatGrup = () => {
   const auth = useSelector(state => state.auth);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [Edescription, setEDescription] = useState('  ');
   const [access, setAccess] = useState([]);
   const navigate = useNavigate();
 
@@ -25,9 +26,27 @@ const BuatGrup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if(!name){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Nama kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    // else if(!description){
+    //   userData.append("deskripsi", Edescription)
+    // }
+else{
     const userData = new FormData();
     userData.append("nama", name);
-    userData.append("deskripsi", description);
+    if(!description){
+      userData.append("deskripsi", Edescription)
+    }
+    else{
+      userData.append("deskripsi", description);
+    }
+   
     access.map((acc) => userData.append("hak_akses[]", acc));
 
     // for (var pair of userData.entries()) {
@@ -59,7 +78,7 @@ const BuatGrup = () => {
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: err.response.data.error.nama,
+            text: err.response.data.error,
           });
         } else if (err.request) {
           console.log("err.request ", err.request);
@@ -69,7 +88,7 @@ const BuatGrup = () => {
           Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
         }
       });
-  };
+   } };
 
   const handleCheck = (event) => {
     var updatedList = [...access];
@@ -161,6 +180,7 @@ const BuatGrup = () => {
                 className="form-control"
                 id="form4Example3"
                 rows="4"
+                // defaultValue={"-"}
                 onChange={(e) => setDescription(e.target.value)}
               />
             </div>

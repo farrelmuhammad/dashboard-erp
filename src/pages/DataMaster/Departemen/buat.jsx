@@ -35,6 +35,15 @@ const BuatDepartemen = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if(!name){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Nama Departemen kosong, Silahkan Lengkapi datanya",
+      });
+    }
+    else {
+
     // console.log(employee);
     const userData = new FormData();
     // userData.append("id", id);
@@ -81,7 +90,7 @@ const BuatDepartemen = () => {
           Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
         }
       });
-  };
+  }};
 
   // const handleCheck = (event) => {
   //   var updatedList = [...employee];

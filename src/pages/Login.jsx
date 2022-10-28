@@ -18,7 +18,7 @@ export default function Login() {
   // const isLoggedIn = jsCookie.get('auth')
   const isLoggedIn = !!useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
-  // const eye = <FontAwesomeIcon icon={faEye} />;
+
   const [passwordShown, setPasswordShown] = useState(false);
 
   const onFinish = (values) => {

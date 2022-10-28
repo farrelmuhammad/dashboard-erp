@@ -21,6 +21,17 @@ const BuatMerek = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    
+    if(!name){
+      Swal.fire({
+        icon:"error",
+        title:"Oops...",
+        text:"Data nama kosong, Silahkan lengkapi datanya"
+      })
+    }
+    else{
+
     const userData = new FormData();
     // userData.append("id", id);
     userData.append("nama", name);
@@ -65,7 +76,7 @@ const BuatMerek = () => {
           Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
         }
       });
-  };
+   } };
 
   useEffect(() => {
     axios

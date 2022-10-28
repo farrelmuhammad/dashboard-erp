@@ -420,7 +420,7 @@ const BuatFakturPembelian = () => {
                     grandTotal = total - Number(getPercent);
                 }
                 else if (tmpData[i].pilihanDiskon == 'nominal') {
-                    grandTotal = (Number(tmpData[i].quantity.replace(',', '.')) * Number(tmpData[i].price)) - tmpData[i].fixed_discount;
+                    grandTotal = (Number(tmpData[i].quantity.replace(',', '.')) * Number(tmpData[i].price)) - tmpData[i].fixed_discount.replace(',', '.');
                 }
                 else {
                     grandTotal = tmpData[i].quantity.replace(',', '.') * Number(tmpData[i].price);
@@ -472,6 +472,10 @@ const BuatFakturPembelian = () => {
             else if (data[x].pilihanDiskon == 'nominal') {
 
                 hasilDiskon += Number(data[x].fixed_discount);
+            }
+            else if (data[x].pilihanDiskon == 'noDisc') {
+
+                hasilDiskon += 0;
             }
 
 
@@ -571,15 +575,15 @@ const BuatFakturPembelian = () => {
             price:
                 <div className='d-flex'>
                     {
-                        grup === 'Lokal' ? 
-                        <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={data[i].currency_name + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].price).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "price")} /> :
+                        // mataUang === 'Rp' || mataUang ===  'IDR' ? 
+                        // <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={data[i].currency_name + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].price).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "price")} /> :
                         <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={data[i].currency_name + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].price).toLocaleString('id')} onChange={(e) => klikUbahData(i, e.target.value, "price")} />
                     }
                 </div>,
             disc:
                 data[i].pilihanDiskon == 'noDisc' ?
                     <div className='d-flex p-1' style={{ height: "100%" }}>
-                        <input onKeyDown={(event) => klikEnter(event)} style={{ width: "70%", fontSize: "10px!important" }} type="text" className="text-center editable-input" defaultValue={data[i].discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} />
+                        <input onKeyDown={(event) => klikEnter(event)} style={{ width: "70%", fontSize: "10px!important" }} type="text" className="text-center editable-input" defaultValue={data[i].discount_percentage == null || data[i].fixed_discount == null ? 0 : data[i].discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} />
                         <div className="input-group-prepend"  >
                             <select
                                 onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
@@ -592,12 +596,15 @@ const BuatFakturPembelian = () => {
                                 <option value="nominal">
                                     {data[i].currency_name}
                                 </option>
+
                             </select>
                         </div>
                     </div> :
                     data[i].pilihanDiskon == 'persen' ?
                         <div className='d-flex p-1' style={{ height: "100%" }} >
-                            <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={data[i].discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
+                            <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={
+                                data[i].discount_percentage != null ? 
+                                data[i].discount_percentage : 0} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
                             <div className="input-group-prepend" >
                                 <select
                                     onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
@@ -610,6 +617,7 @@ const BuatFakturPembelian = () => {
                                     <option value="nominal">
                                         {data[i].currency_name}
                                     </option>
+                                    
                                 </select>
                             </div>
                         </div>
@@ -617,9 +625,13 @@ const BuatFakturPembelian = () => {
                         data[i].pilihanDiskon == 'nominal' ?
                             <div className='d-flex p-1' style={{ height: "100%" }}>
                                 {
-                                    grup === 'Lokal' ? 
-                                    <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].fixed_discount).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" /> : 
-                                    <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].fixed_discount).toLocaleString('id')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
+                                    // mataUang === 'Rp' || mataUang ===  'IDR' ? 
+                                    // <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={
+                                    //     data[i].fixed_discount == null ? 0 :
+                                    //     Number(data[i].fixed_discount).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" /> : 
+                                    <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={
+                                        data[i].fixed_discount == null ? 0 :
+                                        Number(data[i].fixed_discount).toLocaleString('id')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
                                 }
                               
 
@@ -635,15 +647,18 @@ const BuatFakturPembelian = () => {
                                         <option selected value="nominal">
                                             {data[i].currency_name}
                                         </option>
+                                      
                                     </select>
                                 </div>
                             </div> : null,
 
             total:
             
-                grup === 'Lokal' ? 
-                data[i].currency_name + ' ' + Number(data[i].total).toFixed(2).replace('.',',') : 
-                data[i].currency_name + ' ' + Number(data[i].total).toLocaleString('id')
+                mataUang === 'Rp' || mataUang ===  'IDR' ? 
+<CurrencyFormat disabled className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={data[i].currency_name + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].total).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "price")} /> :
+<CurrencyFormat disabled className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={data[i].currency_name + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].total).toLocaleString('id')} onChange={(e) => klikUbahData(i, e.target.value, "price")} />
+                // data[i].currency_name + ' ' + Number(data[i].total).toFixed(2).replace('.',',') : 
+                // data[i].currency_name + ' ' + Number(data[i].total).toLocaleString('id')
    
         }))
         ]
@@ -986,8 +1001,8 @@ const BuatFakturPembelian = () => {
 
         return <>
         {
-            grup === 'Lokal' ? 
-                  < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm"  className="form-control form-control-sm"/>}  />
+          mataUang === 'Rp' || mataUang === 'IDR' ? 
+                  < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm"  className="form-control form-control-sm"/>}  />
                   :< CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true"  id="colFormLabelSm"  className="form-control form-control-sm"/>} />
         }
         </>
@@ -1095,9 +1110,9 @@ const BuatFakturPembelian = () => {
                                     quantity: updatedList[i].quantity,
                                     price: updatedList[i].price,
                                     discount_percentage: updatedList[i].discount_percentage,
-                                    fixed_discount: updatedList[i].fixed_discount,
+                                    fixed_discount: 0,
                                     subtotal: updatedList[i].subtotal,
-                                    pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+                                    pilihanDiskon: updatedList[i].discount_percentage != 0 ? 'persen' : 'noDisc',
                                     currency_name: updatedList[i].currency_name ? updatedList[i].currency_name : 'Rp',
                                     unit: updatedList[i].unit,
                                     total: updatedList[i].total
@@ -1109,6 +1124,7 @@ const BuatFakturPembelian = () => {
 
                         setData(tmpData)
                         calculate(tmpData)
+                        console.log(tmpData)
                     })
 
             }
@@ -1142,9 +1158,9 @@ const BuatFakturPembelian = () => {
                                     quantity: updatedList[i].quantity,
                                     price: updatedList[i].price,
                                     discount_percentage: updatedList[i].discount_percentage,
-                                    fixed_discount: updatedList[i].fixed_discount,
+                                    fixed_discount: 0,
                                     subtotal: updatedList[i].subtotal,
-                                    pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+                                    pilihanDiskon: updatedList[i].fixed_discount != 0 ? 'persen' : 'noDisc',
                                     currency_name: updatedList[i].currency_name ? updatedList[i].currency_name : 'Rp',
                                     unit: updatedList[i].unit,
                                     total: updatedList[i].total
@@ -1946,12 +1962,12 @@ const BuatFakturPembelian = () => {
 
                         <div className="d-flex justify-content-end mb-3">
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">Biaya</label>
-                            <div className="col-sm-6">{convertToRupiah(totalKeseluruhan)} </div>
+                            <div className="col-sm-6">{convertToRupiah(totalCOA)} </div>
                         </div>
 
                         <div className="d-flex justify-content-end mb-3">
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">Credit Note</label>
-                            <div className="col-sm-6">{convertToRupiah(totalKeseluruhan)} </div>
+                            <div className="col-sm-6">{convertToRupiah(totalCredit)} </div>
                         </div>
               
                         <div className="d-flex justify-content-end mb-3">
