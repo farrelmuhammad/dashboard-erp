@@ -121,13 +121,13 @@ export default function Login() {
                           <Input.Password
                             placeholder="input password"
                             size="large"
-                            // iconRender={(visible) =>
-                            //   visible ? (
-                            //     <EyeTwoTone />
-                            //   ) : (
-                            //     <EyeInvisibleOutlined />
-                            //   )
-                            // }
+                            iconRender={(visible) =>
+                              visible ? (
+                                <EyeTwoTone />
+                              ) : (
+                                <EyeInvisibleOutlined />
+                              )
+                            }
                             onChange={(e) => setPassword(e.target.value)}
                           />
                           {/* <input

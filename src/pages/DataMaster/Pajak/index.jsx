@@ -4,7 +4,7 @@ import jsCookie from 'js-cookie'
 import Url from '../../../Config'
 import axios from 'axios'
 import PajakTable from '../../../components/moleculles/PajakTable'
-import { Button } from 'antd'
+import { Button, PageHeader } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { useSelector } from 'react-redux'
 
@@ -28,36 +28,50 @@ const Pajak = () => {
 
   if (userAccess) {
     return (
-      <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
-        <div className="row">
-          <div className="col text-title text-start">
-            <h5 className="title fw-bold">Daftar Pajak</h5>
-          </div>
+      <>
+        <>
           {userAccess?.map(d => {
             if (d.ability_name === "create-tax") {
               return (
-                <div className="col button-add text-end me-3">
-                  <Link to="/pajak/buat">
-                    <Button
-                      type="primary"
-                      icon={<PlusOutlined />}
-                    />
-                  </Link>
-                </div>
+                <PageHeader
+                  ghost={false}
+                  className="bg-body rounded mb-2"
+                  title="Daftar Pajak"
+                  extra={[
+                    <Link to="/pajak/buat">
+                      <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                      />
+                    </Link>,
+                  ]}
+                >
+                  <PajakTable />
+                </PageHeader>
               )
             }
           })}
-        </div>
-        <PajakTable />
-      </div>
+        </>
+      </>
     )
   } else {
-    <div>
-      <div className="text-title text-start">
-        <h5 className="title fw-bold">Daftar Pajak</h5>
-      </div>
-      <PajakTable />
-    </div>
+    <>
+      <PageHeader
+        ghost={false}
+        className="bg-body rounded mb-2"
+        title="Daftar Pajak"
+      // extra={[
+      //   <Link to="/produk/buat">
+      //     <Button
+      //       type="primary"
+      //       icon={<PlusOutlined />}
+      //     />
+      //   </Link>,
+      // ]}
+      >
+        <PajakTable />
+      </PageHeader>
+    </>
   }
 }
 

@@ -1,18 +1,4 @@
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import SendIcon from "@mui/icons-material/Send";
-import Button from "@mui/material/Button";
-// import InfoIcon from "@mui/icons-material/Info";
-// import EditIcon from "@mui/icons-material/Edit";
-// import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
-import jsCookie from "js-cookie";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -69,8 +55,10 @@ const DetailDepartemen = () => {
     <>
       <PageHeader
         ghost={false}
+        className="bg-body rounded mb-2"
         onBack={() => window.history.back()}
-        title="Detail Departemen">
+        title="Detail Departemen"
+        >
         <div className="row mb-3">
           <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
             Kode

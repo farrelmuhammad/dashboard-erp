@@ -336,7 +336,6 @@ const TallyTable = () => {
       dataIndex: 'customer_name',
       width: '15%',
       key: 'customer_name',
-      sorter: true,
       sortDirections: ['descend', 'ascend'],
       ...getColumnSearchProps('customer_name', 'Customer'),
     },

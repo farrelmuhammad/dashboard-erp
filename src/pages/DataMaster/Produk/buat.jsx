@@ -187,7 +187,7 @@ const BuatProduk = () => {
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: err.response.data.error.nama,
+            text: err.response.data.error,
           });
         } else if (err.request) {
           console.log("err.request ", err.request);
@@ -219,7 +219,7 @@ const BuatProduk = () => {
   const onChange = () => {
     checked ? setChecked(false) : setChecked(true)
 
-    if (checked === false) {
+    if (checked === true) {
       setStatus("Active");
       // console.log('Active');
     } else {
@@ -488,11 +488,11 @@ const BuatProduk = () => {
         <div className="row mb-3">
           <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
           <div className="col-sm-7">
-            <Switch defaultChecked={checked} onChange={onChange} />
+            <Switch defaultChecked={status} onChange={onChange} />
             <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
               {
-                checked ? "Aktif"
-                  : "Nonaktif"
+                checked ? "Nonaktif"
+                  : "Aktif"
               }
             </label>
           </div>

@@ -17,6 +17,7 @@ const BagianTable = () => {
   // const auth.token = jsCookie.get("auth");
   const auth = useSelector(state => state.auth);
   const [pieces, setPieces] = useState();
+  const [code, setCode] = useState();
 
   const searchInput = useRef(null);
   const [searchText, setSearchText] = useState('');
@@ -127,7 +128,7 @@ const BagianTable = () => {
     results: params.pagination?.pageSize,
     page: params.pagination?.current,
     ...params,
-});
+  });
 
 
   const columns = [
@@ -153,7 +154,7 @@ const BagianTable = () => {
       title: 'Keterangan',
       dataIndex: 'description',
       key: 'description',
-       ...getColumnSearchProps('description'),
+      ...getColumnSearchProps('description'),
       render: (text) => (
         <Text
           style={
@@ -202,7 +203,7 @@ const BagianTable = () => {
               size='small'
               type="danger"
               icon={<DeleteOutlined />}
-              onClick={() => deletePieces(record.id)}
+              onClick={() => deletePieces(record.id, record.code)}
             />
           </Space>
         </>
@@ -215,7 +216,7 @@ const BagianTable = () => {
   }, []);
 
   const getPieces = async () => {
-    axios
+    await axios
       .get(`${Url}/pieces`, {
         headers: {
           Accept: "application/json",
@@ -224,22 +225,45 @@ const BagianTable = () => {
       })
       .then(res => {
         const getData = res.data.data
-        setPieces(getData)
-        // setStatus(getData.map(d => d.status))
+        setCode(getData.code)
+
+        let data = []
+        for (let i = 0; i < getData.length; i++) {
+          data.push({
+            id: getData[i].id,
+            code: getData[i].code,
+            name: getData[i].name,
+            description: getData[i].description,
+          })
+        }
+
+        setPieces(data)
         setIsLoading(false);
-        console.log(getData)
       })
   };
 
-  const deletePieces = async (id) => {
-    await axios.delete(`${Url}/pieces/${id}`, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    });
-    getPieces();
-    Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+  const deletePieces = async (id, code) => {
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Data akan dihapus",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    })
+      .then((result) => {
+        if (result.isConfirmed) {
+          axios.delete(`${Url}/pieces/${id}`, {
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          });
+          getPieces();
+          Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+        }
+      })
   };
 
   return (
