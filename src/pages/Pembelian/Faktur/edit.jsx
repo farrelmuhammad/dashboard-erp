@@ -1575,7 +1575,7 @@ const EditFakturPembelian = () => {
             formData.append("id_produk[]", data[x].id);
             formData.append("harga[]", data[x].price);
             formData.append("persentase_diskon[]", data[x].discount_percentage.replace(',', '.'));
-            formData.append("diskon_tetap[]", data[x].fixed_discount);
+            formData.append("diskon_tetap[]", data[x].fixed_discount.replace(',', '.'));
         }
 
         for (let i = 0; i < tampilCOA.length; i++) {

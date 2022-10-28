@@ -13,6 +13,7 @@ import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
 import { Button, PageHeader, Tooltip } from 'antd';
 import { EditOutlined, SendOutlined } from "@ant-design/icons";
+import Karyawan from "../Karyawan";
 
 const BuatPengguna = () => {
   // const token = jsCookie.get("auth");
@@ -42,6 +43,30 @@ const BuatPengguna = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if(!username){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data username kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!password){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Password kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!employees){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Karyawan kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+
+    else{
     const userData = new FormData();
     userData.append("username", username);
     userData.append("password", password);
@@ -76,7 +101,7 @@ const BuatPengguna = () => {
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: err.response.data.error.nama,
+            text: err.response.data.error.password,
           });
         } else if (err.request) {
           console.log("err.request ", err.request);
@@ -86,7 +111,7 @@ const BuatPengguna = () => {
           Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
         }
       });
-  };
+  }};
 
   useEffect(() => {
     getIDuser();

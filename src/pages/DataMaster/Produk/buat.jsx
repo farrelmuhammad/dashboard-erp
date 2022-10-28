@@ -27,7 +27,7 @@ const BuatProduk = () => {
   const [sell_price, setSell_price] = useState('');
   const [discount, setDiscount] = useState('');
   const [taxes_id, setTaxes_id] = useState('');
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState('Active');
   const [checked, setChecked] = useState(true);
   const navigate = useNavigate();
 
@@ -142,6 +142,94 @@ const BuatProduk = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if(!pieces_id){
+      Swal.fire({
+        icon:"error",
+        title:"Oops...",
+        text:"Data Bagian kosong, Silahkan lengkapi datanya"
+      })
+    }
+    else if (!group){
+      Swal.fire({
+        icon:"error",
+        title:"Oops...",
+        text:"Data Grup kosong, Silahkan lengkapi datanya"
+      })
+    }
+    else if(!brands_id){
+      Swal.fire({
+        icon:"error",
+        title:"Oops...",
+        text:"Data Merek kosong, Silahkan lengkapi datanya"
+      })
+    }
+    else if(!category_id){
+      Swal.fire({
+        icon:"error",
+        title:"Oops...",
+        text:"Data Kategori kosong, Silahkan lengkapi datanya"
+      })
+    }
+    else if(!grade_id){
+      Swal.fire({
+        icon:"error",
+        title:"Oops...",
+        text:"Data Grade kosong, Silahkan lengkapi datanya"
+      })
+    }
+    else if(!type_id){
+      Swal.fire({
+        icon:"error",
+        title:"Oops...",
+        text:"Data Tipe kosong, Silahkan lengkapi datanya"
+      })
+    }
+    else if(!unit){
+      Swal.fire({
+        icon:"error",
+        title:"Oops...",
+        text:"Data Satuan kosong, Silahkan lengkapi datanya"
+      })
+    }
+    else if(!packaging_id){
+      Swal.fire({
+        icon:"error",
+        title:"Oops...",
+        text:"Data Tipe Packaging kosong, Silahkan lengkapi datanya"
+      })
+    }
+    else if(!buy_price){
+      Swal.fire({
+        icon:"error",
+        title:"Oops...",
+        text:"Data Harga Beli kosong, Silahkan lengkapi datanya"
+      })
+    }
+    else if(!sell_price){
+      Swal.fire({
+        icon:"error",
+        title:"Oops...",
+        text:"Data Harga Jual kosong, Silahkan lengkapi datanya"
+      })
+    }
+    else if(!discount){
+      Swal.fire({
+        icon:"error",
+        title:"Oops...",
+        text:"Data Diskon kosong, Silahkan lengkapi datanya"
+      })
+    }
+    else if(!taxes_id){
+      Swal.fire({
+        icon:"error",
+        title:"Oops...",
+        text:"Data Pajak kosong, Silahkan lengkapi datanya"
+      })
+    }
+    else{
+
+
     const userData = new FormData();
     // userData.append("nama", name);
     // userData.append("nama_alias", alias);
@@ -197,7 +285,7 @@ const BuatProduk = () => {
           Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
         }
       });
-  };
+   } };
 
   const getCodeById = async () => {
     axios
@@ -404,7 +492,7 @@ const BuatProduk = () => {
           </label>
           <div className="col-sm-10">
             <AsyncSelect
-              placeholder="Pilih..."
+              placeholder="Pilih Tipe Packaging"
               cacheOptions
               defaultOptions
               isClearable
@@ -428,7 +516,7 @@ const BuatProduk = () => {
           </label>
           <div className="col-sm-10">
             <input
-              type="kode"
+              type="number"
               className="form-control"
               defaultValue={0}
               placeholder="Masukkan Harga..."
@@ -443,7 +531,7 @@ const BuatProduk = () => {
           </label>
           <div className="col-sm-10">
             <input
-              type="Nama"
+              type="number"
               className="form-control"
               defaultValue={0}
               placeholder="Masukkan Harga..."
@@ -457,7 +545,7 @@ const BuatProduk = () => {
           <div className="col-sm-2">
             <div className="input-group">
               <input
-                type="text"
+                type="number"
                 className="form-control"
                 aria-label="Dollar amount (with dot and two decimal places)"
                 defaultValue={0}

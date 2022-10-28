@@ -741,6 +741,8 @@ const BuatTallySheet = () => {
             }).then((result) => {
                 if (result.isConfirmed) {
                     let arrStatus = []
+                    let dataProduk = []
+                   // console.log(product)
                     for (let x = 0; x < product.length; x++) {
                         let status = []
                         if (sumber == 'Retur') {
@@ -774,6 +776,8 @@ const BuatTallySheet = () => {
 
                     }
                     setStatusPO(arrStatus)
+                    // console.log(dataProduk)
+                    // console.log(arrStatus)
                 }
             })
         }
@@ -1350,12 +1354,12 @@ const BuatTallySheet = () => {
     };
     // load options using API call
     const loadOptionsWarehouse = (inputValue) => {
-        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}`, {
+        return axios.get(`${Url}/warehouses?virtual=0&nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => res.data.data);
     };
 
     const handleChangeProduct = (value) => {

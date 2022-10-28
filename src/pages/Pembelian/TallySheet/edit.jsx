@@ -58,6 +58,8 @@ const EditTallySheet = () => {
     const [catatan, setCatatan] = useState('')
     const [date, setDate] = useState()
 
+    const[canc, setCancel] = useState(false)
+
     const [modalListImpor, setModalListImpor] = useState(false);
     const [modalListLokal, setModalListLokal] = useState(false)
     const [modalListRetur, setModalListRetur] = useState(false)
@@ -800,14 +802,25 @@ const EditTallySheet = () => {
             box:
                 <>
 
-                    <a onClick={() => klikTampilSheet(i)} style={{ color: "#1890ff" }}>
+                    <a onClick={() =>
+                        klikTampilSheet(i)} style={{ color: "#1890ff" }}>
                         {item.number_of_boxes}
                     </a>
                     <Modal
                         centered
                         visible={modal2Visible2}
                         onCancel={() => setModal2Visible2(false)}
-                        onOk={() => setModal2Visible2(false)}
+                        footer={[
+                            <Button
+                                key="submit"
+                                type="primary"
+                                style={{ background: "green", borderColor: "white" }}
+                                onClick={() => setModal2Visible2(false)}
+                            >
+                                OK
+                            </Button>,
+                        ]}  
+                        // onOk={() => setModal2Visible2(false)}
                         width={1000}
                     >
                         <div className="text-title text-start">
@@ -1443,15 +1456,21 @@ const EditTallySheet = () => {
     function klikTampilSheet(indexPO) {
         // console.log(data)
         console.log(product)
-        setQuantityPO(Number(product[indexPO].transaksi_qty).toFixed(2).toString())
 
-        setIndexPO(indexPO);
-        setModal2Visible2(true);
-
-
+            setQuantityPO(Number(product[indexPO].transaksi_qty).toFixed(2).toString())
+            setIndexPO(indexPO)
+            setModal2Visible2(true)
     }
 
+    // function klikTampilSheet2() {
+    //     // console.log(data)
+    //     //console.log(product)
 
+    //         // setQuantityPO(Number(product[indexPO].transaksi_qty).toFixed(2).toString())
+    //         // setIndexPO(indexPO)
+    //         setCancel(true)
+    //         setModal2Visible2(false)
+    // }
 
     if (loading) {
         return (
