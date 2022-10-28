@@ -207,7 +207,7 @@ const BuatTally = () => {
             data.push({
                 key: i.toString(),
                 date: '2014-12-24 23:12:00',
-                name: 'This is production name',
+                name: 'This is produksi name',
                 upgradeNum: 'Upgraded: 56',
             });
         }

@@ -38,7 +38,7 @@ const Production = () => {
             if (d.ability_name === "create-adjustment") {
               return (
                 <div className="col button-add text-end me-3">
-                  <Link to="/production/create">
+                  <Link to="/produksi/create">
                     <Button
                       type="primary"
                       icon={<PlusOutlined />}
