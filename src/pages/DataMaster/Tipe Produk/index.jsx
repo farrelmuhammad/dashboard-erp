@@ -7,7 +7,7 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import TipeProdukTable from '../../../components/moleculles/TipeProdukTable'
 import { IconButton } from '@mui/material'
 import AddBoxIcon from '@mui/icons-material/AddBox';
-import { Button } from 'antd'
+import { Button, PageHeader } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { useSelector } from 'react-redux'
 
@@ -44,36 +44,40 @@ const TipeProduk = () => {
 
   if (userAccess) {
     return (
-      <div className="container   p-3 mb-5 bg-body rounded d-flex flex-column">
-        <div className="row">
-          <div className="col text-title text-start">
-            <h5 className="title fw-bold">Daftar Tipe Produk</h5>
-          </div>
-          {userAccess?.map(d => {
-            if (d.ability_name === "create-type") {
-              return (
-                <div className="col button-add text-end me-3">
+      <>
+        {userAccess?.map(d => {
+          if (d.ability_name === "create-type") {
+            return (
+              <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                title="Daftar Tipe Produk"
+                extra={[
                   <Link to="/tipe/buat">
                     <Button
                       type="primary"
                       icon={<PlusOutlined />}
                     />
-                  </Link>
-                </div>
-              )
-            }
-          })}
-        </div>
-        <TipeProdukTable />
-      </div>
+                  </Link>,
+                ]}
+              >
+                <TipeProdukTable />
+              </PageHeader>
+            )
+          }
+        })}
+      </>
     )
   } else {
-    <div>
-      <div className="text-title text-start">
-        <h5 className="title fw-bold">Daftar Tipe Produk</h5>
-      </div>
-      <TipeProdukTable />
-    </div>
+    <>
+      <PageHeader
+        ghost={false}
+        className="bg-body rounded mb-2"
+        title="Daftar Tipe Produk"
+      >
+        <TipeProdukTable />
+      </PageHeader>
+    </>
   }
 }
 

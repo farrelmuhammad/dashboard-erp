@@ -35,6 +35,7 @@ const Grade = () => {
             return (
               <PageHeader
                 ghost={false}
+                className="bg-body rounded mb-2"
                 title="Daftar Grade Produk"
                 extra={[
                   <Link to="/grade/buat">
@@ -57,6 +58,7 @@ const Grade = () => {
       <>
         <PageHeader
           ghost={false}
+          className="bg-body rounded mb-2"
           title="Daftar Grade Produk"
         // extra={[
         //   <Link to="/produk/buat">
