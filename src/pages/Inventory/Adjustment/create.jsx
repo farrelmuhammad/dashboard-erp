@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
 import CurrencyFormat from 'react-currency-format';
+import { toTitleCase } from '../../../utils/helper';
 
 const EditableContext = createContext(null);
 
@@ -498,9 +499,7 @@ const CreateAdjustment = () => {
                                     <div className="form-group row mb-1">
                                         <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
                                         <div className="col-sm-8">
-                                            <h3 className="badge bg-danger text-center m-1">
-                                                Draft
-                                            </h3>
+                                            <Tag color="orange">{toTitleCase("Draft")}</Tag>
                                         </div>
                                     </div>
                                     <div className="form-group row mb-1">
@@ -587,7 +586,7 @@ const CreateAdjustment = () => {
                         </div>
                     </div>
                 </div>
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -605,6 +604,7 @@ const CreateAdjustment = () => {
                         Submit
                     </button>
                 </div>
+                <div style={{ clear: 'both' }}></div>
             </div>
         </>
     )

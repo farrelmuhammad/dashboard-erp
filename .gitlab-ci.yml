@@ -39,6 +39,6 @@
 # #         - main
 # #     script:
 # #         - npm install --global vercel
-# #         - vercel pull --yes --environment=production --token=$VERCEL_ORG_ID --force
+# #         - vercel pull --yes --environment=produksi --token=$VERCEL_ORG_ID --force
 # #         - vercel build --prod --token=$VERCEL_ORG_ID
 # #         - vercel deploy --prebuilt --prod --token=$VERCEL_ORG_ID
