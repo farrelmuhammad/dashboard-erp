@@ -36,6 +36,7 @@ const Produk = () => {
             return (
               <PageHeader
                 ghost={false}
+                className="bg-body rounded mb-2"
                 title="Daftar Produk"
                 extra={[
                   <Link to="/produk/buat">
@@ -80,16 +81,16 @@ const Produk = () => {
       <>
         <PageHeader
           ghost={false}
-          onBack={() => window.history.back()}
+          className="bg-body rounded mb-2"
           title="Daftar Produk"
-          // extra={[
-          //   <Link to="/produk/buat">
-          //     <Button
-          //       type="primary"
-          //       icon={<PlusOutlined />}
-          //     />
-          //   </Link>,
-          // ]}
+        // extra={[
+        //   <Link to="/produk/buat">
+        //     <Button
+        //       type="primary"
+        //       icon={<PlusOutlined />}
+        //     />
+        //   </Link>,
+        // ]}
         >
           <ProdukTable />
         </PageHeader>
