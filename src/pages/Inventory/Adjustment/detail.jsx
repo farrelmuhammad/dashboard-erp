@@ -12,6 +12,7 @@ import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
+import CurrencyFormat from 'react-currency-format';
 import { toTitleCase } from '../../../utils/helper';
 
 const EditableContext = createContext(null);
@@ -78,8 +79,13 @@ const EditableCell = ({
                     },
                 ]}
             >
-                {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
+                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
+                    decimalSeparator = {','}
+                    onChange={value => {
+                        value = parseFloat(value.toString().replace('.', ','))
+                      }}
+                      
+                />
             </Form.Item>
         ) : (
             <div
@@ -262,7 +268,7 @@ const EditAdjustment = () => {
             width: '30%',
             align: 'center',
             render: (text) => {
-                return <>{text.toString().replace('.', ',')}</>
+                return convertToRupiahTabel(text)
 
             }
         },
@@ -282,6 +288,14 @@ const EditAdjustment = () => {
             setModal2Visible(true)
         }
     };
+    const convertToRupiahTabel = (angka) => {
+        return <>
+        {
+            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} />
+            
+        }
+        </>
+    }
     const handleSave = (row) => {
         const newData = [...product];
         const index = newData.findIndex((item) => row.product_id === item.product_id);
