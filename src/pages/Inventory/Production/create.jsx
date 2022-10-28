@@ -6,7 +6,7 @@ import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
 import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { PlusOutlined,ArrowLeftOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
@@ -357,7 +357,7 @@ const CreateProduction = () => {
         userData.append("warehouse_input", warehouse_input);
         userData.append("warehouse_output", warehouse_output);
         userData.append("notes", notes);
-        userData.append("status", "publish");
+        userData.append("status", "Submitted");
         product.map((p) => {
             userData.append("product_input_id[]", p.product_id);
             userData.append("qty_input[]", p.qty);
@@ -414,7 +414,7 @@ const CreateProduction = () => {
         userData.append("warehouse_input", warehouse_input);
         userData.append("warehouse_output", warehouse_output);
         userData.append("notes", notes);
-        userData.append("status", "draft");
+        userData.append("status", "Draft");
         product.map((p) => {
             userData.append("product_input_id[]", p.product_id);
             userData.append("qty_input[]", p.qty);
@@ -466,7 +466,14 @@ const CreateProduction = () => {
                 <div className="p-3 mb-3">
                     <div className="card" style={cardOutline}>
                         <div className="card-header bg-white">
-                            <h6 className="title fw-bold">Buat Produksi</h6>
+                            <h6 className="title fw-bold">
+                                <Button
+                                    style={{border: 'none'}}
+                                    icon={<ArrowLeftOutlined />}
+                                    onClick={() => navigate(-1)}
+                                />
+                                Buat Produksi
+                            </h6>
                         </div>
                         <div className="card-body">
                             <div className="row">

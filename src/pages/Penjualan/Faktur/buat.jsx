@@ -110,6 +110,7 @@ const BuatFaktur = () => {
     const [description, setDescription] = useState('');
     const [status, setStatus] = useState("");
     const [address, setAddress] = useState("");
+    const [addressId, setAddressId] = useState("");
     const [customer, setCustomer] = useState("");
     const [product, setProduct] = useState([]);
     const [query, setQuery] = useState("");
@@ -128,7 +129,7 @@ const BuatFaktur = () => {
     const [grandTotal, setGrandTotal] = useState("");
     const [checked, setChecked] = useState(false);
 
-    const [selectedValue, setSelectedCustomer] = useState(null);
+    const [selectedValue, setSelectedCustomer] = useState('');
     const [modal2Visible, setModal2Visible] = useState(false);
     // const [pilihanDiskon, setPilihanDiskon] = useState('percent');
     const [pilihanDiskon, setPilihanDiskon] = useState('');
@@ -1251,7 +1252,7 @@ const BuatFaktur = () => {
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
         userData.append("tipe", fakturType);
-        userData.append("alamat_penerima", address);
+        userData.append("alamat_penerima", addressId);
         userData.append("penerima", customer);
         userData.append("catatan", description);
         userData.append("uang_muka", uangMuka);
@@ -1339,7 +1340,7 @@ const BuatFaktur = () => {
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
         userData.append("tipe", fakturType);
-        userData.append("alamat_penerima", address);
+        userData.append("alamat_penerima", addressId);
         userData.append("penerima", customer);
         userData.append("catatan", description);
         userData.append("uang_muka", uangMuka);
@@ -1470,6 +1471,15 @@ const BuatFaktur = () => {
     };
     // load options using API call
     const loadOptionsCustomer = (inputValue) => {
+        return axios.get(`${Url}/sales_invoices_available_customers?limit=10&nama=${inputValue}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.data.data);
+    };
+
+    const loadOptionsPenerima = (inputValue) => {
         return axios.get(`${Url}/sales_invoices_available_recipients?limit=10&nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
@@ -1544,6 +1554,7 @@ const BuatFaktur = () => {
                             </div>
                         </div>
                     </div>
+
                     <div className="col">
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
@@ -1555,11 +1566,13 @@ const BuatFaktur = () => {
                                     value={selectedValue}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsCustomer}
+                                    loadOptions={sumber == 'SO' ? loadOptionsCustomer : loadOptionsPenerima}
                                     onChange={handleChangeCustomer}
                                 />
                             </div>
                         </div>
+
+
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Alamat</label>
                             <div className="col-sm-7">
@@ -1572,7 +1585,7 @@ const BuatFaktur = () => {
                                     getOptionLabel={(e) => e.address}
                                     getOptionValue={(e) => e.id}
                                     options={address}
-                                    onChange={(e) => setAddress(e.id)}
+                                    onChange={(e) => setAddressId(e.id)}
                                 />
                             </div>
                         </div>
@@ -1585,14 +1598,6 @@ const BuatFaktur = () => {
                                 onChange={(e) => setDescription(e.target.value)}
                             />
                         </div>
-                        {/* <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
-                            <div className="col-sm-4 p-1">
-                                <h5>
-                                    {getStatus === 'Submitted' ? <Tag color="blue">{getStatus}</Tag> : getStatus === 'Draft' ? <Tag color="orange">{getStatus}</Tag> : getStatus === 'Done' ? <Tag color="green">{getStatus}</Tag> : <Tag color="red">{getStatus}</Tag>}
-                                </h5>
-                            </div>
-                        </div> */}
                     </div>
                 </div>
             </PageHeader>
@@ -1607,6 +1612,10 @@ const BuatFaktur = () => {
                         onClick={() => {
                             if (sumber == '') {
                                 Swal.fire("Gagal", "Mohon Pilih Transaksi Dahulu..", "error");
+                            }
+                            else if (selectedValue == '') {
+                                Swal.fire("Gagal", "Mohon Pilih Penerima Dahulu..", "error");
+
                             }
                             else {
                                 setModal2Visible(true)

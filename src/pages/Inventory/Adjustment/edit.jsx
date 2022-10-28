@@ -6,12 +6,13 @@ import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
 import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { PlusOutlined,ArrowLeftOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
+import CurrencyFormat from 'react-currency-format';
 
 const EditableContext = createContext(null);
 
@@ -260,16 +261,11 @@ const EditAdjustment = () => {
             align: 'center',
             editable: true,
             render: (text) => {
-                return <>{text.toString().replace('.', ',')}</>
-
+                return convertToRupiahTabel(text)
             }
         },
     ];
     const checkWarehouse = () => {
-        // var updatedList = [...product];
-        // updatedList = []
-        // updatedList.splice(product.indexOf(0), 1);
-        // setProduct(updatedList);
         if (warehouse_id == "") {
             Swal.fire({
                 icon: "error",
@@ -280,6 +276,16 @@ const EditAdjustment = () => {
             setModal2Visible(true)
         }
     };
+
+    const convertToRupiahTabel = (angka) => {
+        return <>
+        {
+            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} />
+            
+        }
+        </>
+    }
+
     const handleSave = (row) => {
         const newData = [...product];
         const index = newData.findIndex((item) => row.product_id === item.product_id);
@@ -327,7 +333,7 @@ const EditAdjustment = () => {
         userData.append("adjustment_date", adjustment_date);
         userData.append("warehouse_id", warehouse_id);
         userData.append("notes", notes);
-        userData.append("status", "publish");
+        userData.append("status", "Done");
         product.map((p) => {
             console.log(p);
             userData.append("product_id[]", p.product_id);
@@ -381,7 +387,7 @@ const EditAdjustment = () => {
         userData.append("adjustment_date", adjustment_date);
         userData.append("warehouse_id", warehouse_id);
         userData.append("notes", notes);
-        userData.append("status", "draft");
+        userData.append("status", "Draft");
         product.map((p) => {
             userData.append("product_id[]", p.product_id);
             userData.append("qty_before[]", p.qty_before);
@@ -434,11 +440,18 @@ const EditAdjustment = () => {
     }
     return (
         <>
-            <form className="p-3 mb-3 bg-body rounded">
+            <div className="p-3 mb-3 bg-body rounded">
                 <div className="p-3 mb-3">
                     <div className="card" style={cardOutline}>
                         <div className="card-header bg-white">
-                            <h6 className="title fw-bold">Edit Penyesuaian Stok</h6>
+                            <h6 className="title fw-bold">
+                                <Button
+                                    style={{border: 'none'}}
+                                    icon={<ArrowLeftOutlined />}
+                                    onClick={() => navigate(-1)}
+                                />
+                                Edit Penyesuaian Stok
+                            </h6>
                         </div>
                         <div className="card-body">
                             <div className="row">
@@ -585,7 +598,7 @@ const EditAdjustment = () => {
                         Submit
                     </button>
                 </div>
-            </form>
+            </div>
         </>
     )
 }
