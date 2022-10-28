@@ -16,7 +16,7 @@ const PesananPembelianTable = () => {
     const [pesananPembelian, setPesananPembelian] = useState([]);
     const [status, setStatus] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [namaMataUang, setNamaMataUang] = useState();
+    const [namaMataUang, setNamaMataUang] = useState([]);
     const [dataTampil, setDataTampil] = useState([]);
     const [getData1, setGetData1] = useState([])
 
@@ -224,6 +224,29 @@ const PesananPembelianTable = () => {
         })
             .then(res => {
                 const getData = res.data.data
+
+                setStatus(getData.map(d => d.status))
+                let mataUang = [];
+                let varnull = null;
+                for (let i = 0; i < getData.length; i++) {
+                    if (getData[i].supplier._group === "Lokal" || !getData[i].currency) {
+                        mataUang.push("Rp ")
+                    }
+                    else if (getData[i].currency) {
+                        mataUang.push(getData[i].currency.name);
+                    }
+                    // else{
+                    //     console.log(getData[i].currency)
+
+                    // }
+                }
+                setNamaMataUang(mataUang);
+                //console.log(mataUang)
+                console.log(namaMataUang)
+                setIsLoading(false);
+                //console.log(getData[0].can)
+                setGetData1(getData)
+
                 setPesananPembelian(getData)
 
                 let tmp = []
@@ -260,27 +283,7 @@ const PesananPembelianTable = () => {
 
 
 
-                setStatus(getData.map(d => d.status))
-                let mataUang = [];
-                let varnull = null;
-                for (let i = 0; i < getData.length; i++) {
-                    if (getData[i].supplier._group === "Lokal" || !getData[i].currency) {
-                        mataUang.push("Rp ")
-                    }
-                    else if (getData[i].currency) {
-                        mataUang.push(getData[i].currency.name);
-                    }
-                    // else{
-                    //     console.log(getData[i].currency)
-
-                    // }
-                }
-                setNamaMataUang(mataUang);
-                console.log(mataUang)
-                console.log(namaMataUang)
-                setIsLoading(false);
-                console.log(getData[0].can)
-                setGetData1(getData)
+          
             })
     }
 
@@ -401,72 +404,72 @@ const PesananPembelianTable = () => {
         },
     ];
 
-    const dataColumn =
-        [...pesananPembelian.map((item, i) => ({
-            date: item.date,
-            code: item.code,
-            supplier_name: item.supplier_name,
-            // currency_name:namaMataUang,
-            total: item.supplier._group == 'Lokal' ? 
-            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" />
-             :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang[i] + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />,
+    // const dataColumn =
+    //     [...pesananPembelian.map((item, i) => ({
+    //         date: item.date,
+    //         code: item.code,
+    //         supplier_name: item.supplier_name,
+    //         // currency_name:namaMataUang,
+    //         total: item.supplier._group == 'Lokal' ? 
+    //         < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" />
+    //          :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang[i] + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />,
 
-            status:
-                <>
-                    {item.status === 'Submitted' ? <Tag color="blue">{item.status}</Tag> : item.status === 'Draft' ? <Tag color="orange">{item.status}</Tag> : item.status === 'Done' ? <Tag color="green">{item.status}</Tag> : item.status === 'Cancelled' ? <Tag color="red">{item.status}</Tag> : item.status === 'Processed' ? <Tag color="purple">{item.status}</Tag> : null
-                    }
-                </>,
-            action:
-                <>
-                    <Space size="middle">
-                        {item.can['read-purchase_order'] ? (
-                            <Link to={`/pesananpembelian/detail/${item.id}`}>
-                                <Button
-                                    size='small'
-                                    type="primary"
-                                    icon={<InfoCircleOutlined />}
-                                />
-                            </Link>
-                        ) : null}
-                        {
-                            item.can['cancel-purchase_order'] ? (
+    //         status:
+    //             <>
+    //                 {item.status === 'Submitted' ? <Tag color="blue">{item.status}</Tag> : item.status === 'Draft' ? <Tag color="orange">{item.status}</Tag> : item.status === 'Done' ? <Tag color="green">{item.status}</Tag> : item.status === 'Cancelled' ? <Tag color="red">{item.status}</Tag> : item.status === 'Processed' ? <Tag color="purple">{item.status}</Tag> : null
+    //                 }
+    //             </>,
+    //         action:
+    //             <>
+    //                 <Space size="middle">
+    //                     {item.can['read-purchase_order'] ? (
+    //                         <Link to={`/pesananpembelian/detail/${item.id}`}>
+    //                             <Button
+    //                                 size='small'
+    //                                 type="primary"
+    //                                 icon={<InfoCircleOutlined />}
+    //                             />
+    //                         </Link>
+    //                     ) : null}
+    //                     {
+    //                         item.can['cancel-purchase_order'] ? (
 
-                                <Button
-                                    size='small'
-                                    type="danger"
-                                    icon={<CloseOutlined />}
-                                    onClick={() => cancelPurchaseOrders(item.id, item.code)}
-                                />
+    //                             <Button
+    //                                 size='small'
+    //                                 type="danger"
+    //                                 icon={<CloseOutlined />}
+    //                                 onClick={() => cancelPurchaseOrders(item.id, item.code)}
+    //                             />
 
-                            ) : null
-                        }
-                        {
-                            item.can['delete-purchase_order'] ? (
-                                    <Button
-                                        size='small'
-                                        type="danger"
-                                        icon={<DeleteOutlined />}
-                                        onClick={() => deletePurchaseOrders(item.id, item.code)}
-                                    />
-                            ) : null
-                        }
-                        {
-                            item.can['update-purchase_order'] ? (
-                                <Link to={`/pesananpembelian/edit/${item.id}`}>
-                                    <Button
-                                        size='small'
-                                        type="success"
-                                        icon={<EditOutlined />}
-                                    />
-                                </Link>
-                            ) : null
-                        }
-                    </Space>
-                </>
-        }))
+    //                         ) : null
+    //                     }
+    //                     {
+    //                         item.can['delete-purchase_order'] ? (
+    //                                 <Button
+    //                                     size='small'
+    //                                     type="danger"
+    //                                     icon={<DeleteOutlined />}
+    //                                     onClick={() => deletePurchaseOrders(item.id, item.code)}
+    //                                 />
+    //                         ) : null
+    //                     }
+    //                     {
+    //                         item.can['update-purchase_order'] ? (
+    //                             <Link to={`/pesananpembelian/edit/${item.id}`}>
+    //                                 <Button
+    //                                     size='small'
+    //                                     type="success"
+    //                                     icon={<EditOutlined />}
+    //                                 />
+    //                             </Link>
+    //                         ) : null
+    //                     }
+    //                 </Space>
+    //             </>
+    //     }))
 
 
-        ]
+    //     ]
     return <Table
         size="small"
         loading={isLoading}

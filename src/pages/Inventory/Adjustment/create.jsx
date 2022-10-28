@@ -1,17 +1,19 @@
 import './form.css'
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link  } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
 import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { PlusOutlined,ArrowLeftOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
+import CurrencyFormat from 'react-currency-format';
+import { toTitleCase } from '../../../utils/helper';
 
 const EditableContext = createContext(null);
 
@@ -77,8 +79,13 @@ const EditableCell = ({
                     },
                 ]}
             >
-                {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" />
+                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
+                    decimalSeparator = {','}
+                    onChange={value => {
+                        value = parseFloat(value.toString().replace('.', ','))
+                      }}
+                      
+                />
             </Form.Item>
         ) : (
             <div
@@ -220,13 +227,8 @@ const CreateAdjustment = () => {
             width: '30%',
             align: 'center',
             editable: true,
-            render: (text,record) => {
-                // var number1 = text;
-                // var number2 = 30.22;
-                // console.log(number1,number1.toLocaleString("id-ID", {maximumFractionDigits:2}),number1.toLocaleString('id'),"-",number2.toLocaleString("id-ID", {maximumFractionDigits:2}))
-                // return number1.toLocaleString("id-ID", {maximumFractionDigits:2});
-                return <>{text.toString().replace('.', ',')}</>
-
+            render: (text) => {
+                return convertToRupiahTabel(text)
             }
         },
     ];
@@ -239,11 +241,17 @@ const CreateAdjustment = () => {
             });
         } else {
             setModal2Visible(true)
-            // setChecked(!checked);
-            // let check_checked = !checked;
-            // calculate(product, check_checked);
         }
     };
+    const convertToRupiahTabel = (angka) => {
+        return <>
+        {
+            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} />
+            
+        }
+        </>
+    }
+
     const handleSave = (row) => {
         const newData = [...product];
         const index = newData.findIndex((item) => row.product_id === item.product_id);
@@ -443,11 +451,18 @@ const CreateAdjustment = () => {
 
     return (
         <>
-            <form className="p-3 mb-3 bg-body rounded">
+            <div className="p-3 mb-3 bg-body rounded">
                 <div className="p-3 mb-3">
                     <div className="card" style={cardOutline}>
                         <div className="card-header bg-white">
-                            <h6 className="title fw-bold">Buat Penyesuaian Stok</h6>
+                            <h6 className="title fw-bold">
+                                <Button
+                                    style={{border: 'none'}}
+                                    icon={<ArrowLeftOutlined />}
+                                    onClick={() => navigate(-1)}
+                                />
+                                Buat Penyesuaian Stok
+                            </h6>
                         </div>
                         <div className="card-body">
                             <div className="row">
@@ -484,9 +499,7 @@ const CreateAdjustment = () => {
                                     <div className="form-group row mb-1">
                                         <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
                                         <div className="col-sm-8">
-                                            <h3 className="badge bg-danger text-center m-1">
-                                                Draft
-                                            </h3>
+                                            <Tag color="orange">{toTitleCase("Draft")}</Tag>
                                         </div>
                                     </div>
                                     <div className="form-group row mb-1">
@@ -573,7 +586,7 @@ const CreateAdjustment = () => {
                         </div>
                     </div>
                 </div>
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -591,7 +604,8 @@ const CreateAdjustment = () => {
                         Submit
                     </button>
                 </div>
-            </form>
+                <div style={{ clear: 'both' }}></div>
+            </div>
         </>
     )
 }

@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import Url from '../../../Config';
 import './form.css'
 import { useSelector } from 'react-redux';
-import { Button, Checkbox, Col, Collapse, Modal, PageHeader, Row } from 'antd';
+import { Button, Checkbox, Col, Collapse, Modal, PageHeader, Row, Skeleton } from 'antd';
 import { PlusOutlined, SendOutlined } from "@ant-design/icons";
 const { Panel } = Collapse;
 
@@ -90,6 +90,7 @@ const EditGrup = () => {
                 const getData = res.data.data[0]
                 setData(getData);
                 setAccess(getData.group_access_rights.map((d) => d.id))
+                console.log(getData.group_access_rights)
                 setLoading(false)
                 // console.log(getData.group_access_rights.map((d) => d.id))
             })
@@ -123,6 +124,16 @@ const EditGrup = () => {
         }
         setAccess(updatedList);
     };
+
+    if (loading) {
+        return (
+            <>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+            </>
+        )
+    }
 
 
     if (getModules?.length > 0) {
@@ -208,6 +219,7 @@ const EditGrup = () => {
                                                     style={{
                                                         width: '100%',
                                                     }}
+                                                    defaultValue={access}
                                                     onChange={handleCheck}
                                                 >
                                                     <Row>

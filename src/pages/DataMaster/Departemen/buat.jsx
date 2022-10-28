@@ -1,25 +1,12 @@
-// import Paper from "@mui/material/Paper";
-// import Table from "@mui/material/Table";
-// import TableBody from "@mui/material/TableBody";
-// import TableCell from "@mui/material/TableCell";
-// import TableContainer from "@mui/material/TableContainer";
-// import TableHead from "@mui/material/TableHead";
-// import TablePagination from "@mui/material/TablePagination";
-// import TableRow from "@mui/material/TableRow";
-import SendIcon from "@mui/icons-material/Send";
-import Button from "@mui/material/Button";
-// import InfoIcon from "@mui/icons-material/Info";
-// import EditIcon from "@mui/icons-material/Edit";
-// import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
-import jsCookie from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
-import { PageHeader } from 'antd';
+import { Button, PageHeader } from 'antd';
+import { SendOutlined } from "@ant-design/icons";
 
 // import { Checkbox } from "@mui/material";
 
@@ -47,6 +34,15 @@ const BuatDepartemen = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if(!name){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Nama Departemen kosong, Silahkan Lengkapi datanya",
+      });
+    }
+    else {
 
     // console.log(employee);
     const userData = new FormData();
@@ -84,7 +80,7 @@ const BuatDepartemen = () => {
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: err.response.data.error.nama,
+            text: err.response.data.error,
           });
         } else if (err.request) {
           console.log("err.request ", err.request);
@@ -94,7 +90,7 @@ const BuatDepartemen = () => {
           Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
         }
       });
-  };
+  }};
 
   // const handleCheck = (event) => {
   //   var updatedList = [...employee];
@@ -163,67 +159,67 @@ const BuatDepartemen = () => {
   //       )
   // }
 
-  if (getEmployee?.length > 0) {
-    return (
-      <>
-        <PageHeader
-          ghost={false}
-          onBack={() => window.history.back()}
-          title="Buat Departemen">
-          <div className="row mb-3">
-            <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
-              Kode
-            </label>
-            <div className="col-sm-10">
-              <input
-                type="kode"
-                className="form-control"
-                // id="inputKode3"
-                // onChange={e => setId(e.target.value)}
-                value={getDepartment}
-                disabled
-              />
-            </div>
+  return (
+    <>
+      <PageHeader
+        ghost={false}
+        className="bg-body rounded mb-2"
+        onBack={() => window.history.back()}
+        title="Buat Departemen">
+        <div className="row mb-3">
+          <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
+            Kode
+          </label>
+          <div className="col-sm-10">
+            <input
+              type="kode"
+              className="form-control"
+              // id="inputKode3"
+              // onChange={e => setId(e.target.value)}
+              value={getDepartment}
+              disabled
+            />
           </div>
-          <div className="row mb-3">
-            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-              Nama Departemen
-            </label>
-            <div className="col-sm-10">
-              <input
-                type="Name"
-                className="form-control"
-                id="inputNama3"
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            Nama Departemen
+          </label>
+          <div className="col-sm-10">
+            <input
+              type="Name"
+              className="form-control"
+              id="inputNama3"
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
-          <div className="row mb-3">
-            <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
-              Keterangan
-            </label>
-            <div className="col-sm-10">
-              <textarea
-                className="form-control"
-                id="form4Example3"
-                rows="4"
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
+            Keterangan
+          </label>
+          <div className="col-sm-10">
+            <textarea
+              className="form-control"
+              id="form4Example3"
+              rows="4"
+              onChange={(e) => setDescription(e.target.value)}
+            />
           </div>
-          <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-            <Button
-              onClick={handleSubmit}
-              variant="contained"
-              endIcon={<SendIcon />}
-            >
-              Simpan
-            </Button>
-          </div>
-        </PageHeader>
-      </>
-    );
-  }
+        </div>
+        <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+          <Button
+            type="primary"
+            icon={<SendOutlined />}
+            size="large"
+            onClick={handleSubmit}
+          >
+            Submit
+          </Button>
+        </div>
+      </PageHeader>
+    </>
+  );
 };
 
 export default BuatDepartemen;

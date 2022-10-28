@@ -331,7 +331,7 @@ const EditPelanggan = () => {
     }
   ];
 
-  
+
   const options = [
     { value: 'PT', label: 'PT' },
     { value: 'CV', label: 'CV' },
@@ -347,7 +347,7 @@ const EditPelanggan = () => {
     //setSupplierId(value.id);
     setBussiness_ent(value);
     // setBussinessName(value)
-};
+  };
 
   if (loading) {
     return (
@@ -445,28 +445,28 @@ const EditPelanggan = () => {
             Badan Usaha
           </label>
           <div className="col-sm-10">
-                  <Select
-                placeholder="Pilih Badan Usaha..."
-                className="basic-single"
-                classNamePrefix="select"
-                //defaultInputValue={bussinessName}
-                value={{value: bussinessName, label:bussinessName}}
-                // isDisabled={isDisabled}
-                // isLoading={isLoading}
-                // isClearable={isClearable}
-                // isRtl={isRtl}
-                isSearchable
-                name="color"
-                options={options}
-                onChange={(item) => {
-                  console.log(item);
-                
-                  // set item instead of item.value
-                  setBussinessName(item.value);
-                }}
-                // onChange={handleSingleChange}
-                // getOptionValue={(e) => e.name}
-              />
+            <Select
+              placeholder="Pilih Badan Usaha..."
+              className="basic-single"
+              classNamePrefix="select"
+              //defaultInputValue={bussinessName}
+              value={{ value: bussinessName, label: bussinessName }}
+              // isDisabled={isDisabled}
+              // isLoading={isLoading}
+              // isClearable={isClearable}
+              // isRtl={isRtl}
+              isSearchable
+              name="color"
+              options={options}
+              onChange={(item) => {
+                console.log(item);
+
+                // set item instead of item.value
+                setBussinessName(item.value);
+              }}
+            // onChange={handleSingleChange}
+            // getOptionValue={(e) => e.name}
+            />
 
             {/* <Select
               className="basic-single"

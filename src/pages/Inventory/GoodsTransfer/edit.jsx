@@ -795,7 +795,7 @@ const EditGoodsTransfer = () => {
                         value="Draft"
                         onClick={handleDraft}
                     >
-                        Simpan
+                        Update
                     </button>
                     <button
                         type="button"

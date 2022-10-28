@@ -4,7 +4,7 @@ import jsCookie from 'js-cookie'
 import Url from '../../../Config'
 import axios from 'axios'
 import DepartemenTable from '../../../components/moleculles/DepartemenTable'
-import { Button } from 'antd'
+import { Button, PageHeader } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { useSelector } from 'react-redux'
 
@@ -29,37 +29,49 @@ const Departemen = () => {
 
   if (userAccess) {
     return (
-      <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
-        <div className="row">
-          <div className="col text-title text-start">
-            <h5 className="title fw-bold">Daftar Departemen</h5>
-          </div>
-          {userAccess?.map(d => {
-            if (d.ability_name === "create-department") {
-              return (
-                <div className="col button-add text-end me-3">
+      <>
+        {userAccess?.map(d => {
+          if (d.ability_name === "create-department") {
+            return (
+              <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                title="Daftar Departemen"
+                extra={[
                   <Link to="/departemen/buat">
                     <Button
                       type="primary"
                       icon={<PlusOutlined />}
                     />
-                  </Link>
-                </div>
-              )
-            }
-          })}
-        </div>
-        <DepartemenTable />
-      </div>
+                  </Link>,
+                ]}
+              >
+                <DepartemenTable />
+              </PageHeader>
+            )
+          }
+        })}
+      </>
     )
   } else {
     return (
-      <div>
-        <div className="text-title text-start">
-          <h5 className="title fw-bold">Daftar Departemen</h5>
-        </div>
-        <DepartemenTable />
-      </div>
+      <>
+        <PageHeader
+          ghost={false}
+          className="bg-body rounded mb-2"
+          title="Daftar Departemen"
+        // extra={[
+        //   <Link to="/produk/buat">
+        //     <Button
+        //       type="primary"
+        //       icon={<PlusOutlined />}
+        //     />
+        //   </Link>,
+        // ]}
+        >
+          <DepartemenTable />
+        </PageHeader>
+      </>
     )
   }
 }

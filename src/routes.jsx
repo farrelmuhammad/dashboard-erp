@@ -321,10 +321,10 @@ const RouteApp = () => {
         <Route path="/goodstransfer/edit/:id" exact element={<EditGoodsTransfer />} />
         <Route path="/goodstransfer/detail" exact element={<DetailGoodsTransfer />} />
 
-        <Route path="/production" exact element={<Production />} />
-        <Route path="/production/create" exact element={<CreateProduction />} />
-        <Route path="/production/edit/:id" exact element={<EditProduction />} />
-        <Route path="/production/detail" exact element={<DetailProduction />} />
+        <Route path="/produksi" exact element={<Production />} />
+        <Route path="/produksi/create" exact element={<CreateProduction />} />
+        <Route path="/produksi/edit/:id" exact element={<EditProduction />} />
+        <Route path="/produksi/detail/:id" exact element={<DetailProduction />} />
 
         {/* Supllier Modul */}
         <Route path="/supplier" exact element={<Supplier />} />
@@ -527,10 +527,10 @@ const RouteApp = () => {
         <Route path="/goodstransfer/edit/:id" exact element={<EditGoodsTransfer />} />
         <Route path="/goodstransfer/detail" exact element={<DetailGoodsTransfer />} />
 
-        <Route path="/production" exact element={<Production />} />
-        <Route path="/production/create" exact element={<CreateProduction />} />
-        <Route path="/production/edit/:id" exact element={<EditProduction />} />
-        <Route path="/production/detail" exact element={<DetailProduction />} />
+        <Route path="/produksi" exact element={<Production />} />
+        <Route path="/produksi/create" exact element={<CreateProduction />} />
+        <Route path="/produksi/edit/:id" exact element={<EditProduction />} />
+        <Route path="/produksi/detail/:id" exact element={<DetailProduction />} />
 
         {/* Supllier Modul */}
         <Route path="/supplier" exact element={<Supplier />} />

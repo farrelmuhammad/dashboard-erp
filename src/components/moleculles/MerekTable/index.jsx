@@ -192,7 +192,7 @@ const MerekTable = () => {
               size='small'
               type="danger"
               icon={<DeleteOutlined />}
-              onClick={() => deleteBrands(record.id)}
+              onClick={() => deleteBrands(record.id, record.code)}
             />
           </Space>
         </>
@@ -222,14 +222,27 @@ const MerekTable = () => {
   };
 
   const deleteBrands = async (id) => {
-    await axios.delete(`${Url}/brands/${id}`, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    });
-    getBrands();
-    Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Data akan dihapus",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    })
+      .then((result) => {
+        if (result.isConfirmed) {
+          axios.delete(`${Url}/brands/${id}`, {
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          });
+          getBrands();
+          Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+        }
+      })
   };
 
   return (

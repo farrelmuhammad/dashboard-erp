@@ -4,7 +4,7 @@ import jsCookie from 'js-cookie'
 import Url from '../../../Config'
 import axios from 'axios'
 import KaryawanTable from '../../../components/moleculles/KaryawanTable'
-import { Button } from 'antd'
+import { Button, PageHeader } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { useSelector } from 'react-redux'
 
@@ -28,36 +28,64 @@ const Karyawan = () => {
 
   if (userAccess) {
     return (
-      <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
-        <div className="row">
-          <div className="col text-title text-start">
-            <h5 className="title fw-bold">Daftar Karyawan</h5>
-          </div>
+      <>
+        <>
           {userAccess?.map(d => {
             if (d.ability_name === "create-employee") {
               return (
-                <div className="col button-add text-end me-3">
-                  <Link to="/karyawan/buat">
-                    <Button
-                      type="primary"
-                      icon={<PlusOutlined />}
-                    />
-                  </Link>
-                </div>
+                <PageHeader
+                  ghost={false}
+                  className="bg-body rounded mb-2"
+                  title="Daftar Karyawan"
+                  extra={[
+                    <Link to="/karyawan/buat">
+                      <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                      />
+                    </Link>,
+                  ]}
+                >
+                  <KaryawanTable />
+                </PageHeader>
               )
             }
           })}
-        </div>
-        <KaryawanTable />
-      </div>
+        </>
+      </>
+      // <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
+      //   <div className="row">
+      //     <div className="col text-title text-start">
+      //       <h5 className="title fw-bold">Daftar Karyawan</h5>
+      //     </div>
+      //     {userAccess?.map(d => {
+      //       if (d.ability_name === "create-employee") {
+      //         return (
+      //           <div className="col button-add text-end me-3">
+      //             <Link to="/karyawan/buat">
+      //               <Button
+      //                 type="primary"
+      //                 icon={<PlusOutlined />}
+      //               />
+      //             </Link>
+      //           </div>
+      //         )
+      //       }
+      //     })}
+      //   </div>
+      //   <KaryawanTable />
+      // </div>
     )
   } else {
-    <div>
-      <div className="text-title text-start">
-        <h5 className="title fw-bold">Daftar Karyawan</h5>
-      </div>
-      <KaryawanTable />
-    </div>
+    <>
+      <PageHeader
+        ghost={false}
+        className="bg-body rounded mb-2"
+        title="Daftar Karyawan"
+      >
+        <KaryawanTable />
+      </PageHeader>
+    </>
   }
 }
 

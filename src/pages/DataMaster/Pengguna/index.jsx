@@ -4,7 +4,7 @@ import jsCookie from 'js-cookie'
 import Url from '../../../Config'
 import axios from 'axios'
 import PenggunaTable from '../../../components/moleculles/PenggunaTable'
-import { Button } from 'antd'
+import { Button, PageHeader } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { useSelector } from 'react-redux'
 
@@ -29,41 +29,51 @@ const Pengguna = () => {
 
   if (userAccess) {
     return (
-      <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
-        <div className="row">
-          <div className="col text-title text-start">
-            <h5 className="title fw-bold">Daftar Pengguna</h5>
-          </div>
-          {userAccess?.map(d => {
-            if (d.ability_name === "create-user") {
-              return (
-                <div className="col button-add text-end me-3">
+      <>
+        {userAccess?.map(d => {
+          if (d.ability_name === "create-user") {
+            return (
+              <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                title="Daftar Pengguna"
+                extra={[
                   <Link to="/pengguna/buat">
                     <Button
                       type="primary"
                       icon={<PlusOutlined />}
                     />
-                  </Link>
-                </div>
-              )
-            }
-          })}
-        </div>
-        <PenggunaTable />
-      </div>
+                  </Link>,
+                ]}
+              >
+                <PenggunaTable />
+              </PageHeader>
+            )
+          }
+        })}
+      </>
     )
   } else {
     return (
-      <div>
-        <div className="text-title text-start">
-          <h5 className="title fw-bold">Daftar Pengguna</h5>
-        </div>
-        <PenggunaTable />
-      </div>
+      <>
+        <PageHeader
+          ghost={false}
+          title="Daftar Pengguna"
+          className="bg-body rounded mb-2"
+        // extra={[
+        //   <Link to="/produk/buat">
+        //     <Button
+        //       type="primary"
+        //       icon={<PlusOutlined />}
+        //     />
+        //   </Link>,
+        // ]}
+        >
+          <PenggunaTable />
+        </PageHeader>
+      </>
     )
-
   }
-
 }
 
 export default Pengguna

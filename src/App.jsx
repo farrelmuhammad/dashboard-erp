@@ -72,7 +72,7 @@ const App = () => {
       </Menu.Item>
       <Menu.Item key="4">
         <Link to="/departemen" />
-        Department
+        Departmen
       </Menu.Item>
       <Menu.Item key="5">
         <Link to="/posisi" />
@@ -143,7 +143,7 @@ const App = () => {
         Transfer Barang
       </Menu.Item>
       <Menu.Item key="49">
-        <Link to="/production" />
+        <Link to="/produksi" />
         Produksi
       </Menu.Item>
     </Menu.SubMenu>
@@ -319,7 +319,7 @@ const App = () => {
       </Menu.Item>
       <Menu.Item key="4">
         <Link to="/departemen" />
-        Department
+        Departmen
       </Menu.Item>
       <Menu.Item key="5">
         <Link to="/posisi" />

@@ -20,6 +20,7 @@ import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
 import { Button, PageHeader, Switch } from 'antd';
 import { SendOutlined } from "@ant-design/icons";
+import { number } from "yup";
 
 const BuatKaryawan = () => {
   // const token = jsCookie.get("auth");
@@ -126,6 +127,169 @@ const BuatKaryawan = () => {
   // }
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if(!nip){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data NIP kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(nip.length > 9 )
+    {
+//Nip maksimal 9 karakter
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "NIP maksimal 9 karakter, Silahkan periksa kembali ",
+      });
+    }
+    else if(!nik){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Nama kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(nik.length > 20)
+    {
+      //NIK maksimal 20 
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "NIK maksimal 20 karakter, Silahkan periksa kembali ",
+      });
+    }
+    else if(!name){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Nama kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!initial){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Inisial kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!department_id){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Departemen kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!position_id){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Posisi kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!phone_number){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data nomor telepon kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(phone_number.length > 20){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Nomor Telepon maksimal 20 karakter, Silahkan periksa kembali ",
+      });
+    }
+    else if(!email){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Email kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!date_of_birth){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Tanggal Lahir kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!start_date){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Tanggal Masuk kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!npwp){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Nama kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(npwp.length > 25){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "NPWP maksimal 25 karakter, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(npwp.type != number){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "NPWP berupa bilangan bulat, Silahkan periksa kembali ",
+      });
+    }
+    else if(!alamat){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Alamat kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!kelurahan){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Kelurahan kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!kecamatan){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Kecamatan kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!kota){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Kota kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!kode_pos){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Kode Pos kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    // else if(!name){
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Nama kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
+else{
+
+    
+
     const userData = new FormData();
     userData.append("nip", nip);
     userData.append("nama", name);
@@ -175,7 +339,7 @@ const BuatKaryawan = () => {
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: err.response.data.error.inisial,
+            text: err.response.data.error.npwp,
           });
         } else if (err.request) {
           console.log("err.request ", err.request);
@@ -185,7 +349,7 @@ const BuatKaryawan = () => {
           Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
         }
       });
-  };
+  }};
 
   // const handleCheck = (event) => {
   //   var updatedList = [...warehouses];
@@ -265,7 +429,7 @@ const BuatKaryawan = () => {
             </label>
             <div className="col-sm-10">
               <input
-                type="number"
+                type="text"
                 className="form-control"
                 id="inputnip"
                 min="1"

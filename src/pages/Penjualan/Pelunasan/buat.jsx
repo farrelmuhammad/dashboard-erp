@@ -12,6 +12,8 @@ import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
+import { formatRupiah } from '../../../utils/helper';
+import CurrencyFormat from 'react-currency-format';
 
 const { Text } = Typography;
 
@@ -112,6 +114,9 @@ const BuatPelunasan = () => {
     const [getDataProduct, setGetDataProduct] = useState();
     const [isLoading, setIsLoading] = useState(false);
 
+    const [namaMataUang, setNamaMataUang] = useState('Rp');
+    
+
     const [sisaUang, setSisaUang] = useState("");
     const [subTotal, setSubTotal] = useState("");
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
@@ -164,7 +169,7 @@ const BuatPelunasan = () => {
                 }
             })
             setGetDataProduct(res.data);
-            // console.log(res.data);
+            console.log(res.data);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -205,6 +210,17 @@ const BuatPelunasan = () => {
         },
     ];
 
+    const convertToRupiahTabel = (angka) => {
+        return <>
+            {
+                namaMataUang === 'Rp' ?
+                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" />
+                    : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" />
+
+            }
+        </>
+    }
+
     const defaultColumns = [
         {
             title: 'No. Faktur',
@@ -217,6 +233,7 @@ const BuatPelunasan = () => {
             dataIndex: 'total',
             width: '25%',
             align: 'center',
+            render: (text) => formatRupiah(text)
         },
         {
             title: 'Sisa',
@@ -227,7 +244,7 @@ const BuatPelunasan = () => {
                 let sisa = 0;
                 sisa = (record.total - record.pays);
 
-                return sisa || 0
+                return convertToRupiahTabel(sisa) || 0
             }
         },
         {
@@ -339,44 +356,44 @@ const BuatPelunasan = () => {
             userData.append("terbayar[]", p.pays);
         });
 
-        for (var pair of userData.entries()) {
-            console.log(pair[0] + ', ' + pair[1]);
-        }
+        // for (var pair of userData.entries()) {
+        //     console.log(pair[0] + ', ' + pair[1]);
+        // }
 
-        // axios({
-        //     method: "post",
-        //     url: `${Url}/sales_invoice_payments`,
-        //     data: userData,
-        //     headers: {
-        //         Accept: "application/json",
-        //         Authorization: `Bearer ${auth.token}`,
-        //     },
-        // })
-        //     .then(function (response) {
-        //         //handle success
-        //         Swal.fire(
-        //             "Berhasil Ditambahkan",
-        //             ` Masuk dalam list`,
-        //             "success"
-        //         );
-        //         navigate("/pesanan");
-        //     })
-        //     .catch((err) => {
-        //         if (err.response) {
-        //             console.log("err.response ", err.response);
-        //             Swal.fire({
-        //                 icon: "error",
-        //                 title: "Oops...",
-        //                 text: err.response.data.error.nama,
-        //             });
-        //         } else if (err.request) {
-        //             console.log("err.request ", err.request);
-        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        //         } else if (err.message) {
-        //             // do something other than the other two
-        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        //         }
-        //     });
+        axios({
+            method: "post",
+            url: `${Url}/sales_invoice_payments`,
+            data: userData,
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        })
+            .then(function (response) {
+                //handle success
+                Swal.fire(
+                    "Berhasil Ditambahkan",
+                    ` Masuk dalam list`,
+                    "success"
+                );
+                navigate("/pesanan");
+            })
+            .catch((err) => {
+                if (err.response) {
+                    console.log("err.response ", err.response);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: err.response.data.error.nama,
+                    });
+                } else if (err.request) {
+                    console.log("err.request ", err.request);
+                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                } else if (err.message) {
+                    // do something other than the other two
+                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                }
+            });
     };
 
     const handleDraft = async (e) => {
@@ -393,72 +410,53 @@ const BuatPelunasan = () => {
             userData.append("terbayar[]", p.pays);
         });
 
-        for (var pair of userData.entries()) {
-            console.log(pair[0] + ', ' + pair[1]);
-        }
+        // for (var pair of userData.entries()) {
+        //     console.log(pair[0] + ', ' + pair[1]);
+        // }
 
-        // axios({
-        //     method: "post",
-        //     url: `${Url}/sales_invoice_payments`,
-        //     data: userData,
-        //     headers: {
-        //         Accept: "application/json",
-        //         Authorization: `Bearer ${auth.token}`,
-        //     },
-        // })
-        //     .then(function (response) {
-        //         //handle success
-        //         Swal.fire(
-        //             "Berhasil Ditambahkan",
-        //             ` Masuk dalam list`,
-        //             "success"
-        //         );
-        //         navigate("/pesanan");
-        //     })
-        //     .catch((err) => {
-        //         if (err.response) {
-        //             console.log("err.response ", err.response);
-        //             Swal.fire({
-        //                 icon: "error",
-        //                 title: "Oops...",
-        //                 text: err.response.data.error.nama,
-        //             });
-        //         } else if (err.request) {
-        //             console.log("err.request ", err.request);
-        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        //         } else if (err.message) {
-        //             // do something other than the other two
-        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        //         }
-        //     });
+        axios({
+            method: "post",
+            url: `${Url}/sales_invoice_payments`,
+            data: userData,
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        })
+            .then(function (response) {
+                //handle success
+                Swal.fire(
+                    "Berhasil Ditambahkan",
+                    ` Masuk dalam list`,
+                    "success"
+                );
+                navigate("/pesanan");
+            })
+            .catch((err) => {
+                if (err.response) {
+                    console.log("err.response ", err.response);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: err.response.data.error.nama,
+                    });
+                } else if (err.request) {
+                    console.log("err.request ", err.request);
+                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                } else if (err.message) {
+                    // do something other than the other two
+                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                }
+            });
     };
-
-    const dataFaktur = [
-        {
-            id: 1,
-            code: 'BMA-001',
-            total: 10000,
-            // pays: 0
-        },
-        {
-            id: 2,
-            code: 'BMA-002',
-            total: 10000,
-            // pays: 0
-        }
-    ]
 
     return (
         <>
-            <form className="p-2 mb-3 bg-body rounded">
             <PageHeader
                 className="bg-body rounded mb-2"
                 onBack={() => window.history.back()}
                 title="Buat Pelunasan"
-            ></PageHeader>
-                {/* <div className="text-title text-start mb-4">
-                    <h4 className="title fw-bold">Buat Pelunasan</h4>
-                </div> */}
+            >
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -513,10 +511,10 @@ const BuatPelunasan = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pembayaran</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Kas/Bank</label>
                             <div className="col-sm-7">
                                 <AsyncSelect
-                                    placeholder="Pilih Pembayaran"
+                                    placeholder="Pilih Kas/Bank"
                                     cacheOptions
                                     defaultOptions
                                     value={selectedValue2}
@@ -529,102 +527,98 @@ const BuatPelunasan = () => {
                         </div>
                     </div>
                 </div>
-            </form>
-            <form className="p-3 mb-5 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <div className="row">
-                        <div className="col">
-                            <h4 className="title fw-normal">Cari Faktur</h4>
-                        </div>
-                        <div className="col text-end me-2">
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
-                            />
-                            <Modal
-                                title="Tambah Faktur Penjualan"
-                                centered
-                                visible={modal2Visible}
-                                onCancel={() => setModal2Visible(false)}
-                                // footer={[
-                                //     <Button
-                                //         key="submit"
-                                //         type="primary"
+            </PageHeader>
 
-                                //     >
-                                //         Tambah
-                                //     </Button>,
-                                // ]}
-                                footer={null}
-                            >
-                                <div className="text-title text-start">
-                                    <div className="row">
-                                        <div className="col mb-3">
-                                            <Search
-                                                placeholder="Cari Nama Faktur..."
-                                                style={{
-                                                    width: 400,
-                                                }}
-                                                onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                            />
-                                        </div>
-                                        <Table
-                                            columns={columnsModal}
-                                            dataSource={getDataProduct}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
-                                    </div>
+            <PageHeader
+                className="bg-body rounded mb-2"
+                title="Cari Faktur"
+                extra={[
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => setModal2Visible(true)}
+                    />,
+                    <Modal
+                        title="Tambah Faktur Penjualan"
+                        centered
+                        visible={modal2Visible}
+                        onCancel={() => setModal2Visible(false)}
+                        // footer={[
+                        //     <Button
+                        //         key="submit"
+                        //         type="primary"
+
+                        //     >
+                        //         Tambah
+                        //     </Button>,
+                        // ]}
+                        footer={null}
+                    >
+                        <div className="text-title text-start">
+                            <div className="row">
+                                <div className="col mb-3">
+                                    <Search
+                                        placeholder="Cari Nama Faktur..."
+                                        style={{
+                                            width: 400,
+                                        }}
+                                        onChange={(e) => setQuery(e.target.value.toLowerCase())}
+                                    />
                                 </div>
-                            </Modal>
+                                <Table
+                                    columns={columnsModal}
+                                    dataSource={getDataProduct}
+                                    scroll={{
+                                        y: 250,
+                                    }}
+                                    pagination={false}
+                                    loading={isLoading}
+                                    size="middle"
+                                />
+                            </div>
                         </div>
-                    </div>
-                    <Table
-                        components={components}
-                        rowClassName={() => 'editable-row'}
-                        bordered
-                        pagination={false}
-                        dataSource={product}
-                        columns={columns}
-                        onChange={(e) => setProduct(e.target.value)}
-                        summary={(pageData) => {
-                            // let totalTotal = 0;
-                            // pageData.forEach(({ total }) => {
-                            //     totalTotal += total;
-                            // });
-                            let totalTotal = 0;
-                            pageData.forEach(({ pays }) => {
-                                totalTotal += pays;
-                            });
-                            return (
-                                <>
-                                    <Table.Summary.Row>
-                                        <Table.Summary.Cell index={0} colSpan={3}>Total yang dibayarkan</Table.Summary.Cell>
-                                        <Table.Summary.Cell index={1}>
-                                            <Text type="danger">{totalTotal || 0}</Text>
-                                        </Table.Summary.Cell>
-                                        {/* <Table.Summary.Cell index={2}>
+                    </Modal>
+                ]}
+            >
+                <Table
+                    components={components}
+                    rowClassName={() => 'editable-row'}
+                    bordered
+                    pagination={false}
+                    dataSource={product}
+                    columns={columns}
+                    onChange={(e) => setProduct(e.target.value)}
+                    summary={(pageData) => {
+                        // let totalTotal = 0;
+                        // pageData.forEach(({ total }) => {
+                        //     totalTotal += total;
+                        // });
+                        let totalTotal = 0;
+                        pageData.forEach(({ pays }) => {
+                            totalTotal += pays;
+                        });
+                        return (
+                            <>
+                                <Table.Summary.Row>
+                                    <Table.Summary.Cell index={0} colSpan={3}>Total yang dibayarkan</Table.Summary.Cell>
+                                    <Table.Summary.Cell index={1}>
+                                        <Text type="danger">Rp {totalTotal || 0}</Text>
+                                    </Table.Summary.Cell>
+                                    {/* <Table.Summary.Cell index={2}>
                                             <Text>{totalRepayment}</Text>
                                         </Table.Summary.Cell> */}
-                                    </Table.Summary.Row>
-                                    {/* <Table.Summary.Row>
+                                </Table.Summary.Row>
+                                {/* <Table.Summary.Row>
                                         <Table.Summary.Cell index={0}>Balance</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1} colSpan={2}>
                                             <Text type="danger">{totalBorrow - totalRepayment}</Text>
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row> */}
-                                </>
-                            );
-                        }}
-                    />
-                </div>
-
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:"right", position:"relative"}}>
+                            </>
+                        );
+                    }}
+                />
+                <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2" role="group" aria-label="Basic mixed styles example">
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -641,14 +635,8 @@ const BuatPelunasan = () => {
                     >
                         Submit
                     </button>
-                    {/* <button
-                        type="button"
-                        className="btn btn-warning rounded m-1">
-                        Cetak
-                    </button> */}
                 </div>
-                <div style={{clear:"both"}}></div>
-            </form>
+            </PageHeader>
         </>
     )
 }

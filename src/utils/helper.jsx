@@ -9,11 +9,17 @@ export const formatRupiah = (angka) =>
 	"Rp " + angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
 //Untuk mengubah string menjadi title case
-export const toTitleCase = (str) =>
-	str.replace(
-		/\w\S*/g,
-		(txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
-	);
+export const toTitleCase = (str) => {
+	//console.log(str)
+	if(str != null){
+		return str.replace(
+			/\w\S*/g,
+			(txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+		);
+	}
+}
+	
+
 
 export const formatQuantity = (angka) =>
 	parseFloat(angka).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");

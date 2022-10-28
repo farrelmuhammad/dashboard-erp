@@ -6,13 +6,14 @@ import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
 import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { PlusOutlined,ArrowLeftOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
-import { formatQuantity, formatRupiah } from '../../../utils/helper';
+import CurrencyFormat from 'react-currency-format';
+import { toTitleCase } from '../../../utils/helper';
 
 const EditableContext = createContext(null);
 
@@ -80,8 +81,13 @@ const EditableCell = ({
                     },
                 ]}
             >
-                {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
+                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
+                    decimalSeparator = {','}
+                    onChange={value => {
+                        value = parseFloat(value.toString().replace('.', ','))
+                      }}
+                      
+                />
             </Form.Item>
         ) : (
             <div
@@ -235,12 +241,8 @@ const CreateProduction = () => {
             width: '30%',
             align: 'center',
             editable: true,
-            render(text, record) {
-                return {
-                    props: {
-                    },
-                    children: <div>{formatQuantity(text)}</div>
-                };
+            render: (text) => {
+                return convertToRupiahTabel(text)
             }
         },
         {
@@ -258,6 +260,14 @@ const CreateProduction = () => {
             }
         },
     ];
+    const convertToRupiahTabel = (angka) => {
+        return <>
+        {
+            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} />
+            
+        }
+        </>
+    }
     const handleSave = (row,type_production) => {
         console.log(row,type_production)
         if (type_production === 'input') {
@@ -357,7 +367,7 @@ const CreateProduction = () => {
         userData.append("warehouse_input", warehouse_input);
         userData.append("warehouse_output", warehouse_output);
         userData.append("notes", notes);
-        userData.append("status", "publish");
+        userData.append("status", "Submitted");
         product.map((p) => {
             userData.append("product_input_id[]", p.product_id);
             userData.append("qty_input[]", p.qty);
@@ -387,7 +397,7 @@ const CreateProduction = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/permintaanbarang");
+                navigate("/produksi");
             })
             .catch((err) => {
                 if (err.response) {
@@ -414,7 +424,7 @@ const CreateProduction = () => {
         userData.append("warehouse_input", warehouse_input);
         userData.append("warehouse_output", warehouse_output);
         userData.append("notes", notes);
-        userData.append("status", "draft");
+        userData.append("status", "Draft");
         product.map((p) => {
             userData.append("product_input_id[]", p.product_id);
             userData.append("qty_input[]", p.qty);
@@ -440,7 +450,7 @@ const CreateProduction = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/permintaanbarang");
+                navigate("/produksi");
             })
             .catch((err) => {
                 if (err.response) {
@@ -466,7 +476,14 @@ const CreateProduction = () => {
                 <div className="p-3 mb-3">
                     <div className="card" style={cardOutline}>
                         <div className="card-header bg-white">
-                            <h6 className="title fw-bold">Buat Produksi</h6>
+                            <h6 className="title fw-bold">
+                                <Button
+                                    style={{border: 'none'}}
+                                    icon={<ArrowLeftOutlined />}
+                                    onClick={() => navigate(-1)}
+                                />
+                                Buat Produksi
+                            </h6>
                         </div>
                         <div className="card-body">
                             <div className="row">
@@ -529,9 +546,7 @@ const CreateProduction = () => {
                                     <div className="form-group row mb-1">
                                         <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
                                         <div className="col-sm-8">
-                                            <h3 className="badge bg-danger text-center m-1">
-                                                Draft
-                                            </h3>
+                                            <Tag color="orange">{toTitleCase("Draft")}</Tag>
                                         </div>
                                     </div>
                                 </div>
@@ -675,7 +690,7 @@ const CreateProduction = () => {
                         </div>
                     </div>
                 </div>
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -693,6 +708,7 @@ const CreateProduction = () => {
                         Submit
                     </button>
                 </div>
+                <div style={{ clear: 'both' }}></div>
             </form>
         </>
     )
