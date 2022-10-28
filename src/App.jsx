@@ -143,7 +143,7 @@ const App = () => {
         Transfer Barang
       </Menu.Item>
       <Menu.Item key="49">
-        <Link to="/production" />
+        <Link to="/produksi" />
         Produksi
       </Menu.Item>
     </Menu.SubMenu>
