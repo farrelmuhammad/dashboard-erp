@@ -48,7 +48,7 @@ const TallyTable = () => {
     }).then((res) => res.json())
       .then(({ data }) => {
         // setGetDataTally(data);
-         // agar bisa di search 
+        // agar bisa di search 
         let tmp = []
         for (let i = 0; i < data.length; i++) {
           tmp.push({
@@ -391,6 +391,17 @@ const TallyTable = () => {
               </Link>
             ) : null}
             {
+              record.can['update-tally_sheet'] ? (
+                <Link to={`/tally/edit/${record.id}`}>
+                  <Button
+                    size='small'
+                    type="success"
+                    icon={<EditOutlined />}
+                  />
+                </Link>
+              ) : null
+            }
+            {
               record.can['cancel-tally_sheet'] ? (
 
                 <Button
@@ -414,17 +425,7 @@ const TallyTable = () => {
                 </Space>
               ) : null
             }
-            {
-              record.can['update-tally_sheet'] ? (
-                <Link to={`/tally/edit/${record.id}`}>
-                  <Button
-                    size='small'
-                    type="success"
-                    icon={<EditOutlined />}
-                  />
-                </Link>
-              ) : null
-            }
+
           </Space>
         </>
       )

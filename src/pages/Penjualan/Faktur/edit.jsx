@@ -246,8 +246,9 @@ const EditFaktur = () => {
                 setCustomer(getData.recipient.id)
                 setCatatan(getData.notes)
 
+                console.log(getData.delivery_notes.length)
                 let dataSumber;
-                if (getData.delivery_notes) {
+                if (getData.delivery_notes && getData.delivery_notes.length < 0) {
                     setSumber('Surat')
                     setDataBarang(getData.sales_invoice_details)
                     dataSumber = getData.delivery_notes

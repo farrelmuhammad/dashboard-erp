@@ -116,6 +116,7 @@ const BuatFaktur = () => {
     const [query, setQuery] = useState("");
     const [getCode, setGetCode] = useState('');
     const [uangMuka, setUangMuka] = useState(0);
+    const [tampilUangMuka, setTampilUangMuka] = useState(0);
     const navigate = useNavigate();
     const auth = useSelector(state => state.auth);
     const [loadingTable, setLoadingTable] = useState(false)
@@ -775,7 +776,7 @@ const BuatFaktur = () => {
         }
 
         setProduct(arrTotal)
-        calculate(arrTotal);
+        calculate(arrTotal, checked);
         setData(arrTotal)
 
     }
@@ -857,8 +858,10 @@ const BuatFaktur = () => {
     };
 
     function tambahUangMuka(value) {
-        let hasil = value.toString().replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+        let hasil = value.toString().replace('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',', '.');
+        console.log(hasil)
         setUangMuka(hasil);
+        setTampilUangMuka(value)
 
     }
 
@@ -1078,7 +1081,7 @@ const BuatFaktur = () => {
                         }
 
                         setData(tmpData)
-                        calculate(tmpData)
+                        calculate(tmpData, checked)
                     })
             }
 
@@ -1126,7 +1129,7 @@ const BuatFaktur = () => {
                         }
 
                         setData(tmpData)
-                        calculate(tmpData)
+                        calculate(tmpData, checked)
 
                     })
             }
@@ -1188,7 +1191,7 @@ const BuatFaktur = () => {
                         }
 
                         setData(tmpData)
-                        calculate(tmpData)
+                        calculate(tmpData, checked)
                     })
             }
 
@@ -1236,7 +1239,7 @@ const BuatFaktur = () => {
                         }
 
                         setData(tmpData)
-                        calculate(tmpData)
+                        calculate(tmpData, checked)
 
                     })
             }
@@ -1556,21 +1559,44 @@ const BuatFaktur = () => {
                     </div>
 
                     <div className="col">
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
-                            <div className="col-sm-7">
-                                <AsyncSelect
-                                    placeholder="Pilih Penerima..."
-                                    cacheOptions
-                                    defaultOptions
-                                    value={selectedValue}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={sumber == 'SO' ? loadOptionsCustomer : loadOptionsPenerima}
-                                    onChange={handleChangeCustomer}
-                                />
-                            </div>
-                        </div>
+                        {
+                            sumber == 'SO' ?
+                                <div className="row mb-3">
+                                    <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
+                                    <div className="col-sm-7">
+                                        <AsyncSelect
+                                            placeholder="Pilih Penerima..."
+                                            cacheOptions
+                                            defaultOptions
+                                            value={selectedValue}
+                                            getOptionLabel={(e) => e.name}
+                                            getOptionValue={(e) => e.id}
+                                            loadOptions={loadOptionsCustomer}
+                                            onChange={handleChangeCustomer}
+                                        />
+                                    </div>
+                                </div> : 
+                                null
+                        }
+                        {
+                            sumber == 'Surat' ?
+                            <div className="row mb-3">
+                                <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
+                                <div className="col-sm-7">
+                                    <AsyncSelect
+                                        placeholder="Pilih Penerima..."
+                                        cacheOptions
+                                        defaultOptions
+                                        value={selectedValue}
+                                        getOptionLabel={(e) => e.name}
+                                        getOptionValue={(e) => e.id}
+                                        loadOptions={loadOptionsPenerima}
+                                        onChange={handleChangeCustomer}
+                                    />
+                                </div>
+                            </div> : null
+                        }
+
 
 
                         <div className="row mb-3">
@@ -1728,7 +1754,7 @@ const BuatFaktur = () => {
                                     decimalSeparator={','}
                                     prefix={'Rp '}
                                     onKeyDown={(event) => klikEnter(event)}
-                                    value={uangMuka}
+                                    value={tampilUangMuka}
                                     onChange={(e) => tambahUangMuka(e.target.value)} />
                             </div>
                         </div>
