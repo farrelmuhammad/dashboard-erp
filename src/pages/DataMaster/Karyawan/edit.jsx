@@ -234,7 +234,7 @@ const EditKaryawan = () => {
           </label>
           <div className="col-sm-10">
             <input
-              type="kode"
+              type="text"
               className="form-control"
               id="inputKode3"
               defaultValue={nip}
