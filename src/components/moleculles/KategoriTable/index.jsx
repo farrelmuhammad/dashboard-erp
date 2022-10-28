@@ -192,7 +192,7 @@ const KategoriTable = () => {
               size='small'
               type="danger"
               icon={<DeleteOutlined />}
-              onClick={() => deleteCategories(record.id)}
+              onClick={() => deleteCategories(record.id, record.code)}
             />
           </Space>
         </>
@@ -221,15 +221,28 @@ const KategoriTable = () => {
       })
   };
 
-  const deleteCategories = async (id) => {
-    await axios.delete(`${Url}/categories/${id}`, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    });
-    getCategories();
-    Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+  const deleteCategories = async (id, code) => {
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Data akan dihapus",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    })
+      .then((result) => {
+        if (result.isConfirmed) {
+          axios.delete(`${Url}/categories/${id}`, {
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          });
+          getCategories();
+          Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+        }
+      })
   };
 
   return (
