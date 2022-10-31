@@ -59,7 +59,7 @@ const FakturTable = () => {
         try {
           axios({
             method: "patch",
-            url: `${Url}/sales_invoices/cancel/${id}`,
+            url: `${Url}/sales_invoices/cancel?id_faktur_penjualan=${id}`,
             headers: {
               Accept: "application/json",
               Authorization: `Bearer ${auth.token}`,
@@ -232,17 +232,6 @@ const FakturTable = () => {
             total : getData[i].total,
             type : getData[i].type,
             status : getData[i].status
-            
-            // name:getData[i].name,
-            // _group:getData[i]._group,
-            // category:getData[i].category.name,
-            // department : getData[i].department.name ,
-            // position: getData[i].position.name,
-            // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
-            // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
-            // date: getData[i].date,
-            // status: getData[i].status,
-            // warehouse: getData[i].warehouse.name
           })
         }
 

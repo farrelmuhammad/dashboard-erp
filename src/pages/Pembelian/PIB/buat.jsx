@@ -25,6 +25,7 @@ const BuatPIB = () => {
     const [loadingTable, setLoadingTable] = useState(false);
 
     const [selectedSupplier, setSelectedSupplier] = useState(null);
+    const [currencyID, setCurrencyID] = useState();
     const [selectedMataUang, setSelectedMataUang] = useState('');
     const [selectedFaktur, setSelectedFaktur] = useState(null);
     const [selectedCOA, setSelectedCOA] = useState(null);
@@ -181,6 +182,7 @@ const BuatPIB = () => {
             setDataFaktur(newIdFaktur)
             setTampilProduk(newData);
             setSelectedMataUang(newData[0].currency_name)
+            setMataUangId(newData[0].currency_id)
         }
 
 
@@ -433,6 +435,83 @@ const BuatPIB = () => {
 
 
     const handleSubmit = async (e) => {
+
+        console.log(selectedMataUang)
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!supplierId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!noBL){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data No Bill of Lading kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!kurs){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Kurs kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!namaKapal){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Nama Kapal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!tanggalTiba){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal Tiba kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!estimasiAwal){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!estimasiAkhir){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!bankId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Kas/Bank kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!mataUangId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Mata Uang kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
+      
+
         e.preventDefault();
         console.log(bankId)
         const formData = new FormData();
@@ -481,7 +560,8 @@ const BuatPIB = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data Faktur belum dipilih, silahkan lengkapi datanya dan coba kembali",
+                       // text: err.response.data.error,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -491,9 +571,84 @@ const BuatPIB = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+     } };
 
     const handleDraft = async (e) => {
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!supplierId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!noBL){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data No Bill of Lading kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!kurs){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Kurs kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!namaKapal){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Nama Kapal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!tanggalTiba){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal Tiba kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!estimasiAwal){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!estimasiAkhir){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!bankId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Kas/Bank kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!mataUangId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Mata Uang kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
+        
+
         e.preventDefault();
         console.log(bankId)
         const formData = new FormData();
@@ -542,7 +697,8 @@ const BuatPIB = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data Faktur belum dipilih, silahkan lengkapi datanya dan coba kembali",
+                        // text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -552,7 +708,7 @@ const BuatPIB = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+     } };
 
     return (
         <>
@@ -621,10 +777,25 @@ const BuatPIB = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
                             <div className="col-sm-7">
+{/* 
+                            <AsyncSelect
+
+                                    cacheOptions
+                                    defaultOptions
+                                    defaultValue={selectedMataUang}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsMataUang}
+                                    onChange={handleChangeMataUang}
+                                    disabled
+                                /> */}
+
                                 <input
                                     type="Nama"
                                     defaultValue={selectedMataUang}
                                     disabled
+                                    // getOptionLabel={(e) => e.name}
+                                    // getOptionValue={(e) => e.id}
                                     className="form-control"
                                     id="inputNama3"
                                 />

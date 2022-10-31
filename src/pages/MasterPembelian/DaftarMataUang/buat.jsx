@@ -23,6 +23,18 @@ const BuatMataUang = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if(!name){
+   
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Data Nama Mata Uang kosong, Silahkan Lengkapi datanya ",
+        });
+    
+    }
+    else{
+
     console.log(data);
 
     const userData = new FormData();
@@ -65,7 +77,7 @@ const BuatMataUang = () => {
           Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
         }
       });
-  };
+    }  };
 
   useEffect(() => {
     axios

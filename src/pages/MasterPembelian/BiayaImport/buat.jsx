@@ -33,6 +33,33 @@ const BuatBiayaImport = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if(!name){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Nama Biaya kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!account_id){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Akun Jurnal kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!category_id){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Kategori kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else{
+
+    
+
+    
     console.log(data);
 
     const userData = new FormData();
@@ -78,7 +105,7 @@ const BuatBiayaImport = () => {
           Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
         }
       });
-  };
+   } };
 
   // select data kategori
   const handleChangeCategory = (value) => {

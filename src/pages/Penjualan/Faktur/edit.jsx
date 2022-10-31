@@ -490,6 +490,7 @@ const EditFaktur = () => {
         let tmpData = [];
         if (key == 'qty') {
             let hasil = value.replaceAll('.', '');
+            console.log(value)
             for (let i = 0; i < data.length; i++) {
                 if (i == y) {
                     tmpData.push(
@@ -516,7 +517,7 @@ const EditFaktur = () => {
             setData(tmpData);
         }
         else if (key == 'price') {
-            let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+            let hasil = value.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "");
 
             for (let i = 0; i < data.length; i++) {
                 if (i == y) {
@@ -556,7 +557,7 @@ const EditFaktur = () => {
                                 product_alias_name: data[i].product_alias_name,
                                 quantity: data[i].quantity,
                                 price: data[i].price,
-                                discount_percentage: data[i].discount_percentage,
+                                discount_percentage: 0,
                                 fixed_discount: hasil,
                                 ppn: data[i].ppn,
                                 subtotal: data[i].subtotal,
@@ -587,7 +588,7 @@ const EditFaktur = () => {
                                 quantity: data[i].quantity,
                                 price: data[i].price,
                                 discount_percentage: hasil,
-                                fixed_discount: data[i].fixed_discount,
+                                fixed_discount: 0,
                                 ppn: data[i].ppn,
                                 subtotal: data[i].subtotal,
                                 pilihanDiskon: 'persen',
@@ -607,21 +608,42 @@ const EditFaktur = () => {
         else if (key == 'pilihanDiskon') {
             for (let i = 0; i < data.length; i++) {
                 if (i == y) {
-                    tmpData.push(
-                        {
-                            id: data[i].id,
-                            product_alias_name: data[i].product_alias_name,
-                            quantity: data[i].quantity,
-                            price: data[i].price,
-                            discount_percentage: data[i].discount_percentage,
-                            fixed_discount: data[i].fixed_discount,
-                            ppn: data[i].ppn,
-                            subtotal: data[i].subtotal,
-                            pilihanDiskon: value,
-                            unit: data[i].unit,
-                            total: data[i].total,
+                    console.log(value)
+                    if (value == 'nominal') {
+                        tmpData.push(
+                            {
+                                id: data[i].id,
+                                product_alias_name: data[i].product_alias_name,
+                                quantity: data[i].quantity,
+                                price: data[i].price,
+                                discount_percentage: 0,
+                                fixed_discount: data[i].fixed_discount,
+                                ppn: data[i].ppn,
+                                subtotal: data[i].subtotal,
+                                pilihanDiskon: value,
+                                unit: data[i].unit,
+                                total: data[i].total,
 
-                        })
+                            })
+                    }
+                    else if (value == 'persen') {
+                        tmpData.push(
+                            {
+                                id: data[i].id,
+                                product_alias_name: data[i].product_alias_name,
+                                quantity: data[i].quantity,
+                                price: data[i].price,
+                                discount_percentage: data[i].discount_percentage,
+                                fixed_discount: 0,
+                                ppn: data[i].ppn,
+                                subtotal: data[i].subtotal,
+                                pilihanDiskon: value,
+                                unit: data[i].unit,
+                                total: data[i].total,
+
+                            })
+                    }
+
                 }
                 else {
                     tmpData.push(data[i]);
@@ -631,7 +653,7 @@ const EditFaktur = () => {
             setData(tmpData);
         }
         else if (key == 'ppn') {
-            let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+            let hasil = value.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "");
 
             for (let i = 0; i < data.length; i++) {
                 if (i == y) {
@@ -667,26 +689,26 @@ const EditFaktur = () => {
         for (let i = 0; i < tmpData.length; i++) {
             if (i == y) {
                 if (tmpData[i].pilihanDiskon == 'persen') {
-                    let total = tmpData[i].quantity.replace(',', '.') * Number(tmpData[i].price);
-                    let getDiskon = (Number(total) * tmpData[i].discount_percentage.replace(',', '.')) / 100;
+                    let total = tmpData[i].quantity.replace(',', '.') * Number(tmpData[i].price.replace(',', '.'));
+                    let getDiskon = (Number(total) * Number(tmpData[i].discount_percentage.toString().replace(',', '.'))) / 100;
 
-                    let ppn = ((Number(total) - Number(getDiskon)) * tmpData[i].ppn.toString().replace(',', '.')) / 100;
+                    let ppn = ((Number(total) - Number(getDiskon)) * tmpData[i].ppn.replace(',', '.')) / 100;
                     console.log(total)
                     console.log(ppn)
 
                     grandTotal = Number(total) - Number(getDiskon) + Number(ppn);
-                    console.log(grandTotal)
+                    // console.log(grandTotal)
                 }
                 else if (tmpData[i].pilihanDiskon == 'nominal') {
-                    let total = (Number(tmpData[i].quantity.replace(',', '.')) * Number(tmpData[i].price))
-                    let getDiskon = tmpData[i].fixed_discount;
+                    let total = (Number(tmpData[i].quantity.replace(',', '.')) * Number(tmpData[i].price.replace(',', '.')))
+                    let getDiskon = Number(tmpData[i].fixed_discount.toString().replace(',', '.'));
 
-                    let ppn = ((Number(total) - Number(getDiskon)) * tmpData[i].ppn.toString().replace(',', '.')) / 100;
+                    let ppn = ((Number(total) - Number(getDiskon)) * tmpData[i].ppn.replace(',', '.')) / 100;
                     grandTotal = total - Number(getDiskon) + Number(ppn);
                 }
                 else {
-                    let total = (Number(tmpData[i].quantity.replace(',', '.')) * Number(tmpData[i].price))
-                    let ppn = (Number(total) * tmpData[i].ppn.toString().replace(',', '.')) / 100;
+                    let total = (Number(tmpData[i].quantity.replace(',', '.')) * Number(tmpData[i].price.replace(',', '.')))
+                    let ppn = (Number(total) * tmpData[i].ppn.replace(',', '.')) / 100;
                     grandTotal = total + Number(ppn);
                 }
                 arrTotal.push(
@@ -701,7 +723,7 @@ const EditFaktur = () => {
                         subtotal: tmpData[i].subtotal,
                         pilihanDiskon: tmpData[i].pilihanDiskon,
                         unit: tmpData[i].unit,
-                        total: grandTotal,
+                        total: Number(grandTotal).toFixed(2).toString().replace('.', ','),
                     })
             }
             else {
@@ -718,8 +740,78 @@ const EditFaktur = () => {
 
 
 
+    // const calculate = (product, check_checked) => {
+    //     console.log(product)
+    //     let totalPerProduk = 0;
+    //     let grandTotal = 0;
+    //     let total = 0;
+    //     let hasilDiskon = 0;
+    //     let subTotal = 0;
+    //     let totalPpn = 0;
+    //     let rowDiscount = 0;
+    //     let subTotalDiscount = 0;
+    //     let totalDiscount = 0;
+    //     product.map((values, i) => {
+    //         // termasuk pajak 
+    //         if (check_checked) {
+    //             total += (Number(values.quantity) * Number(values.price));
+    //             totalPerProduk = (Number(values.quantity) * Number(values.price));
+
+    //             if (values.pilihanDiskon == 'persen') {
+    //                 hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+    //                 rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+    //             }
+    //             else if (values.pilihanDiskon == 'nominal') {
+    //                 hasilDiskon += Number(values.fixed_discount);
+    //                 rowDiscount = Number(values.fixed_discount);
+    //             }
+    //             totalDiscount += ((rowDiscount * 100) / (100 + Number(values.ppn)));
+    //             subTotalDiscount = totalPerProduk - rowDiscount;
+    //             subTotal += (subTotalDiscount * 100) / (100 + Number(values.ppn));
+    //             totalPpn = (subTotal * Number(values.ppn)) / 100;
+
+
+    //             grandTotal = subTotal - hasilDiskon + Number(totalPpn);
+
+    //             setSubTotal(subTotal)
+    //             setGrandTotalDiscount(totalDiscount);
+    //             setTotalPpn(totalPpn)
+    //             setGrandTotal(grandTotal);
+    //         }
+
+    //         // tidak termasuk pajak 
+    //         else {
+    //             console.log("sndjsbfj")
+    //             total += (Number(values.quantity) * Number(values.price));
+    //             totalPerProduk = (Number(values.quantity) * Number(values.price));
+
+    //             if (values.pilihanDiskon == 'persen') {
+    //                 hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+    //                 rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+    //             }
+    //             else if (values.pilihanDiskon == 'nominal') {
+
+    //                 hasilDiskon += Number(values.fixed_discount);
+    //                 rowDiscount = Number(values.fixed_discount);
+    //             }
+    //             // console.log(hasilDiskon)
+    //             // totalDiscount += ((totalPerProduk * rowDiscount) / 100);
+    //             // totalDiscount = hasilDiskon;
+    //             subTotal = total - (Number(totalPerProduk) * Number(rowDiscount) / 100);
+    //             subTotalDiscount = totalPerProduk - rowDiscount;
+    //             totalPpn += (subTotalDiscount * values.ppn) / 100;
+    //             grandTotal = total - hasilDiskon + Number(totalPpn);
+
+    //             setSubTotal(total)
+    //             setGrandTotalDiscount(hasilDiskon);
+    //             setTotalPpn(totalPpn)
+    //             setGrandTotal(grandTotal);
+    //         }
+    //     })
+    // }
+
     const calculate = (product, check_checked) => {
-        console.log(product)
+        // console.log(product)
         let totalPerProduk = 0;
         let grandTotal = 0;
         let total = 0;
@@ -732,21 +824,21 @@ const EditFaktur = () => {
         product.map((values, i) => {
             // termasuk pajak 
             if (check_checked) {
-                total += (Number(values.quantity) * Number(values.price));
-                totalPerProduk = (Number(values.quantity) * Number(values.price));
+                total += (Number(values.quantity.replace(',', '.')) * Number(values.price.replace(',', '.')));
+                totalPerProduk = (Number(values.quantity.replace(',', '.')) * Number(values.price.replace(',', '.')));
 
                 if (values.pilihanDiskon == 'persen') {
-                    hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
-                    rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                    hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage.toString().replace(',', '.')) / 100);
+                    rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage.toString().replace(',', '.')) / 100);
                 }
                 else if (values.pilihanDiskon == 'nominal') {
-                    hasilDiskon += Number(values.fixed_discount);
-                    rowDiscount = Number(values.fixed_discount);
+                    hasilDiskon += Number(values.fixed_discount.toString().replace(',', '.'));
+                    rowDiscount = Number(values.fixed_discount.toString().replace(',', '.'));
                 }
-                totalDiscount += ((rowDiscount * 100) / (100 + Number(values.ppn)));
+                totalDiscount += ((rowDiscount * 100) / (100 + Number(values.ppn.toString().replace(',', '.'))));
                 subTotalDiscount = totalPerProduk - rowDiscount;
-                subTotal += (subTotalDiscount * 100) / (100 + Number(values.ppn));
-                totalPpn = (subTotal * Number(values.ppn)) / 100;
+                subTotal += (subTotalDiscount * 100) / (100 + Number(values.ppn.toString().replace(',', '.')));
+                totalPpn = (subTotal * Number(values.ppn.toString().replace(',', '.'))) / 100;
 
 
                 grandTotal = subTotal - hasilDiskon + Number(totalPpn);
@@ -759,25 +851,21 @@ const EditFaktur = () => {
 
             // tidak termasuk pajak 
             else {
-                console.log("sndjsbfj")
-                total += (Number(values.quantity) * Number(values.price));
-                totalPerProduk = (Number(values.quantity) * Number(values.price));
+                total += (Number(values.quantity.replace(',', '.')) * Number(values.price.replace(',', '.')));
+                totalPerProduk = (Number(values.quantity.replace(',', '.')) * Number(values.price.replace(',', '.')));
 
                 if (values.pilihanDiskon == 'persen') {
-                    hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
-                    rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                    hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage.toString().replace(',', '.')) / 100);
+                    rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage.toString().replace(',', '.')) / 100);
                 }
                 else if (values.pilihanDiskon == 'nominal') {
 
-                    hasilDiskon += Number(values.fixed_discount);
-                    rowDiscount = Number(values.fixed_discount);
+                    hasilDiskon += Number(values.fixed_discount.toString().replace(',', '.'));
+                    rowDiscount = Number(values.fixed_discount.toString().replace(',', '.'));
                 }
-                // console.log(hasilDiskon)
-                // totalDiscount += ((totalPerProduk * rowDiscount) / 100);
-                // totalDiscount = hasilDiskon;
                 subTotal = total - (Number(totalPerProduk) * Number(rowDiscount) / 100);
                 subTotalDiscount = totalPerProduk - rowDiscount;
-                totalPpn += (subTotalDiscount * values.ppn) / 100;
+                totalPpn += (subTotalDiscount * Number(values.ppn.toString().replace(',', '.'))) / 100;
                 grandTotal = total - hasilDiskon + Number(totalPpn);
 
                 setSubTotal(total)
@@ -787,6 +875,7 @@ const EditFaktur = () => {
             }
         })
     }
+
 
     const components = {
         body: {
@@ -1432,10 +1521,10 @@ const EditFaktur = () => {
                         </div>
                         <div className="col">
                             <div className="row mb-3">
-                                <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
+                                <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
                                 <div className="col-sm-7">
                                     <AsyncSelect
-                                        placeholder="Pilih Penerima..."
+                                        placeholder="Pilih Customer..."
                                         cacheOptions
                                         defaultOptions
                                         defaultInputValue={selectedPenerima.name}

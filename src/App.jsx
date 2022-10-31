@@ -15,6 +15,8 @@ import {
   ImportOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  DollarCircleOutlined,
+  
 } from '@ant-design/icons';
 import './App.css';
 import { Avatar, Button, Col, Dropdown, Layout, Menu, Row, Space, Tooltip, Typography } from 'antd';
@@ -61,7 +63,273 @@ const App = () => {
   }, [])
 
   const adminMenu = <>
-    <Menu.SubMenu title="SDM" icon={<AuditOutlined />}>
+
+
+<Menu.SubMenu title="Master Data" icon={<UserOutlined />}>
+            
+      <Menu.SubMenu title="SDM">
+       
+        <Menu.Item key="2">
+          <Link to="/pengguna" />
+          Pengguna
+        </Menu.Item>
+        <Menu.Item key="3">
+          <Link to="/grup" />
+          Grup Pengguna
+        </Menu.Item>
+        <Menu.Item key="4">
+          <Link to="/karyawan" />
+          Karyawan
+        </Menu.Item>
+        <Menu.Item key="5">
+          <Link to="/departemen" />
+          Departmen
+        </Menu.Item>
+        <Menu.Item key="6">
+          <Link to="/posisi" />
+          Posisi
+        </Menu.Item>
+    </Menu.SubMenu>
+
+
+        <Menu.Item key="7">
+          <Link to="/pelanggan" />
+          Customer
+        </Menu.Item>
+        <Menu.Item key="8">
+          <Link to="/supplier" />
+          Supplier
+        </Menu.Item>
+
+        <Menu.SubMenu title="Produk">
+          <Menu.Item key="9">
+            <Link to="/produk" />
+            Produk
+          </Menu.Item>
+          <Menu.Item key="10">
+            <Link to="/kategori" />
+            Kategori
+          </Menu.Item>
+          <Menu.Item key="11">
+            <Link to="/bagian" />
+            Bagian
+          </Menu.Item>
+          <Menu.Item key="12">
+            <Link to="/grade" />
+            Grade 
+          </Menu.Item>
+          <Menu.Item key="13">
+            <Link to="/tipe" />
+            Tipe
+          </Menu.Item>
+          <Menu.Item key="14">
+            <Link to="/merek" />
+            Merek
+          </Menu.Item>
+          <Menu.Item key="15">
+            <Link to="/pajak" />
+            Pajak
+          </Menu.Item>
+        </Menu.SubMenu> 
+
+        <Menu.Item key="16">
+          <Link to="/gudang" />
+          Gudang
+        </Menu.Item>
+
+        <Menu.SubMenu title="Keuangan" >
+        <Menu.Item key="17">
+            <Link to="/matauang" />
+            Mata Uang
+        </Menu.Item>
+        <Menu.Item key="18">
+            <Link to="/coa" />
+            Chart of Accounts
+        </Menu.Item>
+        <Menu.Item key="19">
+          <Link to="/accountmapping" />
+          Pemetaan Akun
+        </Menu.Item>
+        <Menu.Item key="20">
+        <Link to="/biayaimport" />
+          Biaya Import
+        </Menu.Item>
+        <Menu.Item key="21">
+        {/* <Link to="/biayaimport" /> */}
+          Metode Pembayaran
+        </Menu.Item>
+      </Menu.SubMenu>
+
+                
+</Menu.SubMenu>
+
+<Menu.SubMenu title="Penjualan Wholesale" icon={<RiseOutlined />}>
+        <Menu.Item key="22">
+          <Link to="/pesanan" />
+          Pesanan Penjualan
+        </Menu.Item>
+        <Menu.Item key="23">
+          <Link to="/tally" />
+          Tally Sheet
+        </Menu.Item>
+        <Menu.Item key="24">
+          <Link to="/suratjalan" />
+          Surat Jalan
+        </Menu.Item>
+        <Menu.Item key="25">
+          <Link to="/faktur" />
+          Faktur Penjualan
+        </Menu.Item>
+        <Menu.Item key="26">
+          <Link to="/retur" />
+          Retur Penjualan
+        </Menu.Item>
+        <Menu.Item key="27">
+          <Link to="/pelunasan" />
+          Pelunasan Penjualan
+        </Menu.Item>
+        <Menu.Item key="28">
+        {/* <Link to="/pelunasan" /> */}
+           Penyesuaian Harga Jual
+        </Menu.Item> 
+    </Menu.SubMenu>
+
+    <Menu.SubMenu title="Penjualan Retail" icon={<ContainerOutlined />}>
+        <Menu.Item key="29">
+          {/* <Link to="/pelunasan" /> */}
+            POS
+        </Menu.Item> 
+        <Menu.Item key="30">
+          {/* <Link to="/pelunasan" /> */}
+            Riwayat Shift
+        </Menu.Item> 
+        <Menu.Item key="31">
+          {/* <Link to="/pelunasan" /> */}
+            Faktur Retail
+        </Menu.Item> 
+        <Menu.Item key="32">
+          {/* <Link to="/pelunasan" /> */}
+            Pelunasan Penjualan Retail
+        </Menu.Item> 
+    </Menu.SubMenu>  
+
+    <Menu.SubMenu title="Pembelian" icon={<ShoppingCartOutlined />}>
+      <Menu.Item key="33">
+          <Link to="/pesananpembelian" />
+          Pesanan Pembelian
+      </Menu.Item>
+      <Menu.Item key="34">
+          <Link to="/tallypembelian" />
+          Tally Sheet
+      </Menu.Item>
+      <Menu.Item key="35">
+        <Link to="/penerimaanbarang" />
+        Penerimaan Barang
+      </Menu.Item>
+      <Menu.Item key="36">
+        <Link to="/fakturpembelian" />
+        Faktur Pembelian
+      </Menu.Item>
+      <Menu.Item key="37">
+        <Link to="/returpembelian" />
+        Retur Pembelian
+      </Menu.Item>
+      <Menu.Item key="38">
+        <Link to="/pembayaranpembelian" />
+        Pelunasan Pembelian
+      </Menu.Item>
+      <Menu.Item key="39">
+        <Link to="/pib" />
+        PIB
+      </Menu.Item>
+      <Menu.Item key="40">
+        <Link to="/biayaimport" />
+        Biaya Import
+      </Menu.Item>
+      <Menu.Item key="41">
+        <Link to="/" />
+        Pengembalian Biaya Import
+      </Menu.Item>
+      <Menu.Item key="42">
+        <Link to="/creditnote" />
+        Credit Note
+      </Menu.Item>
+    </Menu.SubMenu>
+
+    
+    <Menu.SubMenu title="Stok" icon={<DatabaseOutlined />}>
+    <Menu.Item key="43">
+        <Link to="/stockmutation" />
+        Mutasi Stok
+    </Menu.Item>
+    <Menu.Item key="44">
+        <Link to="/produksi" />
+        Produksi
+    </Menu.Item>
+    <Menu.Item key="45">
+        <Link to="/permintaanbarang" />
+        Permintaan Barang
+    </Menu.Item>
+    <Menu.Item key="46">
+        <Link to="/goodstransfer" />
+        Transfer Gudang
+      </Menu.Item>
+    <Menu.Item key="47">
+        <Link to="/tallytransfer" />
+        Tally Sheet
+      </Menu.Item>
+      <Menu.Item key="48">
+        <Link to="/adjustment" />
+        Penyesuaian Stok
+      </Menu.Item>
+
+    
+
+    </Menu.SubMenu>
+
+<Menu.SubMenu title="Keuangan" icon={<DollarCircleOutlined />}>
+    <Menu.SubMenu title="Rekonsiliasi Bank">
+        <Menu.Item key="49">
+          <Link to="/bankreconciliation/list" />
+          List Rekonsiliasi
+        </Menu.Item>
+        <Menu.Item key="50">
+          <Link to="/bankreconciliation/history" />
+          Histori Rekonsialiasi
+        </Menu.Item>
+    </Menu.SubMenu>
+        <Menu.Item key="51">
+          {/* <Link to="/bankreconciliation/history" /> */}
+         Biaya Lain
+        </Menu.Item>
+      
+        <Menu.Item key="52">
+          {/* <Link to="/bankreconciliation/history" /> */}
+          Pendapatan Lain
+        </Menu.Item>
+
+        <Menu.Item key="53">
+        <Link to="/jurnal" />
+          Jurnal Umum
+        </Menu.Item>
+ </Menu.SubMenu> 
+
+ <Menu.SubMenu title="Aset Tetap" icon={<BoxPlotOutlined />}>
+        <Menu.Item key="54">
+          {/* <Link to="/bankreconciliation/history" /> */}
+         Aset Tetap
+        </Menu.Item>
+      
+        <Menu.Item key="52">
+          {/* <Link to="/bankreconciliation/history" /> */}
+          Penyusutan Aset Tetap
+        </Menu.Item>
+ </Menu.SubMenu> 
+
+
+
+
+    {/* <Menu.SubMenu title="SDM" icon={<AuditOutlined />}>
       <Menu.Item key="2">
         <Link to="/grup" />
         Grup Pengguna
@@ -86,8 +354,8 @@ const App = () => {
         <Link to="/pelanggan" />
         Pelanggan
       </Menu.Item>
-    </Menu.SubMenu>
-    <Menu.SubMenu title="Produk" icon={<CopyOutlined />}>
+    </Menu.SubMenu> */}
+    {/* <Menu.SubMenu title="Produk" icon={<CopyOutlined />}>
       <Menu.Item key="9">
         <Link to="/grade" />
         Grade Produk
@@ -120,8 +388,8 @@ const App = () => {
         <Link to="/gudang" />
         Gudang
       </Menu.Item>
-    </Menu.SubMenu>
-    <Menu.SubMenu title="Inventory" icon={<DatabaseOutlined />}>
+    </Menu.SubMenu> */}
+    {/* <Menu.SubMenu title="Inventory" icon={<DatabaseOutlined />}>
       <Menu.Item key="17">
         <Link to="/adjustment" />
         Penyesuaian Stok
@@ -146,8 +414,8 @@ const App = () => {
         <Link to="/produksi" />
         Produksi
       </Menu.Item>
-    </Menu.SubMenu>
-    <Menu.SubMenu title="Penjualan" icon={<RiseOutlined />}>
+    </Menu.SubMenu> */}
+    {/* <Menu.SubMenu title="Penjualan" icon={<RiseOutlined />}>
       <Menu.Item key="20">
         <Link to="/pesanan" />
         Pesanan Penjualan
@@ -172,8 +440,8 @@ const App = () => {
         <Link to="/pelunasan" />
         Pelunasan Penjualan
       </Menu.Item>
-    </Menu.SubMenu >
-    <Menu.SubMenu title="Master Pembelian" icon={<FundProjectionScreenOutlined />}>
+    </Menu.SubMenu > */}
+    {/* <Menu.SubMenu title="Master Pembelian" icon={<FundProjectionScreenOutlined />}>
       <Menu.Item key="26">
         <Link to="/supplier" />
         Supplier
@@ -186,8 +454,8 @@ const App = () => {
         <Link to="/biayaimport" />
         Master Biaya Import
       </Menu.Item>
-    </Menu.SubMenu>
-    <Menu.SubMenu title="Pembelian" icon={<ShoppingCartOutlined />}>
+    </Menu.SubMenu> */}
+    {/* <Menu.SubMenu title="Pembelian" icon={<ShoppingCartOutlined />}>
       <Menu.Item key="29">
         <Link to="/pesananpembelian" />
         Pesanan Pembelian
@@ -220,9 +488,9 @@ const App = () => {
         <Link to="/pib" />
         PIB
       </Menu.Item>
-    </Menu.SubMenu>
+    </Menu.SubMenu> */}
 
-    <Menu.SubMenu title="Akuntansi" icon={<LineChartOutlined />}>
+    {/* <Menu.SubMenu title="Akuntansi" icon={<LineChartOutlined />}>
       <Menu.Item key="32">
         <Link to="/coa" />
         Chart of Accounts
@@ -246,40 +514,40 @@ const App = () => {
         </Menu.Item>
       </Menu.SubMenu>
 
-    </Menu.SubMenu>
-    <Menu.SubMenu title="Aset Tetap" icon={<BoxPlotOutlined />}>
-      <Menu.Item key="37">
+    </Menu.SubMenu> */}
+    {/* <Menu.SubMenu title="Aset Tetap" icon={<BoxPlotOutlined />}>
+      <Menu.Item key="37"> */}
         {/* <Link to="/tallypembelian" /> */}
-        Pemetaan Akun
+        {/* Pemetaan Akun
       </Menu.Item>
-      <Menu.Item key="38">
+      <Menu.Item key="38"> */}
         {/* <Link to="/fakturpembelian" /> */}
-        Jurnal Umum
+        {/* Jurnal Umum
       </Menu.Item>
-      <Menu.Item key="39">
+      <Menu.Item key="39"> */}
         {/* <Link to="/fakturpembelian" /> */}
-        Rekonsiliasi Bank
+        {/* Rekonsiliasi Bank
       </Menu.Item>
     </Menu.SubMenu>
     <Menu.SubMenu title="POS" icon={<ContainerOutlined />}>
-      <Menu.Item key="40">
+      <Menu.Item key="40"> */}
         {/* <Link to="/coa" /> */}
-        Chart Of Accounts
+        {/* Chart Of Accounts
       </Menu.Item>
-      <Menu.Item key="41">
+      <Menu.Item key="41"> */}
         {/* <Link to="/tallypembelian" /> */}
-        Pemetaan Akun
+        {/* Pemetaan Akun
       </Menu.Item>
-      <Menu.Item key="42">
+      <Menu.Item key="42"> */}
         {/* <Link to="/fakturpembelian" /> */}
-        Jurnal Umum
+        {/* Jurnal Umum
       </Menu.Item>
-      <Menu.Item key="43">
+      <Menu.Item key="43"> */}
         {/* <Link to="/fakturpembelian" /> */}
-        Rekonsiliasi Bank
+        {/* Rekonsiliasi Bank
       </Menu.Item>
-    </Menu.SubMenu>
-    <Menu.SubMenu title="Transaksi Impor" icon={<ImportOutlined />}>
+    </Menu.SubMenu> */}
+    {/* <Menu.SubMenu title="Transaksi Impor" icon={<ImportOutlined />}>
       <Menu.Item key="44">
         <Link to="/" />
         Pesanan Impor
@@ -304,11 +572,193 @@ const App = () => {
         <Link to="/" />
         Pengembalian Biaya
       </Menu.Item>
-    </Menu.SubMenu>
+    </Menu.SubMenu> */}
   </>
 
   const userMenu = <>
-    <Menu.SubMenu title="SDM" icon={<AuditOutlined />}>
+
+
+<Menu.SubMenu title="Master Data" icon={<UserOutlined />}>
+            
+      <Menu.SubMenu title="SDM">
+       
+        <Menu.Item key="2">
+          <Link to="/pengguna" />
+          Pengguna
+        </Menu.Item>
+        <Menu.Item key="3">
+          <Link to="/grup" />
+          Grup Pengguna
+        </Menu.Item>
+        <Menu.Item key="4">
+          <Link to="/karyawan" />
+          Karyawan
+        </Menu.Item>
+        <Menu.Item key="5">
+          <Link to="/departemen" />
+          Departmen
+        </Menu.Item>
+        <Menu.Item key="6">
+          <Link to="/posisi" />
+          Posisi
+        </Menu.Item>
+    </Menu.SubMenu>
+
+        <Menu.Item key="7">
+          <Link to="/pelanggan" />
+          Customer
+        </Menu.Item>
+
+        <Menu.Item key="8">
+          <Link to="/supplier" />
+          Supplier
+        </Menu.Item>
+    
+        <Menu.SubMenu title="Produk">
+          <Menu.Item key="9">
+            <Link to="/produk" />
+            Produk
+          </Menu.Item>
+          <Menu.Item key="10">
+            <Link to="/kategori" />
+            Kategori
+          </Menu.Item>
+          <Menu.Item key="11">
+            <Link to="/bagian" />
+            Bagian
+          </Menu.Item>
+          <Menu.Item key="12">
+            <Link to="/grade" />
+            Grade 
+          </Menu.Item>
+          <Menu.Item key="13">
+            <Link to="/tipe" />
+            Tipe
+          </Menu.Item>
+          <Menu.Item key="14">
+            <Link to="/merek" />
+            Merek
+          </Menu.Item>
+          <Menu.Item key="15">
+            <Link to="/pajak" />
+            Pajak
+          </Menu.Item>
+        </Menu.SubMenu> 
+
+        <Menu.Item key="16">
+          <Link to="/gudang" />
+          Gudang
+        </Menu.Item>
+
+        <Menu.SubMenu title="Keuangan" >
+        <Menu.Item key="17">
+            <Link to="/matauang" />
+            Mata Uang
+        </Menu.Item>
+        <Menu.Item key="20">
+        <Link to="/biayaimport" />
+          Biaya Import
+        </Menu.Item>
+      
+      </Menu.SubMenu>
+      
+</Menu.SubMenu>
+
+<Menu.SubMenu title="Penjualan Wholesale" icon={<RiseOutlined />}>
+        <Menu.Item key="22">
+          <Link to="/pesanan" />
+          Pesanan Penjualan
+        </Menu.Item>
+        <Menu.Item key="23">
+          <Link to="/tally" />
+          Tally Sheet
+        </Menu.Item>
+        <Menu.Item key="24">
+          <Link to="/suratjalan" />
+          Surat Jalan
+        </Menu.Item>
+        <Menu.Item key="25">
+          <Link to="/faktur" />
+          Faktur Penjualan
+        </Menu.Item>
+        <Menu.Item key="26">
+          <Link to="/retur" />
+          Retur Penjualan
+        </Menu.Item>
+        <Menu.Item key="27">
+          <Link to="/pelunasan" />
+          Pelunasan Penjualan
+        </Menu.Item>
+    </Menu.SubMenu>
+
+    <Menu.SubMenu title="Pembelian" icon={<ShoppingCartOutlined />}>
+      <Menu.Item key="33">
+          <Link to="/pesananpembelian" />
+          Pesanan Pembelian
+      </Menu.Item>
+      <Menu.Item key="34">
+          <Link to="/tallypembelian" />
+          Tally Sheet
+      </Menu.Item>
+      <Menu.Item key="35">
+        <Link to="/penerimaanbarang" />
+        Penerimaan Barang
+      </Menu.Item>
+      <Menu.Item key="36">
+        <Link to="/fakturpembelian" />
+        Faktur Pembelian
+      </Menu.Item>
+      <Menu.Item key="37">
+        <Link to="/returpembelian" />
+        Retur Pembelian
+      </Menu.Item>
+      <Menu.Item key="38">
+        <Link to="/pembayaranpembelian" />
+        Pelunasan Pembelian
+      </Menu.Item>
+     
+      <Menu.Item key="40">
+        <Link to="/biayaimport" />
+        Biaya Import
+      </Menu.Item>
+    </Menu.SubMenu>
+
+    <Menu.SubMenu title="Stok" icon={<DatabaseOutlined />}>
+    <Menu.Item key="43">
+        <Link to="/stockmutation" />
+        Mutasi Stok
+    </Menu.Item>
+    <Menu.Item key="45">
+        <Link to="/permintaanbarang" />
+        Permintaan Barang
+    </Menu.Item>
+    <Menu.Item key="46">
+        <Link to="/goodstransfer" />
+        Transfer Gudang
+      </Menu.Item>
+   
+      <Menu.Item key="48">
+        <Link to="/adjustment" />
+        Penyesuaian Stok
+      </Menu.Item>
+
+    
+
+    </Menu.SubMenu>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {/* <Menu.SubMenu title="SDM" icon={<AuditOutlined />}>
       <Menu.Item key="2">
         <Link to="/grup" />
         Grup Pengguna
@@ -451,7 +901,7 @@ const App = () => {
         <Link to="/pembayaranpembelian" />
         Pembayaran Pembelian
       </Menu.Item>
-    </Menu.SubMenu>
+    </Menu.SubMenu> */}
   </>
 
   const handleLogout = () => {

@@ -175,6 +175,14 @@ const BuatPesanan = () => {
             dataIndex: 'stock',
             width: '15%',
             align: 'center',
+            render(text, record) {
+                return {
+                    props: {
+                    },
+                    // children: <div>{formatQuantity(text)}</div>
+                    children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
+                };
+            }
         },
         {
             title: 'actions',
@@ -789,6 +797,27 @@ const BuatPesanan = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!customer){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Customer kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
+     
+
+
+
         const userData = new FormData();
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
@@ -797,6 +826,44 @@ const BuatPesanan = () => {
         userData.append("termasuk_pajak", checked);
         userData.append("status", "Submitted");
         product.map((p, i) => {
+
+            if(!p.alias_name){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Data Produk kosong, Silahkan Lengkapi datanya ",
+                  });
+            }
+            else if(!p.quantity){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Data Kuantiti Produk kosong, Silahkan Lengkapi datanya ",
+                  });
+            }
+            // else if(!p.unit){
+            //     Swal.fire({
+            //         icon: "error",
+            //         title: "Oops...",
+            //         text: "Data Produk kosong, Silahkan Lengkapi datanya ",
+            //       });
+            // }
+            else if(!p.price){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Data Harga Produk kosong, Silahkan Lengkapi datanya ",
+                  });
+            }
+            else if(!p.ppn){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Data PPN Produk kosong, Silahkan Lengkapi datanya ",
+                  });
+            }
+            else{
+
             userData.append("nama_alias_produk[]", p.alias_name);
             userData.append("kuantitas[]", p.quantity);
             userData.append("satuan[]", p.unit);
@@ -810,7 +877,7 @@ const BuatPesanan = () => {
                 userData.append("persentase_diskon[]", 0);
             }
             userData.append("ppn[]", p.ppn);
-        });
+        }});
         userData.append("termasuk_pajak", checked);
 
         // for (var pair of userData.entries()) {
@@ -841,7 +908,8 @@ const BuatPesanan = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data Produk belum lengkap, silahkan lengkapi datanya",
+                        // text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -851,10 +919,27 @@ const BuatPesanan = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+     } };
 
     const handleDraft = async (e) => {
         e.preventDefault();
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!customer){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Customer kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
         const userData = new FormData();
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
@@ -910,7 +995,8 @@ const BuatPesanan = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data Produk belum lengkap, silahkan lengkapi datanya",
+                        // text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -920,7 +1006,7 @@ const BuatPesanan = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+    }};
 
     return (
         <>
@@ -984,7 +1070,7 @@ const BuatPesanan = () => {
                     </div>
                     <div className="col">
                         <div className="row mb-3">
-                            <label htmlFor="inputKode3" className="col-sm-2 col-form-label">Tanggal</label>
+                            <label htmlFor="inputKode3" className="col-sm-2 col-form-label">Estimasi Dikirim</label>
                             <div className="col-sm-4">
                                 <input
                                     id="startDate"

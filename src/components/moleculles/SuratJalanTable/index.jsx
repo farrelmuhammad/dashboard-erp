@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import 'antd/dist/antd.css';
-import { CheckOutlined, DeleteOutlined,CloseOutlined , EditOutlined, InfoCircleOutlined, MoreOutlined, SearchOutlined } from '@ant-design/icons';
+import { CheckOutlined, DeleteOutlined, CloseOutlined, EditOutlined, InfoCircleOutlined, MoreOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Dropdown, Input, Menu, Modal, Skeleton, Space, Table, Tag } from 'antd';
 import axios from 'axios';
 import Url from '../../../Config';
@@ -165,64 +165,64 @@ const SuratJalanTable = () => {
     //     Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
     // };
 
-    const deleteDeliveryNotes = async (id) => {
+    const deleteDeliveryNotes = async (id, code) => {
         Swal.fire({
-          title: 'Apakah Anda Yakin?',
-          text: "Data ini akan dihapus",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Ya'
+            title: 'Apakah Anda Yakin?',
+            text: "Data ini akan dihapus",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya'
         }).then((result) => {
-          if (result.isConfirmed) {
-            axios.delete(`${Url}/delivery_notes/${id}`, {
-              headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-              },
-            });
-            getDeliveryNotes()
-            Swal.fire("Berhasil Dihapus!", `Data dengan ID ${id} Berhasil hapus`, "success");
-    
-          }
+            if (result.isConfirmed) {
+                axios.delete(`${Url}/delivery_notes/${id}`, {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${auth.token}`,
+                    },
+                });
+                getDeliveryNotes()
+                Swal.fire("Berhasil Dihapus!", `Data dengan Code ${code} Berhasil hapus`, "success");
+
+            }
         })
-    
-      };
+
+    };
 
     const cancelDeliveryNote = async (id, code) => {
         Swal.fire({
-          title: 'Apakah Anda Yakin?',
-          text: "Status data akan diubah ",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Ya'
+            title: 'Apakah Anda Yakin?',
+            text: "Status data akan diubah ",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya'
         }).then((result) => {
-          if (result.isConfirmed) {
-            try {
-              axios({
-                method: "patch",
-                url: `${Url}/delivery_notes/cancel/${id}`,
-                headers: {
-                  Accept: "application/json",
-                  Authorization: `Bearer ${auth.token}`,
-                },
-              })
-    
-              getDeliveryNotes();
-              Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
-            }
-            catch (err) {
-              console.log(err);
-            }
-          }
-        })
-    
-      };
+            if (result.isConfirmed) {
+                try {
+                    axios({
+                        method: "patch",
+                        url: `${Url}/delivery_notes/cancel/${id}`,
+                        headers: {
+                            Accept: "application/json",
+                            Authorization: `Bearer ${auth.token}`,
+                        },
+                    })
 
-    
+                    getDeliveryNotes();
+                    Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
+                }
+                catch (err) {
+                    console.log(err);
+                }
+            }
+        })
+
+    };
+
+
 
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -299,33 +299,12 @@ const SuratJalanTable = () => {
             />
         ),
         onFilter: (value, record) =>
-        record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-      onFilterDropdownVisibleChange: (visible) => {
-        if (visible) {
-          setTimeout(() => searchInput.current?.select(), 100);
-        }
-      },
-        // onFilter: (value, record) =>
-        //     record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-        // onFilterDropdownVisibleChange: (visible) => {
-        //     if (visible) {
-        //         setTimeout(() => searchInput.current?.select(), 100);
-        //     }
-        // },
-        // render: (text) =>
-        //   searchedColumn === dataIndex ? (
-        //     <Highlighter
-        //       highlightStyle={{
-        //         backgroundColor: '#ffc069',
-        //         padding: 0,
-        //       }}
-        //       searchWords={[searchText]}
-        //       autoEscape
-        //       textToHighlight={text ? text.toString() : ''}
-        //     />
-        //   ) : (
-        //     text
-        //   ),
+            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+        onFilterDropdownVisibleChange: (visible) => {
+            if (visible) {
+                setTimeout(() => searchInput.current?.select(), 100);
+            }
+        },
     });
 
     useEffect(() => {
@@ -347,25 +326,25 @@ const SuratJalanTable = () => {
 
                 let tmp = []
                 for (let i = 0; i < getData.length; i++) {
-                  tmp.push({
-                    id: getData[i].id,
-                    can: getData[i].can,
-                    date: getData[i].date,
-                    code: getData[i].code,
-                    customer_name: getData[i].customer_name ? getData[i].customer_name : <div className='text-center'>-</div>,
-                    supplier_name: getData[i].supplier_name ? getData[i].supplier_name : <div className='text-center'>-</div>,
-                    vehicle : getData[i].vehicle,
-                    //name:getData[i].name,
-                    // _group:getData[i]._group,
-                    // category:getData[i].category.name,
-                    // department : getData[i].department.name ,
-                    // position: getData[i].position.name,
-                    // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
-                    // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
-                    // date: getData[i].date,
-                    status: getData[i].status,
-                    // warehouse: getData[i].warehouse.name
-                  })
+                    tmp.push({
+                        id: getData[i].id,
+                        can: getData[i].can,
+                        date: getData[i].date,
+                        code: getData[i].code,
+                        customer_name: getData[i].customer_name ? getData[i].customer_name : <div className='text-center'>-</div>,
+                        supplier_name: getData[i].supplier_name ? getData[i].supplier_name : <div className='text-center'>-</div>,
+                        vehicle: getData[i].vehicle,
+                        //name:getData[i].name,
+                        // _group:getData[i]._group,
+                        // category:getData[i].category.name,
+                        // department : getData[i].department.name ,
+                        // position: getData[i].position.name,
+                        // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+                        // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+                        // date: getData[i].date,
+                        status: getData[i].status,
+                        // warehouse: getData[i].warehouse.name
+                    })
                 }
 
                 setDataTampil(tmp)
@@ -584,32 +563,56 @@ const SuratJalanTable = () => {
                                 </Modal>
                                 <Dropdown overlay={
                                     <Menu menu="horizontal">
-                                        <Menu.Item key="detail">
-                                            <Link to={`/suratjalan/detail/${record.id}`}>
-                                                <Button
-                                                    size='small'
-                                                    type="primary"
-                                                    icon={<InfoCircleOutlined />}
-                                                />
-                                            </Link>
-                                        </Menu.Item>
-                                        <Menu.Item key="edit">
-                                            <Link to={`/suratjalan/edit/${record.id}`}>
-                                                <Button
-                                                    size='small'
-                                                    type="success"
-                                                    icon={<EditOutlined />}
-                                                />
-                                            </Link>
-                                        </Menu.Item>
-                                        <Menu.Item key="delete">
-                                            <Button
-                                                size='small'
-                                                type="danger"
-                                                icon={<DeleteOutlined />}
-                                                onClick={() => deleteDeliveryNotes(record.id)}
-                                            />
-                                        </Menu.Item>
+                                        {record.can['read-delivery_note'] ? (
+                                            <Menu.Item key="detail">
+                                                <Link to={`/suratjalan/detail/${record.id}`}>
+                                                    <Button
+                                                        size='small'
+                                                        type="primary"
+                                                        icon={<InfoCircleOutlined />}
+                                                    />
+                                                </Link>
+                                            </Menu.Item>
+                                        ) : null
+                                        }
+                                        {
+                                            record.can['update-delivery_note'] ? (
+                                                <Menu.Item key="edit">
+                                                    <Link to={`/suratjalan/edit/${record.id}`}>
+                                                        <Button
+                                                            size='small'
+                                                            type="success"
+                                                            icon={<EditOutlined />}
+                                                        />
+                                                    </Link>
+                                                </Menu.Item>
+                                            ) : null
+                                        }
+                                        {
+                                            record.can['cancel-delivery_note'] ? (
+                                                <Menu.Item key="edit">
+                                                    <Button
+                                                        size='small'
+                                                        type="danger"
+                                                        icon={<CloseOutlined />}
+                                                        onClick={() => cancelDeliveryNote(record.id, record.code)}
+                                                    />
+                                                </Menu.Item>
+
+                                            ) : null
+                                        }
+                                        {
+                                            record.can['delete-delivery_note'] ? (
+                                                <Menu.Item key="delete">
+                                                    <Button
+                                                        size='small'
+                                                        type="danger"
+                                                        icon={<DeleteOutlined />}
+                                                        onClick={() => deleteDeliveryNotes(record.id, record.code)}
+                                                    />
+                                                </Menu.Item>
+                                            ) : null
+                                        }
                                     </Menu>
                                 }>
                                     <a onClick={(e) => e.preventDefault()}>

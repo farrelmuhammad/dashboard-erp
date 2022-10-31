@@ -49,6 +49,7 @@ const BuatPembayaranPembelian = () => {
 
     const [selectedSupplier, setSelectedSupplier] = useState()
     const [selectedMataUang, setSelectedMataUang] = useState()
+    const [nmMataUang, setnmMataUang] = useState('')
     const [supplierId, setSupplierId] = useState('')
     const [mataUangId, setMataUangId] = useState()
     const [selectedBank, setSelectedBank] = useState()
@@ -83,8 +84,10 @@ const BuatPembayaranPembelian = () => {
 
     // select mata uang 
     const handleChangeMataUang = (value) => {
+        setnmMataUang(value.name);
         setSelectedMataUang(value);
         setMataUangId(value.id);
+        console.log(selectedMataUang)
     };
     const loadOptionsMataUang = (inputValue) => {
         return fetch(`${Url}/select_currencies?nama=${inputValue}`, {
@@ -227,9 +230,9 @@ const BuatPembayaranPembelian = () => {
     const dataFaktur =
         [...product.map((item, i) => ({
             code: item.code,
-            total: <CurrencyFormat prefix={selectedMataUang + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.total} key="total" />,
-            sisa: <CurrencyFormat prefix={selectedMataUang + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.sisa} key="sisa" />,
-            pays: <CurrencyFormat prefix={selectedMataUang + ' '} className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.bayar} onChange={(e) => klikUbahTotal(i, e.target.value)} key="pay" />,
+            total: <CurrencyFormat prefix={nmMataUang + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.total} key="total" />,
+            sisa: <CurrencyFormat prefix={nmMataUang + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.sisa} key="sisa" />,
+            pays: <CurrencyFormat prefix={nmMataUang + ' '} className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.bayar} onChange={(e) => klikUbahTotal(i, e.target.value)} key="pay" />,
 
         }))
 
@@ -313,6 +316,45 @@ const BuatPembayaranPembelian = () => {
     }
 
     const handleSubmit = async (e) => {
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!supplierId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!bankId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Kas/Bank kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!mataUangId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Mata Uang kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!kurs){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Rate Kurs kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
+
         e.preventDefault();
         const dataKirim = new FormData();
         dataKirim.append("tanggal", date);
@@ -354,7 +396,8 @@ const BuatPembayaranPembelian = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data Faktur belum dipilih, silahkan lengkapi datanya dan coba kembali",
+                        //text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -364,9 +407,49 @@ const BuatPembayaranPembelian = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+    }};
 
     const handleDraft = async (e) => {
+
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!supplierId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!bankId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Kas/Bank kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!mataUangId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Mata Uang kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!kurs){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Rate Kurs kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
+
         e.preventDefault();
         const dataKirim = new FormData();
         dataKirim.append("tanggal", date);
@@ -407,7 +490,8 @@ const BuatPembayaranPembelian = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data Faktur belum dipilih, silahkan lengkapi datanya dan coba kembali",
+                        //text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -417,7 +501,7 @@ const BuatPembayaranPembelian = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+      }  };
 
 
     return (
@@ -488,7 +572,7 @@ const BuatPembayaranPembelian = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
                             <div className="col-sm-7">
                                
-                                {/* <AsyncSelect
+                                <AsyncSelect
                                     placeholder="Pilih Mata Uang..."
                                     cacheOptions
                                     defaultOptions
@@ -497,7 +581,7 @@ const BuatPembayaranPembelian = () => {
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsMataUang}
                                     onChange={handleChangeMataUang}
-                                /> */}
+                                />
                             </div>
                         </div>
 
@@ -517,14 +601,14 @@ const BuatPembayaranPembelian = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Total</label>
                             <div className="col-sm-7">
-                                <CurrencyFormat prefix={selectedMataUang + ' '} disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={totalAkhir} key="total" />
+                                <CurrencyFormat prefix={nmMataUang + ' '} disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={totalAkhir} key="total" />
 
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Sisa</label>
                             <div className="col-sm-7">
-                                <CurrencyFormat prefix={selectedMataUang + ' '} disabled className='edit-disabled  form-control' thousandSeparator={'.'} decimalSeparator={','} value={sisaAkhir} key="sisa" />
+                                <CurrencyFormat prefix={nmMataUang + ' '} disabled className='edit-disabled  form-control' thousandSeparator={'.'} decimalSeparator={','} value={sisaAkhir} key="sisa" />
                             </div>
                         </div>
                         <div className="row mb-3">
@@ -608,7 +692,7 @@ const BuatPembayaranPembelian = () => {
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={3} className="text-end">Total yang dibayarkan</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp ' disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={totalAkhir} key="pay" />
+                                            <CurrencyFormat prefix={nmMataUang + ' '} disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={totalAkhir} key="pay" />
 
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>

@@ -2299,6 +2299,24 @@ const BuatTally = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!warehouse){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Gudang kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
+
         const userData = new FormData();
         userData.append("tanggal", date);
         userData.append("gudang", warehouse);
@@ -2307,6 +2325,15 @@ const BuatTally = () => {
         product.map((p, pi) => {
             if (sumber == 'SO') {
                 p.sales_order_details.map((po, i) => {
+                    if(!customer){
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Data Customer kosong, Silahkan Lengkapi datanya ",
+                          });
+                    }
+                    else{
+
                     userData.append("pelanggan", customer);
                     userData.append("id_pesanan_penjualan[]", p.id);
                     userData.append("id_produk[]", idProductSelect[pi][i]);
@@ -2314,10 +2341,18 @@ const BuatTally = () => {
                     userData.append("jumlah_box[]", totalBox[pi][i]);
                     userData.append("satuan_box[]", po.unit);
                     // userData.append("kuantitas_product_box[]", totalTallySheet[pi][i]);
-                })
+             } })
             }
             else {
                 p.purchase_return_details.map((po, i) => {
+                    if(!supplier){
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+                          });
+                    }
+                    else{
                     userData.append("pemasok", supplier);
                     userData.append("id_retur_pembelian[]", p.id);
                     userData.append("id_produk[]", po.product_id);
@@ -2325,7 +2360,7 @@ const BuatTally = () => {
                     userData.append("jumlah_box[]", totalBox[pi][i]);
                     userData.append("satuan_box[]", po.unit);
                     // userData.append("kuantitas_product_box[]", totalTallySheet[pi][i]);
-                })
+            }})
             }
 
         });
@@ -2367,7 +2402,8 @@ const BuatTally = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error,
+                        text:"Data belum lengkap, silahkan lengkapi datanya",
+                        //text: err.response.data.error,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -2377,10 +2413,46 @@ const BuatTally = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+     } };
 
     const handleDraft = async (e) => {
         e.preventDefault();
+
+        
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!warehouse){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Gudang kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(sumber == 'SO'){
+              if(!customer){
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Data Customer kosong, Silahkan Lengkapi datanya ",
+                          });
+                    }
+        }
+        else if(sumber == 'Retur'){
+                if(!supplier){
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+                          });
+                    }
+        }
+        else{
+
         const userData = new FormData();
         userData.append("tanggal", date);
         userData.append("gudang", warehouse);
@@ -2390,16 +2462,33 @@ const BuatTally = () => {
         product.map((p, pi) => {
             if (sumber == 'SO') {
                 p.sales_order_details.map((po, i) => {
+                    // if(!customer){
+                    //     Swal.fire({
+                    //         icon: "error",
+                    //         title: "Oops...",
+                    //         text: "Data Customer kosong, Silahkan Lengkapi datanya ",
+                    //       });
+                    // }
+                    // else{
                     userData.append("pelanggan", customer);
                     userData.append("id_pesanan_penjualan[]", p.id);
                     userData.append("id_produk[]", idProductSelect[pi][i]);
                     userData.append("aksi[]", statusSO[pi][i]);
                     userData.append("jumlah_box[]", totalBox[pi][i]);
                     userData.append("satuan_box[]", po.unit);
-                })
+           //  } 
+            })
             }
             else {
                 p.purchase_return_details.map((po, i) => {
+                    // if(!supplier){
+                    //     Swal.fire({
+                    //         icon: "error",
+                    //         title: "Oops...",
+                    //         text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+                    //       });
+                    // }
+                    // else{
                     userData.append("pemasok", supplier);
                     userData.append("id_retur_pembelian[]", p.id);
                     userData.append("id_produk[]", po.product_id);
@@ -2407,7 +2496,8 @@ const BuatTally = () => {
                     userData.append("jumlah_box[]", totalBox[pi][i]);
                     userData.append("satuan_box[]", po.unit);
                     // userData.append("kuantitas_produk_box" + "[" + pi + "]" + "[" + i + "]", totalTallySheet[pi][i]);
-                })
+             //}
+             })
             }
 
         });
@@ -2448,7 +2538,8 @@ const BuatTally = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data belum lengkap, silahkan lengkapi datanya"
+                        //text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -2458,13 +2549,22 @@ const BuatTally = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+      }  };
 
     function klikUbahSumber(value) {
+        if(!value){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Jenis Transaksi kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
         setSumber(value);
         setProduct([])
         setSelectedSupplier('');
         setSelectedCustomer('')
+    }
     }
 
     return (

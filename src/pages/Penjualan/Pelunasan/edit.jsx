@@ -11,6 +11,7 @@ import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
+import CurrencyFormat from 'react-currency-format';
 import { useSelector } from 'react-redux';
 
 const { Text } = Typography;
@@ -96,12 +97,20 @@ const EditableCell = ({
 };
 
 const EditPelunasan = () => {
+    function klikEnter(event) {
+        if (event.code == "Enter") {
+            event.target.blur()
+        }
+    }
+
+
     // const auth.token = jsCookie.get("auth");
     const [date, setDate] = useState(null);
     const [referensi, setReferensi] = useState('');
     const [description, setDescription] = useState('');
     const [status, setStatus] = useState("");
     const [customer, setCustomer] = useState("");
+    const [dataTampil, setDataTampil] = useState([]);
     const [customerName, setCustomerName] = useState("");
     const [COA, setCOA] = useState("");
     const [COAName, setCOAName] = useState("");
@@ -122,8 +131,8 @@ const EditPelunasan = () => {
     const [grandTotal, setGrandTotal] = useState("");
     const [checked, setChecked] = useState("");
 
-    const [selectedValue, setSelectedCustomer] = useState(null);
-    const [selectedValue2, setSelectedCOA] = useState(null);
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const [selectedPembayaran, setSelectedPembayaran] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
 
     const handleChangeCustomer = (value) => {
@@ -156,13 +165,35 @@ const EditPelunasan = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_sales_invoices?nama_alias=${query}&penerima=${customer}`, {
+            const res = await axios.get(`${Url}/sales_invoice_payments_available_sales_invoices?include_sales_invoice_payment_sales_invoices=${id}&nama_alias=${query}&penerima=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
+            // let tmp = [];
+            // for (let i = 0; i < res.data.data.length; i++) {
+            //     for (let x = 0; x < product.length; x++) {
+
+            //         if (res.data.data[i].code == product[x].code) {
+            //             tmp.push({
+            //                 detail: res.data.data[i],
+            //                 statusCek: true
+            //             });
+            //         }
+            //         else {
+            //             tmp.push({
+            //                 detail: res.data.data.[i],
+            //                 statusCek: false
+            //             });
+            //         }
+
+            //     }
+
+            // }
+            // console.log(tmp)
+            // setGetDataProduct(tmp)
+            setGetDataProduct(res.data.data);
             // console.log(res.data);
         };
 
@@ -184,10 +215,28 @@ const EditPelunasan = () => {
                 const getData = res.data.data[0]
                 setGetCode(getData.code)
                 setDate(getData.date)
-                // setDescription(getData.notes)
+                setReferensi(getData.reference);
+                setSelectedPembayaran(getData.chart_of_account)
+                setStatus(getData.status)
+                setSelectedCustomer(getData.customer)
+                let tmpData = [];
+                let data = getData.sales_invoice_payment_details;
+                for (let i = 0; i < data.length; i++) {
+                    tmpData.push({
+                        id: data[i].id,
+                        bayar: Number(data[i].paid).toString().replace('.', ','),
+                        sisa: Number(data[i].remains).toString().replace('.', ','),
+                        code: data[i].sales_invoice_code,
+                        sales_invoice_id: data[i].sales_invoice_id,
+                        sales_invoice_payment_id: data[i].sales_invoice_payment_id,
+                        sales_invoice_total_payment: data[i].sales_invoice_total_payment,
+                        total: Number(data[i].total).toString().replace('.', ',')
+                    })
+                }
+                console.log(tmpData)
+                setDataTampil(tmpData)
                 setCustomer(getData.recipient.id)
                 setCustomerName(getData.recipient.name)
-                console.log(res.data.data);
             })
     }
 
@@ -209,6 +258,9 @@ const EditPelunasan = () => {
             dataIndex: 'total',
             width: '20%',
             align: 'center',
+            render: (_, record) => (
+                <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={record.total} />
+            )
         },
         {
             title: 'actions',
@@ -226,6 +278,41 @@ const EditPelunasan = () => {
         },
     ];
 
+    function klikUbahBayar(value, index) {
+        let hasilValue = value.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "");
+        console.log(hasilValue)
+        let tmpData = [];
+        for (let i = 0; i < dataTampil.length; i++) {
+            let sisaBaru = Number(dataTampil[i].total.toString().replace(',', '.')) - Number(hasilValue.toString().replace(',', '.'));
+            console.log(sisaBaru)
+            if (i == index) {
+                tmpData.push({
+                    id: dataTampil[i].id,
+                    bayar: hasilValue,
+                    sisa: Number(sisaBaru).toFixed(2).toString().replace('.', ','),
+                    code: dataTampil[i].code,
+                    sales_invoice_id: dataTampil[i].sales_invoice_id,
+                    sales_invoice_payment_id: dataTampil[i].sales_invoice_payment_id,
+                    sales_invoice_total_payment: dataTampil[i].sales_invoice_total_payment,
+                    total: dataTampil[i].total,
+                });
+            }
+            else {
+                tmpData.push(dataTampil[i])
+            }
+
+        }
+        setDataTampil(tmpData)
+    }
+    const data =
+        [...dataTampil.map((item, i) => ({
+            code: item.code,
+            total: <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={item.total} />,
+            sisa: <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={item.sisa} />,
+            paid: <CurrencyFormat onKeyDown={(event) => klikEnter(event)} className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={item.bayar} onChange={(e) => klikUbahBayar(e.target.value, i)} />
+        })
+
+        )]
     const defaultColumns = [
         {
             title: 'No. Faktur',
@@ -238,34 +325,38 @@ const EditPelunasan = () => {
             dataIndex: 'total',
             width: '25%',
             align: 'center',
+            // render: (_, record) => (
+            //     <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(record.total).toString().replace('.', ',')} />
+            // )
         },
         {
             title: 'Sisa',
             dataIndex: 'sisa',
             width: '25%',
             align: 'center',
-            render: (text, record, index) => {
-                let sisa = 0;
-                sisa = (record.total - record.pays);
+            // render: (text, record, index) => {
+            //     let sisa = 0;
+            //     let total = record.total;
+            //     let bayar = record.paid;
+            //     // console.log(total);
+            //     sisa = Number(total) - Number(bayar);
+            //     // console.log(sisa)
 
-                return sisa
-            }
+            //     return <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(sisa).toString().replace('.', ',')} />
+
+            //     // return sisa
+            // }
         },
         {
             title: 'Dibayarkan',
-            dataIndex: 'pays',
+            dataIndex: 'paid',
             width: '25%',
             align: 'center',
-            editable: true,
-            // render: (record) => {
-            //     let pay = 0;
-            //     if (record.pays !== 0) {
-            //         return pay += record.pays
-            //     } 
-            //     else {
-            //         return pay
-            //     }
-            // }
+            // editable: true,
+            // render: (_, record) => (
+            //     <CurrencyFormat onKeyDown={(event) => klikEnter(event)} className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(record.paid).toString().replace('.', ',')} />
+
+            // )
         },
     ];
 
@@ -309,22 +400,22 @@ const EditPelunasan = () => {
             cell: EditableCell,
         },
     };
-    const columns = defaultColumns.map((col) => {
-        if (!col.editable) {
-            return col;
-        }
+    // const columns = defaultColumns.map((col) => {
+    //     if (!col.editable) {
+    //         return col;
+    //     }
 
-        return {
-            ...col,
-            onCell: (record) => ({
-                record,
-                editable: col.editable,
-                dataIndex: col.dataIndex,
-                title: col.title,
-                handleSave,
-            }),
-        };
-    });
+    //     return {
+    //         ...col,
+    //         onCell: (record) => ({
+    //             record,
+    //             editable: col.editable,
+    //             dataIndex: col.dataIndex,
+    //             title: col.title,
+    //             handleSave,
+    //         }),
+    //     };
+    // });
 
     const handleCheck = (event) => {
         var updatedList = [...product];
@@ -456,29 +547,14 @@ const EditPelunasan = () => {
             });
     };
 
-    const dataFaktur = [
-        {
-            id: 1,
-            code: 'BMA-001',
-            total: 10000,
-            pays: 0
-        },
-        {
-            id: 2,
-            code: 'BMA-002',
-            total: 10000,
-            pays: 0
-        }
-    ]
-
     return (
         <>
             <form className="p-2 mb-3 bg-body rounded">
-            <PageHeader
-                className="bg-body rounded mb-2"
-                onBack={() => window.history.back()}
-                title="Edit Pelunasan"
-            ></PageHeader>
+                <PageHeader
+                    className="bg-body rounded mb-2"
+                    onBack={() => window.history.back()}
+                    title="Edit Pelunasan"
+                ></PageHeader>
                 {/* <div className="text-title text-start mb-4">
                     <h4 className="title fw-bold">Buat Pelunasan</h4>
                 </div> */}
@@ -491,6 +567,7 @@ const EditPelunasan = () => {
                                     id="startDate"
                                     className="form-control"
                                     type="date"
+                                    defaultValue={date}
                                     onChange={(e) => setDate(e.target.value)}
                                 />
                             </div>
@@ -514,7 +591,7 @@ const EditPelunasan = () => {
                                     placeholder="Pilih Pelanggan..."
                                     cacheOptions
                                     defaultOptions
-                                    value={selectedValue}
+                                    value={selectedCustomer}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsCustomer}
@@ -529,6 +606,8 @@ const EditPelunasan = () => {
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Referensi</label>
                             <div className="col-sm-7">
                                 <input
+                                    defaultValue={referensi}
+                                    onChange={(e) => setReferensi(e.target.value)}
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
@@ -542,7 +621,7 @@ const EditPelunasan = () => {
                                     placeholder="Pilih Pembayaran"
                                     cacheOptions
                                     defaultOptions
-                                    value={selectedValue2}
+                                    value={selectedPembayaran}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsCOA}
@@ -551,7 +630,7 @@ const EditPelunasan = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Status</label>
                             <div className="col-sm-4 p-2">
                                 {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
                             </div>
@@ -618,24 +697,21 @@ const EditPelunasan = () => {
                         rowClassName={() => 'editable-row'}
                         bordered
                         pagination={false}
-                        dataSource={product}
-                        columns={columns}
+                        dataSource={data}
+                        columns={defaultColumns}
                         onChange={(e) => setProduct(e.target.value)}
                         summary={(pageData) => {
                             let totalTotal = 0;
-                            // pageData.forEach(({ total }) => {
-                            //     totalTotal = total;
-                            // });
-                            // let totalTotal = 0;
-                            pageData.forEach(({ pays }) => {
-                                totalTotal += pays;
+
+                            pageData.forEach(({ paid }) => {
+                                totalTotal = Number(totalTotal) + Number(paid.props.value.replace(',', '.'));
                             });
                             return (
                                 <>
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={3}>Total yang dibayarkan</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <Text type="danger">{totalTotal}</Text>
+                                            <CurrencyFormat onKeyDown={(event) => klikEnter(event)} className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={totalTotal} />
                                         </Table.Summary.Cell>
                                         {/* <Table.Summary.Cell index={2}>
                                             <Text>{totalRepayment}</Text>
@@ -653,7 +729,7 @@ const EditPelunasan = () => {
                     />
                 </div>
 
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{float:"right", position:"relative"}}>
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: "right", position: "relative" }}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -676,7 +752,7 @@ const EditPelunasan = () => {
                         Cetak
                     </button> */}
                 </div>
-                <div style={{clear:"both"}}></div>
+                <div style={{ clear: "both" }}></div>
             </form>
         </>
     )

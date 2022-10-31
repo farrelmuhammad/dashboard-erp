@@ -145,7 +145,7 @@ const BuatFaktur = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?nama_alias=${query}&id_penerima=${customer}`, {
+            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?nama_alias=${query}&id_pelanggan=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -1251,6 +1251,44 @@ const BuatFaktur = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!customer){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Penerima kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!addressId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Alamat Penerima kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!uangMuka){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Uang Muka kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!fakturType){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Kas/Bank kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
         const userData = new FormData();
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
@@ -1325,7 +1363,8 @@ const BuatFaktur = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data belum lengkap, silahkan lengkapi datanya dan coba kembali"
+                         //text: err.response.data.error,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -1335,10 +1374,41 @@ const BuatFaktur = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+     } };
 
     const handleDraft = async (e) => {
         e.preventDefault();
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!customer){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Penerima kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!addressId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Alamat Penerima kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!uangMuka){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Uang Muka kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
         const userData = new FormData();
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
@@ -1412,7 +1482,8 @@ const BuatFaktur = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.message,
+                        text:"Data belum lengkap, silahkan lengkapi datanya dan coba kembali"
+                        //text: err.response.data.error,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -1422,11 +1493,19 @@ const BuatFaktur = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+     } };
 
     function handleChangeTipe(value) {
+        if(!value){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tipe Faktur kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
         setFakturType(value.value)
-        setSelectedType(value)
+        setSelectedType(value)}
     }
     const optionsType = [
         {
@@ -1440,6 +1519,18 @@ const BuatFaktur = () => {
     ]
 
     function klikUbahSumber(value) {
+
+        if(!value){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Jenis Transaksi kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
+
+
         let tmpDataBaru = []
         // handle cek 
         if (sumber == 'SO') {
@@ -1465,6 +1556,7 @@ const BuatFaktur = () => {
         setProduct([])
         setSelectedSupplier('');
         setSelectedCustomer('')
+    }
     }
 
     const handleChangeCustomer = (value) => {
