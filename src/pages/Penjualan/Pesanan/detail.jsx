@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
+import { useParams , Link} from 'react-router-dom';
 import jsCookie from "js-cookie";
 import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
 import { BarsOutlined, DeleteOutlined, EditOutlined, LoadingOutlined, MinusOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons'
@@ -478,6 +478,14 @@ export const DetailPesanan = () => {
                                 onBack={() => window.history.back()}
                                 title="Detail Pesanan"
                                 extra={[
+                                    <Tooltip title="Edit" placement="bottom">
+                                        <Link to={`/pesanan/edit/${id}`}>
+                                            <Button
+                                                type="primary"
+                                                icon={<EditOutlined />}
+                                            />
+                                        </Link>
+                                    </Tooltip>,
                                     <Tooltip title="Cetak" placement="bottom">
                                     <Button
                                         type="primary"

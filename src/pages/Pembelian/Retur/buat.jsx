@@ -190,7 +190,7 @@ const BuatReturPembelian = () => {
 
                 console.log(totalPerProduk)
                 if (newData[x].discount_percentage != 0) {
-                    hasilDiskon += (Number(totalPerProduk) * Number(newData[x].discount_percentage.replace(',', '.')) / 100);
+                    hasilDiskon += (Number(totalPerProduk) * Number(newData[x].discount_percentage.replaceAll(',', '.')) / 100);
                 }
                 else if (newData[x].fixed_discount != 0) {
 
@@ -675,6 +675,31 @@ const BuatReturPembelian = () => {
     }
  
     const handleSubmit = async (e) => {
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!supplierId)
+        {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!fakturId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Faktur kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
         e.preventDefault();
         const dataRetur = new URLSearchParams();
         dataRetur.append("tanggal", date);
@@ -718,7 +743,8 @@ const BuatReturPembelian = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data Produk belum dipilih, silahkan lengkapi datanya dan coba kembali",
+                        // text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -728,10 +754,35 @@ const BuatReturPembelian = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+       }   };
 
     const handleDraft = async (e) => {
         e.preventDefault();
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!supplierId)
+        {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!fakturId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Faktur kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
         const dataRetur = new URLSearchParams();
         dataRetur.append("tanggal", date);
         dataRetur.append("catatan", description);
@@ -774,7 +825,8 @@ const BuatReturPembelian = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data Produk belum dipilih, silahkan lengkapi datanya dan coba kembali",
+                        //text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -784,7 +836,7 @@ const BuatReturPembelian = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+        }    };
 
     function klikTambahPpn(value){
         let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");

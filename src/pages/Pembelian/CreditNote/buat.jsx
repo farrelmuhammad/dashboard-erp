@@ -146,6 +146,58 @@ const BuatCreditNote = () => {
     const handleSubmit = async (e) => {
         console.log(document.getElementById('supplier'))
         //console.log(selectedOption)
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!supplierId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!fakturId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Faktur kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!nominal){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Nominal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!biayaId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Biaya kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!COAId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Akun Kredit kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!mataUangId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Mata Uang kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
         e.preventDefault();
         const formData = new FormData();
         formData.append("tanggal", date);
@@ -182,7 +234,8 @@ const BuatCreditNote = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data belum lengkap, silahkan lengkapi datanya dan coba kembali",
+                        //text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -192,10 +245,62 @@ const BuatCreditNote = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+       }   };
 
     const handleDraft = async (e) => {
         e.preventDefault();
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!supplierId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!fakturId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Faktur kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!nominal){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Nominal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!biayaId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Biaya kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!COAId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Akun Kredit kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!mataUangId){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Mata Uang kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
         const formData = new FormData();
         formData.append("tanggal", date);
         formData.append("pemasok", supplierId);
@@ -244,7 +349,8 @@ const BuatCreditNote = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+   
+         }     };
 
 
     const options = [

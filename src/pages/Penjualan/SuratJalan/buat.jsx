@@ -412,6 +412,62 @@ const BuatSuratJalan = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!vehicle){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Kendaraan kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!sender){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Pengirim kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(sumber == 'SO'){
+            if(!customer){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Data Customer kosong, Silahkan Lengkapi datanya ",
+                  });
+            }
+            else if(!addressId){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Data Alamat Customer kosong, Silahkan Lengkapi datanya ",
+                  });
+            }
+        }
+        else if (sumber == 'Retur'){
+            if(!supplier){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+                  });
+            }
+            else if(!addressId){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Data Alamat Supplier kosong, Silahkan Lengkapi datanya ",
+                  });
+            }
+        }
+        else{
+
         const userData = new FormData();
         userData.append("tanggal", date);
         userData.append("kendaraan", vehicle);
@@ -498,10 +554,68 @@ const BuatSuratJalan = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+      }  };
 
     const handleDraft = async (e) => {
         e.preventDefault();
+
+        
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!vehicle){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Kendaraan kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!sender){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Pengirim kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(sumber == 'SO'){
+            if(!customer){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Data Customer kosong, Silahkan Lengkapi datanya ",
+                  });
+            }
+            else if(!addressId){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Data Alamat Customer kosong, Silahkan Lengkapi datanya ",
+                  });
+            }
+        }
+        else if (sumber == 'Retur'){
+            if(!supplier){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+                  });
+            }
+            else if(!addressId){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Data Alamat Supplier kosong, Silahkan Lengkapi datanya ",
+                  });
+            }
+        }
+        else{
+
+
         const userData = new FormData();
         userData.append("tanggal", date);
         userData.append("kendaraan", vehicle);
@@ -552,14 +666,22 @@ const BuatSuratJalan = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+     } };
 
     function klikUbahSumber(value) {
+        if(!value){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Jenis Transaksi kosong, Silahkan Lengkapi datanya ",
+              });
+        }else{
         setSumber(value);
         setProduct([])
         setSelectedAddress('')
         setSelectedSupplier('');
         setSelectedCustomer('')
+    }
     }
 
     return (

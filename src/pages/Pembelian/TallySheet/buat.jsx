@@ -16,7 +16,7 @@ import ReactDataSheet from 'react-datasheet';
 import { useSelector } from 'react-redux';
 import "react-datasheet/lib/react-datasheet.css";
 import { CreateOutlined } from '@material-ui/icons';
-import { update } from 'lodash';
+import { sum, update } from 'lodash';
 import { array } from 'yup';
 import { PageHeader } from 'antd';
 
@@ -1349,8 +1349,18 @@ const BuatTallySheet = () => {
     };
 
     const handleChangeWarehouse = (value) => {
+        if(!value){
+          
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text:"Data GUDANG kosong, silahkan lengkapi datanya"
+                })
+           
+        }
+        else{
         setSelectedWarehouse(value);
-        setWarehouse(value.id);
+        setWarehouse(value.id);}
     };
     // load options using API call
     const loadOptionsWarehouse = (inputValue) => {
@@ -2136,6 +2146,61 @@ const BuatTallySheet = () => {
     }
 
     const handleSubmit = async (e) => {
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(sumber == ''){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Transaksi kosong, silahkan lengkapi datanya"
+            })
+        }
+        else if(sumber == 'Retur' && !customer){
+          
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text:"Data customer kosong, silahkan lengkapi datanya"
+                })
+            
+        }
+        else if(sumber == 'PO' && !supplier){
+           
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text:"Data Supplier kosong, silahkan lengkapi datanya"
+                })
+            
+        }
+        else if (sumber == 'Faktur' && !supplier){
+           
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text:"Data Supplier kosong, silahkan lengkapi datanya"
+                })
+           
+        }
+        else if(!warehouse){
+            
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text:"Data Gudang kosong, silahkan lengkapi datanya"
+                })
+           
+        }
+        
+        else{
+        
+
         e.preventDefault();
         const tallySheetData = new FormData();
         tallySheetData.append("tanggal", date);
@@ -2224,7 +2289,8 @@ const BuatTallySheet = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data Kuantiti Produk belum Diisi, silahkan lengkapi datanya dan coba kembali",
+                        //text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -2234,9 +2300,63 @@ const BuatTallySheet = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
+     }  
     };
 
     const handleDraft = async (e) => {
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(sumber == ''){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Transaksi kosong, silahkan lengkapi datanya"
+            })
+        }
+        else if(sumber == 'Retur' && !customer){
+          
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text:"Data customer kosong, silahkan lengkapi datanya"
+                })
+            
+        }
+        else if(sumber == 'PO' && !supplier){
+           
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text:"Data Supplier kosong, silahkan lengkapi datanya"
+                })
+            
+        }
+        else if (sumber == 'Faktur' && !supplier){
+           
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text:"Data Supplier kosong, silahkan lengkapi datanya"
+                })
+           
+        }
+        else if(!warehouse){
+            
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text:"Data Gudang kosong, silahkan lengkapi datanya"
+                })
+           
+        }
+        else{
+        
         e.preventDefault();
         const tallySheetData = new FormData();
         tallySheetData.append("tanggal", date);
@@ -2325,7 +2445,8 @@ const BuatTallySheet = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data Kuantiti Produk belum Diisi, silahkan lengkapi datanya dan coba kembali",
+                        // text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -2335,7 +2456,8 @@ const BuatTallySheet = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+ 
+           }       };
 
     return (
         <>

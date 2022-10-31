@@ -17,7 +17,7 @@ const DetailBiayaImport = () => {
   const { id } = useParams();
   const [data, setData] = useState([]);
   const [idKategori, setIDKategori] = useState('')
-  const [namaKategori, setNamaKategori] = useState([])
+  const [namaKategori, setNamaKategori] = useState('')
 
   useEffect(() => {
     getBiayaImport()
@@ -138,7 +138,9 @@ const DetailBiayaImport = () => {
                     className="form-control"
                     id="inputNama3"
                     disabled
-                    value={d.category.name}
+                    value={
+                      d.category.name === null ? ' -  ' :
+                      d.category.name}
                   />
               ))}
               </div>
@@ -154,7 +156,8 @@ const DetailBiayaImport = () => {
                     className="form-control"
                     id="inputNama3"
                     disabled
-                     value={d.chart_of_account.name}
+                     value={ d.chart_of_account.name === null ? ' - ' :
+                      d.chart_of_account.name}
                   />
               ))}
               </div>

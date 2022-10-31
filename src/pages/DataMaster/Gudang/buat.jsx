@@ -63,6 +63,37 @@ const BuatGudang = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if(!name){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Nama kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!tipe){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Tipe Gudang kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!address){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Alamat kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if (!chart){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data COA kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else{
+
     const userData = new FormData();
     userData.append("nama", name);
     userData.append("alamat", address);
@@ -113,7 +144,7 @@ const BuatGudang = () => {
           Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
         }
       });
-  };
+    }  };
 
   useEffect(() => {
     axios

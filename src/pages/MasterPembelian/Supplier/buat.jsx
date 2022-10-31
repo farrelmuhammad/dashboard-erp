@@ -229,6 +229,52 @@ const BuatSupplier = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if(!name){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Nama kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!bussiness_ent){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Badan Usaha kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!grup){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Grup kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if (npwp.length > 25){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "NPWP tidak lebih dari 25 karakter, Silahkan periksa kembali datanya ",
+      });
+    }
+    else if (phone_number.length > 20){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Nomor telepon tidak lebih dari 20 karakter, Silahkan periksa kembali datanya ",
+      });
+    }
+    else if(!address){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Alamat kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else{
+
+
     const userData = new FormData();
     userData.append("nama", name);
     userData.append("badan_usaha", bussiness_ent);
@@ -240,6 +286,7 @@ const BuatSupplier = () => {
 
     dataSource.map((address) => {
       console.log(address);
+      
       userData.append("alamat[]", address.address);
       userData.append("kota[]", address.city);
       userData.append("kecamatan[]", address.sub_district);
@@ -276,7 +323,8 @@ const BuatSupplier = () => {
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: err.response.data.error,
+            text:"Data belum lengkap, silahkan lengkapi datanya dan coba kembali"
+            // text: err.response.data.error,
           });
         } else if (err.request) {
           console.log("err.request ", err.request);
@@ -286,7 +334,7 @@ const BuatSupplier = () => {
           Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
         }
       });
-  };
+   } };
 
   useEffect(() => {
     axios

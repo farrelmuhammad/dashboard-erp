@@ -196,12 +196,22 @@ const BuatRetur = () => {
     };
 
     const handleChangeFaktur = (value) => {
+
+        if(!value){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Faktur kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
         // console.log(value)
         setSelectedFaktur(value);
         console.log(value)
         setFakturId(value.value);
         setTampilPilihProduk(true)
-    };
+    }};
 
     // produkFaktur 
     const [produkFaktur, setProdukFaktur] = useState([])
@@ -239,6 +249,16 @@ const BuatRetur = () => {
     }, [fakturId])
 
     const handleChangePilih = (value) => {
+
+        if(!value){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Produk Belum dipilih, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
         let dataDouble = [];
         console.log(value)
         console.log(tampilProduk)
@@ -263,7 +283,7 @@ const BuatRetur = () => {
             calculate(newData, checked)
         }
 
-
+    }
     };
 
 
@@ -780,6 +800,23 @@ const BuatRetur = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!customer){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Pelanggan kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
         const userData = new FormData();
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
@@ -827,7 +864,8 @@ const BuatRetur = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data belum lengkap, silahkan lengkapi datanya dan coba kembali"
+                        // text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -838,10 +876,28 @@ const BuatRetur = () => {
                 }
             });
 
-    };
+     } };
 
     const handleDraft = async (e) => {
         e.preventDefault();
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!customer){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Pelanggan kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
+
         const userData = new FormData();
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
@@ -889,7 +945,8 @@ const BuatRetur = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data belum lengkap, silahkan lengkapi datanya dan coba kembali"
+                        // text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -899,7 +956,7 @@ const BuatRetur = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    
+        }  
     };
 
     return (
