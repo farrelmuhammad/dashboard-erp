@@ -436,6 +436,7 @@ const EditProduction = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const userData = new URLSearchParams();
+        userData.append("code", code);
         userData.append("date", date);
         userData.append("warehouse_input", warehouse_input);
         userData.append("warehouse_output", warehouse_output);
@@ -493,6 +494,7 @@ const EditProduction = () => {
     const handleDraft = async (e) => {
         e.preventDefault();
         const userData = new URLSearchParams();
+        userData.append("code", code);
         userData.append("date", date);
         userData.append("warehouse_input", warehouse_input);
         userData.append("warehouse_output", warehouse_output);

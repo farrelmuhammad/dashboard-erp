@@ -338,6 +338,7 @@ const EditAdjustment = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const userData = new URLSearchParams();
+        userData.append("code", getCode);
         userData.append("adjustment_date", adjustment_date);
         userData.append("warehouse_id", warehouse_id);
         userData.append("notes", notes);
@@ -392,6 +393,7 @@ const EditAdjustment = () => {
     const handleDraft = async (e) => {
         e.preventDefault();
         const userData = new URLSearchParams();
+        userData.append("code", getCode);
         userData.append("adjustment_date", adjustment_date);
         userData.append("warehouse_id", warehouse_id);
         userData.append("notes", notes);
