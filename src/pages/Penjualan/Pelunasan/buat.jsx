@@ -12,7 +12,7 @@ import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
-import { formatRupiah } from '../../../utils/helper';
+// import { formatRupiah } from '../../../utils/helper';
 import CurrencyFormat from 'react-currency-format';
 
 const { Text } = Typography;
@@ -115,7 +115,7 @@ const BuatPelunasan = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const [namaMataUang, setNamaMataUang] = useState('Rp');
-    
+
 
     const [sisaUang, setSisaUang] = useState("");
     const [subTotal, setSubTotal] = useState("");
@@ -129,17 +129,18 @@ const BuatPelunasan = () => {
     const [modal2Visible, setModal2Visible] = useState(false);
 
     const handleChangeCustomer = (value) => {
+        console.log(value)
         setSelectedCustomer(value);
         setCustomer(value.id);
     };
     // load options using API call
     const loadOptionsCustomer = (inputValue) => {
-        return fetch(`${Url}/select_customers?limit=10&nama=${inputValue}`, {
+        return axios.get(`${Url}/sales_invoice_payments_available_customers?nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => res.data.data);
     };
 
     const handleChangeCOA = (value) => {
@@ -162,14 +163,14 @@ const BuatPelunasan = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_sales_invoices?nama_alias=${query}&penerima=${customer}`, {
+            const res = await axios.get(`${Url}/sales_invoice_payments_available_sales_invoices?nama_alias=${query}&penerima=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
-            console.log(res.data);
+            setGetDataProduct(res.data.data);
+            // console.log(res.data.data);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -193,6 +194,9 @@ const BuatPelunasan = () => {
             dataIndex: 'total',
             width: '20%',
             align: 'center',
+            render: (_, record) => (
+                <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(record.total).toString().replace('.', ',')} />
+            )
         },
         {
             title: 'actions',
@@ -233,7 +237,9 @@ const BuatPelunasan = () => {
             dataIndex: 'total',
             width: '25%',
             align: 'center',
-            render: (text) => formatRupiah(text)
+            render: (_, record) => (
+                <CurrencyFormat  disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(record.total).toString().replace('.', ',')} />
+            )
         },
         {
             title: 'Sisa',
@@ -244,7 +250,7 @@ const BuatPelunasan = () => {
                 let sisa = 0;
                 sisa = (record.total - record.pays);
 
-                return convertToRupiahTabel(sisa) || 0
+                return <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(sisa).toString().replace('.', ',')} /> || 0
             }
         },
         {
@@ -252,16 +258,10 @@ const BuatPelunasan = () => {
             dataIndex: 'pays',
             width: '25%',
             align: 'center',
-            editable: true,
-            // render: (record) => {
-            //     let pay = 0;
-            //     if (record.pays !== 0) {
-            //         return pay += record.pays
-            //     } 
-            //     else {
-            //         return pay
-            //     }
-            // }
+            render: (text, record, index) => {
+
+                return <CurrencyFormat  className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(record.total).toString().replace('.', ',')} /> || 0
+            }
         },
     ];
 
@@ -376,7 +376,7 @@ const BuatPelunasan = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/pesanan");
+                navigate("/pelunasan");
             })
             .catch((err) => {
                 if (err.response) {
@@ -430,7 +430,7 @@ const BuatPelunasan = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/pesanan");
+                navigate("/pelunasan");
             })
             .catch((err) => {
                 if (err.response) {
@@ -543,15 +543,6 @@ const BuatPelunasan = () => {
                         centered
                         visible={modal2Visible}
                         onCancel={() => setModal2Visible(false)}
-                        // footer={[
-                        //     <Button
-                        //         key="submit"
-                        //         type="primary"
-
-                        //     >
-                        //         Tambah
-                        //     </Button>,
-                        // ]}
                         footer={null}
                     >
                         <div className="text-title text-start">
@@ -602,18 +593,9 @@ const BuatPelunasan = () => {
                                 <Table.Summary.Row>
                                     <Table.Summary.Cell index={0} colSpan={3}>Total yang dibayarkan</Table.Summary.Cell>
                                     <Table.Summary.Cell index={1}>
-                                        <Text type="danger">Rp {totalTotal || 0}</Text>
+                                        <Text >Rp {totalTotal || 0}</Text>
                                     </Table.Summary.Cell>
-                                    {/* <Table.Summary.Cell index={2}>
-                                            <Text>{totalRepayment}</Text>
-                                        </Table.Summary.Cell> */}
                                 </Table.Summary.Row>
-                                {/* <Table.Summary.Row>
-                                        <Table.Summary.Cell index={0}>Balance</Table.Summary.Cell>
-                                        <Table.Summary.Cell index={1} colSpan={2}>
-                                            <Text type="danger">{totalBorrow - totalRepayment}</Text>
-                                        </Table.Summary.Cell>
-                                    </Table.Summary.Row> */}
                             </>
                         );
                     }}

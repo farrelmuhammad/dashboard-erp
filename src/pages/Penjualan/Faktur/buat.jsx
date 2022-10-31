@@ -145,7 +145,7 @@ const BuatFaktur = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?nama_alias=${query}&id_penerima=${customer}`, {
+            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?nama_alias=${query}&id_pelanggan=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`

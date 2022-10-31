@@ -165,9 +165,9 @@ const DetailPelunasan = () => {
         }).then((res) => res.json());
     };
 
-    useEffect(() => {
-        getNewCodeSales()
-    })
+    // useEffect(() => {
+    //     getNewCodeSales()
+    // })
 
     useEffect(() => {
         const getProduct = async () => {
@@ -373,23 +373,23 @@ const DetailPelunasan = () => {
     };
 
     const { id } = useParams();
-    const getNewCodeSales = async () => {
-        await axios.get(`${Url}/get_new_sales_invoice_payment_code?tanggal=${date}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then((res) => {
-                let getData1 = res.data.data
-                setGetCode(res.data.data);
-                //console.log(getData1)
-            })
-            .catch((err) => {
-                // Jika Gagal
-                console.log(err);
-            });
-    }
+    // const getNewCodeSales = async () => {
+    //     await axios.get(`${Url}/get_new_sales_invoice_payment_code?tanggal=${date}`, {
+    //         headers: {
+    //             Accept: "application/json",
+    //             Authorization: `Bearer ${auth.token}`,
+    //         },
+    //     })
+    //         .then((res) => {
+    //             let getData1 = res.data.data
+    //             setGetCode(res.data.data);
+    //             //console.log(getData1)
+    //         })
+    //         .catch((err) => {
+    //             // Jika Gagal
+    //             console.log(err);
+    //         });
+    // }
 
     useEffect(() => {
         getDataPelunasan();
@@ -449,7 +449,7 @@ const DetailPelunasan = () => {
                 setGetStatus(getData.status)
                 setNamaCust(getData.customer.name)
                 setSalesInvoicePayment(getData.sales_invoice_payment_details)
-
+                setGetCode(getData.code)
                 console.log(dataHeader)
 
                 //console.log(namaCust)

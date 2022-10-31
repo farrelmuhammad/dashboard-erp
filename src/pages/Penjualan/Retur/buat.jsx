@@ -399,154 +399,154 @@ const BuatRetur = () => {
 
             }
         }
-        else if (key == 'price') {
-            let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+        // else if (key == 'price') {
+        //     let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
 
-            for (let i = 0; i < updateProduk.length; i++) {
-                if (i == y) {
+        //     for (let i = 0; i < updateProduk.length; i++) {
+        //         if (i == y) {
 
-                    tmpData.push(
-                        {
-                            value: updateProduk[i].value,
-                            label: updateProduk[i].label,
-                            quantity: updateProduk[i].quantity,
-                            price: hasil,
-                            fixed_discount: updateProduk[i].fixed_discount,
-                            discount_percentage: updateProduk[i].discount_percentage,
-                            unit: updateProduk[i].unit,
-                            subtotal_after_discount: updateProduk[i].subtotal_after_discount,
-                            ppn: updateProduk[i].ppn,
-                            shrink: updateProduk[i].shrink,
-                            total: updateProduk[i].total,
-                            pilihanDiskon: updateProduk[i].pilihanDiskon
-                        })
-                }
-                else {
-                    tmpData.push(updateProduk[i]);
-                }
+        //             tmpData.push(
+        //                 {
+        //                     value: updateProduk[i].value,
+        //                     label: updateProduk[i].label,
+        //                     quantity: updateProduk[i].quantity,
+        //                     price: hasil,
+        //                     fixed_discount: updateProduk[i].fixed_discount,
+        //                     discount_percentage: updateProduk[i].discount_percentage,
+        //                     unit: updateProduk[i].unit,
+        //                     subtotal_after_discount: updateProduk[i].subtotal_after_discount,
+        //                     ppn: updateProduk[i].ppn,
+        //                     shrink: updateProduk[i].shrink,
+        //                     total: updateProduk[i].total,
+        //                     pilihanDiskon: updateProduk[i].pilihanDiskon
+        //                 })
+        //         }
+        //         else {
+        //             tmpData.push(updateProduk[i]);
+        //         }
 
-            }
-        }
-        else if (key == 'diskonValue') {
-            if (updateProduk[y].pilihanDiskon == 'nominal') {
-                let hasil = value.replaceAll('.', '');
+        //     }
+        // }
+        // else if (key == 'diskonValue') {
+        //     if (updateProduk[y].pilihanDiskon == 'nominal') {
+        //         let hasil = value.replaceAll('.', '');
 
-                for (let i = 0; i < updateProduk.length; i++) {
-                    if (i == y) {
-                        tmpData.push(
-                            {
-                                value: updateProduk[i].value,
-                                label: updateProduk[i].label,
-                                quantity: updateProduk[i].quantity,
-                                price: updateProduk[i].price,
-                                fixed_discount: hasil,
-                                discount_percentage: 0,
-                                unit: updateProduk[i].unit,
-                                subtotal_after_discount: updateProduk[i].subtotal_after_discount,
-                                ppn: updateProduk[i].ppn,
-                                shrink: updateProduk[i].shrink,
-                                total: updateProduk[i].total,
-                                pilihanDiskon: 'nominal'
-                            })
-                    }
+        //         for (let i = 0; i < updateProduk.length; i++) {
+        //             if (i == y) {
+        //                 tmpData.push(
+        //                     {
+        //                         value: updateProduk[i].value,
+        //                         label: updateProduk[i].label,
+        //                         quantity: updateProduk[i].quantity,
+        //                         price: updateProduk[i].price,
+        //                         fixed_discount: hasil,
+        //                         discount_percentage: 0,
+        //                         unit: updateProduk[i].unit,
+        //                         subtotal_after_discount: updateProduk[i].subtotal_after_discount,
+        //                         ppn: updateProduk[i].ppn,
+        //                         shrink: updateProduk[i].shrink,
+        //                         total: updateProduk[i].total,
+        //                         pilihanDiskon: 'nominal'
+        //                     })
+        //             }
 
-                    else {
-                        tmpData.push(updateProduk[i]);
-                    }
+        //             else {
+        //                 tmpData.push(updateProduk[i]);
+        //             }
 
-                }
-                // setData(tmpData);
-            }
-            else {
+        //         }
+        //         // setData(tmpData);
+        //     }
+        //     else {
 
-                let hasil = value.replaceAll('.', '');
-                console.log(hasil)
+        //         let hasil = value.replaceAll('.', '');
+        //         console.log(hasil)
 
-                for (let i = 0; i < updateProduk.length; i++) {
+        //         for (let i = 0; i < updateProduk.length; i++) {
 
-                    if (i == y) {
-                        tmpData.push(
-                            {
-                                value: updateProduk[i].value,
-                                label: updateProduk[i].label,
-                                quantity: updateProduk[i].quantity,
-                                price: updateProduk[i].price,
-                                fixed_discount: 0,
-                                discount_percentage: hasil,
-                                unit: updateProduk[i].unit,
-                                subtotal_after_discount: updateProduk[i].subtotal_after_discount,
-                                ppn: updateProduk[i].ppn,
-                                shrink: updateProduk[i].shrink,
-                                total: updateProduk[i].total,
-                                pilihanDiskon: 'persen'
-                            })
-                    }
+        //             if (i == y) {
+        //                 tmpData.push(
+        //                     {
+        //                         value: updateProduk[i].value,
+        //                         label: updateProduk[i].label,
+        //                         quantity: updateProduk[i].quantity,
+        //                         price: updateProduk[i].price,
+        //                         fixed_discount: 0,
+        //                         discount_percentage: hasil,
+        //                         unit: updateProduk[i].unit,
+        //                         subtotal_after_discount: updateProduk[i].subtotal_after_discount,
+        //                         ppn: updateProduk[i].ppn,
+        //                         shrink: updateProduk[i].shrink,
+        //                         total: updateProduk[i].total,
+        //                         pilihanDiskon: 'persen'
+        //                     })
+        //             }
 
-                    else {
-                        tmpData.push(updateProduk[i]);
-                    }
+        //             else {
+        //                 tmpData.push(updateProduk[i]);
+        //             }
 
-                }
-                // setData(tmpData);
-            }
-        }
-        else if (key == 'pilihanDiskon') {
-            for (let i = 0; i < updateProduk.length; i++) {
-                if (i == y) {
-                    tmpData.push(
-                        {
-                            value: updateProduk[i].value,
-                            label: updateProduk[i].label,
-                            quantity: updateProduk[i].quantity,
-                            price: updateProduk[i].price,
-                            fixed_discount: updateProduk[i].fixed_discount,
-                            discount_percentage: updateProduk[i].discount_percentage,
-                            unit: updateProduk[i].unit,
-                            subtotal_after_discount: updateProduk[i].subtotal_after_discount,
-                            ppn: updateProduk[i].ppn,
-                            shrink: updateProduk[i].shrink,
-                            total: updateProduk[i].total,
-                            pilihanDiskon: value
+        //         }
+        //         // setData(tmpData);
+        //     }
+        // }
+        // else if (key == 'pilihanDiskon') {
+        //     for (let i = 0; i < updateProduk.length; i++) {
+        //         if (i == y) {
+        //             tmpData.push(
+        //                 {
+        //                     value: updateProduk[i].value,
+        //                     label: updateProduk[i].label,
+        //                     quantity: updateProduk[i].quantity,
+        //                     price: updateProduk[i].price,
+        //                     fixed_discount: updateProduk[i].fixed_discount,
+        //                     discount_percentage: updateProduk[i].discount_percentage,
+        //                     unit: updateProduk[i].unit,
+        //                     subtotal_after_discount: updateProduk[i].subtotal_after_discount,
+        //                     ppn: updateProduk[i].ppn,
+        //                     shrink: updateProduk[i].shrink,
+        //                     total: updateProduk[i].total,
+        //                     pilihanDiskon: value
 
-                        })
-                }
-                else {
-                    tmpData.push(updateProduk[i]);
-                }
+        //                 })
+        //         }
+        //         else {
+        //             tmpData.push(updateProduk[i]);
+        //         }
 
-            }
-            // setData(tmpData);
-        }
-        else if (key == 'ppn') {
-            let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+        //     }
+        //     // setData(tmpData);
+        // }
+        // else if (key == 'ppn') {
+        //     let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
 
-            for (let i = 0; i < updateProduk.length; i++) {
-                if (i == y) {
+        //     for (let i = 0; i < updateProduk.length; i++) {
+        //         if (i == y) {
 
-                    tmpData.push(
-                        {
-                            value: updateProduk[i].value,
-                            label: updateProduk[i].label,
-                            quantity: updateProduk[i].quantity,
-                            price: updateProduk[i].price,
-                            fixed_discount: updateProduk[i].fixed_discount,
-                            discount_percentage: updateProduk[i].discount_percentage,
-                            unit: updateProduk[i].unit,
-                            subtotal_after_discount: updateProduk[i].subtotal_after_discount,
-                            ppn: hasil,
-                            shrink: updateProduk[i].shrink,
-                            total: updateProduk[i].total,
-                            pilihanDiskon: updateProduk[i].pilihanDiskon
-                        })
-                }
-                else {
-                    tmpData.push(updateProduk[i]);
-                }
+        //             tmpData.push(
+        //                 {
+        //                     value: updateProduk[i].value,
+        //                     label: updateProduk[i].label,
+        //                     quantity: updateProduk[i].quantity,
+        //                     price: updateProduk[i].price,
+        //                     fixed_discount: updateProduk[i].fixed_discount,
+        //                     discount_percentage: updateProduk[i].discount_percentage,
+        //                     unit: updateProduk[i].unit,
+        //                     subtotal_after_discount: updateProduk[i].subtotal_after_discount,
+        //                     ppn: hasil,
+        //                     shrink: updateProduk[i].shrink,
+        //                     total: updateProduk[i].total,
+        //                     pilihanDiskon: updateProduk[i].pilihanDiskon
+        //                 })
+        //         }
+        //         else {
+        //             tmpData.push(updateProduk[i]);
+        //         }
 
-                // }
-                // setData(tmpData);
-            }
-        }
+        //         // }
+        //         // setData(tmpData);
+        //     }
+        // }
 
         // ubah total 
         let grandTotal;
@@ -559,11 +559,8 @@ const BuatRetur = () => {
                     let getDiskon = (Number(total) * tmpData[i].discount_percentage.toString().replace(',', '.')) / 100;
 
                     let ppn = ((Number(total) - Number(getDiskon)) * tmpData[i].ppn.toString().replace(',', '.')) / 100;
-                    // console.log(total)
-                    // console.log(ppn)
 
                     grandTotal = Number(total) - Number(getDiskon) + Number(ppn);
-                    // console.log(grandTotal)
                 }
                 else if (tmpData[i].pilihanDiskon == 'nominal') {
                     let total = (Number(tmpData[i].quantity.toString().replace(',', '.')) * Number(tmpData[i].price))
@@ -608,15 +605,15 @@ const BuatRetur = () => {
     const dataProduk =
         [...tampilProduk.map((item, i) => ({
             name_product: item.label,
-            qty: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(item.quantity).toString().replace('.', ',')} onChange={(e) => klikUbahData(i, e.target.value, "qty")} key="qty" />,
+            qty: <CurrencyFormat  className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.quantity} onChange={(e) => klikUbahData(i, e.target.value, "qty")} key="qty" />,
             stn: item.unit,
-            prc: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(updateProduk[i].price).toString().replace('.', ',')} onChange={(e) => klikUbahData(i, e.target.value, "price")} />,
+            prc: <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(updateProduk[i].price).toString().replace('.', ',')} onChange={(e) => klikUbahData(i, e.target.value, "price")} />,
             dsc:
                 <>
                     {
                         item.pilihanDiskon == 'noDisc' ?
                             <div className='d-flex p-1' style={{ height: "100%" }}>
-                                <input onKeyDown={(event) => klikEnter(event)} style={{ width: "70%", fontSize: "10px!important" }} type="text" className="text-center editable-input" value={updateProduk[i].discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} />
+                                <input disabled onKeyDown={(event) => klikEnter(event)} style={{ width: "70%", fontSize: "10px!important" }} type="text" className="edit-disabled text-center editable-input" value={updateProduk[i].discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} />
                                 <div className="input-group-prepend"  >
                                     <select
                                         onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
@@ -634,7 +631,7 @@ const BuatRetur = () => {
                             </div> :
                             item.pilihanDiskon == 'persen' ?
                                 <div className='d-flex p-1' style={{ height: "100%" }} >
-                                    <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={updateProduk[i].discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
+                                    <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={updateProduk[i].discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
                                     <div className="input-group-prepend" >
                                         <select
                                             onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
@@ -654,7 +651,7 @@ const BuatRetur = () => {
                                 item.pilihanDiskon == 'nominal' ?
                                     <div className='d-flex p-1' style={{ height: "100%" }}>
 
-                                        <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(updateProduk[i].fixed_discount).toString().replace('.', ',')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
+                                        <CurrencyFormat disabled className='edit-disabled text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(updateProduk[i].fixed_discount).toString().replace('.', ',')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
 
                                         <div className="input-group-prepend" >
                                             <select
@@ -674,7 +671,7 @@ const BuatRetur = () => {
                     }</>,
 
             total: < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.', ',')} key="diskon" />,
-            ppn: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} suffix={'%'} onKeyDown={(event) => klikEnter(event)} value={Number(item.ppn)} onChange={(e) => klikUbahData(i, e.target.value, "ppn")} />,
+            ppn: <CurrencyFormat disabled className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} suffix={'%'} onKeyDown={(event) => klikEnter(event)} value={Number(item.ppn)} onChange={(e) => klikUbahData(i, e.target.value, "ppn")} />,
             act: <Space size="middle">
                 <Button
                     size='small'
@@ -708,8 +705,8 @@ const BuatRetur = () => {
         faktur.map((values, i) => {
             // termasuk pajak 
             if (check_checked) {
-                total += (Number(values.quantity) * Number(values.price));
-                totalPerProduk = (Number(values.quantity) * Number(values.price));
+                total += (Number(values.quantity.toString().replace(',', '.')) * Number(values.price));
+                totalPerProduk = (Number(values.quantity.toString().replace(',', '.')) * Number(values.price));
 
                 if (values.pilihanDiskon == 'persen') {
                     hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
@@ -735,8 +732,8 @@ const BuatRetur = () => {
 
             // tidak termasuk pajak 
             else {
-                total += (Number(values.quantity) * Number(values.price));
-                totalPerProduk = (Number(values.quantity) * Number(values.price));
+                total += (Number(values.quantity.toString().replace(',', '.')) * Number(values.price));
+                totalPerProduk = (Number(values.quantity.toString().replace(',', '.')) * Number(values.price));
 
                 if (values.pilihanDiskon == 'persen') {
                     hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);

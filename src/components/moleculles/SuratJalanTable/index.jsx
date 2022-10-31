@@ -305,27 +305,6 @@ const SuratJalanTable = () => {
                 setTimeout(() => searchInput.current?.select(), 100);
             }
         },
-        // onFilter: (value, record) =>
-        //     record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-        // onFilterDropdownVisibleChange: (visible) => {
-        //     if (visible) {
-        //         setTimeout(() => searchInput.current?.select(), 100);
-        //     }
-        // },
-        // render: (text) =>
-        //   searchedColumn === dataIndex ? (
-        //     <Highlighter
-        //       highlightStyle={{
-        //         backgroundColor: '#ffc069',
-        //         padding: 0,
-        //       }}
-        //       searchWords={[searchText]}
-        //       autoEscape
-        //       textToHighlight={text ? text.toString() : ''}
-        //     />
-        //   ) : (
-        //     text
-        //   ),
     });
 
     useEffect(() => {

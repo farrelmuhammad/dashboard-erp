@@ -60,7 +60,7 @@ const Retur = () => {
   } else {
     <div>
       <div className="text-title text-start">
-        <h5 className="title fw-bold">Daftar Retur</h5>
+        <h5 className="title fw-bold">Daftar Retur Penjualan</h5>
       </div>
       <ReturTable />
     </div>

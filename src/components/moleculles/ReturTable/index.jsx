@@ -54,66 +54,6 @@ const ReturTable = () => {
         }).then((res) => res.json());
     };
 
-    // const showModal = () => {
-    //     setVisible(true);
-    // };
-
-    // const handleOk = (e, id) => {
-    //     // setModalText('The modal will be closed after two seconds');
-    //     setConfirmLoading(true);
-    //     setTimeout(() => {
-    //         setVisible(false);
-    //         setConfirmLoading(false);
-    //     }, 2000);
-    //     e.preventDefault();
-    //     const userData = new URLSearchParams();
-    //     userData.append("penerima", customer);
-    //     userData.append("alamat_penerima", address);
-
-    //     // for (var pair of userData.entries()) {
-    //     //     console.log(pair[0] + ', ' + pair[1]);
-    //     // }
-
-    //     axios({
-    //         method: "patch",
-    //         url: `${Url}/delivery_notes/delivered/${id}`,
-    //         data: userData,
-    //         headers: {
-    //             Accept: "application/json",
-    //             Authorization: `Bearer ${auth.token}`,
-    //         },
-    //     })
-    //         .then(function (response) {
-    //             //handle success
-    //             Swal.fire(
-    //                 "Berhasil Ditambahkan",
-    //                 ` Masuk dalam list`,
-    //                 "success"
-    //             );
-    //             // navigate("/suratjalan");
-    //         })
-    //         .catch((err) => {
-    //             if (err.response) {
-    //                 console.log("err.response ", err.response);
-    //                 Swal.fire({
-    //                     icon: "error",
-    //                     title: "Oops...",
-    //                     text: err.response.data.message,
-    //                 });
-    //             } else if (err.request) {
-    //                 console.log("err.request ", err.request);
-    //                 Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-    //             } else if (err.message) {
-    //                 // do something other than the other two
-    //                 Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-    //             }
-    //         });
-    // };
-
-    // const handleCancel = () => {
-    //     console.log('Clicked cancel button');
-    //     setVisible(false);
-    // };
 
     const deleteSalesReturn = async (id) => {
         await axios.delete(`${Url}/sales_returns/${id}`, {
@@ -332,61 +272,7 @@ const ReturTable = () => {
             render: (_, record) => (
                 <>
                     <Space size="middle">
-                        {/* <Button
-                            size='small'
-                            type="primary"
-                            icon={<CheckOutlined />}
-                            onClick={showModal}
-                        />
-                        <Modal
-                            title="Konfirmasi Penerima"
-                            visible={visible}
-                            onOk={handleOk}
-                            confirmLoading={confirmLoading}
-                            onCancel={handleCancel}
-                        >
-                            <div className="text-title text-start">
-                                <div className="row">
-                                    <div className="row">
-                                        <label htmlFor="inputNama3" className="col-sm-4 ms-5 mb-2 col-form-label">Penerima</label>
-                                        <div className="col-sm-6">
-                                            <AsyncSelect
-                                                placeholder="Pilih Penerima..."
-                                                cacheOptions
-                                                defaultOptions
-                                                value={selectedValue}
-                                                getOptionLabel={(e) => e.name}
-                                                getOptionValue={(e) => e.id}
-                                                loadOptions={loadOptionsCustomer}
-                                                onChange={handleChangeCustomer}
-                                            />
-                                        </div>
-                                        <label htmlFor="inputNama3" className="col-sm-4 ms-5 mb-2 col-form-label">Alamat Penerima</label>
-                                        <div className="col-sm-6">
-                                            <ReactSelect
-                                                className="basic-single"
-                                                placeholder="Pilih Alamat..."
-                                                classNamePrefix="select"
-                                                isLoading={isLoading}
-                                                isSearchable
-                                                getOptionLabel={(e) => e.address}
-                                                getOptionValue={(e) => e.id}
-                                                options={address}
-                                                onChange={(e) => setAddress(e.id)}
-                                            />
-                                        </div>
-                                        <label htmlFor="inputNama3" className="col-sm-4 ms-5 col-form-label"></label>
-                                        <div className="col-sm-6">
-                                            <Checkbox
-                                            onChange={onChange}
-                                            >
-                                                Sama Dengan Pelanggan
-                                            </Checkbox>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </Modal> */}
+                       
                         <Link to={`/retur/detail/${record.id}`}>
                             <Button
                                 size='small'
