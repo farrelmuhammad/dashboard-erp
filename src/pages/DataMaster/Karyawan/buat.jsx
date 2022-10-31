@@ -202,6 +202,7 @@ const BuatKaryawan = () => {
         text: "Nomor Telepon maksimal 20 karakter, Silahkan periksa kembali ",
       });
     }
+
     else if(!email){
       Swal.fire({
         icon: "error",
@@ -237,13 +238,7 @@ const BuatKaryawan = () => {
         text: "NPWP maksimal 25 karakter, Silahkan Lengkapi datanya ",
       });
     }
-    else if(npwp.type != number){
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "NPWP berupa bilangan bulat, Silahkan periksa kembali ",
-      });
-    }
+
     else if(!alamat){
       Swal.fire({
         icon: "error",
@@ -339,7 +334,7 @@ else{
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: err.response.data.error.npwp,
+            text: err.response.data.error.nama,
           });
         } else if (err.request) {
           console.log("err.request ", err.request);
