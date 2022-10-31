@@ -169,9 +169,16 @@ const EditSuratJalan = () => {
                 console.log(unikTmp)
                 setIdTallySheet(unikTmp);
 
-                setVehicle(getData.vehicle)
-                setDescription(getData.notes)
-                setSender(getData.sender)
+                if (getData.vehicle != null) {
+                    setVehicle(getData.vehicle)
+                }
+                if (getData.notes != null) {
+                    setDescription(getData.notes)
+                }
+                if (getData.sender != null) {
+                    setSender(getData.sender)
+
+                }
                 setIsLoading(false)
                 console.log(getData);
             })
@@ -206,8 +213,8 @@ const EditSuratJalan = () => {
             width: '10%',
             align: 'center',
             key: 'name',
-            render : (_,record) => {
-                return <>{Number(record.quantity).toFixed(2).replace('.',',')}</>
+            render: (_, record) => {
+                return <>{Number(record.quantity).toFixed(2).replace('.', ',')}</>
             }
         },
         {
@@ -594,13 +601,13 @@ const EditSuratJalan = () => {
 
         } else {
             let jumlah = 0
-            for(let i = 0; i<updatedList.length; i++){
-                if(updatedList[i].tally_sheet_code == event.target.value.detail.code){
-                    jumlah = jumlah +1;
+            for (let i = 0; i < updatedList.length; i++) {
+                if (updatedList[i].tally_sheet_code == event.target.value.detail.code) {
+                    jumlah = jumlah + 1;
                 }
             }
-            for(let i = 0; i<updatedList.length; i++){
-                if(updatedList[i].tally_sheet_code == event.target.value.detail.code){
+            for (let i = 0; i < updatedList.length; i++) {
+                if (updatedList[i].tally_sheet_code == event.target.value.detail.code) {
                     updatedList.splice(i, jumlah);
 
                 }
@@ -684,7 +691,9 @@ const EditSuratJalan = () => {
             userData.append("pemasok", supplier);
         }
 
-        idTallySheet.map((t) => userData.append("id_tally_sheet[]", t));
+        // let uniqID = [];
+        let uniqID = [...new Set(idTallySheet)];
+        uniqID.map((t) => userData.append("id_tally_sheet[]", t));
         userData.append("status", "Draft");
 
         // for (var pair of userData.entries()) {
@@ -777,7 +786,7 @@ const EditSuratJalan = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pilih Transaksi</label>
                             <div className="col-sm-7">
                                 <input
-                                    value={sumber == 'SO' ? 'Pesanan Penjualan' : 'Retur Pembelian'}
+                                    value={sumber == 'SO' ? 'Penjualan' : 'Retur Pembelian'}
                                     type="Nama"
                                     className="form-control"
                                     disabled
@@ -948,7 +957,7 @@ const EditSuratJalan = () => {
                 // }}
                 // onChange={(e) => setProduct(e.id)}
                 />
-<br/>
+                <br />
                 <div className="btn-group mt-2" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"

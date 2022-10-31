@@ -1432,10 +1432,10 @@ const EditFaktur = () => {
                         </div>
                         <div className="col">
                             <div className="row mb-3">
-                                <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
+                                <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
                                 <div className="col-sm-7">
                                     <AsyncSelect
-                                        placeholder="Pilih Penerima..."
+                                        placeholder="Pilih Customer..."
                                         cacheOptions
                                         defaultOptions
                                         defaultInputValue={selectedPenerima.name}
