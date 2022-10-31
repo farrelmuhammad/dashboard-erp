@@ -424,7 +424,7 @@ else{
             </label>
             <div className="col-sm-10">
               <input
-                type="number"
+                type="text"
                 className="form-control"
                 id="inputnip"
                 min="1"

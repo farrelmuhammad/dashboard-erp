@@ -30,6 +30,7 @@ const EditTally = () => {
     const [productNoEdit, setProductNoEdit] = useState([])
     const [sheetNoEdit, setSheetNoEdit] = useState([])
     const [loading, setLoading] = useState(true);
+    const [catatan, setCatatan] = useState('')
     const [getTallySheet, setGetTallySheet] = useState([])
     const [loadingTable, setLoadingTable] = useState(false);
     const [delIndex, setDelIndex] = useState([]);
@@ -89,6 +90,7 @@ const EditTally = () => {
                     setSupplier(getData.supplier_id)
                     setSumber('Retur')
                 }
+                setCatatan(getData.notes)
                 setWarehouse(getData.warehouse.id)
                 setWarehouseName(getData.warehouse.name)
                 setProductSelectName(dataTallySheet[0].product_name)
@@ -1729,7 +1731,7 @@ const EditTally = () => {
 
         }
         tallySheetData.append("gudang", getTallySheet.warehouse_id);
-        tallySheetData.append("catatan", getTallySheet.notes);
+        tallySheetData.append("catatan", catatan);
         tallySheetData.append("status", "Submitted");
         product.map((p, pi) => {
             tallySheetData.append("id_produk[]", productId[pi]);
@@ -1805,7 +1807,7 @@ const EditTally = () => {
 
         }
         tallySheetData.append("gudang", getTallySheet.warehouse_id);
-        tallySheetData.append("catatan", getTallySheet.notes);
+        tallySheetData.append("catatan", catatan);
         tallySheetData.append("status", "Draft");
         product.map((p, pi) => {
             tallySheetData.append("id_produk[]", productId[pi]);
@@ -1998,8 +2000,8 @@ const EditTally = () => {
                                     className="form-control"
                                     id="form4Example3"
                                     rows="4"
-                                    value={getTallySheet.notes}
-                                    onChange={(e) => setDescription(e.target.value)}
+                                    defaultValue={catatan}
+                                    onChange={(e) => setCatatan(e.target.value)}
                                 />
                             </div>
                         </div>

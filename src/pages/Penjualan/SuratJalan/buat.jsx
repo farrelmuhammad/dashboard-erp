@@ -209,7 +209,7 @@ const BuatSuratJalan = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/delivery_notes_available_tally_sheets?nama_alias=${query}&pelanggan=${customer}`, {
+            const res = await axios.get(`${Url}/delivery_notes_available_tally_sheets?nama_alias=${query}&id_pelanggan=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`

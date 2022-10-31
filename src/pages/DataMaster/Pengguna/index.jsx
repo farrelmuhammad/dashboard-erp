@@ -35,6 +35,7 @@ const Pengguna = () => {
             return (
               <PageHeader
                 ghost={false}
+                className="bg-body rounded mb-2"
                 title="Daftar Pengguna"
                 extra={[
                   <Link to="/pengguna/buat">
@@ -58,6 +59,7 @@ const Pengguna = () => {
         <PageHeader
           ghost={false}
           title="Daftar Pengguna"
+          className="bg-body rounded mb-2"
         // extra={[
         //   <Link to="/produk/buat">
         //     <Button

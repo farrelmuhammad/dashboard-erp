@@ -406,7 +406,6 @@ const BuatReturPembelian = () => {
                     tmpData.push(updateProduk[i]);
                 }
 
-                // }
                 setTampilProduk(tmpData);
                 setUpdateProduk(tmpData)
             }
@@ -554,7 +553,7 @@ const BuatReturPembelian = () => {
                 <div className='d-flex'>
                     {
                         mataUang === 'Rp ' ?
-                        <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(updateProduk[i].price).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "price")} /> :
+                        <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(updateProduk[i].price).toString().replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "price")} /> :
                         <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(updateProduk[i].price).toLocaleString('id')} onChange={(e) => klikUbahData(i, e.target.value, "price")} />
                     }
                    
@@ -642,24 +641,6 @@ const BuatReturPembelian = () => {
         ];
 
 
-    // console.log(product)
-
-    // const handleChange = () => {
-    //     setChecked(!checked);
-    //     let check_checked = !checked;
-    //     calculate(product, check_checked);
-    // };
-    // const handleSave = (row) => {
-    //     const newData = [...product];
-    //     const index = newData.findIndex((item) => row.id === item.id);
-    //     const item = newData[index];
-    //     newData.splice(index, 1, { ...item, ...row });
-    //     setProduct(newData);
-    //     let check_checked = checked;
-    //     calculate(product, check_checked);
-    // };
-
-
     const calculate = (data) => {
         // console.log(data)
         let totalPerProduk = 0;
@@ -692,40 +673,7 @@ const BuatReturPembelian = () => {
         setGrandTotalDiscount(hasilDiskon);
         setGrandTotal(grandTotal);
     }
-
-
-    const handleCheck = (event) => {
-        var updatedList = [...product];
-        if (event.target.checked) {
-            updatedList = [...product, event.target.value];
-        } else {
-            updatedList.splice(product.indexOf(event.target.value), 1);
-        }
-        setProduct(updatedList);
-        setSource(updatedList.map(p => p.delivery_note_details))
-        // console.log(updatedList.map(p => p.delivery_note_details.map(prod => prod)))
-    };
-
-    // const getSalesOrderDetails = async () => {
-    //     await axios.get(`${Url}/sales_order_details/${id}`, {
-    //         headers: {
-    //             Accept: "application/json",
-    //             Authorization: `Bearer ${auth.token}`,
-    //         },
-    //     })
-    //         .then((res) => {
-    //             const getData = res.data.data
-    //             setGetProduct(getData);
-    //             console.log(getData)
-    //         })
-    //         .catch((err) => {
-    //             // Jika Gagal
-    //             console.log(err);
-    //         });
-    // }
-
-    // console.log(product.map(p => p.delivery_note_details));
-
+ 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const dataRetur = new URLSearchParams();
