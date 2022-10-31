@@ -217,6 +217,14 @@ const BuatPesananPembelian = () => {
             dataIndex: 'stock',
             width: '15%',
             align: 'center',
+            render(text, record) {
+                return {
+                    props: {
+                    },
+                    // children: <div>{formatQuantity(text)}</div>
+                    children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
+                };
+            }
         },
         {
             title: 'actions',
@@ -652,6 +660,61 @@ const BuatPesananPembelian = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!grup){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Grup kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (grup == "Impor"){
+            if  (!matauang){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Data Mata Uang kosong, Silahkan Lengkapi datanya ",
+                  });
+            }
+        }
+        else if(!supplier){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!tanggalAwal){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!tanggalAkhir){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!totalPpn){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data PPN kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
+
         console.log(pilihanDiskon);
         const OrderData = new FormData();
         OrderData.append("tanggal", date);
@@ -723,7 +786,8 @@ const BuatPesananPembelian = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data Produk belum lengkap, silahkan lengkapi datanya dan coba kembali",
+                        //text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -733,10 +797,63 @@ const BuatPesananPembelian = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+     } };
 
     const handleDraft = async (e) => {
         console.log(pilihanDiskon);
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!grup){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Grup kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (grup == "Impor"){
+            if  (!matauang){
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Data Mata Uang kosong, Silahkan Lengkapi datanya ",
+                  });
+            }
+        }
+        else if(!supplier){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!tanggalAwal){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!tanggalAkhir){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!totalPpn){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data PPN kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
         e.preventDefault();
         const OrderData = new FormData();
         OrderData.append("tanggal", date);
@@ -800,7 +917,8 @@ const BuatPesananPembelian = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data Produk belum lengkap, silahkan lengkapi datanya dan coba kembali",
+                        //text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -810,7 +928,9 @@ const BuatPesananPembelian = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+  
+          }    
+          };
 
     return (
         <>

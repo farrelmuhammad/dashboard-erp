@@ -144,8 +144,19 @@ const BuatPelunasan = () => {
     };
 
     const handleChangeCOA = (value) => {
+
+        if(!value){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Kas/Bank kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
         setSelectedCOA(value);
         setChartOfAcc(value.id);
+        }
     };
     // load options using API call
     const loadOptionsCOA = (inputValue) => {
@@ -344,6 +355,31 @@ const BuatPelunasan = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!customer){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Pelanggan kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!chartOfAcc){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Kas/Bank kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
+
         const userData = new FormData();
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
@@ -384,7 +420,8 @@ const BuatPelunasan = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data belum lengkap, silahkan lengkapi datanya dan coba kembali"
+                        //text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -394,10 +431,34 @@ const BuatPelunasan = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+        }    };
 
     const handleDraft = async (e) => {
         e.preventDefault();
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!customer){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Pelanggan kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(!chartOfAcc){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Kas/Bank kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
         const userData = new FormData();
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
@@ -438,7 +499,8 @@ const BuatPelunasan = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data belum lengkap, silahkan lengkapi datanya dan coba kembali"
+                        //text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -448,7 +510,7 @@ const BuatPelunasan = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+     } };
 
     return (
         <>

@@ -110,6 +110,7 @@ const DetailFaktur = () => {
     const [query, setQuery] = useState("");
     const [fakturType, setFakturType] = useState("");
     const [code, setCode] = useState('');
+    const [taxIncluded, setTaxIncluded] = useState(null);
     const [getCode, setGetCode] = useState('');
     const navigate = useNavigate();
     const auth = useSelector(state => state.auth);
@@ -145,13 +146,10 @@ const DetailFaktur = () => {
     const [catatan, setCatatan] = useState()
 
     const [getStatus, setGetStatus] = useState([])
+    const [getProduct, setGetProduct] = useState([])
     const [term, setTerm] = useState([])
     const [selectedSupplier, setSelectedSupplier] = useState()
     // const [sumber, setSumber] = useState('')
-
-
-
-
 
     useEffect(() => {
         axios.get(`${Url}/select_sales_invoices?id=${id}`, {
@@ -162,9 +160,12 @@ const DetailFaktur = () => {
         })
             .then((res) => {
                 let getData = res.data[0]
+                console.log(getData);
+                setTaxIncluded(getData.tax_included)
                 setDataHeader(getData);
                 setDate(getData.date)
                 setCode(getData.code)
+                setGetProduct(getData.sales_invoice_details)
                 setSubTotal(getData.subtotal)
                 setGrandTotal(getData.total)
                 setUangMuka(getData.down_payment);
@@ -568,6 +569,7 @@ const DetailFaktur = () => {
         {
             title: 'Nama Produk Alias',
             dataIndex: 'product_alias_name',
+            width: '15%',
             render(text, record) {
                 return {
                     props: {
@@ -681,7 +683,7 @@ const DetailFaktur = () => {
         {
             title: 'PPN',
             dataIndex: 'ppn',
-            width: '10%',
+            width: '5%',
             align: 'center',
             render(text, record) {
                 return {
@@ -694,29 +696,37 @@ const DetailFaktur = () => {
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '14%',
+            width: '18%',
             align: 'center',
-            render:
-                (text, record, index) => {
-                    let grandTotalAmount = 0;
-                    // console.log("masuk percent")
-                    let total = (record.quantity * record.price);
-                    let getPercent = (total * jumlahDiskon) / 100;
-                    let totalDiscount = total - getPercent;
-                    let getPpn = (totalDiscount * record.ppn) / 100;
-                    if (checked) {
-                        grandTotalAmount = tableToRupiah(totalDiscount, "Rp");
-                    } else {
-                        grandTotalAmount = tableToRupiah(totalDiscount + getPpn, "Rp");
-                    }
+            render(text, record) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: <div>{< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.', ',')} key="diskon" />}</div>
+                };
+            }
+            // render:
+            //     (text, record, index) => {
+            //         let grandTotalAmount = 0;
+            //         // console.log("masuk percent")
+            //         let total = (record.quantity * record.price);
+            //         let getPercent = (total * jumlahDiskon) / 100;
+            //         let totalDiscount = total - getPercent;
+            //         let getPpn = (totalDiscount * record.ppn) / 100;
+            //         if (checked) {
+            //             grandTotalAmount = tableToRupiah(totalDiscount, "Rp");
+            //         } else {
+            //             grandTotalAmount = tableToRupiah(totalDiscount + getPpn, "Rp");
+            //         }
 
-                    return {
-                        props: {
-                            style: { background: "#f5f5f5" }
-                        },
-                        children: grandTotalAmount
-                    }
-                }
+            //         return {
+            //             props: {
+            //                 style: { background: "#f5f5f5" }
+            //             },
+            //             children: grandTotalAmount
+            //         }
+            //     }
         },
     ];
 
@@ -1151,7 +1161,7 @@ const DetailFaktur = () => {
                         </div>
                         <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Catatan</label>
                         <div className="col-sm-12">
-                           
+
                             <textarea
                                 defaultValue={catatan}
                                 className="form-control"
@@ -1176,13 +1186,14 @@ const DetailFaktur = () => {
             <PageHeader
                 ghost={false}
                 title={sumber == 'SO' ? "Daftar Pesanan" : "Daftar Surat Jalan"}
+                className="bg-body rounded mb-2"
             >
                 {sumber == 'SO' ? <Table
                     components={components}
                     rowClassName={() => 'editable-row'}
                     bordered
                     pagination={false}
-                    dataSource={product}
+                    dataSource={getProduct}
                     columns={columns}
                     onChange={(e) => setProduct(e.target.value)}
                 /> : <Table
@@ -1190,14 +1201,14 @@ const DetailFaktur = () => {
                     rowClassName={() => 'editable-row'}
                     bordered
                     pagination={false}
-                    dataSource={product}
+                    dataSource={getProduct}
                     columns={columns}
                     onChange={(e) => setProduct(e.target.value)}
                 />}
                 <div className="row p-0 mt-3">
                     <div className="col ms-5">
                         <div className="form-check">
-                            <input className="form-check-input" type="checkbox" id="flexCheckDefault" onChange={handleChange} />
+                            <input className="form-check-input" type="checkbox" id="flexCheckDefault" onChange={handleChange} defaultChecked={taxIncluded} disabled />
                             <label className="form-check-label" for="flexCheckDefault">
                                 Harga Termasuk PPN
                             </label>

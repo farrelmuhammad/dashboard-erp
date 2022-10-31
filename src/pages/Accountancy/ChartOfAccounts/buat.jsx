@@ -20,8 +20,8 @@ const BuatCoa = () => {
     const [exchangeRate, setExchangeRate] = useState('');
     const [firstBalance, setFirstBalance] = useState('');
     const [notes, setNotes] = useState('');
-    const [checked, setChecked] = useState(false);
-    const [status, setStatus] = useState('');
+    const [checked, setChecked] = useState(true);
+    const [status, setStatus] = useState('Active');
 
     const navigate = useNavigate();
 
@@ -128,17 +128,32 @@ const BuatCoa = () => {
             });
     };
 
-    const onChange = () => {
-        checked ? setChecked(false) : setChecked(true)
+    // const onChange = () => {
+    //     checked ? setChecked(false) : setChecked(true)
 
-        if (checked === false) {
-            setStatus("Active");
-            // console.log('Active');
-        } else {
-            setStatus("Inactive");
-            // console.log('Inactive');
-        }
-    };
+    //     if (checked === false) {
+    //         setStatus("Active");
+    //         // console.log('Active');
+    //     } else {
+    //         setStatus("Inactive");
+    //         // console.log('Inactive');
+    //     }
+    // };
+
+    const onChange = () => {
+        setChecked(!checked)
+        // checked ? setChecked(true) : setChecked(false)
+        checked ? setStatus('Active') : setStatus ('NonActive')
+        console.log(status)
+        // if (checked === true) {
+        //   setStatus("Active");
+        //   // console.log('Active');
+        // } else {
+        //   setStatus("Inactive");
+        //   // console.log('Inactive');
+        // }
+      };
+    
 
     return (
         <>

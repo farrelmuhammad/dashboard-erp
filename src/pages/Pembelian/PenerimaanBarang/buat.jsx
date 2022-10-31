@@ -378,6 +378,43 @@ const BuatPenerimaanBarang = () => {
     }
 
     const handleSubmit = async (e) => {
+
+        if(!date)
+        {
+            Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+                        });
+        }
+        else if(sumber == ''){
+            Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Data Transaksi kosong, Silahkan Lengkapi datanya ",
+                      });
+        }
+        else if(sumber == 'PO' && !supplierId ){
+           
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+                  });
+        }
+        else if(sumber == 'Retur' && !customerId){
+           
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Data Customer kosong, Silahkan Lengkapi datanya ",
+                  });
+           
+        }
+        else{
+
+
+
         e.preventDefault();
         const formData = new FormData();
         // console.log(product[0])
@@ -421,7 +458,8 @@ const BuatPenerimaanBarang = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data  Tally Sheet belum lengkap, silahkan lengkapi datanya dan coba kembali",
+                       // text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -431,9 +469,45 @@ const BuatPenerimaanBarang = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+   
+         }     };
 
     const handleDraft = async (e) => {
+
+        if(!date)
+        {
+            Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+                        });
+        }
+        else if(sumber == ''){
+            Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Data Transaksi kosong, Silahkan Lengkapi datanya ",
+                      });
+        }
+        else if(sumber == 'PO' && !supplierId ){
+           
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+                  });
+        }
+        else if(sumber == 'Retur' && !customerId){
+           
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Data Customer kosong, Silahkan Lengkapi datanya ",
+                  });
+           
+        }
+        else{
+
         e.preventDefault();
         console.log(productTampil)
         const formData = new FormData();
@@ -479,7 +553,8 @@ const BuatPenerimaanBarang = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data Tally Sheet belum lengkap, silahkan lengkapi datanya dan coba kembali",
+                        //text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -489,7 +564,8 @@ const BuatPenerimaanBarang = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+  
+          }      };
 
     function klikUbahSumber(value) {
         setSumber(value);
