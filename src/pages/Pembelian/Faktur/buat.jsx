@@ -1307,6 +1307,66 @@ const BuatFakturPembelian = () => {
 
 
     const handleSubmit = async (e) => {
+
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (grup != ""){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Grup kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!supplier){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(grup == 'Impor' && !kontainer){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Kontainer kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(grup == 'Impor' && !ctn){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Karton kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (grup == 'Impor' && term == ''){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Term kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (grup == 'Impor' && !muatan){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Muatan kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!jatuhTempo){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal Jatuh Tempo kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else{
+
+
         e.preventDefault();
         const formData = new URLSearchParams();
         formData.append("tanggal", date);
@@ -1382,7 +1442,8 @@ const BuatFakturPembelian = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.message,
+                        text:"Data Produk belum Diisi, silahkan lengkapi datanya dan coba kembali",
+                        // text: err.response.data.message,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -1392,9 +1453,66 @@ const BuatFakturPembelian = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+     } };
 
     const handleDraft = async (e) => {
+        if(!date){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (grup != ""){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Grup kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!supplier){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(grup == 'Impor' && !kontainer){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Kontainer kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if(grup == 'Impor' && !ctn){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Karton kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (grup == 'Impor' && term == ''){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Term kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (grup == 'Impor' && !muatan){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Muatan kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else if (!jatuhTempo){
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal Jatuh Tempo kosong, Silahkan Lengkapi datanya ",
+              });
+        }
+        else {
         e.preventDefault();
         const formData = new URLSearchParams();
         formData.append("tanggal", date);
@@ -1474,7 +1592,8 @@ const BuatFakturPembelian = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text:"Data Produk belum Diisi, silahkan lengkapi datanya dan coba kembali",
+                        // text: err.response.data.error.nama,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -1484,7 +1603,7 @@ const BuatFakturPembelian = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-    };
+       }   };
 
     const [optionsType, setOptionsType] = useState([]);
     const [optionsAlamat, setOptionsAlamat] = useState([])
@@ -1588,7 +1707,7 @@ const BuatFakturPembelian = () => {
                                     id="grupSelect"
                                     className="form-select"
                                 >
-                                    <option>Pilih Grup</option>
+                                    <option value="">Pilih Grup</option>
                                     <option value="Lokal" checked={grup === "Lokal"}>
                                         Lokal
                                     </option>

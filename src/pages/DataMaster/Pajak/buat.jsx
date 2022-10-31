@@ -25,6 +25,23 @@ const BuatPajak = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if(!type){
+      Swal.fire({
+        icon:"error",
+        title:"Oops...",
+        text:"Data Nama kosong, Silahkan lengkapi datanya"
+      })
+    }
+    else if(!rate){
+      Swal.fire({
+        icon:"error",
+        title:"Oops...",
+        text:"Data Persentase kosong, Silahkan lengkapi datanya"
+      })
+    }
+    else{
+
     const userData = new FormData();
     // userData.append("id", id);
     userData.append("jenis", type);
@@ -69,7 +86,7 @@ const BuatPajak = () => {
           Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
         }
       });
-  };
+   } };
 
   useEffect(() => {
     axios
@@ -117,12 +134,13 @@ const BuatPajak = () => {
           </label>
           <div className="col-sm-10">
             <Input
-              size="large"
+              // size="large"
               value={getTaxes}
               style={{
                 fontWeight: "bold",
               }}
               disabled
+              className="form-control"
             // onChange={(e) => setType(e.target.value)}
             />
             {/* <input
