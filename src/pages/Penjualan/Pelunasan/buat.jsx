@@ -148,7 +148,7 @@ const BuatPelunasan = () => {
     };
     // load options using API call
     const loadOptionsCOA = (inputValue) => {
-        return fetch(`${Url}/select_chart_of_accounts?limit=10&nama=${inputValue}`, {
+        return fetch(`${Url}/select_chart_of_accounts?limit=10&nama=${inputValue}&parent=null`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -183,7 +183,7 @@ const BuatPelunasan = () => {
             dataIndex: 'code',
         },
         {
-            title: 'Pelanggan',
+            title: 'Customer',
             dataIndex: 'recipient',
             align: 'center',
             render: (recipient) => recipient.name
@@ -483,10 +483,10 @@ const BuatPelunasan = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pelanggan</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
                             <div className="col-sm-7">
                                 <AsyncSelect
-                                    placeholder="Pilih Pelanggan..."
+                                    placeholder="Pilih Customer..."
                                     cacheOptions
                                     defaultOptions
                                     value={selectedValue}

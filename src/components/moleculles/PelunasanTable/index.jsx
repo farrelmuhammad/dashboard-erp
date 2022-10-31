@@ -239,29 +239,29 @@ const PelunasanTable = () => {
 
                 let tmp = []
                 for (let i = 0; i < getData.length; i++) {
-                  tmp.push({
-                    id: getData[i].id,
-                    can: getData[i].can,
-                    code: getData[i].code,
-                    date:getData[i].date,
-                    customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
-                    total : getData[i].total,
-                    // type : getData[i].type,
-                    status : getData[i].status
-                    
-                    // name:getData[i].name,
-                    // _group:getData[i]._group,
-                    // category:getData[i].category.name,
-                    // department : getData[i].department.name ,
-                    // position: getData[i].position.name,
-                    // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
-                    // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
-                    // date: getData[i].date,
-                    // status: getData[i].status,
-                    // warehouse: getData[i].warehouse.name
-                  })
+                    tmp.push({
+                        id: getData[i].id,
+                        can: getData[i].can,
+                        code: getData[i].code,
+                        date: getData[i].date,
+                        customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
+                        total: getData[i].total,
+                        // type : getData[i].type,
+                        status: getData[i].status
+
+                        // name:getData[i].name,
+                        // _group:getData[i]._group,
+                        // category:getData[i].category.name,
+                        // department : getData[i].department.name ,
+                        // position: getData[i].position.name,
+                        // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+                        // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+                        // date: getData[i].date,
+                        // status: getData[i].status,
+                        // warehouse: getData[i].warehouse.name
+                    })
                 }
-        
+
                 setDataTampil(tmp)
 
 
@@ -280,7 +280,7 @@ const PelunasanTable = () => {
             ...getColumnSearchProps('date'),
         },
         {
-            title: 'No. Kwitansi',
+            title: 'No. Pelunasan',
             dataIndex: 'code',
             key: 'code',
             width: '20%',
@@ -289,7 +289,7 @@ const PelunasanTable = () => {
             sortDirections: ['descend', 'ascend'],
         },
         {
-            title: 'Pelanggan',
+            title: 'Customer',
             dataIndex: 'customer',
             width: '15%',
             key: 'customer',
@@ -304,7 +304,7 @@ const PelunasanTable = () => {
             key: 'total',
             width: '15%',
             ...getColumnSearchProps('total'),
-              render: (text) => {
+            render: (text) => {
                 return < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.', ',')} key="diskon" />
             }
         },

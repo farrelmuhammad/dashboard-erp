@@ -160,165 +160,163 @@ const BuatGudang = () => {
     setTipe(e.value);
   };
 
-  if (employeesData?.length > 0) {
-    return (
-      <>
-        <PageHeader
-          ghost={false}
-          className="bg-body rounded mb-2"
-          onBack={() => window.history.back()}
-          title="Buat Gudang"
-        >
-          <div className="row mb-3">
-            <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
-              Kode
-            </label>
-            <div className="col-sm-10">
-              <input
-                type="kode"
-                className="form-control"
-                id="inputKode3"
-                value={getWarehouse}
-                disabled
-              />
-            </div>
+  return (
+    <>
+      <PageHeader
+        ghost={false}
+        className="bg-body rounded mb-2"
+        onBack={() => window.history.back()}
+        title="Buat Gudang"
+      >
+        <div className="row mb-3">
+          <label htmlFor="inputKode3" className="col-sm-2 col-form-label">
+            Kode
+          </label>
+          <div className="col-sm-10">
+            <input
+              type="kode"
+              className="form-control"
+              id="inputKode3"
+              value={getWarehouse}
+              disabled
+            />
           </div>
-          <div className="row mb-3">
-            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-              Nama Gudang
-            </label>
-            <div className="col-sm-10">
-              <input
-                type="text"
-                className="form-control"
-                id="inputNama3"
-                placeholder="Masukkan Nama Gudang"
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            Nama Gudang
+          </label>
+          <div className="col-sm-10">
+            <input
+              type="text"
+              className="form-control"
+              id="inputNama3"
+              placeholder="Masukkan Nama Gudang"
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
-          <div className="row mb-3">
-            <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
-              Tipe
-            </label>
-            <div className="col-sm-10">
-              <ReactSelect
-                className="basic-single"
-                placeholder="Pilih Tipe Gudang..."
-                classNamePrefix="select"
-                isSearchable
-                isClearable
-                onChange={handleSingleChangeType}
-                options={optionsType}
-              />
-            </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
+            Tipe
+          </label>
+          <div className="col-sm-10">
+            <ReactSelect
+              className="basic-single"
+              placeholder="Pilih Tipe Gudang..."
+              classNamePrefix="select"
+              isSearchable
+              isClearable
+              onChange={handleSingleChangeType}
+              options={optionsType}
+            />
           </div>
-          <div className="row mb-3">
-            <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
-              Alamat
-            </label>
-            <div className="col-sm-10">
-              <textarea
-                className="form-control"
-                id="form4Example3"
-                rows="4"
-                placeholder="Masukkan Alamat Gudang"
-                onChange={(e) => setAddress(e.target.value)}
-              />
-            </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">
+            Alamat
+          </label>
+          <div className="col-sm-10">
+            <textarea
+              className="form-control"
+              id="form4Example3"
+              rows="4"
+              placeholder="Masukkan Alamat Gudang"
+              onChange={(e) => setAddress(e.target.value)}
+            />
           </div>
-          <div className="row mb-3">
-            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-              Kota
-            </label>
-            <div className="col-sm-10">
-              <input
-                type="text"
-                className="form-control"
-                id="inputNama3"
-                placeholder="Masukkan Kota"
-                onChange={(e) => setCity(e.target.value)}
-              />
-            </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            Kota
+          </label>
+          <div className="col-sm-10">
+            <input
+              type="text"
+              className="form-control"
+              id="inputNama3"
+              placeholder="Masukkan Kota"
+              onChange={(e) => setCity(e.target.value)}
+            />
           </div>
-          <div className="row mb-3">
-            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-              Kode Pos
-            </label>
-            <div className="col-sm-10">
-              <input
-                type="number"
-                className="form-control"
-                id="inputNama3"
-                placeholder="Masukkan Kode Pos"
-                onChange={(e) => setPostal_code(e.target.value)}
-              />
-            </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            Kode Pos
+          </label>
+          <div className="col-sm-10">
+            <input
+              type="number"
+              className="form-control"
+              id="inputNama3"
+              placeholder="Masukkan Kode Pos"
+              onChange={(e) => setPostal_code(e.target.value)}
+            />
           </div>
-          <div className="row mb-3">
-            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-              No Telepon
-            </label>
-            <div className="col-sm-10">
-              <input
-                type="tel"
-                className="form-control"
-                id="inputNama3"
-                placeholder="08x-xxxx-xxx-xxx"
-                onChange={(e) => setPhone_number(e.target.value)}
-              />
-            </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            No Telepon
+          </label>
+          <div className="col-sm-10">
+            <input
+              type="tel"
+              className="form-control"
+              id="inputNama3"
+              placeholder="08x-xxxx-xxx-xxx"
+              onChange={(e) => setPhone_number(e.target.value)}
+            />
           </div>
-          <div className="row mb-3">
-            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-              Nama Karyawan
-            </label>
-            <div className="col-sm-10">
-              <AsyncSelect
-                placeholder="Pilih Karyawan..."
-                cacheOptions
-                defaultOptions
-                isClearable
-                value={selectedValue2}
-                getOptionLabel={(e) => e.name}
-                getOptionValue={(e) => e.id}
-                loadOptions={loadOptionsEmployee}
-                onChange={handleChangeEmployee}
-              />
-            </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            Nama Karyawan
+          </label>
+          <div className="col-sm-10">
+            <AsyncSelect
+              placeholder="Pilih Karyawan..."
+              cacheOptions
+              defaultOptions
+              // isClearable
+              value={selectedValue2}
+              getOptionLabel={(e) => e.name}
+              getOptionValue={(e) => e.id}
+              loadOptions={loadOptionsEmployee}
+              onChange={handleChangeEmployee}
+            />
           </div>
-          <div className="row mb-3">
-            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-              COA
-            </label>
-            <div className="col-sm-10">
-              <AsyncSelect
-                placeholder="Pilih Akun..."
-                cacheOptions
-                defaultOptions
-                isClearable
-                value={selectedValue}
-                getOptionLabel={(e) => e.name}
-                getOptionValue={(e) => e.id}
-                loadOptions={loadOptionsChart}
-                onChange={handleChangeChart}
-              />
-            </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            COA
+          </label>
+          <div className="col-sm-10">
+            <AsyncSelect
+              placeholder="Pilih Akun..."
+              cacheOptions
+              defaultOptions
+              isClearable
+              value={selectedValue}
+              getOptionLabel={(e) => e.name}
+              getOptionValue={(e) => e.id}
+              loadOptions={loadOptionsChart}
+              onChange={handleChangeChart}
+            />
           </div>
-          <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
-            <Button
-              type="primary"
-              icon={<SendOutlined />}
-              size="large"
-              onClick={handleSubmit}
-            >
-              Submit
-            </Button>
-          </div>
-        </PageHeader>
-      </>
-    );
-  }
+        </div>
+        <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+          <Button
+            type="primary"
+            icon={<SendOutlined />}
+            size="large"
+            onClick={handleSubmit}
+          >
+            Submit
+          </Button>
+        </div>
+      </PageHeader>
+    </>
+  );
 };
 
 export default BuatGudang;

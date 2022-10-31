@@ -1,12 +1,12 @@
 import './form.css'
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate,Link  } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
 import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd'
-import { PlusOutlined,ArrowLeftOutlined } from '@ant-design/icons'
+import { PlusOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
@@ -80,11 +80,10 @@ const EditableCell = ({
                 ]}
             >
                 <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
-                    decimalSeparator = {','}
+                    decimalSeparator={','}
                     onChange={value => {
                         value = parseFloat(value.toString().replace('.', ','))
-                      }}
-                      
+                    }}
                 />
             </Form.Item>
         ) : (
@@ -137,7 +136,7 @@ const CreateAdjustment = () => {
         var updatedList = [...product];
         updatedList = []
         setProduct(updatedList);
-        
+
     };
     // load options using API call
     const loadOptionsWarehouse = (inputValue) => {
@@ -160,7 +159,7 @@ const CreateAdjustment = () => {
             setGetDataProduct(res.data);
         };
         if (query.length === 0 || query.length > 2) getProduct();
-    }, [query,warehouse_id])
+    }, [query, warehouse_id])
 
     // Column for modal input product
     const columnsModal = [
@@ -245,10 +244,10 @@ const CreateAdjustment = () => {
     };
     const convertToRupiahTabel = (angka) => {
         return <>
-        {
-            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} />
-            
-        }
+            {
+                < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} />
+
+            }
         </>
     }
 
@@ -457,7 +456,7 @@ const CreateAdjustment = () => {
                         <div className="card-header bg-white">
                             <h6 className="title fw-bold">
                                 <Button
-                                    style={{border: 'none'}}
+                                    style={{ border: 'none' }}
                                     icon={<ArrowLeftOutlined />}
                                     onClick={() => navigate(-1)}
                                 />

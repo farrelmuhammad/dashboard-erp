@@ -75,7 +75,7 @@ const EditKategori = () => {
         setLoading(false)
         setCode(getData.code)
         setName(getData.name)
-        setDescription(getData.description)
+        setDescription(getData.description || "")
         console.log(response.data.data);
       })
       .catch((err) => {

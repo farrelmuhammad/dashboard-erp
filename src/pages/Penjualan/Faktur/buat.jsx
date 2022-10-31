@@ -848,7 +848,7 @@ const BuatFaktur = () => {
                                 </div>
                             </div> : null,
             ppn: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} suffix={'%'} onKeyDown={(event) => klikEnter(event)} value={Number(item.ppn)} onChange={(e) => klikUbahData(i, e.target.value, "ppn")} />,
-            total: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].total)} />,
+            total: <CurrencyFormat className=' text-center editable-input' disabled thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].total)} />,
         }))]
 
     const handleChange = () => {
@@ -1533,10 +1533,10 @@ const BuatFaktur = () => {
                                 >
                                     <option value="">Pilih Transaksi</option>
                                     <option value="SO">
-                                        Penjualan
+                                        Uang Muka
                                     </option>
                                     <option value="Surat" >
-                                        Surat Jalan
+                                        Penjualan
                                     </option>
                                 </select>
                             </div>
@@ -1575,26 +1575,26 @@ const BuatFaktur = () => {
                                             onChange={handleChangeCustomer}
                                         />
                                     </div>
-                                </div> : 
+                                </div> :
                                 null
                         }
                         {
                             sumber == 'Surat' ?
-                            <div className="row mb-3">
-                                <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
-                                <div className="col-sm-7">
-                                    <AsyncSelect
-                                        placeholder="Pilih Penerima..."
-                                        cacheOptions
-                                        defaultOptions
-                                        value={selectedValue}
-                                        getOptionLabel={(e) => e.name}
-                                        getOptionValue={(e) => e.id}
-                                        loadOptions={loadOptionsPenerima}
-                                        onChange={handleChangeCustomer}
-                                    />
-                                </div>
-                            </div> : null
+                                <div className="row mb-3">
+                                    <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
+                                    <div className="col-sm-7">
+                                        <AsyncSelect
+                                            placeholder="Pilih Penerima..."
+                                            cacheOptions
+                                            defaultOptions
+                                            value={selectedValue}
+                                            getOptionLabel={(e) => e.name}
+                                            getOptionValue={(e) => e.id}
+                                            loadOptions={loadOptionsPenerima}
+                                            onChange={handleChangeCustomer}
+                                        />
+                                    </div>
+                                </div> : null
                         }
 
 

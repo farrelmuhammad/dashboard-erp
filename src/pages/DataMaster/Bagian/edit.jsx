@@ -37,8 +37,8 @@ const EditBagian = () => {
         const getData = response.data.data[0];
         setLoading(false)
         setCode(getData.code)
-        setName(getData.name)
-        setDescription(getData.description)
+        setName(getData.name || "")
+        setDescription(getData.description || "")
       })
       .catch((err) => {
         // Jika Gagal
@@ -63,7 +63,7 @@ const EditBagian = () => {
       .then(function (res) {
         //handle success
         console.log(res);
-        Swal.fire("Berhasil Ditambahkan", `${id} Masuk dalam list`, "success");
+        Swal.fire("Berhasil Ditambahkan", `${code} Masuk dalam list`, "success");
         navigate("/bagian");
       })
       .catch((err) => {
