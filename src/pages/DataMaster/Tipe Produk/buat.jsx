@@ -23,63 +23,64 @@ const BuatTipeProduk = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    
-    if(!name){
+
+    if (!name) {
       Swal.fire({
-        icon:"error",
-        title:"Oops...",
-        text:"Data nama kosong, Silahkan lengkapi datanya"
+        icon: "error",
+        title: "Oops...",
+        text: "Data nama kosong, Silahkan lengkapi datanya"
       })
     }
-    else{
+    else {
 
-    const userData = new FormData();
-    // userData.append("id", id);
-    userData.append("nama", name);
-    userData.append("deskripsi", description);
-    product.map((p) => userData.append("produk[]", p));
+      const userData = new FormData();
+      // userData.append("id", id);
+      userData.append("nama", name);
+      userData.append("deskripsi", description);
+      product.map((p) => userData.append("produk[]", p));
 
-    // for (var pair of userData.entries()) {
-    //     console.log(pair[0]+ ', ' + pair[1]);
-    //   }
+      // for (var pair of userData.entries()) {
+      //     console.log(pair[0]+ ', ' + pair[1]);
+      //   }
 
-    axios({
-      method: "post",
-      url: `${Url}/types`,
-      data: userData,
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    })
-      .then(function (response) {
-        //handle success
-        Swal.fire(
-          "Berhasil Ditambahkan",
-          `${getType} Masuk dalam list`,
-          "success"
-        );
-        navigate("/tipe");
+      axios({
+        method: "post",
+        url: `${Url}/types`,
+        data: userData,
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${auth.token}`,
+        },
       })
-      .catch((err) => {
-        if (err.response) {
-          console.log("err.response ", err.response);
-          Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: err.response.data.error.nama,
-          });
-        } else if (err.request) {
-          console.log("err.request ", err.request);
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        } else if (err.message) {
-          // do something other than the other two
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        }
-      });
+        .then(function (response) {
+          //handle success
+          Swal.fire(
+            "Berhasil Ditambahkan",
+            `${getType} Masuk dalam list`,
+            "success"
+          );
+          navigate("/tipe");
+        })
+        .catch((err) => {
+          if (err.response) {
+            console.log("err.response ", err.response);
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: err.response.data.error.nama,
+            });
+          } else if (err.request) {
+            console.log("err.request ", err.request);
+            Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+          } else if (err.message) {
+            // do something other than the other two
+            Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+          }
+        });
 
-    addType(name, description, product)
-   } };
+      addType(name, description, product)
+    }
+  };
 
   // const handleCheck = (event) => {
   //   var updatedList = [...product];

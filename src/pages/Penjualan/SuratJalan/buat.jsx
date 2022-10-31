@@ -106,7 +106,7 @@ const BuatSuratJalan = () => {
     const [address, setAddress] = useState("");
     const [selectedAddress, setSelectedAddress] = useState("");
     const [addressId, setAddressId] = useState("");
-    const [product, setProduct] = useState('');
+    const [product, setProduct] = useState([]);
     const [tally, setTally] = useState([]);
     const [query, setQuery] = useState("");
     const [getCode, setGetCode] = useState('');
@@ -130,7 +130,7 @@ const BuatSuratJalan = () => {
     const [grup, setGrup] = useState()
     const [selectedSupplier, setSelectedSupplier] = useState()
 
-    const expandedRowRender = (product) => {
+    const expandedRowRender = (record) => {
 
         const columns = [
             {
@@ -152,9 +152,9 @@ const BuatSuratJalan = () => {
                 width: '10%',
                 align: 'center',
                 key: 'name',
-                render: (_, record) => {
-                    return Number(record.boxes_quantity).toFixed(2).replace('.' , ',')
-                }
+                // render: (_, record) => {
+                //     return Number(record.boxes_quantity).toFixed(2).replace('.' , ',')
+                // }
             },
             {
                 title: 'Stn',
@@ -164,7 +164,15 @@ const BuatSuratJalan = () => {
                 key: 'name',
             },
         ];
-        return <Table columns={columns} dataSource={product.tally_sheet_details} pagination={false} />;
+        console.log(record)
+
+        const dataTampil = [...product[record.key].tally_sheet_details.map((item , i) => ({
+            product_alias_name: item.product_alias_name,
+            product_name: item.product_name,
+            boxes_quantity: item.boxes_quantity,
+            boxes_unit: item.boxes_unit
+        }))]
+        return <Table columns={columns} dataSource={dataTampil} pagination={false} />;
     };
 
     const handleChangeSupplier = (value) => {
@@ -381,22 +389,15 @@ const BuatSuratJalan = () => {
             cell: EditableCell,
         },
     };
-    const columns = defaultColumns.map((col) => {
-        if (!col.editable) {
-            return col;
-        }
+  
+    const mainDataSource =
+    [...product.map((item, i) => ({
+        key: i,
+        code: item.code,
+        status: item.status,
+    }))
 
-        return {
-            ...col,
-            onCell: (record) => ({
-                record,
-                editable: col.editable,
-                dataIndex: col.dataIndex,
-                title: col.title,
-                handleSave,
-            }),
-        };
-    });
+    ]
 
     const handleCheck = (event) => {
         var updatedList = [...product];
@@ -684,6 +685,7 @@ const BuatSuratJalan = () => {
     }
     }
 
+
     return (
         <>
             <PageHeader
@@ -889,15 +891,12 @@ const BuatSuratJalan = () => {
                 ]}
             >
                 <Table
-                    components={components}
+                    // components={components}
                     bordered
                     pagination={false}
-                    dataSource={product}
-                    columns={columns}
-                    expandable={{
-                        expandedRowRender,
-                        defaultExpandedRowKeys: ['0'],
-                    }}
+                    dataSource={mainDataSource}
+                    columns={defaultColumns}
+                    expandable={{ expandedRowRender }}
                 // onChange={(e) => setProduct(e.id)}
                 />
             <br/>

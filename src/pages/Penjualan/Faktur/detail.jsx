@@ -176,6 +176,8 @@ const DetailFaktur = () => {
                 setGetStatus(getData.status);
                 setGrandTotalDiscount(getData.discount);
                 setTerm(getData.term);
+                setChecked(getData.tax_included)
+                console.log(getData.tax_included)
                 setSelectedAddress(getData.recipient_address)
                 setSelectedPenerima(getData.recipient)
                 setCustomer(getData.recipient.id)
@@ -1121,7 +1123,7 @@ const DetailFaktur = () => {
                     </div>
                     <div className="col">
                         <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
                             <div className="col-sm-7">
                                 <input
                                     value={selectedPenerima.name}

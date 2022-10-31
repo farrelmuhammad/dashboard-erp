@@ -39,6 +39,11 @@ export const DetailSuratJalan = () => {
             render: (text, record, index) => index + 1,
         },
         {
+            title: 'No. Tally Sheet',
+            width: '25%',
+            dataIndex: 'tally_sheet_code',
+        },
+        {
             title: 'Nama Alias Produk',
             width: '25%',
             dataIndex: 'product_alias_name',
@@ -97,6 +102,7 @@ export const DetailSuratJalan = () => {
                     setAddress(getData.supplier_address.address)
                     setSumber('Retur')
                 }
+                
                 setVehicle(getData.vehicle)
                 setSender(getData.sender)
                 setNotes(getData.notes)
@@ -104,7 +110,7 @@ export const DetailSuratJalan = () => {
                 setDetails(getData.delivery_note_details)
                 setDelivered(getData.is_delivered)
                 setLoading(false)
-                console.log(getData)
+                console.log(getData.delivery_note_details)
                 // console.log(res.data.data.map(d => d.sales_order_details));
                 // console.log(getData.map(d => d.sales_order_details));
             })
@@ -362,7 +368,7 @@ export const DetailSuratJalan = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pilih Transaksi</label>
                             <div className="col-sm-7">
                                 <input
-                                    value={sumber == 'SO' ? 'Pesanan Penjualan' : 'Retur Pembelian'}
+                                    value={sumber == 'SO' ? 'Penjualan' : 'Retur Pembelian'}
                                     type="Nama"
                                     className="form-control"
                                     disabled
