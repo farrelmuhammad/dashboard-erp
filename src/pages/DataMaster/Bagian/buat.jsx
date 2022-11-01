@@ -21,7 +21,7 @@ const BuatBagian = () => {
   const [getPiece, setGetPiece] = useState();
 
   const [loadings, setLoadings] = useState([]);
-  const enterLoading = (index, event) => {
+  const enterLoading = (index) => {
     setLoadings((prevLoadings) => {
       const newLoadings = [...prevLoadings];
       newLoadings[index] = true;
@@ -34,8 +34,8 @@ const BuatBagian = () => {
         return newLoadings;
       });
       handleSubmit()
-      setName('');
-      setDescription('');
+      // setName('');
+      // setDescription('');
     }, 2000);
   };
 
@@ -60,7 +60,15 @@ const BuatBagian = () => {
       //   console.log(pair[0]+ ', ' + pair[1]);
       // }
 
-      axios({
+      // await axios.post(`${Url}/pieces`, {
+      //   data: userData,
+      //   headers: {
+      //     Accept: "application/json",
+      //     Authorization: `Bearer ${auth.token}`,
+      //   },
+      // })
+
+      await axios({
         method: "post",
         url: `${Url}/pieces`,
         data: userData,
@@ -72,12 +80,14 @@ const BuatBagian = () => {
         .then(function (res) {
           //handle success
           console.log(res);
-          Swal.fire(
-            "Berhasil Ditambahkan",
-            `${getPiece} Masuk dalam list`,
-            "success"
-          );
-          navigate("/bagian");
+          if (res.status === 201) {
+            Swal.fire(
+              "Berhasil Ditambahkan",
+              `${getPiece} Masuk dalam list`,
+              "success"
+            );
+            navigate("/bagian");
+          }
         })
         .catch((err) => {
           if (err.response) {
