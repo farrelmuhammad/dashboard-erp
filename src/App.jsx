@@ -33,6 +33,8 @@ const { Header, Sider, Content } = Layout;
 const { Text } = Typography;
 
 const App = () => {
+
+  let timer;
   const [collapsed, setCollapsed] = useState(false);
 
   const isLoggedIn = !!useSelector(state => state.auth.token);
@@ -903,6 +905,44 @@ const App = () => {
       </Menu.Item>
     </Menu.SubMenu> */}
   </>
+
+const events = [
+  "load",
+  "mousemove",
+  "mousedown",
+  "click",
+  "scroll",
+  "keypress",
+];
+
+
+
+const handleLogoutTimer = () => {
+  timer = setTimeout(() => {
+    // clears any pending timer.
+    resetTimer();
+    // Listener clean up. Removes the existing event listener from the window
+    Object.values(events).forEach((item) => {
+      window.removeEventListener(item, resetTimer);
+    });
+    // logs out user
+    handleLogout();
+  }, 3600000); // 10000ms = 10secs. You can change the time.
+};
+
+const resetTimer = () => {
+  if (timer) clearTimeout(timer);
+};
+
+useEffect(() => {
+  Object.values(events).forEach((item) => {
+    window.addEventListener(item, () => {
+      resetTimer();
+      handleLogoutTimer();
+    });
+  });
+}, []);
+
 
   const handleLogout = () => {
     // jsCookie.remove('auth')
