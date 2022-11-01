@@ -23,9 +23,9 @@ const BuatProduk = () => {
   const [brands_id, setBrands_id] = useState('');
   const [packaging_id, setPackaging_id] = useState('');
   const [unit, setUnit] = useState('');
-  const [buy_price, setBuy_price] = useState('');
-  const [sell_price, setSell_price] = useState('');
-  const [discount, setDiscount] = useState('');
+  const [buy_price, setBuy_price] = useState(0);
+  const [sell_price, setSell_price] = useState(0);
+  const [discount, setDiscount] = useState(0);
   const [taxes_id, setTaxes_id] = useState('');
   const [status, setStatus] = useState('Active');
   const [checked, setChecked] = useState(true);
@@ -143,149 +143,150 @@ const BuatProduk = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if(!pieces_id){
+    if (!pieces_id) {
       Swal.fire({
-        icon:"error",
-        title:"Oops...",
-        text:"Data Bagian kosong, Silahkan lengkapi datanya"
+        icon: "error",
+        title: "Oops...",
+        text: "Data Bagian kosong, Silahkan lengkapi datanya"
       })
     }
-    else if (!group){
+    else if (!group) {
       Swal.fire({
-        icon:"error",
-        title:"Oops...",
-        text:"Data Grup kosong, Silahkan lengkapi datanya"
+        icon: "error",
+        title: "Oops...",
+        text: "Data Grup kosong, Silahkan lengkapi datanya"
       })
     }
-    else if(!brands_id){
+    else if (!brands_id) {
       Swal.fire({
-        icon:"error",
-        title:"Oops...",
-        text:"Data Merek kosong, Silahkan lengkapi datanya"
+        icon: "error",
+        title: "Oops...",
+        text: "Data Merek kosong, Silahkan lengkapi datanya"
       })
     }
-    else if(!category_id){
+    else if (!category_id) {
       Swal.fire({
-        icon:"error",
-        title:"Oops...",
-        text:"Data Kategori kosong, Silahkan lengkapi datanya"
+        icon: "error",
+        title: "Oops...",
+        text: "Data Kategori kosong, Silahkan lengkapi datanya"
       })
     }
-    else if(!grade_id){
+    else if (!grade_id) {
       Swal.fire({
-        icon:"error",
-        title:"Oops...",
-        text:"Data Grade kosong, Silahkan lengkapi datanya"
+        icon: "error",
+        title: "Oops...",
+        text: "Data Grade kosong, Silahkan lengkapi datanya"
       })
     }
-    else if(!type_id){
+    else if (!type_id) {
       Swal.fire({
-        icon:"error",
-        title:"Oops...",
-        text:"Data Tipe kosong, Silahkan lengkapi datanya"
+        icon: "error",
+        title: "Oops...",
+        text: "Data Tipe kosong, Silahkan lengkapi datanya"
       })
     }
-    else if(!unit){
+    else if (!unit) {
       Swal.fire({
-        icon:"error",
-        title:"Oops...",
-        text:"Data Satuan kosong, Silahkan lengkapi datanya"
+        icon: "error",
+        title: "Oops...",
+        text: "Data Satuan kosong, Silahkan lengkapi datanya"
       })
     }
-    else if(!packaging_id){
+    else if (!packaging_id) {
       Swal.fire({
-        icon:"error",
-        title:"Oops...",
-        text:"Data Tipe Packaging kosong, Silahkan lengkapi datanya"
+        icon: "error",
+        title: "Oops...",
+        text: "Data Tipe Packaging kosong, Silahkan lengkapi datanya"
       })
     }
-    else if(!buy_price){
+    else if (!buy_price) {
       Swal.fire({
-        icon:"error",
-        title:"Oops...",
-        text:"Data Harga Beli kosong, Silahkan lengkapi datanya"
+        icon: "error",
+        title: "Oops...",
+        text: "Data Harga Beli kosong, Silahkan lengkapi datanya"
       })
     }
-    else if(!sell_price){
+    else if (!sell_price) {
       Swal.fire({
-        icon:"error",
-        title:"Oops...",
-        text:"Data Harga Jual kosong, Silahkan lengkapi datanya"
+        icon: "error",
+        title: "Oops...",
+        text: "Data Harga Jual kosong, Silahkan lengkapi datanya"
       })
     }
-    else if(!discount){
+    else if (!discount) {
       Swal.fire({
-        icon:"error",
-        title:"Oops...",
-        text:"Data Diskon kosong, Silahkan lengkapi datanya"
+        icon: "error",
+        title: "Oops...",
+        text: "Data Diskon kosong, Silahkan lengkapi datanya"
       })
     }
-    else if(!taxes_id){
+    else if (!taxes_id) {
       Swal.fire({
-        icon:"error",
-        title:"Oops...",
-        text:"Data Pajak kosong, Silahkan lengkapi datanya"
+        icon: "error",
+        title: "Oops...",
+        text: "Data Pajak kosong, Silahkan lengkapi datanya"
       })
     }
-    else{
+    else {
 
 
-    const userData = new FormData();
-    // userData.append("nama", name);
-    // userData.append("nama_alias", alias);
-    userData.append("bagian", pieces_id);
-    userData.append("grup", group);
-    userData.append("kategori", category_id);
-    userData.append("grade", grade_id);
-    userData.append("tipe", type_id);
-    userData.append("merk", brands_id);
-    userData.append("satuan", unit);
-    userData.append("harga_beli", buy_price);
-    userData.append("harga_jual", sell_price);
-    userData.append("diskon", discount);
-    userData.append("pajak", taxes_id);
-    userData.append("jenis_kemasan", packaging_id);
-    userData.append("status", status);
+      const userData = new FormData();
+      // userData.append("nama", name);
+      // userData.append("nama_alias", alias);
+      userData.append("bagian", pieces_id);
+      userData.append("grup", group);
+      userData.append("kategori", category_id);
+      userData.append("grade", grade_id);
+      userData.append("tipe", type_id);
+      userData.append("merk", brands_id);
+      userData.append("satuan", unit);
+      userData.append("harga_beli", buy_price);
+      userData.append("harga_jual", sell_price);
+      userData.append("diskon", discount);
+      userData.append("pajak", taxes_id);
+      userData.append("jenis_kemasan", packaging_id);
+      userData.append("status", status);
 
-    // for (var pair of userData.entries()) {
-    //   console.log(pair[0] + ', ' + pair[1]);
-    // }
+      // for (var pair of userData.entries()) {
+      //   console.log(pair[0] + ', ' + pair[1]);
+      // }
 
-    axios({
-      method: "post",
-      url: `${Url}/products`,
-      data: userData,
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    })
-      .then(function (res) {
-        //handle success
-        Swal.fire(
-          "Berhasil Ditambahkan",
-          `${getProduct} Masuk dalam list`,
-          "success"
-        );
-        navigate("/produk");
+      axios({
+        method: "post",
+        url: `${Url}/products`,
+        data: userData,
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${auth.token}`,
+        },
       })
-      .catch((err) => {
-        if (err.response) {
-          console.log("err.response ", err.response);
-          Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: err.response.data.error,
-          });
-        } else if (err.request) {
-          console.log("err.request ", err.request);
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        } else if (err.message) {
-          // do something other than the other two
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        }
-      });
-   } };
+        .then(function (res) {
+          //handle success
+          Swal.fire(
+            "Berhasil Ditambahkan",
+            `${getProduct} Masuk dalam list`,
+            "success"
+          );
+          navigate("/produk");
+        })
+        .catch((err) => {
+          if (err.response) {
+            console.log("err.response ", err.response);
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: err.response.data.error,
+            });
+          } else if (err.request) {
+            console.log("err.request ", err.request);
+            Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+          } else if (err.message) {
+            // do something other than the other two
+            Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+          }
+        });
+    }
+  };
 
   const getCodeById = async () => {
     axios
@@ -431,9 +432,9 @@ const BuatProduk = () => {
           <div className="col-sm-10">
             <select onChange={e => setGroup(e.target.value)} id="Typeselect" className="form-select">
               <option>Pilih Grup</option>
-              <option value="Lokal">Lokal</option>
-              <option value="Impor">Impor</option>
-              <option value="Meatshop">Meatshop</option>
+              <option value="lokal">Lokal</option>
+              <option value="impor">Impor</option>
+              <option value="meatshop">Meatshop</option>
             </select>
           </div>
         </div>
@@ -521,6 +522,7 @@ const BuatProduk = () => {
               defaultValue={0}
               placeholder="Masukkan Harga..."
               id="inputKode3"
+              value={buy_price}
               onChange={(e) => setBuy_price(e.target.value)}
             />
           </div>
@@ -533,9 +535,9 @@ const BuatProduk = () => {
             <input
               type="number"
               className="form-control"
-              defaultValue={0}
               placeholder="Masukkan Harga..."
               id="inputNama3"
+              value={sell_price}
               onChange={(e) => setSell_price(e.target.value)}
             />
           </div>
@@ -548,7 +550,7 @@ const BuatProduk = () => {
                 type="number"
                 className="form-control"
                 aria-label="Dollar amount (with dot and two decimal places)"
-                defaultValue={0}
+                value={discount}
                 onChange={(e) => setDiscount(e.target.value)}
               />
               <span className="input-group-text">%</span>
@@ -579,8 +581,8 @@ const BuatProduk = () => {
             <Switch defaultChecked={status} onChange={onChange} />
             <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
               {
-                checked ? "Nonaktif"
-                  : "Aktif"
+                checked ? "Aktif"
+                  : "Nonaktif"
               }
             </label>
           </div>

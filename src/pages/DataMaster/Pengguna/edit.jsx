@@ -13,7 +13,8 @@ import Button from "@mui/material/Button";
 import ReactSelect from "react-select";
 import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
-import { PageHeader, Skeleton } from "antd";
+import { Input, PageHeader, Skeleton } from "antd";
+import { EditOutlined, SendOutlined, EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 
 const EditPengguna = ({ defaultOptionValueEmp, defaultOptionValueGroups }) => {
   // const token = jsCookie.get("auth");
@@ -224,11 +225,10 @@ const EditPengguna = ({ defaultOptionValueEmp, defaultOptionValueGroups }) => {
       <>
         <PageHeader
           ghost={false}
+          className="bg-body rounded mb-2"
           onBack={() => window.history.back()}
-          title="Edit Pengguna">
-        </PageHeader>
-
-        <form className="  p-3 mb-5 bg-body rounded">
+          title="Edit Pengguna"
+        >
           <div className="row mb-3">
             <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
               Karyawan
@@ -314,7 +314,22 @@ const EditPengguna = ({ defaultOptionValueEmp, defaultOptionValueGroups }) => {
               Kata Sandi
             </label>
             <div className="col-sm-10">
-              <input
+              <Input.Password
+                placeholder="input password"
+                size="large"
+                style={{
+                  borderRadius: "6px"
+                }}
+                iconRender={(visible) =>
+                  visible ? (
+                    <EyeTwoTone />
+                  ) : (
+                    <EyeInvisibleOutlined />
+                  )
+                }
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              {/* <input
                 type="password"
                 className="form-control"
                 id="inputpassword"
@@ -323,10 +338,10 @@ const EditPengguna = ({ defaultOptionValueEmp, defaultOptionValueGroups }) => {
               />
               {formik.errors.password && formik.touched.password && (
                 <p>{formik.errors.password}</p>
-              )}
+              )} */}
             </div>
           </div>
-          <div className="row mb-3">
+          {/* <div className="row mb-3">
             <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
               Konfirmasi Kata Sandi
             </label>
@@ -341,7 +356,7 @@ const EditPengguna = ({ defaultOptionValueEmp, defaultOptionValueGroups }) => {
                 <p>{formik.errors.password}</p>
               )}
             </div>
-          </div>
+          </div> */}
           <div className="d-grid gap-2 d-md-flex justify-content-md-end">
             <Button
               onClick={handleSubmit}
@@ -351,7 +366,7 @@ const EditPengguna = ({ defaultOptionValueEmp, defaultOptionValueGroups }) => {
               Simpan
             </Button>
           </div>
-        </form>
+        </PageHeader>
       </>
     );
   }

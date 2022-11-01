@@ -160,7 +160,11 @@ const BuatPajak = () => {
             <Input
               size="large"
               placeholder="Masukkan Nama Pajak"
+              className="form-control"
               onChange={(e) => setType(e.target.value)}
+              // style={{
+              //   borderRadius: "25px"
+              // }}
             />
             {/* <input
               type="Nama"

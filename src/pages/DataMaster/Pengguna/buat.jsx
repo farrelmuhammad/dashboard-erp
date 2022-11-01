@@ -11,8 +11,8 @@ import ReactSelect from "react-select";
 // import { AsyncPaginate } from "react-select-async-paginate";
 import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
-import { Button, PageHeader, Tooltip } from 'antd';
-import { EditOutlined, SendOutlined } from "@ant-design/icons";
+import { Button, Input, PageHeader, Tooltip } from 'antd';
+import { EditOutlined, SendOutlined, EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import Karyawan from "../Karyawan";
 
 const BuatPengguna = () => {
@@ -44,21 +44,21 @@ const BuatPengguna = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if(!username){
+    if (!username) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Data username kosong, Silahkan Lengkapi datanya ",
       });
     }
-    else if(!password){
+    else if (!password) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Data Password kosong, Silahkan Lengkapi datanya ",
       });
     }
-    else if(!employees){
+    else if (!employees) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -66,52 +66,53 @@ const BuatPengguna = () => {
       });
     }
 
-    else{
-    const userData = new FormData();
-    userData.append("username", username);
-    userData.append("password", password);
-    userData.append("karyawan", employees);
-    groups.map((g) => userData.append("grup[]", g));
+    else {
+      const userData = new FormData();
+      userData.append("username", username);
+      userData.append("password", password);
+      userData.append("karyawan", employees);
+      groups.map((g) => userData.append("grup[]", g));
 
-    // for (var pair of userData.entries()) {
-    //   console.log(pair[0] + ", " + pair[1]);
-    // }
+      // for (var pair of userData.entries()) {
+      //   console.log(pair[0] + ", " + pair[1]);
+      // }
 
-    axios({
-      method: "post",
-      url: `${Url}/users`,
-      data: userData,
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    })
-      .then(function (res) {
-        //handle success
-        Swal.fire(
-          "Berhasil Ditambahkan",
-          `${getUser} Masuk dalam list`,
-          "success"
-        );
-        navigate("/pengguna");
+      axios({
+        method: "post",
+        url: `${Url}/users`,
+        data: userData,
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${auth.token}`,
+        },
       })
-      .catch((err) => {
-        if (err.response) {
-          console.log("err.response ", err.response);
-          Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: err.response.data.message,
-          });
-        } else if (err.request) {
-          console.log("err.request ", err.request);
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        } else if (err.message) {
-          // do something other than the other two
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        }
-      });
-  }};
+        .then(function (res) {
+          //handle success
+          Swal.fire(
+            "Berhasil Ditambahkan",
+            `${getUser} Masuk dalam list`,
+            "success"
+          );
+          navigate("/pengguna");
+        })
+        .catch((err) => {
+          if (err.response) {
+            console.log("err.response ", err.response);
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: err.response.data.message,
+            });
+          } else if (err.request) {
+            console.log("err.request ", err.request);
+            Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+          } else if (err.message) {
+            // do something other than the other two
+            Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+          }
+        });
+    }
+  };
 
   useEffect(() => {
     getIDuser();
@@ -227,6 +228,7 @@ const BuatPengguna = () => {
       <>
         <PageHeader
           ghost={false}
+          className="bg-body rounded mb-2"
           onBack={() => window.history.back()}
           title="Buat Pengguna"
         >
@@ -315,15 +317,30 @@ const BuatPengguna = () => {
               Kata Sandi
             </label>
             <div className="col-sm-10">
-              <input
+              <Input.Password
+                placeholder="input password"
+                size="large"
+                style={{
+                  borderRadius: "6px"
+                }}
+                iconRender={(visible) =>
+                  visible ? (
+                    <EyeTwoTone />
+                  ) : (
+                    <EyeInvisibleOutlined />
+                  )
+                }
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              {/* <input
                 type="password"
                 className="form-control"
                 id="inputpassword"
                 onChange={(e) => setPassword(e.target.value)}
-              />
+              /> */}
             </div>
           </div>
-          <div className="row mb-3">
+          {/* <div className="row mb-3">
             <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
               Konfirmasi Kata Sandi
             </label>
@@ -335,7 +352,7 @@ const BuatPengguna = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
-          </div>
+          </div> */}
           <div className="d-grid gap-2 d-md-flex justify-content-md-end">
             <Button
               type="primary"

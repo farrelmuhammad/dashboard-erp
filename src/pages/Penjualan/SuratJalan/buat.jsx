@@ -7,7 +7,7 @@ import axios from 'axios';
 import AsyncSelect from "react-select/async";
 // import Select from 'react-select';
 import { Button, Checkbox, Form, Input, InputNumber, Modal, notification, PageHeader, Select, Space, Table, Tag } from 'antd'
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
+import { DeleteOutlined, PlusOutlined, SaveOutlined, SendOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
@@ -129,6 +129,46 @@ const BuatSuratJalan = () => {
     const [supplier, setSupplier] = useState()
     const [grup, setGrup] = useState()
     const [selectedSupplier, setSelectedSupplier] = useState()
+    const [loadings, setLoadings] = useState([]);
+    const [loadings1, setLoadings1] = useState([]);
+
+    const enterLoading = (index) => {
+        setLoadings((prevLoadings) => {
+            const newLoadings = [...prevLoadings];
+            newLoadings[index] = true;
+            return newLoadings;
+        });
+        setTimeout(() => {
+            setLoadings((prevLoadings) => {
+                const newLoadings = [...prevLoadings];
+                newLoadings[index] = false;
+                return newLoadings;
+            });
+            // handleSubmit()
+            handleDraft();
+            // setName('');
+            // setDescription('');
+        }, 2000);
+    };
+
+    const enterLoading1 = (index) => {
+        setLoadings1((prevLoadings) => {
+            const newLoadings = [...prevLoadings];
+            newLoadings[index] = true;
+            return newLoadings;
+        });
+        setTimeout(() => {
+            setLoadings1((prevLoadings) => {
+                const newLoadings = [...prevLoadings];
+                newLoadings[index] = false;
+                return newLoadings;
+            });
+            handleSubmit()
+            // handleDraft();
+            // setName('');
+            // setDescription('');
+        }, 2000);
+    };
 
     const expandedRowRender = (record) => {
 
@@ -166,7 +206,7 @@ const BuatSuratJalan = () => {
         ];
         console.log(record)
 
-        const dataTampil = [...product[record.key].tally_sheet_details.map((item , i) => ({
+        const dataTampil = [...product[record.key].tally_sheet_details.map((item, i) => ({
             product_alias_name: item.product_alias_name,
             product_name: item.product_name,
             boxes_quantity: item.boxes_quantity,
@@ -389,15 +429,15 @@ const BuatSuratJalan = () => {
             cell: EditableCell,
         },
     };
-  
-    const mainDataSource =
-    [...product.map((item, i) => ({
-        key: i,
-        code: item.code,
-        status: item.status,
-    }))
 
-    ]
+    const mainDataSource =
+        [...product.map((item, i) => ({
+            key: i,
+            code: item.code,
+            status: item.status,
+        }))
+
+        ]
 
     const handleCheck = (event) => {
         var updatedList = [...product];
@@ -412,9 +452,9 @@ const BuatSuratJalan = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        // e.preventDefault();
 
-        if(!date){
+        if (!date) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
@@ -554,134 +594,270 @@ const BuatSuratJalan = () => {
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
                 }
             });
-      }  };
-
-    const handleDraft = async (e) => {
-        e.preventDefault();
-
-        
-        if(!date){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
-              });
         }
-        else if(!vehicle){
+        else if (!vehicle) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Kendaraan kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!sender){
+        else if (!sender) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Pengirim kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(sumber == 'SO' && !customer){
-           
+        else if (sumber == 'SO') {
+            if (!customer) {
                 Swal.fire({
                     icon: "error",
                     title: "Oops...",
                     text: "Data Customer kosong, Silahkan Lengkapi datanya ",
-                  });
-            
-        }
-        else if(sumber == 'SO' && !addressId){
+                });
+            }
+            else if (!addressId) {
                 Swal.fire({
                     icon: "error",
                     title: "Oops...",
                     text: "Data Alamat Customer kosong, Silahkan Lengkapi datanya ",
-                  });
+                });
+            }
         }
-        
-        else if (sumber == 'Retur' && !supplier){
-            
+        else if (sumber == 'Retur') {
+            if (!supplier) {
                 Swal.fire({
                     icon: "error",
                     title: "Oops...",
                     text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
-                  });
-        }
-            else if( sumber == 'retur' && !addressId){
+                });
+            }
+            else if (!addressId) {
                 Swal.fire({
                     icon: "error",
                     title: "Oops...",
                     text: "Data Alamat Supplier kosong, Silahkan Lengkapi datanya ",
-                  });
+                });
+            }
         }
-        else{
+        else {
 
-
-        const userData = new FormData();
-        userData.append("tanggal", date);
-        userData.append("kendaraan", vehicle);
-        userData.append("pengirim", sender);
-        userData.append("catatan", description);
-        if (sumber == 'SO') {
+            const userData = new FormData();
+            userData.append("tanggal", date);
+            userData.append("kendaraan", vehicle);
+            userData.append("pengirim", sender);
+            userData.append("catatan", description);
             userData.append("pelanggan", customer);
             userData.append("alamat_pelanggan", addressId);
-        }
-        else if (sumber == 'Retur') {
-            userData.append("alamat_pemasok", addressId);
-            userData.append("pemasok", supplier);
-        }
-        tally.map((t) => userData.append("id_tally_sheet[]", t));
-        userData.append("status", "Draft");
+            tally.map((t) => userData.append("id_tally_sheet[]", t));
+            userData.append("status", "Submitted");
 
-        axios({
-            method: "post",
-            url: `${Url}/delivery_notes`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/suratjalan");
+            // for (var pair of userData.entries()) {
+            //     console.log(pair[0] + ', ' + pair[1]);
+            // }
+
+            await axios({
+                method: "post",
+                url: `${Url}/delivery_notes`,
+                data: userData,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
             })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
+                .then(function (response) {
+                    //handle success
+                    Swal.fire(
+                        "Berhasil Ditambahkan",
+                        ` Masuk dalam list`,
+                        "success"
+                    );
+                    navigate("/suratjalan");
+                })
+                .catch((err) => {
+                    if (err.response) {
+                        console.log("err.response ", err.response);
+                        // Swal.fire({
+                        //     icon: "error",
+                        //     title: "Oops...",
+                        //     text: err.response.data.message,
+                        // });
+                        if (err.response.data.error.pelanggan) {
+                            notification['error']({
+                                message: 'Silahkan Cek Input Anda!',
+                                description:
+                                    err.response.data.error.pelanggan,
+                            });
+                        } else if (err.response.data.error.alamat_pelanggan) {
+                            notification['error']({
+                                message: 'Silahkan Cek Input Anda!',
+                                description:
+                                    err.response.data.error.alamat_pelanggan,
+                            });
+                        } else if (err.response.data.error.id_tally_sheet) {
+                            notification['error']({
+                                message: 'Silahkan Cek Input Anda!',
+                                description:
+                                    err.response.data.error.id_tally_sheet,
+                            });
+                        }
+                        // notification['error']({
+                        //     message: 'Silahkan Cek Input Anda!',
+                        //     description:
+                        //         err.response.data.error.pelanggan,
+                        // });
+                        // notification['error']({
+                        //     message: 'Silahkan Cek Input Anda!',
+                        //     description:
+                        //         err.response.data.error.alamat_pelanggan,
+                        // });
+                        // notification['error']({
+                        //     message: 'Silahkan Cek Input Anda!',
+                        //     description:
+                        //         err.response.data.error.id_tally_sheet,
+                        // });
+                    } else if (err.request) {
+                        console.log("err.request ", err.request);
+                        notification['error']({
+                            message: 'Gagal Ditambahkan',
+                            description:
+                                "Mohon Cek Dahulu..",
+                        });
+                    } else if (err.message) {
+                        // do something other than the other two
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    }
+                });
+        }
+    };
+
+    const handleDraft = async (e) => {
+        // e.preventDefault();
+
+        if (!date) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
             });
-     } };
+        }
+        else if (!vehicle) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Kendaraan kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+        else if (!sender) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Pengirim kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+        else if (sumber == 'SO' && !customer) {
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Customer kosong, Silahkan Lengkapi datanya ",
+            });
+
+        }
+        else if (sumber == 'SO' && !addressId) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Alamat Customer kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+
+        else if (sumber == 'Retur' && !supplier) {
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+        else if (sumber == 'retur' && !addressId) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Alamat Supplier kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+        else {
+
+
+            const userData = new FormData();
+            userData.append("tanggal", date);
+            userData.append("kendaraan", vehicle);
+            userData.append("pengirim", sender);
+            userData.append("catatan", description);
+            if (sumber == 'SO') {
+                userData.append("pelanggan", customer);
+                userData.append("alamat_pelanggan", addressId);
+            }
+            else if (sumber == 'Retur') {
+                userData.append("alamat_pemasok", addressId);
+                userData.append("pemasok", supplier);
+            }
+            tally.map((t) => userData.append("id_tally_sheet[]", t));
+            userData.append("status", "Draft");
+
+            axios({
+                method: "post",
+                url: `${Url}/delivery_notes`,
+                data: userData,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            })
+                .then(function (response) {
+                    //handle success
+                    Swal.fire(
+                        "Berhasil Ditambahkan",
+                        ` Masuk dalam list`,
+                        "success"
+                    );
+                    navigate("/suratjalan");
+                })
+                .catch((err) => {
+                    if (err.response) {
+                        console.log("err.response ", err.response);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: err.response.data.error.nama,
+                        });
+                    } else if (err.request) {
+                        console.log("err.request ", err.request);
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    } else if (err.message) {
+                        // do something other than the other two
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    }
+                });
+        }
+    };
 
     function klikUbahSumber(value) {
-        if(!value){
+        if (!value) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Jenis Transaksi kosong, Silahkan Lengkapi datanya ",
-              });
-        }else{
-        setSumber(value);
-        setProduct([])
-        setSelectedAddress('')
-        setSelectedSupplier('');
-        setSelectedCustomer('')
-    }
+            });
+        } else {
+            setSumber(value);
+            setProduct([])
+            setSelectedAddress('')
+            setSelectedSupplier('');
+            setSelectedCustomer('')
+        }
     }
 
 
@@ -830,10 +1006,10 @@ const BuatSuratJalan = () => {
                         type="primary"
                         icon={<PlusOutlined />}
                         onClick={() => {
-                            if(sumber == ''){
+                            if (sumber == '') {
                                 Swal.fire("Gagal", "Mohon Pilih Transaksi Dahulu..", "error")
                             }
-                            else{
+                            else {
                                 setModal2Visible(true)
                             }
                         }}
@@ -898,24 +1074,41 @@ const BuatSuratJalan = () => {
                     expandable={{ expandedRowRender }}
                 // onChange={(e) => setProduct(e.id)}
                 />
-            <br/>
-                <div className="btn-group mt-2" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
-                    <button
+                <br />
+                <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
+                    {/* <button
                         type="button"
                         className="btn btn-success rounded m-1"
                         value="Draft"
                         onClick={handleDraft}
                     >
                         Simpan
-                    </button>
-                    <button
+                    </button> */}
+                    <Button
+                        type="primary"
+                        style={{ background: "green", borderColor: "green" }}
+                        icon={<SaveOutlined />}
+                        loading={loadings[1]}
+                        onClick={() => enterLoading(1)}
+                    >
+                        Simpan
+                    </Button>
+                    <Button
+                        type="primary"
+                        icon={<SendOutlined />}
+                        loading={loadings1[1]}
+                        onClick={() => enterLoading1(1)}
+                    >
+                        Submit
+                    </Button>
+                    {/* <button
                         type="button"
                         className="btn btn-primary rounded m-1"
                         value="Submitted"
                         onClick={handleSubmit}
                     >
                         Submit
-                    </button>
+                    </button> */}
                     {/* <button
                         type="button"
                         className="btn btn-warning rounded m-1">
