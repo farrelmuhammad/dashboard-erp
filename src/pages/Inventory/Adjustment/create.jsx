@@ -158,7 +158,7 @@ const CreateAdjustment = () => {
             })
             setGetDataProduct(res.data);
         };
-        if (query.length === 0 || query.length > 2) getProduct();
+        if (query.length >= 0) getProduct();
     }, [query, warehouse_id])
 
     // Column for modal input product
