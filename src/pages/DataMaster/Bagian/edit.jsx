@@ -21,10 +21,29 @@ const EditBagian = () => {
   const { id } = useParams();
 
   const [loading, setLoading] = useState(true);
+  const [loadings, setLoadings] = useState([]);
 
   useEffect(() => {
     fetchBagian()
   }, [])
+
+  const enterLoading = (index, event) => {
+    setLoadings((prevLoadings) => {
+      const newLoadings = [...prevLoadings];
+      newLoadings[index] = true;
+      return newLoadings;
+    });
+    setTimeout(() => {
+      setLoadings((prevLoadings) => {
+        const newLoadings = [...prevLoadings];
+        newLoadings[index] = false;
+        return newLoadings;
+      });
+      handleUpdate()
+      setName('');
+      setDescription('');
+    }, 2000);
+  };
 
   const fetchBagian = async () => {
     await axios.get(`${Url}/pieces?id=${id}`, {
@@ -46,7 +65,7 @@ const EditBagian = () => {
   }
 
   const handleUpdate = async (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     const userData = new URLSearchParams();
     userData.append("nama", name);
     userData.append("deskripsi", description);
@@ -144,11 +163,19 @@ const EditBagian = () => {
           <Button
             type="primary"
             icon={<SendOutlined />}
+            loading={loadings[1]}
+            onClick={() => enterLoading(1)}
+          >
+            Submit
+          </Button>
+          {/* <Button
+            type="primary"
+            icon={<SendOutlined />}
             size="large"
             onClick={handleUpdate}
           >
             Submit
-          </Button>
+          </Button> */}
         </div>
       </PageHeader>
     </>

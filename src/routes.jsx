@@ -1,7 +1,8 @@
 
-import React, { useEffect, useState } from 'react'
+import React, { lazy, Suspense, useEffect, useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
-import Dashboard from './pages/Dashboard'
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+// import Dashboard from './pages/Dashboard'
 
 import Login from './pages/Login'
 
@@ -394,7 +395,7 @@ const RouteApp = () => {
         <Route path="/creditnote/buat" exact element={<BuatCreditNote />} />
         <Route path="/creditnote/edit/:id" exact element={<EditCreditNote />} />
         <Route path="/creditnote/detail/:id" exact element={<DetailCreditNote />} />
-        
+
         <Route path="/fakturpembelian" exact element={<FakturPembelian />} />
         <Route path="/fakturpembelian/buat" exact element={<BuatFakturPembelian />} />
         <Route path="/fakturpembelian/edit/:id" exact element={<EditFakturPembelian />} />
@@ -620,18 +621,21 @@ const RouteApp = () => {
 
     return (
         <>
-            <Routes>
-                <Route path="/login" exact element={<Login />} />
+            <Suspense fallback={<div>Loading Component</div>}>
+                <Routes>
+                    <Route path="/login" exact element={<Login />} />
 
-                <Route path="/" exact element={<Dashboard />} />
+                    <Route path="/" exact element={<Dashboard />} />
 
-                {
-                    isAdmin ? adminRoute : userRoute
-                }
 
-                {/* PageNotFound */}
-                <Route path="*" element={<NotFound />} />
-            </Routes>
+                    {
+                        isAdmin ? adminRoute : userRoute
+                    }
+
+                    {/* PageNotFound */}
+                    <Route path="*" element={<NotFound />} />
+                </Routes>
+            </Suspense>
         </>
     )
 }
