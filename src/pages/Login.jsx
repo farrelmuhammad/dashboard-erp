@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import React, { lazy, Suspense, useState } from "react";
 import Logo from "./Logo.jpeg";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Dashboard from "./Dashboard";
+// import Dashboard from "./Dashboard";
 import Url from "../Config";
 import { useDispatch } from "react-redux";
 import { setData } from "../redux/slices/authSlice";
 import { useSelector } from "react-redux";
 import { Button, Checkbox, Col, Form, Input, Row } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
+const Dashboard = lazy(() => import('./Dashboard'));
 
 export default function Login() {
   const [username, setUserName] = useState();
@@ -62,7 +63,7 @@ export default function Login() {
           );
 
           navigate("/");
-          setTimeout(window.location.reload.bind(window.location), 300);
+          // setTimeout(window.location.reload.bind(window.location), 300);
           toastMixin.fire({
             animation: true,
             title: "Signed in Successfully",
@@ -80,7 +81,9 @@ export default function Login() {
   };
 
   if (isLoggedIn) {
-    return <Dashboard />;
+    return (
+        <Dashboard />
+    );
   }
 
   return (
