@@ -156,6 +156,7 @@ const EditPesanan = () => {
                 setCustomerName(getData.customer.name);
                 setChecked(getData.tax_included);
                 setProduct(getData.sales_order_details);
+                console.log(getData.sales_order_details)
 
                 setSubTotal(getData.subtotal);
                 setGrandTotalDiscount(getData.discount);
@@ -405,7 +406,7 @@ const EditPesanan = () => {
         let totalDiscount = 0;
         if (jumlahDiskon.length === 0) {
             for (let i = 0; i < product.length; i++) {
-                tmp[i] = '';
+                tmp[i] = 'percent';
             }
             setJumlahDiskon(tmp);
         }
@@ -486,6 +487,7 @@ const EditPesanan = () => {
                 setJumlahDiskon(tmp);
             }
         }
+        calculate(product, checked)
     }
 
     const convertToRupiah = (angka, namaMataUang) => {
@@ -497,12 +499,12 @@ const EditPesanan = () => {
         // />
 
         return <>
-        {
-            namaMataUang === 'Rp' ?
-                < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
-                : < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
-        }
-    </>
+            {
+                namaMataUang === 'Rp' ?
+                    < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                    : < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+            }
+        </>
     }
 
     const tableToRupiah = (angka, namaMataUang) => {
@@ -553,7 +555,7 @@ const EditPesanan = () => {
                 return {
                     props: {
                     },
-                    children: <div>{Number(text).toFixed(2).replace('.',',')}</div>
+                    children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
                 };
             }
         },
@@ -581,7 +583,7 @@ const EditPesanan = () => {
                 return {
                     props: {
                     },
-                    children: <div>{< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.' , ',')} key="diskon" />}</div>
+                    children: <div>{< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.', ',')} key="diskon" />}</div>
                 };
             }
         },
@@ -719,7 +721,7 @@ const EditPesanan = () => {
             render:
                 (text, record, index) => {
                     let grandTotalAmount = 0;
-                    if (pilihanDiskon[index] == 'percent' || pilihanDiskon == 'percent') {
+                    if (pilihanDiskon[index] == 'percent') {
                         // console.log("masuk percent")
                         let total = (record.quantity * record.price);
                         let getPercent = (total * jumlahDiskon[index]) / 100;
@@ -739,7 +741,8 @@ const EditPesanan = () => {
                         } else {
                             grandTotalAmount = tableToRupiah(Number(total) + Number(getPpn), "Rp");
                         }
-                    } else {
+                    } 
+                    else {
                         grandTotalAmount = tableToRupiah(Number(record.quantity) * Number(record.price), "Rp");
                     }
                     return {
@@ -768,8 +771,24 @@ const EditPesanan = () => {
         },
     ];
 
-    const handleDelete = (stid) => {
-        setProduct(data => data.filter(item => item.id !== stid));
+    const handleDelete = (id) => {
+        let tmpProduct = [...product]
+        let tmpJumlahDiskon = [...jumlahDiskon]
+        let tmpPilihanDiskon = [...pilihanDiskon]
+        for (let i = 0; i < product.length; i++) {
+            if (product[i].id == id) {
+                tmpProduct.splice(i, 1)
+                tmpJumlahDiskon.splice(i, 1)
+                tmpPilihanDiskon.splice(i, 1)
+            }
+        }
+        setPilihanDiskon(tmpPilihanDiskon)
+        setJumlahDiskon(tmpJumlahDiskon)
+        calculate(tmpProduct, checked)
+        setProduct(tmpProduct)
+
+        // setProduct(data => data.filter(item => item.id !== stid));
+        // console.log(product)
     };
 
     const handleChange = () => {
@@ -897,14 +916,21 @@ const EditPesanan = () => {
         userData.append("catatan", description);
         userData.append("pelanggan", customer);
         userData.append("status", "Submitted");
-        product.map((p) => {
+        product.map((p, i) => {
             // console.log(p);
             userData.append("nama_alias_produk[]", p.alias_name);
             userData.append("kuantitas[]", p.quantity);
             userData.append("satuan[]", p.unit);
             userData.append("harga[]", p.price);
-            userData.append("persentase_diskon[]", p.discount);
-            userData.append("diskon_tetap[]", p.nominal_disc);
+            if (pilihanDiskon[i] == 'percent') {
+                userData.append("diskon_tetap[]", 0);
+                userData.append("persentase_diskon[]", jumlahDiskon[i]);
+            }
+            else if (pilihanDiskon[i] == 'nominal') {
+                userData.append("persentase_diskon[]", 0);
+                userData.append("diskon_tetap[]", jumlahDiskon[i]);
+            }
+            
             userData.append("ppn[]", p.ppn);
         });
         userData.append("termasuk_pajak", checked);
@@ -957,14 +983,20 @@ const EditPesanan = () => {
         userData.append("catatan", description);
         userData.append("pelanggan", customer);
         userData.append("status", "Draft");
-        product.map((p) => {
+        product.map((p, i) => {
             console.log(p);
             userData.append("nama_alias_produk[]", p.alias_name);
             userData.append("kuantitas[]", p.quantity);
             userData.append("satuan[]", p.unit);
             userData.append("harga[]", p.price);
-            userData.append("persentase_diskon[]", p.discount);
-            userData.append("diskon_tetap[]", p.nominal_disc);
+            if (pilihanDiskon[i] == 'percent') {
+                userData.append("diskon_tetap[]", 0);
+                userData.append("persentase_diskon[]", jumlahDiskon[i]);
+            }
+            else if (pilihanDiskon[i] == 'nominal') {
+                userData.append("persentase_diskon[]", 0);
+                userData.append("diskon_tetap[]", jumlahDiskon[i]);
+            }
             userData.append("ppn[]", p.ppn);
         });
         userData.append("termasuk_pajak", checked);
@@ -1208,7 +1240,7 @@ const EditPesanan = () => {
                     </div>
                 </div>
 
-<br/>
+                <br />
                 <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"

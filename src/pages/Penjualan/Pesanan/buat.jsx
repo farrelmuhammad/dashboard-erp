@@ -117,6 +117,7 @@ const BuatPesanan = () => {
     const auth = useSelector(state => state.auth);
 
     const [getDataProduct, setGetDataProduct] = useState();
+    const [tmpCentang, setTmpCentang] = useState([])
     const [isLoading, setIsLoading] = useState(false);
 
     const [subTotal, setSubTotal] = useState("");
@@ -128,7 +129,7 @@ const BuatPesanan = () => {
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
     // const [pilihanDiskon, setPilihanDiskon] = useState('percent');
-    const [pilihanDiskon, setPilihanDiskon] = useState('');
+    const [pilihanDiskon, setPilihanDiskon] = useState([]);
     const [jumlahDiskon, setJumlahDiskon] = useState([]);
 
     const handleChangeCustomer = (value) => {
@@ -153,11 +154,29 @@ const BuatPesanan = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
-            console.log(res.data);
+            let tmp = []
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentang[i]) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: true
+                    });
+                }
+            }
+            for (let i = 0; i < res.data.length; i++) {
+                if (!tmpCentang[i]) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: false
+                    });
+                }
+            }
+           
+            // console.log(tmp.statusCek.sort())
+            setGetDataProduct(tmp)
         };
 
-        if (query.length === 0 || query.length > 2) getProduct();
+        if (query.length >= 0) getProduct();
     }, [query])
 
     useEffect(() => {
@@ -169,18 +188,21 @@ const BuatPesanan = () => {
         {
             title: 'Nama Produk',
             dataIndex: 'alias_name',
+            render: (_, record) => {
+                return <>{record.detail.alias_name}</>
+            }
         },
         {
             title: 'Stok',
             dataIndex: 'stock',
             width: '15%',
             align: 'center',
-            render(text, record) {
+            render(_, record) {
                 return {
                     props: {
                     },
                     // children: <div>{formatQuantity(text)}</div>
-                    children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
+                    children: <div>{Number(record.detail.stock).toFixed(2).replace('.', ',')}</div>
                 };
             }
         },
@@ -189,11 +211,12 @@ const BuatPesanan = () => {
             dataIndex: 'address',
             width: '15%',
             align: 'center',
-            render: (_, record) => (
+            render: (_, record, index) => (
                 <>
                     <Checkbox
                         value={record}
-                        onChange={handleCheck}
+                        checked={record.statusCek}
+                        onChange={(e) => handleCheck(e, index)}
                     />
                 </>
             )
@@ -213,7 +236,7 @@ const BuatPesanan = () => {
         let totalDiscount = 0;
         if (pilihanDiskon.length === 0) {
             for (let i = 0; i < product.length; i++) {
-                tmp[i] = '';
+                tmp[i] = 'percent';
             }
             setPilihanDiskon(tmp);
         }
@@ -323,7 +346,7 @@ const BuatPesanan = () => {
         let totalDiscount = 0;
         if (jumlahDiskon.length === 0) {
             for (let i = 0; i < product.length; i++) {
-                tmp[i] = '';
+                tmp[i] = 0;
             }
             setJumlahDiskon(tmp);
         }
@@ -419,8 +442,8 @@ const BuatPesanan = () => {
         return <>
         {
             namaMataUang === 'Rp' ?
-                < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
-                : < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                < CurrencyFormat disabled className='edit-disabled text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                : < CurrencyFormat disabled className='edit-disabled text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
         }
     </>
 
@@ -606,9 +629,6 @@ const BuatPesanan = () => {
                                 className="form-select select-diskon"
                                 style={{ width: "70px" }}
                             >
-                                {/* <option value="" >
-                                    Pilih
-                                </option> */}
                                 <option value="percent">
                                     %
                                 </option>
@@ -776,23 +796,56 @@ const BuatPesanan = () => {
         };
     });
 
-    const handleCheck = (event) => {
-        console.log(event.target.checked)
+    const handleCheck = (event, index) => {
+        let data = event.target.value;
+        let tmpDataBaru = []
+        // let tmpJumlah = [...jumlah]
+        let tmpDataCentang = []
+        for (let i = 0; i < getDataProduct.length; i++) {
+            if (i == index) {
+                tmpDataBaru.push({
+                    detail: getDataProduct[i].detail,
+                    statusCek: !getDataProduct[i].statusCek
+                })
+            }
+            else {
+                tmpDataBaru.push(getDataProduct[i])
+            }
+
+            if (tmpDataBaru[i].statusCek == true) {
+                tmpDataCentang.push(tmpDataBaru[i].detail.alias_name)
+            }
+            else {
+                tmpDataCentang.push('')
+            }
+        }
+        setTmpCentang(tmpDataCentang)
+        setGetDataProduct(tmpDataBaru)
         var updatedList = [...product];
-        if (event.target.checked) {
-            updatedList = [...product, event.target.value];
+        let tmpJumlahDiskon = [...jumlahDiskon]
+        let tmpPilihanDiskon = [...pilihanDiskon]
+        if (tmpDataBaru[index].statusCek) {
+            updatedList = [...product, data.detail];
+            for (let i = 0; i < updatedList.length; i++) {
+                if (i >= product.length) {
+                    tmpJumlahDiskon.push(0);
+                    tmpPilihanDiskon.push('percent')
+                }
+
+            }
         } else {
-            updatedList.splice(product.indexOf(event.target.value), 1);
+            for (let i = 0; i < updatedList.length; i++) {
+                if (updatedList[i].alias_name == data.detail.alias_name) {
+                    updatedList.splice(i, 1);
+                    tmpJumlahDiskon.splice(i, 1)
+                    tmpPilihanDiskon.splice(i, 1)
+                }
+            }
+
         }
         setProduct(updatedList);
-        let tmp = [];
-        let tmpJumlah = [];
-        for (let i = 0; i < updatedList.length; i++) {
-            tmp[i] = 'percent';
-            tmpJumlah[i] = 0;
-        }
-        setPilihanDiskon(tmp);
-        setJumlahDiskon(tmpJumlah)
+        setJumlahDiskon(tmpJumlahDiskon)
+        setPilihanDiskon(tmpPilihanDiskon)
     };
 
     const handleSubmit = async (e) => {

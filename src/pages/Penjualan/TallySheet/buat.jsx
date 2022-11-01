@@ -2418,6 +2418,7 @@ const BuatTally = () => {
     const handleDraft = async (e) => {
         e.preventDefault();
 
+        console.log("hai")
         
         if(!date){
             Swal.fire({
