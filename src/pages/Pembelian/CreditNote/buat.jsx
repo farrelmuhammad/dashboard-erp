@@ -23,10 +23,10 @@ const BuatCreditNote = () => {
     const [selectedCOA, setSelectedCOA] = useState(null);
     const [selectedBiaya, setSelectedBiaya] = useState(null);
     const [supplierId, setSupplierId] = useState();
-    const [biayaId, setBiayaId] = useState();
+    const [biayaId, setBiayaId] = useState('');
     const [nominal, setNominal] = useState();
     const [deskripsi, setDeskripsi] = useState()
-    const [COAId, setCOAId] = useState();
+    const [COAId, setCOAId] = useState('');
     const [fakturId, setFakturId] = useState();
     const [mataUangId, setMataUangId] = useState();
     const [mataUang, setMataUang] = useState('Rp ');
@@ -51,6 +51,7 @@ const BuatCreditNote = () => {
     const handleChangeSupplier = (value) => {
         setSupplierId(value.id);
         setSelectedSupplier(value);
+        loadOptionsFaktur(value.id)
     };
     const loadOptionsSupplier = (inputValue) => {
         return fetch(`${Url}/select_suppliers?nama=${inputValue}&grup=impor`, {
@@ -89,7 +90,7 @@ const BuatCreditNote = () => {
         setSelectedFaktur(value);
     };
     const loadOptionsFaktur = (inputValue) => {
-        return fetch(`${Url}/select_purchase_invoices/Import?code=${inputValue}`, {
+        return fetch(`${Url}/credit_notes_available_purchase_invoices?supplier_id=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -175,20 +176,20 @@ const BuatCreditNote = () => {
                 text: "Data Nominal kosong, Silahkan Lengkapi datanya ",
               });
         }
-        else if (!biayaId){
+        else if (!biayaId && !COAId){
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
-                text: "Data Biaya kosong, Silahkan Lengkapi datanya ",
+                text: "Data Biaya atau Akun Kredit kosong, Silahkan Lengkapi datanya ",
               });
         }
-        else if(!COAId){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Akun Kredit kosong, Silahkan Lengkapi datanya ",
-              });
-        }
+        // else if(!COAId){
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data Akun Kredit kosong, Silahkan Lengkapi datanya ",
+        //       });
+        // }
         else if(!mataUangId){
             Swal.fire({
                 icon: "error",
@@ -278,20 +279,20 @@ const BuatCreditNote = () => {
                 text: "Data Nominal kosong, Silahkan Lengkapi datanya ",
               });
         }
-        else if (!biayaId){
+        else if (!biayaId && !COAId){
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
-                text: "Data Biaya kosong, Silahkan Lengkapi datanya ",
+                text: "Data Biaya atau Akun Kredit kosong, Silahkan Lengkapi datanya ",
               });
         }
-        else if(!COAId){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Akun Kredit kosong, Silahkan Lengkapi datanya ",
-              });
-        }
+        // else if(!COAId){
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data Akun Kredit kosong, Silahkan Lengkapi datanya ",
+        //       });
+        // }
         else if(!mataUangId){
             Swal.fire({
                 icon: "error",
@@ -444,6 +445,21 @@ const BuatCreditNote = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
+                            <div className="col-sm-7">
+                                <AsyncSelect
+                                    placeholder="Pilih Mata Uang..."
+                                    cacheOptions
+                                    defaultOptions
+                                    value={selectedMataUang}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsMataUang}
+                                    onChange={handleChangeMataUang}
+                                />
+                            </div>
+                        </div>
+                        <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Nominal</label>
                             <div className="col-sm-7">
                                 <CurrencyFormat
@@ -485,21 +501,7 @@ const BuatCreditNote = () => {
                                 />
                             </div>
                         </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
-                            <div className="col-sm-7">
-                                <AsyncSelect
-                                    placeholder="Pilih Mata Uang..."
-                                    cacheOptions
-                                    defaultOptions
-                                    value={selectedMataUang}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsMataUang}
-                                    onChange={handleChangeMataUang}
-                                />
-                            </div>
-                        </div>
+                       
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Deskripsi</label>
                             <div className="col-sm-7">

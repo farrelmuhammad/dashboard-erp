@@ -112,9 +112,41 @@ const App = () => {
           <Link to="/kategori" />
           Kategori
         </Menu.Item>
-        <Menu.Item key="11">
-          <Link to="/bagian" />
-          Bagian
+
+        <Menu.SubMenu title="Produk">
+          <Menu.Item key="9">
+            <Link to="/produk" />
+            Produk
+          </Menu.Item>
+          <Menu.Item key="10">
+            <Link to="/kategori" />
+            Kategori Produk
+          </Menu.Item>
+          <Menu.Item key="11">
+            <Link to="/bagian" />
+            Bagian Produk
+          </Menu.Item>
+          <Menu.Item key="12">
+            <Link to="/grade" />
+            Grade Produk
+          </Menu.Item>
+          <Menu.Item key="13">
+            <Link to="/tipe" />
+            Tipe Produk
+          </Menu.Item>
+          <Menu.Item key="14">
+            <Link to="/merek" />
+            Merek Produk
+          </Menu.Item>
+          <Menu.Item key="15">
+            <Link to="/pajak" />
+            Pajak
+          </Menu.Item>
+        </Menu.SubMenu> 
+
+        <Menu.Item key="16">
+          <Link to="/gudang" />
+          Gudang
         </Menu.Item>
         <Menu.Item key="12">
           <Link to="/grade" />
@@ -163,34 +195,32 @@ const App = () => {
       </Menu.SubMenu>
 
 
-    </Menu.SubMenu>
-
-    <Menu.SubMenu title="Penjualan Wholesale" icon={<RiseOutlined />}>
-      <Menu.Item key="22">
-        <Link to="/pesanan" />
-        Pesanan Penjualan
-      </Menu.Item>
-      <Menu.Item key="23">
-        <Link to="/tally" />
-        Tally Sheet
-      </Menu.Item>
-      <Menu.Item key="24">
-        <Link to="/suratjalan" />
-        Surat Jalan
-      </Menu.Item>
-      <Menu.Item key="25">
-        <Link to="/faktur" />
-        Faktur Penjualan
-      </Menu.Item>
-      <Menu.Item key="26">
-        <Link to="/retur" />
-        Retur Penjualan
-      </Menu.Item>
-      <Menu.Item key="27">
-        <Link to="/pelunasan" />
-        Pelunasan Penjualan
-      </Menu.Item>
-      <Menu.Item key="28">
+<Menu.SubMenu title="Penjualan Wholesale" icon={<RiseOutlined />}>
+        <Menu.Item key="22">
+          <Link to="/pesanan" />
+          Pesanan Penjualan
+        </Menu.Item>
+        <Menu.Item key="23">
+          <Link to="/tally" />
+          Tally Sheet Out
+        </Menu.Item>
+        <Menu.Item key="24">
+          <Link to="/suratjalan" />
+          Surat Jalan
+        </Menu.Item>
+        <Menu.Item key="25">
+          <Link to="/faktur" />
+          Faktur Penjualan
+        </Menu.Item>
+        <Menu.Item key="26">
+          <Link to="/retur" />
+          Retur Penjualan
+        </Menu.Item>
+        <Menu.Item key="27">
+          <Link to="/pelunasan" />
+          Pelunasan Penjualan
+        </Menu.Item>
+        <Menu.Item key="28">
         {/* <Link to="/pelunasan" /> */}
         Penyesuaian Harga Jual
       </Menu.Item>
@@ -221,8 +251,8 @@ const App = () => {
         Pesanan Pembelian
       </Menu.Item>
       <Menu.Item key="34">
-        <Link to="/tallypembelian" />
-        Tally Sheet
+          <Link to="/tallypembelian" />
+          Tally Sheet In
       </Menu.Item>
       <Menu.Item key="35">
         <Link to="/penerimaanbarang" />
@@ -278,7 +308,7 @@ const App = () => {
       </Menu.Item>
       <Menu.Item key="47">
         <Link to="/tallytransfer" />
-        Tally Sheet
+        Tally Sheet Transfer
       </Menu.Item>
       <Menu.Item key="48">
         <Link to="/adjustment" />
@@ -625,9 +655,47 @@ const App = () => {
           <Link to="/kategori" />
           Kategori
         </Menu.Item>
+<<<<<<< HEAD
+    
+        <Menu.SubMenu title="Produk">
+          <Menu.Item key="9">
+            <Link to="/produk" />
+            Produk
+          </Menu.Item>
+          <Menu.Item key="10">
+            <Link to="/kategori" />
+            Kategori Produk
+          </Menu.Item>
+          <Menu.Item key="11">
+            <Link to="/bagian" />
+            Bagian Produk
+          </Menu.Item>
+          <Menu.Item key="12">
+            <Link to="/grade" />
+            Grade Produk
+          </Menu.Item>
+          <Menu.Item key="13">
+            <Link to="/tipe" />
+            Tipe Produk
+          </Menu.Item>
+          <Menu.Item key="14">
+            <Link to="/merek" />
+            Merek Produk
+          </Menu.Item>
+          <Menu.Item key="15">
+            <Link to="/pajak" />
+            Pajak
+          </Menu.Item>
+        </Menu.SubMenu> 
+
+        <Menu.Item key="16">
+          <Link to="/gudang" />
+          Gudang
+=======
         <Menu.Item key="11">
           <Link to="/bagian" />
           Bagian
+>>>>>>> 76bdecae0b5939c450abb2805e28bb08a0bded07
         </Menu.Item>
         <Menu.Item key="12">
           <Link to="/grade" />
@@ -662,35 +730,31 @@ const App = () => {
           Biaya Import
         </Menu.Item>
 
-      </Menu.SubMenu>
-
-    </Menu.SubMenu>
-
-    <Menu.SubMenu title="Penjualan Wholesale" icon={<RiseOutlined />}>
-      <Menu.Item key="22">
-        <Link to="/pesanan" />
-        Pesanan Penjualan
-      </Menu.Item>
-      <Menu.Item key="23">
-        <Link to="/tally" />
-        Tally Sheet
-      </Menu.Item>
-      <Menu.Item key="24">
-        <Link to="/suratjalan" />
-        Surat Jalan
-      </Menu.Item>
-      <Menu.Item key="25">
-        <Link to="/faktur" />
-        Faktur Penjualan
-      </Menu.Item>
-      <Menu.Item key="26">
-        <Link to="/retur" />
-        Retur Penjualan
-      </Menu.Item>
-      <Menu.Item key="27">
-        <Link to="/pelunasan" />
-        Pelunasan Penjualan
-      </Menu.Item>
+<Menu.SubMenu title="Penjualan Wholesale" icon={<RiseOutlined />}>
+        <Menu.Item key="22">
+          <Link to="/pesanan" />
+          Pesanan Penjualan
+        </Menu.Item>
+        <Menu.Item key="23">
+          <Link to="/tally" />
+          Tally Sheet Out
+        </Menu.Item>
+        <Menu.Item key="24">
+          <Link to="/suratjalan" />
+          Surat Jalan
+        </Menu.Item>
+        <Menu.Item key="25">
+          <Link to="/faktur" />
+          Faktur Penjualan
+        </Menu.Item>
+        <Menu.Item key="26">
+          <Link to="/retur" />
+          Retur Penjualan
+        </Menu.Item>
+        <Menu.Item key="27">
+          <Link to="/pelunasan" />
+          Pelunasan Penjualan
+        </Menu.Item>
     </Menu.SubMenu>
 
     <Menu.SubMenu title="Pembelian" icon={<ShoppingCartOutlined />}>
@@ -699,8 +763,8 @@ const App = () => {
         Pesanan Pembelian
       </Menu.Item>
       <Menu.Item key="34">
-        <Link to="/tallypembelian" />
-        Tally Sheet
+          <Link to="/tallypembelian" />
+          Tally Sheet In
       </Menu.Item>
       <Menu.Item key="35">
         <Link to="/penerimaanbarang" />

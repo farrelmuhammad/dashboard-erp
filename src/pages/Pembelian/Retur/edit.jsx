@@ -532,7 +532,26 @@ const EditReturPembelian = () => {
     const dataProduk =
         [...tampilProduk.map((item, i) => ({
             name_product: item.label,
-            qty: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(item.quantity).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "qty")} key="qty" />,
+            qty: 
+            <div className='d-flex'>
+{
+   <CurrencyFormat className=' text-center editable-input'  thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.quantity.replace('.', ',')} 
+   
+  
+   
+  
+   onChange={e => {
+      // value = parseFloat(value.toString().replace('.', ',')
+        klikUbahData(i, e.target.value, "qty")
+       
+   }}
+   key="qty" />
+}
+</div>,
+
+            
+            
+            // <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(item.quantity).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "qty")} key="qty" />,
             stn: item.unit,
             prc:
                 <div className='d-flex'>

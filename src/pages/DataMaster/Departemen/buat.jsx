@@ -20,22 +20,28 @@ const BuatDepartemen = () => {
 
   const [getDepartment, setGetDepartment] = useState('');
 
-  const [getEmployee, setGetEmployee] = useState('');
-
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  // const columns = [
-  //     { title: "ID", field: "id", editable: false },
-  //     { title: "Nama", field: "name" },
-  //     { title: "Departemen", field: "department_id" },
-  //     { title: "Posisi", field: "position_id" },
-  //   ];
-
+  const [loadings, setLoadings] = useState([]);
+  const enterLoading = (index, event) => {
+    setLoadings((prevLoadings) => {
+      const newLoadings = [...prevLoadings];
+      newLoadings[index] = true;
+      return newLoadings;
+    });
+    setTimeout(() => {
+      setLoadings((prevLoadings) => {
+        const newLoadings = [...prevLoadings];
+        newLoadings[index] = false;
+        return newLoadings;
+      });
+      handleSubmit()
+      setName('');
+      setDescription('');
+    }, 2000);
+  };
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    // e.preventDefault();
 
-    if(!name){
+    if (!name) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -44,53 +50,54 @@ const BuatDepartemen = () => {
     }
     else {
 
-    // console.log(employee);
-    const userData = new FormData();
-    // userData.append("id", id);
-    userData.append("nama", name);
-    userData.append("deskripsi", description);
-    // employee.map((emp) => userData.append("karyawan[]", emp));
+      // console.log(employee);
+      const userData = new FormData();
+      // userData.append("id", id);
+      userData.append("nama", name);
+      userData.append("deskripsi", description);
+      // employee.map((emp) => userData.append("karyawan[]", emp));
 
-    // for (var pair of userData.entries()) {
-    //   console.log(pair[0]+ ', ' + pair[1]);
-    // }
+      // for (var pair of userData.entries()) {
+      //   console.log(pair[0]+ ', ' + pair[1]);
+      // }
 
-    axios({
-      method: "post",
-      url: `${Url}/departments`,
-      data: userData,
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    })
-      .then(function (res) {
-        //handle success
-        console.log(res);
-        Swal.fire(
-          "Berhasil Ditambahkan",
-          `${getDepartment} Masuk dalam list`,
-          "success"
-        );
-        navigate("/departemen");
+      axios({
+        method: "post",
+        url: `${Url}/departments`,
+        data: userData,
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${auth.token}`,
+        },
       })
-      .catch((err) => {
-        if (err.response) {
-          console.log("err.response ", err.response);
-          Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: err.response.data.error,
-          });
-        } else if (err.request) {
-          console.log("err.request ", err.request);
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        } else if (err.message) {
-          // do something other than the other two
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        }
-      });
-  }};
+        .then(function (res) {
+          //handle success
+          console.log(res);
+          Swal.fire(
+            "Berhasil Ditambahkan",
+            `${getDepartment} Masuk dalam list`,
+            "success"
+          );
+          navigate("/departemen");
+        })
+        .catch((err) => {
+          if (err.response) {
+            console.log("err.response ", err.response);
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: err.response.data.error,
+            });
+          } else if (err.request) {
+            console.log("err.request ", err.request);
+            Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+          } else if (err.message) {
+            // do something other than the other two
+            Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+          }
+        });
+    }
+  };
 
   // const handleCheck = (event) => {
   //   var updatedList = [...employee];
@@ -211,11 +218,19 @@ const BuatDepartemen = () => {
           <Button
             type="primary"
             icon={<SendOutlined />}
+            loading={loadings[1]}
+            onClick={() => enterLoading(1)}
+          >
+            Submit
+          </Button>
+          {/* <Button
+            type="primary"
+            icon={<SendOutlined />}
             size="large"
             onClick={handleSubmit}
           >
             Submit
-          </Button>
+          </Button> */}
         </div>
       </PageHeader>
     </>

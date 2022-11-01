@@ -35,7 +35,7 @@ const PIB = () => {
       <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
         <div className="row">
           <div className="col text-title text-start">
-            <h3 className="title fw-bold">Pemberitahuan Impor Barang</h3>
+            <h3 className="title fw-bold">Daftar PIB</h3>
           </div>
           {userAccess?.map(d => {
             if (d.ability_name === "create-tax") {

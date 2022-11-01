@@ -78,7 +78,13 @@ const EditableCell = ({
                 ]}
             >
                 {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
+                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
+                   decimalSeparator={','}
+                   onChange={value => {
+                       value = parseFloat(value.toString().replace('.', ','))
+                   }}
+
+                />
             </Form.Item>
         ) : (
             <div
@@ -253,6 +259,7 @@ const BuatFakturPembelian = () => {
     }, [supplier])
 
     function klikUbahData(y, value, key) {
+        console.log(value)
         console.log(product)
         let tmpData = [];
         if (key == 'qty') {
@@ -520,6 +527,13 @@ const BuatFakturPembelian = () => {
             width: '10%',
             align: 'center',
             editable: true,
+            // render(text, record) {
+            //     return {
+            //         props: {
+            //         },
+            //         children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
+            //     };
+            // }
 
         },
         {
@@ -570,14 +584,32 @@ const BuatFakturPembelian = () => {
     const TableData =
         [...product.map((item, i) => ({
             namaProduk: item.product_name,
-            qty: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].quantity).toFixed(2).replace('.', ',')} onChange={(e) => klikUbahData(i, e.target.value, "qty")} key="qty" />,
+            qty: 
+<div className='d-flex'>
+{
+   <CurrencyFormat className=' text-center editable-input'  thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={data[i].quantity.replace('.', ',')} 
+   
+  
+  
+   onChange={e => {
+      // value = parseFloat(value.toString().replace('.', ',')
+        klikUbahData(i, e.target.value, "qty")
+       
+   }}
+   key="qty" />
+}
+</div>,
+
+
+
+         
             stn: item.unit,
             price:
                 <div className='d-flex'>
                     {
                         // mataUang === 'Rp' || mataUang ===  'IDR' ? 
                         // <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={data[i].currency_name + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].price).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "price")} /> :
-                        <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={data[i].currency_name + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].price).toLocaleString('id')} onChange={(e) => klikUbahData(i, e.target.value, "price")} />
+                        <CurrencyFormat disabled className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={data[i].currency_name + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].price).toLocaleString('id')} onChange={(e) => klikUbahData(i, e.target.value, "price")} />
                     }
                 </div>,
             disc:
@@ -602,7 +634,7 @@ const BuatFakturPembelian = () => {
                     </div> :
                     data[i].pilihanDiskon == 'persen' ?
                         <div className='d-flex p-1' style={{ height: "100%" }} >
-                            <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={
+                            <CurrencyFormat disabled className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={
                                 data[i].discount_percentage != null ? 
                                 data[i].discount_percentage : 0} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
                             <div className="input-group-prepend" >
@@ -629,7 +661,7 @@ const BuatFakturPembelian = () => {
                                     // <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={
                                     //     data[i].fixed_discount == null ? 0 :
                                     //     Number(data[i].fixed_discount).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" /> : 
-                                    <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={
+                                    <CurrencyFormat disabled className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={
                                         data[i].fixed_discount == null ? 0 :
                                         Number(data[i].fixed_discount).toLocaleString('id')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
                                 }
@@ -1315,13 +1347,13 @@ const BuatFakturPembelian = () => {
                 text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
               });
         }
-        else if (grup != ""){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Grup kosong, Silahkan Lengkapi datanya ",
-              });
-        }
+        // else if (grup != ""){
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data Grup kosong, Silahkan Lengkapi datanya ",
+        //       });
+        // }
         else if (!supplier){
             Swal.fire({
                 icon: "error",
@@ -1463,13 +1495,13 @@ const BuatFakturPembelian = () => {
                 text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
               });
         }
-        else if (grup != ""){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Grup kosong, Silahkan Lengkapi datanya ",
-              });
-        }
+        // else if (grup != ""){
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data Grup kosong, Silahkan Lengkapi datanya ",
+        //       });
+        // }
         else if (!supplier){
             Swal.fire({
                 icon: "error",
@@ -2043,6 +2075,7 @@ const BuatFakturPembelian = () => {
                             <div className="col-sm-6">
 
                             <CurrencyFormat
+                            disabled
                                     className='form-control form-control-sm'
                                     style={{width:"70%"}}
                                     thousandSeparator={'.'}

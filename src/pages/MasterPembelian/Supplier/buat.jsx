@@ -143,8 +143,8 @@ const BuatSupplier = () => {
 
   const onChange = () => {
     setChecked(!checked)
-    checked ? setStatus('Active') : setStatus ('NonActive')
-   // checked ? setChecked(false) : setChecked(true)
+    checked ? setStatus('Active') : setStatus('NonActive')
+    // checked ? setChecked(false) : setChecked(true)
 
     // if (checked === false) {
     //   setStatus("Active");
@@ -230,111 +230,112 @@ const BuatSupplier = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if(!name){
+    if (!name) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Data Nama kosong, Silahkan Lengkapi datanya ",
       });
     }
-    else if(!bussiness_ent){
+    else if (!bussiness_ent) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Data Badan Usaha kosong, Silahkan Lengkapi datanya ",
       });
     }
-    else if(!grup){
+    else if (!grup) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Data Grup kosong, Silahkan Lengkapi datanya ",
       });
     }
-    else if (npwp.length > 25){
+    else if (npwp.length > 25) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "NPWP tidak lebih dari 25 karakter, Silahkan periksa kembali datanya ",
       });
     }
-    else if (phone_number.length > 20){
+    else if (phone_number.length > 20) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Nomor telepon tidak lebih dari 20 karakter, Silahkan periksa kembali datanya ",
       });
     }
-    else if(!address){
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Alamat kosong, Silahkan Lengkapi datanya ",
-      });
-    }
-    else{
-
-
-    const userData = new FormData();
-    userData.append("nama", name);
-    userData.append("badan_usaha", bussiness_ent);
-    userData.append("grup", grup);
-    userData.append("nomor_telepon", phone_number);
-    userData.append("email", email);
-    userData.append("npwp", npwp);
-    userData.append("status", status);
-
-    dataSource.map((address) => {
-      console.log(address);
-      
-      userData.append("alamat[]", address.address);
-      userData.append("kota[]", address.city);
-      userData.append("kecamatan[]", address.sub_district);
-      userData.append("kelurahan[]", address.urban_village);
-      userData.append("kode_pos[]", address.postal_code);
-    });
-
-    // for (var pair of userData.entries()) {
-    //   console.log(pair[0] + ", " + pair[1]);
+    // else if (!address) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Alamat kosong, Silahkan Lengkapi datanya ",
+    //   });
     // }
+    else {
 
-    axios({
-      method: "post",
-      url: `${Url}/suppliers`,
-      data: userData,
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    })
-      .then(function (res) {
-        //handle success
-        console.log(res);
-        Swal.fire(
-          "Berhasil Ditambahkan",
-          `${getSupplier} Masuk dalam list`,
-          "success"
-        );
-        navigate("/supplier");
-      })
-      .catch((err) => {
-        if (err.response) {
-          console.log("err.response ", err.response);
-          Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text:"Data belum lengkap, silahkan lengkapi datanya dan coba kembali"
-            // text: err.response.data.error,
-          });
-        } else if (err.request) {
-          console.log("err.request ", err.request);
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        } else if (err.message) {
-          // do something other than the other two
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        }
+
+      const userData = new FormData();
+      userData.append("nama", name);
+      userData.append("badan_usaha", bussiness_ent);
+      userData.append("grup", grup);
+      userData.append("nomor_telepon", phone_number);
+      userData.append("email", email);
+      userData.append("npwp", npwp);
+      userData.append("status", status);
+
+      dataSource.map((address) => {
+        console.log(address);
+
+        userData.append("alamat[]", address.address);
+        userData.append("kota[]", address.city);
+        userData.append("kecamatan[]", address.sub_district);
+        userData.append("kelurahan[]", address.urban_village);
+        userData.append("kode_pos[]", address.postal_code);
       });
-   } };
+
+      // for (var pair of userData.entries()) {
+      //   console.log(pair[0] + ", " + pair[1]);
+      // }
+
+      axios({
+        method: "post",
+        url: `${Url}/suppliers`,
+        data: userData,
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${auth.token}`,
+        },
+      })
+        .then(function (res) {
+          //handle success
+          console.log(res);
+          Swal.fire(
+            "Berhasil Ditambahkan",
+            `${getSupplier} Masuk dalam list`,
+            "success"
+          );
+          navigate("/supplier");
+        })
+        .catch((err) => {
+          if (err.response) {
+            console.log("err.response ", err.response);
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "Data belum lengkap, silahkan lengkapi datanya dan coba kembali"
+              // text: err.response.data.error,
+            });
+          } else if (err.request) {
+            console.log("err.request ", err.request);
+            Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+          } else if (err.message) {
+            // do something other than the other two
+            Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+          }
+        });
+    }
+  };
 
   useEffect(() => {
     axios
