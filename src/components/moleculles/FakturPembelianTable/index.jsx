@@ -317,8 +317,9 @@ const [dataTampil, setDataTampil] = useState([])
       width: '10%',
       render: (_, { status }) => (
         <>
-          {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
-
+          {/* {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> :  <Tag color="red">{status}</Tag>} */}
+          {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Cancelled' ? <Tag color="red">{status}</Tag> : status === 'Processed' ? <Tag color="purple">{status}</Tag> :   <Tag color="red">{status}</Tag>
+        }
         </>
       ),
       ...getColumnSearchProps('status'),

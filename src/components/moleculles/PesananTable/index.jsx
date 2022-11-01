@@ -62,16 +62,96 @@ const PesananTable = () => {
     
       };
 
-    const cancelSalesOrder = async (id) => {
-        await axios.patch(`${Url}/sales_orders/cancel/${id}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        });
-        getSalesOrder()
-        Swal.fire("Berhasil Dibatalkan!", `${id} Dibatalkan`, "success");
+      const cancelSalesOrder = async (id, code) => {
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Status data akan diubah",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                try {
+                    const datakirim = new FormData();
+                    datakirim.append("", '');
+
+                    axios({
+                        method: "patch",
+                        url: `${Url}/sales_orders/cancel/${id}`,
+                        data: datakirim,
+                        headers: {
+                            Accept: "application/json",
+                            Authorization: `Bearer ${auth.token}`,
+                        },
+                    })
+
+                    getSalesOrder();
+                    Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
+                }
+                catch (err) {
+                    console.log(err);
+                }
+
+            }
+        })
+
+
     };
+
+
+
+
+    //   const cancelSalesOrder = async (id, code) => {
+    //     Swal.fire({
+    //         title: 'Apakah Anda Yakin?',
+    //         text: "Status data akan diubah",
+    //         icon: 'warning',
+    //         showCancelButton: true,
+    //         confirmButtonColor: '#3085d6',
+    //         cancelButtonColor: '#d33',
+    //         confirmButtonText: 'Ya'
+    //     }).then((result) => {
+    //         if (result.isConfirmed) {
+    //             try {
+    //                 const datakirim = new FormData();
+    //                 datakirim.append("", '');
+
+    //                 axios({
+    //                     method: "patch",
+    //                     url: `${Url}/sales_orders/cancel/${id}`,
+    //                     data: datakirim,
+    //                     headers: {
+    //                         Accept: "application/json",
+    //                         Authorization: `Bearer ${auth.token}`,
+    //                     },
+    //                 })
+
+    //                 getSalesOrder();
+    //                 Swal.fire("Berhasil Dihapus!", `Data ${code} Berhasil hapus`, "success");
+    //             }
+    //             catch (err) {
+    //                 console.log(err);
+    //             }
+
+    //         }
+    //     })
+
+
+    // };
+
+
+    // const cancelSalesOrder = async (id) => {
+    //     await axios.patch(`${Url}/sales_orders/cancel/${id}`, {
+    //         headers: {
+    //             Accept: "application/json",
+    //             Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiODgxODg3MTgzNzk4NGI2YWIzMmVkNDljMGYyYWI5MDQzN2YxNTZkNDUwMmRmN2RhY2ZlMTNhODhlZmI0MGRiOGU1NzkzNDgxMWJkM2FhMDQiLCJpYXQiOjE2NjcyNzU4MDIuOTQ3NzM3LCJuYmYiOjE2NjcyNzU4MDIuOTQ3NzM5LCJleHAiOjE2OTg4MTE4MDIuODU3NjY3LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.bjbsnCMShERlIiw2GHtW9w2avdasIe_R7qbJkeJ62qmTrqbSF0sgHjOyrI_caShp7JBNIZ7XQX_4skoOn-rOb6YhGRG5P_8Mmtr8a5F3l3lkRbIArQq3Nbbj_tqDMmNfIFGDPBabm7V66g_dSQ8y2assPqk9eY2UYSmPfeuIVkriVddB-hCl35i1RJaSjGNQ7ebG-9Ys8GaCLot7RSj6aMpA4QOnZYraVcOdaC6BRzfkR5RO8lwG-5GfFbVfRrv1-cGZrk3Jk8m5vUTd7YTc6DQUXrsOStw20n0E9w9nZE71JOrmeZlW-QNZ3x2652kfRTnJ2PBAAPA2-6MFI6vOm64iasjzKQzhXlwGq_5N5ZriAbKqTPHzdHqz68HNtgXaoLb0FPzYjiSCadBWY90a6ri5rlca0SKC5prmcY62dKoboDroFI-L6nxmJZmm30fyQX28mpVHbQY2zzHaa4hKgaE50tuBNTVyDH4FK-nW-KthxuTxXjCHLO7wLYFMwaofrqXs-LIsOzNAfgxYehSeFnRkM6JNVvSPdurKrYdpaZXJbr_ygMT30GLvcY0qximnCtWwA1O1xhcjeGRZz0FxSSsMnGPnQjgBN83BkFL_kcA9wuBfSdiz3Bz3LK1NaCjj6OLDeI4lKNJZ-yT1WjB4iqKht3ahXOMtQw9GV2GbyKg`,
+    //         },
+    //     });
+    //     getSalesOrder()
+    //     Swal.fire("Berhasil Dibatalkan!", `${id} Dibatalkan`, "success");
+    // };
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
@@ -232,8 +312,8 @@ const PesananTable = () => {
             key: 'code',
             width: '20%',
             ...getColumnSearchProps('code'),
-            sorter: true,
-            sortDirections: ['descend', 'ascend'],
+            // sorter: true,
+            // sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Customer',
@@ -262,7 +342,8 @@ const PesananTable = () => {
             width: '12%',
             render: (_, { status }) => (
                 <>
-                     {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="volcano">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Processed' ? <Tag color="orange">{status}</Tag> : <Tag color="red">{status}</Tag>}
+                   
+                     {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="volcano">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Processed' ? <Tag color="orange">{status}</Tag> : status == 'Cancelled' ? <Tag color="red">{status}</Tag> : null}
                 </>
             ),
             ...getColumnSearchProps('status'),
@@ -274,10 +355,10 @@ const PesananTable = () => {
             dataIndex:'action',
             render: (_, record) => (
                 <>
-                {record.status === 'Submitted' ? (
+             
                 <Space size="middle">
-                  
-                  <Tooltip title="Detail" placement="bottom">
+                {record.can['read-sales_order'] ? (
+                    <Tooltip title="Detail" placement="bottom">
                     <Link to={`/pesanan/detail/${record.id}`}>
                         <Button
                             size='small'
@@ -286,26 +367,45 @@ const PesananTable = () => {
                         />
                     </Link>
                     </Tooltip>
-                    <Tooltip title="Edit" placement="bottom">
-                    <Link to={`/pesanan/edit/${record.id}`}>
-                        <Button
-                            size='small'
-                            type="success"
-                            icon={<EditOutlined />}
-                        />
-                    </Link>
-                    </Tooltip>
-                    <Tooltip title="Cancel" placement="bottom">
+                ) : null}
+
+                { record.can['update-sales_order'] ? (
+                <Tooltip title="Edit" placement="bottom">
+                <Link to={`/pesanan/edit/${record.id}`}>
                     <Button
                         size='small'
-                        type="danger"
-                        icon={<CloseOutlined />}
-                        onClick={() => cancelSalesOrder(record.id)}
+                        type="success"
+                        icon={<EditOutlined />}
                     />
-                    </Tooltip>
+                </Link>
+                </Tooltip>
+                ) : null}
+
+                { record.can['cancel-sales_order'] ? (
+                <Tooltip title="Cancel" placement="bottom">
+                <Button
+                    size='small'
+                    type="danger"
+                    icon={<CloseOutlined />}
+                    onClick={() => cancelSalesOrder(record.id, record.code)}
+                />
+                </Tooltip>
+                ) : null}
+
+                { record.can['delete-sales_order'] ? (
+                      <Tooltip title="Delete" placement="bottom">
+                      <Button
+                          size='small'
+                          type="danger"
+                          icon={<DeleteOutlined />}
+                          onClick={() => deleteSalesOrder(record.id, record.code)}
+                      />
+                      </Tooltip>
+                ):null}
+                   
                 </Space>
-            ) : record.status === 'Draft' ? (
-                <Space size="middle">
+           
+                {/* <Space size="middle">
                     <Tooltip title="Detail" placement="bottom">
                     <Link to={`/pesanan/detail/${record.id}`}>
                         <Button
@@ -333,7 +433,7 @@ const PesananTable = () => {
                     />
                     </Tooltip>
                 </Space>
-            ) : record.status === 'Done' ? (
+           
                 <Space size="middle">
                     <Tooltip title="Detail" placement="bottom">
                     <Link to={`/pesanan/detail/${record.id}`}>
@@ -344,11 +444,11 @@ const PesananTable = () => {
                         />
                     </Link>
                     </Tooltip>
-                </Space>
-            ) : (
+                </Space> */}
+           
                 <>
                 </>
-            )}
+          
                 </>
             ),
         },
@@ -371,7 +471,7 @@ const PesananTable = () => {
                         size='small'
                         type="danger"
                         icon={<CloseOutlined />}
-                        onClick={() => cancelSalesOrder(item.id)}
+                        onClick={() => cancelSalesOrder(item.id,item.code)}
                     />
                     <Link to={`/pesanan/detail/${item.id}`}>
                         <Button

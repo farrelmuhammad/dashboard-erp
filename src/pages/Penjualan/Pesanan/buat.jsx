@@ -827,20 +827,20 @@ const BuatPesanan = () => {
         userData.append("status", "Submitted");
         product.map((p, i) => {
 
-            if(!p.alias_name){
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Data Produk kosong, Silahkan Lengkapi datanya ",
-                  });
-            }
-            else if(!p.quantity){
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Data Kuantiti Produk kosong, Silahkan Lengkapi datanya ",
-                  });
-            }
+            // if(!p.alias_name){
+            //     Swal.fire({
+            //         icon: "error",
+            //         title: "Oops...",
+            //         text: "Data Produk kosong, Silahkan Lengkapi datanya ",
+            //       });
+            // }
+            // else if(!p.quantity){
+            //     Swal.fire({
+            //         icon: "error",
+            //         title: "Oops...",
+            //         text: "Data Kuantiti Produk kosong, Silahkan Lengkapi datanya ",
+            //       });
+            // }
             // else if(!p.unit){
             //     Swal.fire({
             //         icon: "error",
@@ -848,21 +848,21 @@ const BuatPesanan = () => {
             //         text: "Data Produk kosong, Silahkan Lengkapi datanya ",
             //       });
             // }
-            else if(!p.price){
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Data Harga Produk kosong, Silahkan Lengkapi datanya ",
-                  });
-            }
-            else if(!p.ppn){
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Data PPN Produk kosong, Silahkan Lengkapi datanya ",
-                  });
-            }
-            else{
+            // else if(!p.price){
+            //     Swal.fire({
+            //         icon: "error",
+            //         title: "Oops...",
+            //         text: "Data Harga Produk kosong, Silahkan Lengkapi datanya ",
+            //       });
+            // }
+            // else if(!p.ppn){
+            //     Swal.fire({
+            //         icon: "error",
+            //         title: "Oops...",
+            //         text: "Data PPN Produk kosong, Silahkan Lengkapi datanya ",
+            //       });
+            // }
+           
 
             userData.append("nama_alias_produk[]", p.alias_name);
             userData.append("kuantitas[]", p.quantity);
@@ -877,7 +877,7 @@ const BuatPesanan = () => {
                 userData.append("persentase_diskon[]", 0);
             }
             userData.append("ppn[]", p.ppn);
-        }});
+        });
         userData.append("termasuk_pajak", checked);
 
         // for (var pair of userData.entries()) {

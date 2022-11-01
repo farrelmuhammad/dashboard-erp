@@ -110,23 +110,23 @@ const App = () => {
           </Menu.Item>
           <Menu.Item key="10">
             <Link to="/kategori" />
-            Kategori
+            Kategori Produk
           </Menu.Item>
           <Menu.Item key="11">
             <Link to="/bagian" />
-            Bagian
+            Bagian Produk
           </Menu.Item>
           <Menu.Item key="12">
             <Link to="/grade" />
-            Grade 
+            Grade Produk
           </Menu.Item>
           <Menu.Item key="13">
             <Link to="/tipe" />
-            Tipe
+            Tipe Produk
           </Menu.Item>
           <Menu.Item key="14">
             <Link to="/merek" />
-            Merek
+            Merek Produk
           </Menu.Item>
           <Menu.Item key="15">
             <Link to="/pajak" />
@@ -172,7 +172,7 @@ const App = () => {
         </Menu.Item>
         <Menu.Item key="23">
           <Link to="/tally" />
-          Tally Sheet
+          Tally Sheet Out
         </Menu.Item>
         <Menu.Item key="24">
           <Link to="/suratjalan" />
@@ -222,7 +222,7 @@ const App = () => {
       </Menu.Item>
       <Menu.Item key="34">
           <Link to="/tallypembelian" />
-          Tally Sheet
+          Tally Sheet In
       </Menu.Item>
       <Menu.Item key="35">
         <Link to="/penerimaanbarang" />
@@ -278,7 +278,7 @@ const App = () => {
       </Menu.Item>
     <Menu.Item key="47">
         <Link to="/tallytransfer" />
-        Tally Sheet
+        Tally Sheet Transfer
       </Menu.Item>
       <Menu.Item key="48">
         <Link to="/adjustment" />
@@ -623,23 +623,23 @@ const App = () => {
           </Menu.Item>
           <Menu.Item key="10">
             <Link to="/kategori" />
-            Kategori
+            Kategori Produk
           </Menu.Item>
           <Menu.Item key="11">
             <Link to="/bagian" />
-            Bagian
+            Bagian Produk
           </Menu.Item>
           <Menu.Item key="12">
             <Link to="/grade" />
-            Grade 
+            Grade Produk
           </Menu.Item>
           <Menu.Item key="13">
             <Link to="/tipe" />
-            Tipe
+            Tipe Produk
           </Menu.Item>
           <Menu.Item key="14">
             <Link to="/merek" />
-            Merek
+            Merek Produk
           </Menu.Item>
           <Menu.Item key="15">
             <Link to="/pajak" />
@@ -673,7 +673,7 @@ const App = () => {
         </Menu.Item>
         <Menu.Item key="23">
           <Link to="/tally" />
-          Tally Sheet
+          Tally Sheet Out
         </Menu.Item>
         <Menu.Item key="24">
           <Link to="/suratjalan" />
@@ -700,7 +700,7 @@ const App = () => {
       </Menu.Item>
       <Menu.Item key="34">
           <Link to="/tallypembelian" />
-          Tally Sheet
+          Tally Sheet In
       </Menu.Item>
       <Menu.Item key="35">
         <Link to="/penerimaanbarang" />

@@ -997,7 +997,7 @@ const EditPesanan = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text: err.response.data.error,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
