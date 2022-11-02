@@ -691,20 +691,20 @@ const BuatPesananPembelian = () => {
                 text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
               });
         }
-        else if(!tanggalAwal){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        else if(!tanggalAkhir){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
-              });
-        }
+        // else if(!tanggalAwal){
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
+        //       });
+        // }
+        // else if(!tanggalAkhir){
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
+        //       });
+        // }
         else if(!totalPpn){
             Swal.fire({
                 icon: "error",

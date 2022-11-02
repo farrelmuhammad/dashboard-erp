@@ -374,7 +374,7 @@ const SuratJalanTable = () => {
             sortDirections: ['descend', 'ascend'],
         },
         {
-            title: 'Pelanggan',
+            title: 'Customer',
             dataIndex: 'customer_name',
             key: 'customer',
             width: '15%',

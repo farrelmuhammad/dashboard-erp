@@ -241,7 +241,7 @@ const PesananPembelianTable = () => {
                     // }
                 }
                 setNamaMataUang(mataUang);
-                //console.log(mataUang)
+                console.log(mataUang)
                 console.log(namaMataUang)
                 setIsLoading(false);
                 //console.log(getData[0].can)

@@ -169,7 +169,7 @@ const BuatSuratJalan = () => {
         const dataTampil = [...product[record.key].tally_sheet_details.map((item , i) => ({
             product_alias_name: item.product_alias_name,
             product_name: item.product_name,
-            boxes_quantity: item.boxes_quantity,
+            boxes_quantity: Number(item.boxes_quantity).toFixed(2).replace('.',','),
             boxes_unit: item.boxes_unit
         }))]
         return <Table columns={columns} dataSource={dataTampil} pagination={false} />;
@@ -421,20 +421,20 @@ const BuatSuratJalan = () => {
                 text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
               });
         }
-        else if(!vehicle){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Kendaraan kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        else if(!sender){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Pengirim kosong, Silahkan Lengkapi datanya ",
-              });
-        }
+        // else if(!vehicle){
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data Kendaraan kosong, Silahkan Lengkapi datanya ",
+        //       });
+        // }
+        // else if(!sender){
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data Pengirim kosong, Silahkan Lengkapi datanya ",
+        //       });
+        // }
         else if(sumber == 'SO' && !customer){
           
                 Swal.fire({
@@ -567,20 +567,20 @@ const BuatSuratJalan = () => {
                 text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
               });
         }
-        else if(!vehicle){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Kendaraan kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        else if(!sender){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Pengirim kosong, Silahkan Lengkapi datanya ",
-              });
-        }
+        // else if(!vehicle){
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data Kendaraan kosong, Silahkan Lengkapi datanya ",
+        //       });
+        // }
+        // else if(!sender){
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data Pengirim kosong, Silahkan Lengkapi datanya ",
+        //       });
+        // }
         else if(sumber == 'SO' && !customer){
            
                 Swal.fire({
@@ -751,10 +751,10 @@ const BuatSuratJalan = () => {
                             </div>
                         </div>
                         <div className="row mb-3" style={{ display: sumber == 'SO' ? 'flex' : 'none' }}>
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pelanggan</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
                             <div className="col-sm-7">
                                 <AsyncSelect
-                                    placeholder="Pilih Pelanggan..."
+                                    placeholder="Pilih Customer..."
                                     cacheOptions
                                     defaultOptions
                                     value={selectedCustomer}

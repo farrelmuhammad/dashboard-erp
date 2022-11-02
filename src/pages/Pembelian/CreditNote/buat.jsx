@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import CurrencyFormat from 'react-currency-format';
 import { PageHeader } from 'antd';
 import { Deselect, TenMp } from '@mui/icons-material';
+import ReactSelect from 'react-select';
 
 const BuatCreditNote = () => {
     const auth = useSelector(state => state.auth);
@@ -31,6 +32,7 @@ const BuatCreditNote = () => {
     const [mataUangId, setMataUangId] = useState();
     const [mataUang, setMataUang] = useState('Rp ');
     const [dataSupplier, setDataSupplier] = useState();
+    const [dataFaktur, setDataFaktur] = useState();
   
     const [isClearable, setIsClearable] = useState(true);
     const [isSearchable, setIsSearchable] = useState(true);
@@ -49,12 +51,21 @@ const BuatCreditNote = () => {
 
     // handle change supplier 
     const handleChangeSupplier = (value) => {
-        setSupplierId(value.id);
+        setSupplierId(value.value);
         setSelectedSupplier(value);
-        loadOptionsFaktur(value.id)
+        
     };
-    const loadOptionsSupplier = (inputValue) => {
-        return fetch(`${Url}/select_suppliers?nama=${inputValue}&grup=impor`, {
+    // const loadOptionsSupplier = (inputValue) => {
+    //     return fetch(`${Url}/select_suppliers?nama=${inputValue}&grup=impor`, {
+    //         headers: {
+    //             Accept: "application/json",
+    //             Authorization: `Bearer ${auth.token}`,
+    //         },
+    //     }).then((res) => res.json());
+    // };
+
+    const loadOptionsSupplier = () => {
+        return fetch(`${Url}/credit_notes_available_suppliers`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -63,21 +74,23 @@ const BuatCreditNote = () => {
     };
 
     useEffect(() => {
-        axios.get(`${Url}/select_suppliers?grup=impor`, {
+        
+        axios.get(`${Url}/credit_notes_available_suppliers`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
         }).then((res) => {
             let tmp = []
-            for (let i = 0; i < res.data.length; i++) {
+            for (let i = 0; i < res.data.data.length; i++) {
                 tmp.push({
-                    label: res.data[i].name,
-                    value: res.data[i].id
+                    label: res.data.data[i].name,
+                    value: res.data.data[i].id
                 })
             }
-            console.log(tmp)
+            //console.log(tmp)
             setDataSupplier(tmp)
+            console.log(dataSupplier)
         }
 
 
@@ -86,7 +99,7 @@ const BuatCreditNote = () => {
 
     // handle change faktur 
     const handleChangeFaktur = (value) => {
-        setFakturId(value.id);
+        setFakturId(value.value);
         setSelectedFaktur(value);
     };
     const loadOptionsFaktur = (inputValue) => {
@@ -95,8 +108,32 @@ const BuatCreditNote = () => {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => res.json.data());
     };
+
+    useEffect(() => {
+        console.log(supplierId)
+        axios.get(`${Url}/credit_notes_available_purchase_invoices?id_pemasok=${supplierId}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => {
+            let tmp = []
+            for (let i = 0; i < res.data.data.length; i++) {
+                tmp.push({
+                    label: res.data.data[i].code,
+                    value: res.data.data[i].id
+                })
+            }
+            //console.log(tmp)
+            setDataFaktur(tmp)
+            console.log(dataFaktur)
+        }
+
+
+        );
+    }, [supplierId])
 
     // handle change mata uang 
     const handleChangeMataUang = (value) => {
@@ -415,16 +452,17 @@ const BuatCreditNote = () => {
       /> */}
 
 
-                                <AsyncSelect
+                                <ReactSelect
                                     placeholder="Pilih Supplier..."
                                     cacheOptions
                                     defaultOptions
                                     isClearable={true}
                                     isSearchable={true}
                                     value={selectedSupplier}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsSupplier}
+                                    getOptionLabel={(e) => e.label}
+                                    getOptionValue={(e) => e.value}
+                                    options={dataSupplier}
+                                    //loadOptions={loadOptionsSupplier}
                                     onChange={handleChangeSupplier}
                                 />
                             </div>
@@ -432,14 +470,15 @@ const BuatCreditNote = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Faktur Pembelian</label>
                             <div className="col-sm-7">
-                                <AsyncSelect
+                                <ReactSelect
                                     placeholder="Pilih Faktur Pembelian..."
                                     cacheOptions
                                     defaultOptions
                                     value={selectedFaktur}
-                                    getOptionLabel={(e) => e.code}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsFaktur}
+                                    getOptionLabel={(e) => e.label}
+                                    getOptionValue={(e) => e.value}
+                                    options={dataFaktur}
+                                   // loadOptions={loadOptionsFaktur}
                                     onChange={handleChangeFaktur}
                                 />
                             </div>
