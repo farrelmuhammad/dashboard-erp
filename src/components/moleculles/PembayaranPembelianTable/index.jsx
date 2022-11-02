@@ -115,15 +115,42 @@ const PembayaranPembelianTable = () => {
         setVisible(false);
     };
 
+    // const deletePembayaran = async (id, code) => {
+    //     await axios.delete(`${Url}/purchase_invoice_payments/${id}`, {
+    //         headers: {
+    //             Accept: "application/json",
+    //             Authorization: `Bearer ${auth.token}`,
+    //         },
+    //     });
+    //     getDataPembayaran()
+    //     Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+    // };
+
+
     const deletePembayaran = async (id, code) => {
-        await axios.delete(`${Url}/purchase_invoice_payments/${id}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        });
-        getDataPembayaran()
-        Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Data ini akan dihapus",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios.delete(`${Url}/purchase_invoice_payments/${id}`, {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${auth.token}`,
+                    },
+                });
+                getDataPembayaran()
+                Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+
+            }
+        })
+
+
     };
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -250,8 +277,8 @@ const PembayaranPembelianTable = () => {
            // phone_number: getData[i].phone_number ? getData[i].phone_number : <div>-</div>,
             // customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
              total : 
-             getData[i].currency_name == null ? 
-             < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].paid).toFixed(2).replace('.' , ',')} key="diskon" />
+             getData[i].currency_name == null  || getData[i].currency_name == 'IDR' ?
+             < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={'IDR' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].paid).toFixed(2).replace('.' , ',')} key="diskon" />
               :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={getData[i].currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].paid).toLocaleString('id')} key="diskon" />,
 
             //type : getData[i].supplier._group,

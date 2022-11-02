@@ -14,6 +14,7 @@ import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
 import CurrencyFormat from 'react-currency-format';
 import { PageHeader } from 'antd';
+import ReactSelect from 'react-select';
 
 const { Text } = Typography;
 
@@ -49,7 +50,8 @@ const BuatPembayaranPembelian = () => {
 
     const [selectedSupplier, setSelectedSupplier] = useState()
     const [selectedMataUang, setSelectedMataUang] = useState()
-    const [nmMataUang, setnmMataUang] = useState('')
+    const [nmMataUang, setnmMataUang] = useState()
+    const [nmMataUang2, setnmMataUang2] = useState('')
     const [supplierId, setSupplierId] = useState('')
     const [mataUangId, setMataUangId] = useState()
     const [selectedBank, setSelectedBank] = useState()
@@ -86,6 +88,7 @@ const BuatPembayaranPembelian = () => {
     const handleChangeMataUang = (value) => {
         setnmMataUang(value.name);
         setSelectedMataUang(value);
+        setnmMataUang2(value)
         setMataUangId(value.id);
         console.log(selectedMataUang)
     };
@@ -317,6 +320,8 @@ const BuatPembayaranPembelian = () => {
 
     const handleSubmit = async (e) => {
 
+        console.log(kurs)
+
         if(!date){
             Swal.fire({
                 icon: "error",
@@ -359,7 +364,7 @@ const BuatPembayaranPembelian = () => {
         const dataKirim = new FormData();
         dataKirim.append("tanggal", date);
         dataKirim.append("referensi", referensi);
-        dataKirim.append("kurs", kurs);
+        dataKirim.append("kurs", kurs.replace(',','.'));
         dataKirim.append("pemasok", supplierId);
         dataKirim.append("status", "Submitted");
         dataKirim.append("mata_uang", mataUangId);
@@ -454,7 +459,7 @@ const BuatPembayaranPembelian = () => {
         const dataKirim = new FormData();
         dataKirim.append("tanggal", date);
         dataKirim.append("referensi", referensi);
-        dataKirim.append("kurs", kurs);
+        dataKirim.append("kurs", kurs.replace(',','.'));
         dataKirim.append("pemasok", supplierId);
         dataKirim.append("status", "Draft");
         dataKirim.append("mata_uang", mataUangId);
@@ -572,16 +577,40 @@ const BuatPembayaranPembelian = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
                             <div className="col-sm-7">
                                
+                               {
+                                nmMataUang == '' ? 
                                 <AsyncSelect
-                                    placeholder="Pilih Mata Uang..."
-                                    cacheOptions
-                                    defaultOptions
-                                    value={selectedMataUang}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsMataUang}
-                                    onChange={handleChangeMataUang}
-                                />
+                                placeholder="Pilih Mata Uang..."
+                                cacheOptions
+                                defaultOptions
+                                value={selectedMataUang}
+                                getOptionLabel={(e) => e.name}
+                                getOptionValue={(e) => e.id}
+                                loadOptions={loadOptionsMataUang}
+                                onChange={handleChangeMataUang}
+                            /> : 
+                        //     <input
+                        //     type="Nama"
+                        //     className="form-control"
+                        //     value={nmMataUang}
+                        //     id="inputNama3"
+
+                        // />
+                        <AsyncSelect
+                        placeholder="Pilih Mata Uang..."
+                        cacheOptions
+                        defaultOptions
+                        value={nmMataUang2}
+                        getOptionLabel={(e) => e.name}
+                        getOptionValue={(e) => e.id}
+                        loadOptions={loadOptionsMataUang}
+                        onChange={handleChangeMataUang}
+                    /> 
+
+
+                               }
+
+                             
                             </div>
                         </div>
 
@@ -590,12 +619,37 @@ const BuatPembayaranPembelian = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Rate Kurs</label>
                             <div className="col-sm-7">
-                                <input
+                                {/* <input
+                                    
+                                    prefix={nmMataUang}
                                     type="Nama"
                                     className="form-control"
+                                    defaultValue={Number(kurs).toFixed(2).replace('.',',')}
                                     onChange={(e) => setKurs(e.target.value)}
+                                    decimalSeparator={','}
                                     id="inputNama3"
-                                />
+                                /> */}
+
+
+                                            <div className="col-sm-7">
+
+< CurrencyFormat  className=' text-start form-control  editable-input ' style={{ width: "100%", fontSize: "10px!important" }} prefix={nmMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(kurs).toFixed(2).replace('.',',')} key="diskon" 
+onChange={(e) => setKurs(parseFloat ((e.target.value).toString().replace('.',',')))}
+
+//onChange={(e) => setKurs(e.target.value)}
+// renderText={value => <input 
+// value={parseFloat(value.toString().replace('.', ','))}  id="colFormLabelSm"  className="form-control form-control-sm" onChange={(e) => 
+
+// console.log(e.target.value)}/>}  
+/>
+
+
+
+
+{/* <CurrencyFormat prefix={nmMataUang} className='form-control' thousandSeparator={'.'} decimalSeparator={','} value={kurs} onKeyDown={(event) => klikEnter(event)} onChange={(e) => setUbahKurs(e.target.value)} key="total" /> */}
+
+
+</div>
                             </div>
                         </div>
                         <div className="row mb-3">

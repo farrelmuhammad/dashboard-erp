@@ -109,6 +109,7 @@ const BuatPelunasan = () => {
     const [description, setDescription] = useState('');
     const [status, setStatus] = useState("");
     const [customer, setCustomer] = useState("");
+    const [dataNoEdit, setDataNoEdit] = useState("");
     const [chartOfAcc, setChartOfAcc] = useState("");
     const [product, setProduct] = useState([]);
     const [query, setQuery] = useState("");
@@ -177,9 +178,16 @@ const BuatPelunasan = () => {
         }).then((res) => res.data.data);
     };
 
-    // useEffect(() => {
-    //     getNewCodeSales()
-    // })
+    useEffect(() => {
+        axios.get(`${Url}/sales_invoice_payments_available_sales_invoices?penerima=${customer}`, {
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${auth.token}`
+            }
+        }).then((res) => {
+            setDataNoEdit(res.data.data)
+        })
+    }, [customer])
 
     useEffect(() => {
         const getProduct = async () => {
@@ -192,7 +200,8 @@ const BuatPelunasan = () => {
             })
             let tmp = []
             for (let i = 0; i < res.data.data.length; i++) {
-                if (tmpCentang[i]) {
+                console.log(tmpCentang.indexOf(res.data.data[i].code))
+                if (tmpCentang.indexOf(res.data.data[i].code) >= 0) {
                     tmp.push({
                         detail: res.data.data[i],
                         statusCek: true
@@ -205,9 +214,28 @@ const BuatPelunasan = () => {
                     });
                 }
 
+                // let temp = []
+                // if (tmpCentang.length != 0) {
+                //     for (let x = 0; x < tmpCentang.length; x++) {
+                //         if (tmpCentang[x] == res.data.data[i].code) {
+                //             temp.push(x)
+                //         }
+                //         else {
+                //             temp.push('')
+                //         }
+                //     }
+                // }
+                // else {
+                //     tmp.push({
+                //         detail: res.data.data[i],
+                //         statusCek: false
+                //     });
+                // }
+
+
 
             }
-
+            // console.log(tmp)
             setGetDataProduct(tmp);
         };
 
@@ -409,26 +437,45 @@ const BuatPelunasan = () => {
 
         let tmpDataBaru = []
         let tmpJumlah = [...jumlah]
-        let tmpDataCentang = []
+        let tmpDataCentang = [...tmpCentang]
         for (let i = 0; i < getDataProduct.length; i++) {
             if (i == index) {
                 tmpDataBaru.push({
                     detail: getDataProduct[i].detail,
                     statusCek: !getDataProduct[i].statusCek
                 })
+                // tmpDataCentang.push(tmpDataBaru[i].detail.code)
+
             }
             else {
                 tmpDataBaru.push(getDataProduct[i])
             }
 
+
             if (tmpDataBaru[i].statusCek == true) {
                 tmpDataCentang.push(tmpDataBaru[i].detail.code)
             }
             else {
-                tmpDataCentang.push('')
+                let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.code);
+                if(index>=0){
+                    tmpDataCentang.splice(index, 1)
+                }
+                // tmpDataCentang.push('')
             }
         }
-        setTmpCentang(tmpDataCentang)
+
+        // for(let x=0; x<dataNoEdit.length; x++){
+
+        //     if (tmpDataBaru[i].statusCek == true) {
+        //         tmpDataCentang.push(tmpDataBaru[i].detail.code)
+        //     }
+        //     else {
+        //         tmpDataCentang.push('')
+        //     }
+        // }
+        let unikTmpCentang = [...new Set(tmpDataCentang)]
+        console.log(unikTmpCentang)
+        setTmpCentang(unikTmpCentang)
         setGetDataProduct(tmpDataBaru)
         var updatedList = [...product];
         if (tmpDataBaru[index].statusCek) {
