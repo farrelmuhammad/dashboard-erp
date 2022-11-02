@@ -32,7 +32,7 @@ const PesananPembelian = () => {
       <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
         <div className="row">
           <div className="col text-title text-start">
-            <h3 className="title fw-bold">Daftar Pesanan Pembelian</h3>
+            <h5 className="title fw-bold">Daftar Pesanan Pembelian</h5>
           </div>
           {userAccess?.map(d => {
             if (d.ability_name === "create-sales_order") {

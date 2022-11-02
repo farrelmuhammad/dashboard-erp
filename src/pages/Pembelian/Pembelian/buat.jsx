@@ -114,6 +114,7 @@ const BuatPesananPembelian = () => {
     const navigate = useNavigate();
 
     const [getDataProduct, setGetDataProduct] = useState();
+    const [tmpCentang, setTmpCentang] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const [subTotal, setSubTotal] = useState("");
@@ -161,16 +162,34 @@ const BuatPesananPembelian = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_products?nama_alias=${query}&grup=${grup}`, {
+            const res = await axios.get(`${Url}/select_products?nama=${query}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
+            let tmp = []
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentang[i]) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: true
+                    });
+                }
+                else {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: false
+                    });
+                }
+
+
+            }
+            // setGetDataProduct(res.data);
+            setGetDataProduct(tmp);
         };
 
-        if (query.length === 0 || query.length > 2) getProduct();
+        if (query.length >= 0) getProduct();
     }, [query, grup])
 
     useEffect(() => {
@@ -211,18 +230,21 @@ const BuatPesananPembelian = () => {
         {
             title: 'Nama Produk',
             dataIndex: 'name',
+            render: (_, record) => {
+                return <>{record.detail.name}</>
+            }
         },
         {
             title: 'Stok',
             dataIndex: 'stock',
             width: '15%',
             align: 'center',
-            render(text, record) {
+            render(_, record) {
                 return {
                     props: {
                     },
                     // children: <div>{formatQuantity(text)}</div>
-                    children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
+                    children: <div>{Number(record.detail.stock).toFixed(2).replace('.', ',')}</div>
                 };
             }
         },
@@ -231,11 +253,12 @@ const BuatPesananPembelian = () => {
             dataIndex: 'address',
             width: '15%',
             align: 'center',
-            render: (_, record) => (
+            render: (_, record, index) => (
                 <>
                     <Checkbox
                         value={record}
-                        onChange={handleCheck}
+                        checked={record.statusCek}
+                        onChange={(e) => handleCheck(e, index)}
                     />
                 </>
             )
@@ -604,8 +627,35 @@ const BuatPesananPembelian = () => {
         };
     });
 
-    const handleCheck = (event) => {
+    const handleCheck = (event, index) => {
+        let data = event.target.value
+
+        let tmpDataBaru = []
+        let tmpJumlah = [...jumlah]
+        let tmpDataCentang = []
+        for (let i = 0; i < getDataProduct.length; i++) {
+            if (i == index) {
+                tmpDataBaru.push({
+                    detail: getDataProduct[i].detail,
+                    statusCek: !getDataProduct[i].statusCek
+                })
+            }
+            else {
+                tmpDataBaru.push(getDataProduct[i])
+            }
+
+            if (tmpDataBaru[i].statusCek == true) {
+                tmpDataCentang.push(tmpDataBaru[i].detail.code)
+            }
+            else {
+                tmpDataCentang.push('')
+            }
+        }
+        setTmpCentang(tmpDataCentang)
+        setGetDataProduct(tmpDataBaru)
         var updatedList = [...product];
+
+        // var updatedList = [...product];
         if (event.target.checked) {
             updatedList = [...product, event.target.value];
             let tmp = [];
@@ -661,35 +711,35 @@ const BuatPesananPembelian = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if(!date){
+        if (!date) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if (!grup){
+        else if (!grup) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Grup kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if (grup == "Impor"){
-            if  (!matauang){
+        else if (grup == "Impor") {
+            if (!matauang) {
                 Swal.fire({
                     icon: "error",
                     title: "Oops...",
                     text: "Data Mata Uang kosong, Silahkan Lengkapi datanya ",
-                  });
+                });
             }
         }
-        else if(!supplier){
+        else if (!supplier) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
         // else if(!tanggalAwal){
         //     Swal.fire({
@@ -710,227 +760,228 @@ const BuatPesananPembelian = () => {
                 icon: "error",
                 title: "Oops...",
                 text: "Data PPN kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        else{
-
-
-        console.log(pilihanDiskon);
-        const OrderData = new FormData();
-        OrderData.append("tanggal", date);
-        OrderData.append("referensi", referensi);
-        OrderData.append("_group", grup);
-        OrderData.append("catatan", description);
-        OrderData.append("pemasok", supplier);
-        OrderData.append("berdasarkan", PIC);
-        OrderData.append("dibeli_oleh", namaPenerima);
-        OrderData.append("tanggal_awal_periode_pengiriman", tanggalAwal);
-        OrderData.append("tanggal_akhir_periode_pengiriman", tanggalAkhir);
-
-        OrderData.append("mata_uang", matauang);
-        OrderData.append("status", "Submitted");
-
-        OrderData.append("ppn", totalPpn);
-        product.map((p, i) => {
-            console.log(p);
-            OrderData.append("nama_alias_produk[]", p.alias_name);
-            OrderData.append("id_produk[]", p.id);
-            OrderData.append("kuantitas[]", p.quantity);
-            OrderData.append("satuan[]", p.unit);
-            OrderData.append("harga[]", p.purchase_price);
-
-            if (jumlahDiskon[i] == 0) {
-
-            }
-            if (pilihanDiskon[i] == '%') {
-                OrderData.append("persentase_diskon[]", jumlahDiskon[i]);
-
-                OrderData.append("diskon_tetap[]", 0);
-            }
-            else if (pilihanDiskon[i] == namaMataUang) {
-                OrderData.append("diskon_tetap[]", jumlahDiskon[i]);
-
-                OrderData.append("persentase_diskon[]", 0);
-            }
-            // else if(pilihanDiskon[i]=="pilih"){
-
-            //     OrderData.append("diskon_tetap[]", 0);
-
-            //     OrderData.append("persentase_diskon[]", 0);
-            // }
-        });
-        OrderData.append("termasuk_pajak", checked);
-
-
-        axios({
-            method: "post",
-            url: `${Url}/purchase_orders`,
-            data: OrderData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/pesananpembelian");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text:"Data Produk belum lengkap, silahkan lengkapi datanya dan coba kembali",
-                        //text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
             });
-     } };
+        }
+        else {
+
+
+            console.log(pilihanDiskon);
+            const OrderData = new FormData();
+            OrderData.append("tanggal", date);
+            OrderData.append("referensi", referensi);
+            OrderData.append("_group", grup);
+            OrderData.append("catatan", description);
+            OrderData.append("pemasok", supplier);
+            OrderData.append("berdasarkan", PIC);
+            OrderData.append("dibeli_oleh", namaPenerima);
+            OrderData.append("tanggal_awal_periode_pengiriman", tanggalAwal);
+            OrderData.append("tanggal_akhir_periode_pengiriman", tanggalAkhir);
+
+            OrderData.append("mata_uang", matauang);
+            OrderData.append("status", "Submitted");
+
+            OrderData.append("ppn", totalPpn);
+            product.map((p, i) => {
+                console.log(p);
+                OrderData.append("nama_alias_produk[]", p.alias_name);
+                OrderData.append("id_produk[]", p.id);
+                OrderData.append("kuantitas[]", p.quantity);
+                OrderData.append("satuan[]", p.unit);
+                OrderData.append("harga[]", p.purchase_price);
+
+                if (jumlahDiskon[i] == 0) {
+
+                }
+                if (pilihanDiskon[i] == '%') {
+                    OrderData.append("persentase_diskon[]", jumlahDiskon[i]);
+
+                    OrderData.append("diskon_tetap[]", 0);
+                }
+                else if (pilihanDiskon[i] == namaMataUang) {
+                    OrderData.append("diskon_tetap[]", jumlahDiskon[i]);
+
+                    OrderData.append("persentase_diskon[]", 0);
+                }
+                // else if(pilihanDiskon[i]=="pilih"){
+
+                //     OrderData.append("diskon_tetap[]", 0);
+
+                //     OrderData.append("persentase_diskon[]", 0);
+                // }
+            });
+            OrderData.append("termasuk_pajak", checked);
+
+
+            axios({
+                method: "post",
+                url: `${Url}/purchase_orders`,
+                data: OrderData,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            })
+                .then(function (response) {
+                    //handle success
+                    Swal.fire(
+                        "Berhasil Ditambahkan",
+                        ` Masuk dalam list`,
+                        "success"
+                    );
+                    navigate("/pesananpembelian");
+                })
+                .catch((err) => {
+                    if (err.response) {
+                        console.log("err.response ", err.response);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Data Produk belum lengkap, silahkan lengkapi datanya dan coba kembali",
+                            //text: err.response.data.error.nama,
+                        });
+                    } else if (err.request) {
+                        console.log("err.request ", err.request);
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    } else if (err.message) {
+                        // do something other than the other two
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    }
+                });
+        }
+    };
 
     const handleDraft = async (e) => {
         console.log(pilihanDiskon);
 
-        if(!date){
+        if (!date) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if (!grup){
+        else if (!grup) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Grup kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if (grup == "Impor"){
-            if  (!matauang){
+        else if (grup == "Impor") {
+            if (!matauang) {
                 Swal.fire({
                     icon: "error",
                     title: "Oops...",
                     text: "Data Mata Uang kosong, Silahkan Lengkapi datanya ",
-                  });
+                });
             }
         }
-        else if(!supplier){
+        else if (!supplier) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!tanggalAwal){
+        else if (!tanggalAwal) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!tanggalAkhir){
+        else if (!tanggalAkhir) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!totalPpn){
+        else if (!totalPpn) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data PPN kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        else{
-        e.preventDefault();
-        const OrderData = new FormData();
-        OrderData.append("tanggal", date);
-        OrderData.append("pemasok", supplier);
-        OrderData.append("ppn", totalPpn);
-        OrderData.append("referensi", referensi);
-        OrderData.append("catatan", description);
-        OrderData.append("mata_uang", matauang);
-        OrderData.append("status", "Draft");
-
-        OrderData.append("berdasarkan", PIC);
-        OrderData.append("dibeli_oleh", namaPenerima);
-        OrderData.append("tanggal_awal_periode_pengiriman", tanggalAwal);
-        OrderData.append("tanggal_akhir_periode_pengiriman", tanggalAkhir);
-        OrderData.append("_group", grup);
-        product.map((p, i) => {
-            console.log(p.price);
-            OrderData.append("nama_alias_produk[]", p.alias_name);
-            OrderData.append("id_produk[]", p.id);
-            OrderData.append("kuantitas[]", p.quantity);
-            OrderData.append("satuan[]", p.unit);
-            OrderData.append("harga[]", p.purchase_price);
-            if (pilihanDiskon[i] == '%') {
-                OrderData.append("persentase_diskon[]", jumlahDiskon[i]);
-
-                OrderData.append("diskon_tetap[]", 0);
-            }
-            else if (pilihanDiskon[i] == namaMataUang) {
-                OrderData.append("diskon_tetap[]", jumlahDiskon[i]);
-
-                OrderData.append("persentase_diskon[]", 0);
-            }
-            // else if (pilihanDiskon[i]=="pilih"){
-
-            //     OrderData.append("diskon_tetap[]", 0);
-
-            //     OrderData.append("persentase_diskon[]", 0);
-            // }
-        });
-        axios({
-            method: "post",
-            url: `${Url}/purchase_orders`,
-            data: OrderData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/pesananpembelian");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text:"Data Produk belum lengkap, silahkan lengkapi datanya dan coba kembali",
-                        //text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
             });
-  
-          }    
-          };
+        }
+        else {
+            e.preventDefault();
+            const OrderData = new FormData();
+            OrderData.append("tanggal", date);
+            OrderData.append("pemasok", supplier);
+            OrderData.append("ppn", totalPpn);
+            OrderData.append("referensi", referensi);
+            OrderData.append("catatan", description);
+            OrderData.append("mata_uang", matauang);
+            OrderData.append("status", "Draft");
+
+            OrderData.append("berdasarkan", PIC);
+            OrderData.append("dibeli_oleh", namaPenerima);
+            OrderData.append("tanggal_awal_periode_pengiriman", tanggalAwal);
+            OrderData.append("tanggal_akhir_periode_pengiriman", tanggalAkhir);
+            OrderData.append("_group", grup);
+            product.map((p, i) => {
+                console.log(p.price);
+                OrderData.append("nama_alias_produk[]", p.alias_name);
+                OrderData.append("id_produk[]", p.id);
+                OrderData.append("kuantitas[]", p.quantity);
+                OrderData.append("satuan[]", p.unit);
+                OrderData.append("harga[]", p.purchase_price);
+                if (pilihanDiskon[i] == '%') {
+                    OrderData.append("persentase_diskon[]", jumlahDiskon[i]);
+
+                    OrderData.append("diskon_tetap[]", 0);
+                }
+                else if (pilihanDiskon[i] == namaMataUang) {
+                    OrderData.append("diskon_tetap[]", jumlahDiskon[i]);
+
+                    OrderData.append("persentase_diskon[]", 0);
+                }
+                // else if (pilihanDiskon[i]=="pilih"){
+
+                //     OrderData.append("diskon_tetap[]", 0);
+
+                //     OrderData.append("persentase_diskon[]", 0);
+                // }
+            });
+            axios({
+                method: "post",
+                url: `${Url}/purchase_orders`,
+                data: OrderData,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            })
+                .then(function (response) {
+                    //handle success
+                    Swal.fire(
+                        "Berhasil Ditambahkan",
+                        ` Masuk dalam list`,
+                        "success"
+                    );
+                    navigate("/pesananpembelian");
+                })
+                .catch((err) => {
+                    if (err.response) {
+                        console.log("err.response ", err.response);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Data Produk belum lengkap, silahkan lengkapi datanya dan coba kembali",
+                            //text: err.response.data.error.nama,
+                        });
+                    } else if (err.request) {
+                        console.log("err.request ", err.request);
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    } else if (err.message) {
+                        // do something other than the other two
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    }
+                });
+
+        }
+    };
 
     return (
         <>
