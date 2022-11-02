@@ -1269,7 +1269,7 @@ const EditPesananPembelian = () => {
                         <div className="row mb-3" id="ppn" style={{ display: tampilPPN ? "flex" : "none" }}>
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">PPN</label>
                             <div className="col-sm-6">
-                                <CurrencyFormat prefix='Rp ' className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toFixed(2).replace('.',',')} onKeyDown={(event) => klikEnter(event)} onChange={(e) => setTotalPpn(e.target.value.replace('.', '').replace(/[^0-9\.]+/g, ""))} key="total" />
+                                <CurrencyFormat prefix='Rp ' style={{width:"70%"}} className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toFixed(2).replace('.',',')} onKeyDown={(event) => klikEnter(event)} onChange={(e) => setTotalPpn(e.target.value.replace('.', '').replace(/[^0-9\.]+/g, ""))} key="total" />
 
 
                                 {/* <input

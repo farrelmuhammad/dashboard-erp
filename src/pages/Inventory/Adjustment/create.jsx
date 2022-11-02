@@ -122,6 +122,8 @@ const CreateAdjustment = () => {
     const [totalPpn, setTotalPpn] = useState("");
     const [grandTotal, setGrandTotal] = useState("");
     const [checked, setChecked] = useState("");
+    const [tmpCentang, setTmpCentang] = useState([]);
+    const [jumlah, setJumlah] = useState([])
 
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
@@ -156,7 +158,24 @@ const CreateAdjustment = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
+            let tmp = []
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentang.indexOf(res.data[i].product_id) >= 0) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: true
+                    });
+                }
+                else {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: false
+                    });
+                }
+
+
+            }
+            setGetDataProduct(tmp);
         };
         if (query.length >= 0) getProduct();
     }, [query, warehouse_id])
@@ -166,14 +185,17 @@ const CreateAdjustment = () => {
         {
             title: 'Nama Produk',
             dataIndex: 'product_name',
+            render: (_, record) => {
+                return <>{record.detail.product_name}</>
+            }
         },
         {
             title: 'Stok',
             dataIndex: 'qty_before',
             width: '15%',
             align: 'center',
-            render: (text) => {
-                return <>{text.toString().replace('.', ',')}</>
+            render: (_,record) => {
+                return <>{record.detail.qty_before.toString().replace('.', ',')}</>
 
             }
         },
@@ -182,18 +204,13 @@ const CreateAdjustment = () => {
             dataIndex: 'actions',
             width: '15%',
             align: 'center',
-            render: (_, record) => (
+            render: (_, record, index) => (
                 <>
                     <Checkbox
                         value={record}
-                        // checked
-                        onChange={handleCheck}
+                        checked={record.statusCek}
+                        onChange={(e) => handleCheck(e, index)}
                     />
-                    {/* <CheckBox
-          type="checkbox"
-          checked={selected}
-          onChange={handleOnChange} 
-        ></CheckBox> */}
                 </>
             )
         },
@@ -329,15 +346,77 @@ const CreateAdjustment = () => {
         };
     });
 
-    const handleCheck = (event) => {
-        var updatedList = [...product];
-        if (event.target.checked) {
-            updatedList = [...product, event.target.value];
-        } else {
-            updatedList.splice(product.indexOf(event.target.value), 1);
+    const handleCheck = (event, index) => {
+        let data = event.target.value
+
+        let tmpDataBaru = []
+        let tmpJumlah = [...jumlah]
+        let tmpDataCentang = [...tmpCentang]
+        for (let i = 0; i < getDataProduct.length; i++) {
+            if (i == index) {
+                tmpDataBaru.push({
+                    detail: getDataProduct[i].detail,
+                    statusCek: !getDataProduct[i].statusCek
+                })
+                // tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+
+            }
+            else {
+                tmpDataBaru.push(getDataProduct[i])
+            }
+
+
+            if (tmpDataBaru[i].statusCek == true) {
+                tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+            }
+            else {
+                let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.product_id);
+                if(index>=0){
+                    tmpDataCentang.splice(index, 1)
+                }
+                // tmpDataCentang.push('')
+            }
         }
-        console.log(product.indexOf(event.target.value))
+
+        // for(let x=0; x<dataNoEdit.length; x++){
+
+        //     if (tmpDataBaru[i].statusCek == true) {
+        //         tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+        //     }
+        //     else {
+        //         tmpDataCentang.push('')
+        //     }
+        // }
+        let unikTmpCentang = [...new Set(tmpDataCentang)]
+        console.log(unikTmpCentang)
+        setTmpCentang(unikTmpCentang)
+        setGetDataProduct(tmpDataBaru)
+        var updatedList = [...product];
+        if (tmpDataBaru[index].statusCek) {
+            updatedList = [...product, data.detail];
+
+            for (let i = 0; i < updatedList.length; i++) {
+                if (i >= product.length) {
+                    tmpJumlah.push(0)
+                }
+
+            }
+            console.log(tmpJumlah)
+        } else {
+            for (let i = 0; i < updatedList.length; i++) {
+                if (updatedList[i].product_id == data.detail.product_id) {
+                    updatedList.splice(i, 1);
+                    tmpJumlah.splice(i, 1)
+                }
+            }
+        }
         setProduct(updatedList);
+        setJumlah(tmpJumlah)
+
+
+        // for(let )
+        console.log(updatedList);
+
     };
 
     const handleSubmit = async (e) => {

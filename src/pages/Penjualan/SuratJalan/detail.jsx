@@ -26,6 +26,9 @@ export const DetailSuratJalan = () => {
     const [vehicle, setVehicle] = useState('');
     const [sender, setSender] = useState('');
     const [notes, setNotes] = useState('');
+    const [recipient, setRecipient] = useState('')
+    const [recipientAdd, setRecipientAdd] = useState('');
+    const [recipientID, setRecipientID] = useState();
     const [status, setStatus] = useState([]);
     const [details, setDetails] = useState([]);
     const [delivered, setDelivered] = useState();
@@ -110,6 +113,11 @@ export const DetailSuratJalan = () => {
                 setDetails(getData.delivery_note_details)
                 setDelivered(getData.is_delivered)
                 setLoading(false)
+
+                setRecipientID(getData.recipient_address.customer_id)
+                setRecipientAdd(getData.recipient_address.address)
+
+                console.log(getData)
                 console.log(getData.delivery_note_details)
                 // console.log(res.data.data.map(d => d.sales_order_details));
                 // console.log(getData.map(d => d.sales_order_details));
@@ -119,6 +127,59 @@ export const DetailSuratJalan = () => {
                 console.log(err);
             });
     }
+
+
+    const getRecipientName = async () => {
+        await axios.get(`${Url}/customers?id=${recipientID}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        })
+            .then((res) => {
+                const getData = res.data.data[0];
+
+                setRecipient(getData.name)
+                // setDataSO(getData);
+                // setCode(getData.code)
+                // setDate(getData.date)
+                // if (getData.customer) {
+                //     setCustomer(getData.customer.name)
+                //     setAddress(getData.customer_address.address)
+                //     setSumber('SO')
+                // }
+                // else if (getData.supplier) {
+                //     setSupplier(getData.supplier.name)
+                //     setAddress(getData.supplier_address.address)
+                //     setSumber('Retur')
+                // }
+                
+                // setVehicle(getData.vehicle)
+                // setSender(getData.sender)
+                // setNotes(getData.notes)
+                // setStatus(getData.status)
+                // setDetails(getData.delivery_note_details)
+                // setDelivered(getData.is_delivered)
+                // setLoading(false)
+
+                // setRecipientAdd(getData.recipient_address.address)
+
+                console.log(getData)
+                //console.log(getData.delivery_note_details)
+                // console.log(res.data.data.map(d => d.sales_order_details));
+                // console.log(getData.map(d => d.sales_order_details));
+            })
+            .catch((err) => {
+                // Jika Gagal
+                console.log(err);
+            });
+    }
+
+    
+    useEffect(() => {
+        getRecipientName()
+    }, [recipientID])
+
 
     if (loading) {
         return (
@@ -175,7 +236,24 @@ export const DetailSuratJalan = () => {
                                                                 <label className='col-8'>Tanggal</label>
                                                                 <div className='col-6'> : {date}</div>
                                                             </div>
-                                                            <div className="d-flex flex-row">
+
+                                                        {delivered === true ?
+                                                    <>
+                                                   <div className="d-flex flex-row">
+                                                        <label className='col-8'>Kepada Yth.</label>
+                                                                        <div className='col-6'>
+                                                                            : {recipient}
+                                                                        </div> 
+                                                    </div>
+                                                    <div className="d-flex flex-row">
+                                                        <label className='col-8'>Alamat</label>
+                                                                <div>:</div>
+                                                                <div className='col-12' style={{overflowWrap:"break-word", maxWidth:"260px", marginLeft:"3px"}}> {recipientAdd}  </div>
+                                                    </div>
+                                             </>
+                                                : 
+                                              <>
+                                                    <div className="d-flex flex-row">
                                                                 <label className='col-8'>Kepada Yth.</label>
                                                                 {
                                                                     sumber === 'SO' ?
@@ -193,6 +271,27 @@ export const DetailSuratJalan = () => {
                                                                 <div>:</div>
                                                                 <div className='col-12' style={{overflowWrap:"break-word", maxWidth:"260px", marginLeft:"3px"}}> {address}  </div>
                                                             </div>
+                                              </>
+                                                        }
+
+                                                            {/* <div className="d-flex flex-row">
+                                                                <label className='col-8'>Kepada Yth.</label>
+                                                                {
+                                                                    sumber === 'SO' ?
+                                                                        <div className='col-6'>
+                                                                            : {customer}
+                                                                        </div> :
+                                                                        <div className='col-6'>
+                                                                            :  {supplier}
+                                                                        </div>
+                                                                }
+
+                                                            </div>
+                                                            <div className="d-flex flex-row">
+                                                                <label className='col-8'>Alamat</label>
+                                                                <div>:</div>
+                                                                <div className='col-12' style={{overflowWrap:"break-word", maxWidth:"260px", marginLeft:"3px"}}> {address}  </div>
+                                                            </div> */}
                                                             <div className="d-flex flex-row">
                                                                 <label className='col-8'>Kendaraan</label>
                                                                 <div className='col-6'> : {vehicle} </div>
@@ -378,7 +477,7 @@ export const DetailSuratJalan = () => {
                         {
                             sumber == 'SO' ?
                                 <div className="row mb-3">
-                                    <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pelanggan</label>
+                                    <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
                                     <div className="col-sm-7">
                                         <select disabled="true" id="PelangganSelect" className="form-select">
                                             <option>{customer}</option>
@@ -404,6 +503,31 @@ export const DetailSuratJalan = () => {
                                 </select>
                             </div>
                         </div>
+                     
+                        {delivered === true ?
+                        <>
+                            <div className="row mb-3">
+                                <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
+                                    <div className="col-sm-7">
+                                        <select disabled="true" id="PelangganSelect" className="form-select">
+                                            <option>{recipient}</option>
+                                        </select>
+                                    </div>
+                            </div>
+
+                        <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Alamat Penerima</label>
+                            <div className="col-sm-7">
+                                <select disabled="true" id="PelangganSelect" className="form-select">
+                                    <option>{recipientAdd}</option>
+                                </select>
+                            </div>
+                        </div>
+                        </>
+                        : 
+                     null
+                        }
+
                     </div>
                     <div className="col">
                         <div className="col">

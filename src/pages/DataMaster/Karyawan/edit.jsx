@@ -29,10 +29,10 @@ const EditKaryawan = () => {
   const [alamat, setAlamat] = useState("");
   const [kelurahan, setkelurahan] = useState("");
   const [kecamatan, setKecataman] = useState("");
-  const [kota, setKota] = useState("");
-  const [kode_pos, setKode_pos] = useState("");
-  const [date_of_birth, setDate_of_birth] = useState(null);
-  const [start_date, setStart_date] = useState(null);
+  const [kota, setKota] = useState('');
+  const [kode_pos, setKode_pos] = useState('');
+  const [date_of_birth, setDate_of_birth] = useState("");
+  const [start_date, setStart_date] = useState("");
   const [status, setStatus] = useState('');
   const navigate = useNavigate();
   const { id } = useParams();
@@ -91,55 +91,131 @@ const EditKaryawan = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    const userData = new URLSearchParams();
-    userData.append("nip", nip);
-    userData.append("nama", name);
-    userData.append("inisial", initial);
-    userData.append("departemen", department_id);
-    userData.append("posisi", position_id);
-    userData.append("email", email);
-    userData.append("nomor_telepon", phone_number);
-    userData.append("nik", nik);
-    userData.append("npwp", npwp);
-    userData.append("alamat", alamat);
-    userData.append("kelurahan", kelurahan);
-    userData.append("kecamatan", kecamatan);
-    userData.append("kota", kota);
-    userData.append("kode_pos", kode_pos);
-    userData.append("tanggal_lahir", date_of_birth);
-    userData.append("tanggal_masuk", start_date);
-    userData.append("status", status);
-    axios({
-      method: "put",
-      url: `${Url}/employees/${id}`,
-      data: userData,
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    })
-      .then(function (res) {
-        //handle success
-        console.log(res);
-        Swal.fire("Berhasil Ditambahkan", `${code} Masuk dalam list`, "success");
-        navigate("/karyawan");
-      })
-      .catch((err) => {
-        if (err.response) {
-          console.log("err.response ", err.response);
-          Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: err.response.data.error.nama,
-          });
-        } else if (err.request) {
-          console.log("err.request ", err.request);
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        } else if (err.message) {
-          // do something other than the other two
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        }
+    console.log(npwp)
+    if(!nip){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data NIP kosong, Silahkan Lengkapi datanya ",
       });
+    }
+    else if(nip.length > 9 )
+    {
+    //Nip maksimal 9 karakter
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "NIP maksimal 9 karakter, Silahkan periksa kembali ",
+      });
+    }
+    // else if(!nik){
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Nama kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
+    else if(nik.length > 20 && nik != "")
+    {
+      //NIK maksimal 20 
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "NIK maksimal 20 karakter, Silahkan periksa kembali ",
+      });
+    }
+    else if(!name){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Nama kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!initial > 5 && initial != ""){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Inisial kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!department_id){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Departemen kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(!position_id){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Posisi kosong, Silahkan Lengkapi datanya ",
+      });
+    }
+    else if(phone_number?.length > 20 && phone_number != ""){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Nomor Telepon maksimal 20 karakter, Silahkan periksa kembali ",
+      });
+    }
+    else if(npwp?.length > 25 && npwp != ""){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "NPWP maksimal 25 karakter, Silahkan Lengkapi datanya ",
+      });
+    }else {
+      const userData = new URLSearchParams();
+      userData.append("nip", nip);
+      userData.append("nama", name);
+      userData.append("inisial", initial);
+      userData.append("departemen", department_id);
+      userData.append("posisi", position_id);
+      userData.append("email", email);
+      userData.append("nomor_telepon", phone_number);
+      userData.append("nik", nik);
+      userData.append("npwp", npwp);
+      userData.append("alamat", alamat);
+      userData.append("kelurahan", kelurahan);
+      userData.append("kecamatan", kecamatan);
+      userData.append("kota", kota);
+      userData.append("kode_pos", kode_pos);
+      userData.append("tanggal_lahir", date_of_birth);
+      userData.append("tanggal_masuk", start_date);
+      userData.append("status", status);
+      axios({
+        method: "put",
+        url: `${Url}/employees/${id}`,
+        data: userData,
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${auth.token}`,
+        },
+      })
+        .then(function (res) {
+          //handle success
+          console.log(res);
+          Swal.fire("Berhasil Ditambahkan", `${code} Masuk dalam list`, "success");
+          navigate("/karyawan");
+        })
+        .catch((err) => {
+          if (err.response) {
+            console.log("err.response ", err.response);
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: err.response.data.error.nama,
+            });
+          } else if (err.request) {
+            console.log("err.request ", err.request);
+            Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+          } else if (err.message) {
+            // do something other than the other two
+            Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+          }
+        });
+    }
   };
 
   // const handleChangePage = (event, newPage) => {
@@ -159,29 +235,29 @@ const EditKaryawan = () => {
           Authorization: `Bearer ${auth.token}`,
         },
       })
-      .then(function (response) {
+      .then((response) => {
         setData(response.data.data[0]);
         const getData = response.data.data[0];
         setLoading(false)
-        setCode(getData.code);
-        setNip(getData.nip);
-        setName(getData.name);
-        setInitial(getData.initial);
+        setCode(getData.code || "");
+        setNip(getData.nip || "");
+        setName(getData.name || "");
+        setInitial(getData.initial || "");
         setDepartment_id(getData.department.id);
         setDepartmentName(getData.department.name);
         setPosition_id(getData.position.id);
-        setPositionName(getData.position.name);
-        setEmail(getData.email);
-        setPhone_number(getData.phone_number);
-        setNik(getData.nik);
-        setNpwp(getData.npwp);
-        setAlamat(getData.address);
-        setkelurahan(getData.urban_village);
-        setKecataman(getData.sub_district);
-        setKota(getData.city);
-        setKode_pos(getData.postal_code);
-        setDate_of_birth(getData.date_of_birth);
-        setStart_date(getData.start_date);
+        setPositionName(getData.position.name || "");
+        setEmail(getData.email || "");
+        setPhone_number(getData.phone_number || "");
+        setNik(getData.nik || "");
+        setNpwp(getData.npwp || "");
+        setAlamat(getData.address || "");
+        setkelurahan(getData.urban_village || "");
+        setKecataman(getData.sub_district || "");
+        setKota(getData.city || "");
+        setKode_pos(getData.postal_code || "");
+        setDate_of_birth(getData.date_of_birth || "");
+        setStart_date(getData.start_date || "");
         setStatus(getData.status);
         console.log(getData)
       })
@@ -356,7 +432,7 @@ const EditKaryawan = () => {
             <input
               type="date"
               className="form-control"
-              defaultValue={date_of_birth}
+              value={date_of_birth}
               onChange={(e) => setDate_of_birth(e.target.value)}
             />
           </div>
