@@ -14,7 +14,7 @@ import {
   InfoCircleOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { toTitleCase } from "../../../utils/helper";
+import { formatQuantity, toTitleCase } from "../../../utils/helper";
 const { Text } = Typography;
 
 const PajakTable = () => {
@@ -155,7 +155,7 @@ const PajakTable = () => {
       dataIndex: "rate",
       key: "rate",
       ...getColumnSearchProps("rate"),
-      render: (text) => <div>{text} %</div>,
+      render: (text) => <div>{formatQuantity(text)} %</div>,
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
       // sortDirections: ['descend', 'ascend'],
     },

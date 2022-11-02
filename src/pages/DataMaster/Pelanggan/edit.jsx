@@ -131,6 +131,7 @@ const EditPelanggan = () => {
     userData.append("status", status);
     dataSource.map((address) => {
       console.log(address);
+      userData.append("id_alamat_pelanggan[]", address.id ``);
       userData.append("alamat[]", address.address);
       userData.append("kota[]", address.city);
       userData.append("kecamatan[]", address.sub_district);
@@ -138,37 +139,37 @@ const EditPelanggan = () => {
       userData.append("kode_pos[]", address.postal_code);
     });
 
-    // for (var pair of userData.entries()) {
-    //   console.log(pair[0] + ", " + pair[1]);
-    // }
+    for (var pair of userData.entries()) {
+      console.log(pair[0] + ", " + pair[1]);
+    }
 
-    axios({
-      method: "put",
-      url: `${Url}/customers/${id}`,
-      data: userData,
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    })
-      .then(function (res) {
-        //handle success
-        // console.log(res);
-        Swal.fire("Berhasil Ditambahkan", `${id} Masuk dalam list`, "success");
-        navigate("/pelanggan");
-      })
-      .catch((err) => {
-        if (err.response) {
-          console.log("err.response ", err.response);
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        } else if (err.request) {
-          console.log("err.request ", err.request);
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        } else if (err.message) {
-          // do something other than the other two
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        }
-      });
+    // axios({
+    //   method: "put",
+    //   url: `${Url}/customers/${id}`,
+    //   data: userData,
+    //   headers: {
+    //     Accept: "application/json",
+    //     Authorization: `Bearer ${auth.token}`,
+    //   },
+    // })
+    //   .then(function (res) {
+    //     //handle success
+    //     // console.log(res);
+    //     Swal.fire("Berhasil Diedit", `${code} Masuk dalam list`, "success");
+    //     navigate("/pelanggan");
+    //   })
+    //   .catch((err) => {
+    //     if (err.response) {
+    //       console.log("err.response ", err.response);
+    //       Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+    //     } else if (err.request) {
+    //       console.log("err.request ", err.request);
+    //       Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+    //     } else if (err.message) {
+    //       // do something other than the other two
+    //       Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+    //     }
+    //   });
   };
 
   const onChange = () => {
@@ -225,10 +226,10 @@ const EditPelanggan = () => {
   const defaultColumns = [
     {
       title: 'No.',
-      dataIndex: 'index',
+      dataIndex: 'id',
       width: '3%',
       align: 'center',
-      render: (text, record, index) => index + 1
+      // render: (text, record, index) => index + 1
     },
     {
       title: 'Alamat',
@@ -277,10 +278,15 @@ const EditPelanggan = () => {
   const handleAdd = () => {
     const newData = {
       key: count,
-      name: ``,
-      age: '',
-      address: ``,
+      id: '',
+      address: '',
+      urban_village: ``,
+      sub_district: ``,
+      city: ``,
+      postal_code: ``,
     };
+    
+    console.log(newData);
     setDataSource([...dataSource, newData]);
     setCount(count + 1);
   };
@@ -450,6 +456,7 @@ const EditPelanggan = () => {
               className="basic-single"
               classNamePrefix="select"
               //defaultInputValue={bussinessName}
+              // value={{ value: bussinessName, label: bussinessName }}
               value={{ value: bussinessName, label: bussinessName }}
               // isDisabled={isDisabled}
               // isLoading={isLoading}
@@ -468,12 +475,12 @@ const EditPelanggan = () => {
             // getOptionValue={(e) => e.name}
             />
 
-            {/* <Select
+            {/* <ReactSelect
               className="basic-single"
               placeholder="Pilih Badan Usaha..."
               classNamePrefix="select"
               isSearchable
-              value={bussinessName}
+              defaultValue={bussinessName}
               onChange={handleSingleChange}
               options={options}
             /> */}

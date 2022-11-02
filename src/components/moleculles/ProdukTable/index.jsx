@@ -127,33 +127,42 @@ const ProdukTable = () => {
       title: 'Kode',
       dataIndex: 'code',
       key: 'code',
-      width: '15%',
+      width: '12%',
       ...getColumnSearchProps('code'),
     },
     {
-      title: 'Bagian',
+      title: 'Nama Produk',
       dataIndex: 'name',
       key: 'name',
-      width: '30%',
+      width: '24%',
       ...getColumnSearchProps('name'),
-      sorter: true,
-      sortDirections: ['descend', 'ascend'],
     },
     {
-      title: 'Grup',
-      dataIndex: '_group',
-      key: '_group',
-      width: '15%',
-      ...getColumnSearchProps('_group'),
-      sorter: true,
+      title: 'Bagian',
+      dataIndex: 'piece',
+      key: 'piece',
+      width: '10%',
+      ...getColumnSearchProps('piece'),
+      // sorter: true,
       sortDirections: ['descend', 'ascend'],
+      render: (piece) => piece.name
+    },
+    {
+      title: 'Merek',
+      dataIndex: 'brand',
+      key: 'brand',
+      // width: '15%',
+      ...getColumnSearchProps('brand'),
+      // sorter: true,
+      // sortDirections: ['descend', 'ascend'],
+      // render: (brand) => brand.name
     },
     {
       title: 'Kategori',
       dataIndex: 'category',
       key: 'category',
       ...getColumnSearchProps('category'),
-      //render: (category) => category.name
+      render: (category) => category.name
       // render: (text) => (
       //   <Text
       //     style={
@@ -178,8 +187,17 @@ const ProdukTable = () => {
       // sortDirections: ['descend', 'ascend'],
     },
     {
+      title: 'Grup',
+      dataIndex: '_group',
+      key: '_group',
+      width: '15%',
+      ...getColumnSearchProps('_group'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
       title: 'Actions',
-      width: '20%',
+      width: '12%',
       align: 'center',
       render: (_, record) => (
         <>
@@ -226,28 +244,8 @@ const ProdukTable = () => {
       .then(res => {
         const getData = res.data.data
         setProducts(getData)
+        console.log(getData);
 
-        let tmp = []
-        for (let i = 0; i < getData.length; i++) {
-          tmp.push({
-            id: getData[i].id,
-            can: getData[i].can,
-            code: getData[i].code,
-            name:getData[i].name,
-            _group:getData[i]._group,
-            category:getData[i].category.name,
-            // department : getData[i].department.name ,
-            // position: getData[i].position.name,
-            // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
-            // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
-            // date: getData[i].date,
-            // status: getData[i].status,
-            // warehouse: getData[i].warehouse.name
-          })
-        }
-
-        // setStatus(getData.map(d => d.status))
-        setDataTampil(tmp)
         setIsLoading(false);
 
         //console.log(getData)
@@ -272,7 +270,7 @@ const ProdukTable = () => {
         loading={isLoading}
         columns={columns}
         pagination={{ pageSize: 10 }}
-        dataSource={dataTampil}
+        dataSource={products}
         scroll={{
           y: 295,
         }}

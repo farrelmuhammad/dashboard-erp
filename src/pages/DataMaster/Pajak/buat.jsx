@@ -12,7 +12,7 @@ import CurrencyFormat from "react-currency-format";
 const BuatPajak = () => {
   const auth = useSelector((state) => state.auth);
   const [type, setType] = useState("");
-  const [rate, setRate] = useState("");
+  const [rate, setRate] = useState();
   const [product, setProduct] = useState([]);
   const navigate = useNavigate();
 
@@ -26,67 +26,68 @@ const BuatPajak = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if(!type){
+    if (!type) {
       Swal.fire({
-        icon:"error",
-        title:"Oops...",
-        text:"Data Nama kosong, Silahkan lengkapi datanya"
+        icon: "error",
+        title: "Oops...",
+        text: "Data Nama kosong, Silahkan lengkapi datanya"
       })
     }
-    else if(!rate){
+    else if (!rate) {
       Swal.fire({
-        icon:"error",
-        title:"Oops...",
-        text:"Data Persentase kosong, Silahkan lengkapi datanya"
+        icon: "error",
+        title: "Oops...",
+        text: "Data Persentase kosong, Silahkan lengkapi datanya"
       })
     }
-    else{
+    else {
 
-    const userData = new FormData();
-    // userData.append("id", id);
-    userData.append("jenis", type);
-    userData.append("tarif", rate);
-    product.map((p) => userData.append("produk[]", p));
+      const userData = new FormData();
+      // userData.append("id", id);
+      userData.append("jenis", type);
+      userData.append("tarif", rate);
+      product.map((p) => userData.append("produk[]", p));
 
-    // for (var pair of userData.entries()) {
-    //   console.log(pair[0]+ ', ' + pair[1]);
-    // }
+      // for (var pair of userData.entries()) {
+      //   console.log(pair[0]+ ', ' + pair[1]);
+      // }
 
-    axios({
-      method: "post",
-      url: `${Url}/taxes`,
-      data: userData,
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    })
-      .then(function (response) {
-        //handle success
-        Swal.fire(
-          "Berhasil Ditambahkan",
-          `${getTaxes} Masuk dalam list`,
-          "success"
-        );
-        navigate("/pajak");
+      axios({
+        method: "post",
+        url: `${Url}/taxes`,
+        data: userData,
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${auth.token}`,
+        },
       })
-      .catch((err) => {
-        if (err.response) {
-          console.log("err.response ", err.response);
-          Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: err.response.data.error.nama,
-          });
-        } else if (err.request) {
-          console.log("err.request ", err.request);
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        } else if (err.message) {
-          // do something other than the other two
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        }
-      });
-   } };
+        .then(function (response) {
+          //handle success
+          Swal.fire(
+            "Berhasil Ditambahkan",
+            `${getTaxes} Masuk dalam list`,
+            "success"
+          );
+          navigate("/pajak");
+        })
+        .catch((err) => {
+          if (err.response) {
+            console.log("err.response ", err.response);
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: err.response.data.error,
+            });
+          } else if (err.request) {
+            console.log("err.request ", err.request);
+            Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+          } else if (err.message) {
+            // do something other than the other two
+            Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+          }
+        });
+    }
+  };
 
   useEffect(() => {
     axios
@@ -108,7 +109,7 @@ const BuatPajak = () => {
   const onChange = (value) => {
     // console.log('changed', value);
     // value = parseFloat(value.toString().replace('.', ','))
-    setRate(value.toString().replace('.', ','))
+    setRate(value.toString(2).replace(',', '.'))
   };
 
   const convertToRupiahTabel = (angka) => {
@@ -162,9 +163,9 @@ const BuatPajak = () => {
               placeholder="Masukkan Nama Pajak"
               className="form-control"
               onChange={(e) => setType(e.target.value)}
-              // style={{
-              //   borderRadius: "25px"
-              // }}
+            // style={{
+            //   borderRadius: "25px"
+            // }}
             />
             {/* <input
               type="Nama"
@@ -182,9 +183,12 @@ const BuatPajak = () => {
             <div className="input-group">
               <InputNumber
                 size="large"
+                style={{
+                  borderRadius: "25px"
+                }}
                 addonAfter="%"
                 defaultValue={0}
-                decimalSeparator = {','}
+                decimalSeparator={','}
                 formatter={(value) => { convertToRupiahTabel(value) }}
                 onChange={onChange}
               />
