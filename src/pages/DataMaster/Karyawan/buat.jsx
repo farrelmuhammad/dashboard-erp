@@ -144,14 +144,14 @@ const BuatKaryawan = () => {
         text: "NIP maksimal 9 karakter, Silahkan periksa kembali ",
       });
     }
-    else if(!nik){
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Nama kosong, Silahkan Lengkapi datanya ",
-      });
-    }
-    else if(nik.length > 20)
+    // else if(!nik){
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Nama kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
+    else if(nik.length > 20 && nik != "")
     {
       //NIK maksimal 20 
       Swal.fire({
@@ -174,6 +174,13 @@ const BuatKaryawan = () => {
         text: "Data Inisial kosong, Silahkan Lengkapi datanya ",
       });
     }
+    else if(!initial > 5 && initial != ""){
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Inisial maksimal berisi 5 karakter ",
+      });
+    }
     else if(!department_id){
       Swal.fire({
         icon: "error",
@@ -188,14 +195,14 @@ const BuatKaryawan = () => {
         text: "Data Posisi kosong, Silahkan Lengkapi datanya ",
       });
     }
-    else if(!phone_number){
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data nomor telepon kosong, Silahkan Lengkapi datanya ",
-      });
-    }
-    else if(phone_number.length > 20){
+    // else if(!phone_number){
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data nomor telepon kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
+    else if(phone_number?.length > 20 && phone_number != ""){
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -203,35 +210,35 @@ const BuatKaryawan = () => {
       });
     }
 
-    else if(!email){
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Email kosong, Silahkan Lengkapi datanya ",
-      });
-    }
-    else if(!date_of_birth){
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Tanggal Lahir kosong, Silahkan Lengkapi datanya ",
-      });
-    }
-    else if(!start_date){
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Tanggal Masuk kosong, Silahkan Lengkapi datanya ",
-      });
-    }
-    else if(!npwp){
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Nama kosong, Silahkan Lengkapi datanya ",
-      });
-    }
-    else if(npwp.length > 25){
+    // else if(!email){
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Email kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
+    // else if(!date_of_birth){
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Tanggal Lahir kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
+    // else if(!start_date){
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Tanggal Masuk kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
+    // else if(!npwp){
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Nama kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
+    else if(npwp?.length > 25 && npwp != ""){
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -239,41 +246,41 @@ const BuatKaryawan = () => {
       });
     }
 
-    else if(!alamat){
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Alamat kosong, Silahkan Lengkapi datanya ",
-      });
-    }
-    else if(!kelurahan){
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Kelurahan kosong, Silahkan Lengkapi datanya ",
-      });
-    }
-    else if(!kecamatan){
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Kecamatan kosong, Silahkan Lengkapi datanya ",
-      });
-    }
-    else if(!kota){
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Kota kosong, Silahkan Lengkapi datanya ",
-      });
-    }
-    else if(!kode_pos){
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Kode Pos kosong, Silahkan Lengkapi datanya ",
-      });
-    }
+    // else if(!alamat){
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Alamat kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
+    // else if(!kelurahan){
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Kelurahan kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
+    // else if(!kecamatan){
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Kecamatan kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
+    // else if(!kota){
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Kota kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
+    // else if(!kode_pos){
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Kode Pos kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
     // else if(!name){
     //   Swal.fire({
     //     icon: "error",
