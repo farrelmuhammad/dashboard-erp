@@ -213,29 +213,7 @@ const BuatPelunasan = () => {
                         statusCek: false
                     });
                 }
-
-                // let temp = []
-                // if (tmpCentang.length != 0) {
-                //     for (let x = 0; x < tmpCentang.length; x++) {
-                //         if (tmpCentang[x] == res.data.data[i].code) {
-                //             temp.push(x)
-                //         }
-                //         else {
-                //             temp.push('')
-                //         }
-                //     }
-                // }
-                // else {
-                //     tmp.push({
-                //         detail: res.data.data[i],
-                //         statusCek: false
-                //     });
-                // }
-
-
-
             }
-            // console.log(tmp)
             setGetDataProduct(tmp);
         };
 
@@ -444,7 +422,6 @@ const BuatPelunasan = () => {
                     detail: getDataProduct[i].detail,
                     statusCek: !getDataProduct[i].statusCek
                 })
-                // tmpDataCentang.push(tmpDataBaru[i].detail.code)
 
             }
             else {
@@ -460,19 +437,9 @@ const BuatPelunasan = () => {
                 if(index>=0){
                     tmpDataCentang.splice(index, 1)
                 }
-                // tmpDataCentang.push('')
             }
         }
 
-        // for(let x=0; x<dataNoEdit.length; x++){
-
-        //     if (tmpDataBaru[i].statusCek == true) {
-        //         tmpDataCentang.push(tmpDataBaru[i].detail.code)
-        //     }
-        //     else {
-        //         tmpDataCentang.push('')
-        //     }
-        // }
         let unikTmpCentang = [...new Set(tmpDataCentang)]
         console.log(unikTmpCentang)
         setTmpCentang(unikTmpCentang)

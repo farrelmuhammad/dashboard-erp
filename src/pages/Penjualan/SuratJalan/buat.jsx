@@ -567,20 +567,20 @@ const BuatSuratJalan = () => {
                 text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
               });
         }
-        else if(!vehicle){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Kendaraan kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        else if(!sender){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Pengirim kosong, Silahkan Lengkapi datanya ",
-              });
-        }
+        // else if(!vehicle){
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data Kendaraan kosong, Silahkan Lengkapi datanya ",
+        //       });
+        // }
+        // else if(!sender){
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data Pengirim kosong, Silahkan Lengkapi datanya ",
+        //       });
+        // }
         else if(sumber == 'SO' && !customer){
            
                 Swal.fire({
