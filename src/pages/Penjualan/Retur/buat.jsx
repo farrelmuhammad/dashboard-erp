@@ -82,10 +82,10 @@ const EditableCell = ({
                 ]}
             >
                 {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} 
-                
+                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
+
                 />
-           
+
             </Form.Item>
         ) : (
             <div
@@ -119,10 +119,10 @@ const BuatRetur = () => {
 
     const [subTotal, setSubTotal] = useState("");
     const [totalKeseluruhan, setTotalKeseluruhan] = useState("")
-    const [updateProduk, setUpdateProduk] = useState([])
+    // const [updateProduk, setUpdateProduk] = useState([])
     const [tampilTabel, setTampilTabel] = useState(true)
     const [tampilProduk, setTampilProduk] = useState([])
-    const [jumlah,setJumlah] = useState([])
+    const [jumlah, setJumlah] = useState([])
     // const [u, setUpdateData] = useState([])
 
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
@@ -253,8 +253,6 @@ const BuatRetur = () => {
         else {
 
             let dataDouble = [];
-            console.log(value)
-            console.log(tampilProduk)
             for (let i = 0; i < tampilProduk.length; i++) {
                 if (tampilProduk[i].id == value.id) {
                     dataDouble.push(i)
@@ -268,18 +266,46 @@ const BuatRetur = () => {
                     "success"
                 )
             }
+
             else {
                 let newData = [...tampilProduk];
                 newData.push(value)
                 let tmpJumlah = [...jumlah]
-                setUpdateProduk(newData)
-                setTampilProduk(newData);
-                for(let i = 0; i<newData.length; i++){
-                    if(i>=tampilProduk.length){
-                        tmpJumlah.push(0)
+
+                let grandTotal;
+                let arrTotal = [];
+                // console.log(tmpData)
+                for (let i = 0; i < newData.length; i++) {
+                    if (i >= tampilProduk.length) {
+
+                        if (newData[i].sales_invoice_discount_percentage != 0) {
+                            let total = newData[i].remains.toString().replace(',', '.') * Number(newData[i].sales_invoice_price);
+                            let getDiskon = (Number(total) * newData[i].sales_invoice_discount_percentage.toString().replace(',', '.')) / 100;
+
+                            let ppn = ((Number(total) - Number(getDiskon)) * newData[i].sales_invoice_ppn.toString().replace(',', '.')) / 100;
+
+                            grandTotal = Number(total) - Number(getDiskon) + Number(ppn);
+                        }
+                        else if (newData[i].sales_invoice_fixed_discount != 0) {
+                            let total = (Number(newData[i].remains.toString().replace(',', '.')) * Number(newData[i].sales_invoice_price))
+                            let getDiskon = newData[i].sales_invoice_fixed_discount;
+
+                            let ppn = ((Number(total) - Number(getDiskon)) * newData[i].sales_invoice_ppn.toString().replace(',', '.')) / 100;
+                            grandTotal = total - Number(getDiskon) + Number(ppn);
+                        }
+                        else {
+                            let total = (Number(newData[i].remains.toString().replace(',', '.')) * Number(newData[i].sales_invoice_price))
+                            let ppn = (Number(total) * newData[i].sales_invoice_ppn.toString().replace(',', '.')) / 100;
+                            grandTotal = total + Number(ppn);
+                        }
+
+                        tmpJumlah[i] = grandTotal
                     }
+
                 }
+
                 setJumlah(tmpJumlah)
+                setTampilProduk(newData);
                 calculate(newData, checked)
             }
 
@@ -454,10 +480,10 @@ const BuatRetur = () => {
                     let ppn = (Number(total) * tmpData[i].sales_invoice_ppn.toString().replace(',', '.')) / 100;
                     grandTotal = total + Number(ppn);
                 }
-               
+
                 tmpJumlah[i] = grandTotal
             }
-           
+
         }
 
         // console.log(arrTotal)
@@ -476,11 +502,11 @@ const BuatRetur = () => {
             dsc:
                 <>
                     {
-                        item.sales_invoice_fixed_discount !='0' ?
-                            <CurrencyFormat disabled prefix={'Rp '} className='edit-disabled text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','}  value={Number(item.sales_invoice_fixed_discount).toString().replace('.', ',')} key="diskon" />
-                            : item.sales_invoice_discount_percentage!='0'?
+                        item.sales_invoice_fixed_discount != '0' ?
+                            <CurrencyFormat disabled prefix={'Rp '} className='edit-disabled text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.sales_invoice_fixed_discount).toString().replace('.', ',')} key="diskon" />
+                            : item.sales_invoice_discount_percentage != '0' ?
                                 <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} suffix={'%'} value={Number(item.sales_invoice_discount_percentage).toString().replace('.', ',')} />
-                                : null
+                                : <>-</>
                     }
 
 
@@ -609,26 +635,27 @@ const BuatRetur = () => {
             });
         }
         else {
-
+            console.log(tampilProduk)
             const userData = new FormData();
             userData.append("tanggal", date);
             userData.append("referensi", referensi);
             userData.append("catatan", description);
+            userData.append("id_faktur_penjualan", fakturId);
             userData.append("pelanggan", customer);
             userData.append("status", "Submitted");
-            faktur.map((p) => {
+            tampilProduk.map((p) => {
                 console.log(p);
-                userData.append("id_faktur_penjualan", p.id);
-                userData.append("id_produk[]", p.alias_name);
-                userData.append("kuantitas[]", p.quantity);
+                userData.append("nama_alias_produk[]", p.alias_name);
+                userData.append("id_produk[]", p.id);
+                userData.append("produk[]", p.name);
+                userData.append("kuantitas[]", p.remains);
                 userData.append("satuan[]", p.unit);
-                userData.append("harga[]", p.price);
-                userData.append("persentase_diskon[]", p.discount);
-                userData.append("diskon_tetap[]", p.nominal_disc);
-                userData.append("ppn[]", p.ppn);
+                userData.append("harga[]", p.sales_invoice_price);
+                userData.append("persentase_diskon[]", p.sales_invoice_discount_percentage);
+                userData.append("diskon_tetap[]", p.sales_invoice_fixed_discount);
+                userData.append("ppn[]", p.sales_invoice_ppn);
             });
             userData.append("termasuk_pajak", checked);
-
             for (var pair of userData.entries()) {
                 console.log(pair[0] + ', ' + pair[1]);
             }
@@ -649,7 +676,7 @@ const BuatRetur = () => {
                         ` Masuk dalam list`,
                         "success"
                     );
-                    navigate("/pesanan");
+                    navigate("/retur");
                 })
                 .catch((err) => {
                     if (err.response) {
@@ -696,24 +723,27 @@ const BuatRetur = () => {
             userData.append("tanggal", date);
             userData.append("referensi", referensi);
             userData.append("catatan", description);
+            userData.append("id_faktur_penjualan", fakturId);
             userData.append("pelanggan", customer);
             userData.append("status", "Draft");
-            faktur.map((p) => {
+            tampilProduk.map((p) => {
                 console.log(p);
                 userData.append("nama_alias_produk[]", p.alias_name);
-                userData.append("product[]", p.product_id);
-                userData.append("kuantitas[]", p.quantity);
-                userData.append("satuan[]", p.delivery_note_details.unit);
-                userData.append("harga[]", p.price);
-                userData.append("persentase_diskon[]", p.discount);
-                userData.append("diskon_tetap[]", p.nominal_disc);
-                userData.append("ppn[]", p.ppn);
+                userData.append("id_produk[]", p.id);
+                userData.append("produk[]", p.name);
+                userData.append("kuantitas[]", p.remains);
+                // userData.append("susut[]", p.remains);
+                userData.append("satuan[]", p.unit);
+                userData.append("harga[]", p.sales_invoice_price);
+                userData.append("persentase_diskon[]", p.sales_invoice_discount_percentage);
+                userData.append("diskon_tetap[]", p.sales_invoice_fixed_discount);
+                userData.append("ppn[]", p.sales_invoice_ppn);
             });
             userData.append("termasuk_pajak", checked);
 
-            for (var pair of userData.entries()) {
-                console.log(pair[0] + ', ' + pair[1]);
-            }
+            // for (var pair of userData.entries()) {
+            //     console.log(pair[0] + ', ' + pair[1]);
+            // }
 
             axios({
                 method: "post",
@@ -731,7 +761,7 @@ const BuatRetur = () => {
                         ` Masuk dalam list`,
                         "success"
                     );
-                    navigate("/pesanan");
+                    navigate("/retur");
                 })
                 .catch((err) => {
                     if (err.response) {
