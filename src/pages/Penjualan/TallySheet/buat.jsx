@@ -2314,6 +2314,23 @@ const BuatTally = () => {
                 text: "Data Gudang kosong, Silahkan Lengkapi datanya ",
               });
         }
+        else if(sumber == 'SO' && !customer){
+              
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Customer kosong, Silahkan Lengkapi datanya ",
+              });
+    
+            }
+            else if(sumber == 'Retur' && !supplier){
+            
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+              });
+            }   
         else{
 
 
@@ -2434,24 +2451,23 @@ const BuatTally = () => {
                 text: "Data Gudang kosong, Silahkan Lengkapi datanya ",
               });
         }
-        else if(sumber == 'SO'){
-              if(!customer){
+        else if(sumber == 'SO' && !customer){
+              
                         Swal.fire({
                             icon: "error",
                             title: "Oops...",
                             text: "Data Customer kosong, Silahkan Lengkapi datanya ",
                           });
-                    }
+                
         }
-        else if(sumber == 'Retur'){
-                if(!supplier){
+        else if(sumber == 'Retur' && !supplier){
+              
                         Swal.fire({
                             icon: "error",
                             title: "Oops...",
                             text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
                           });
-                    }
-        }
+                        }   
         else{
 
         const userData = new FormData();
