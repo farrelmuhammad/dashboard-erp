@@ -82,7 +82,12 @@ const EditableCell = ({
                 ]}
             >
                 {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
+                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} 
+                 onChange={value => {
+                    value = parseFloat(value.toString().replace('.', ','))
+                }}
+
+                />
             </Form.Item>
         ) : (
             <div
@@ -331,6 +336,13 @@ const EditPembayaranPembelian = () => {
             //         return pay
             //     }
             // }
+                // render(text, record) {
+            //     return {
+            //         props: {
+            //         },
+            //         children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
+            //     };
+            // }
         },
     ];
 
@@ -550,19 +562,27 @@ const EditPembayaranPembelian = () => {
     const dataFaktur =
         [...dataDetail.map((item, i) => ({
             code: item.code,
-            total: selectedMataUang === 'IDR ' ? 
+            total: selectedMataUang === 'IDR ' || selectedMataUang === 'Rp ' ? 
            
             <CurrencyFormat prefix={selectedMataUang} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.',',')} key="total" /> :
             <CurrencyFormat prefix={selectedMataUang} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="total" />,
            
             sisa: 
-            selectedMataUang === 'IDR ' ?
+            selectedMataUang === 'IDR ' || selectedMataUang === 'Rp '  ?
 
               <CurrencyFormat prefix={selectedMataUang} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.sisa).toFixed(2).replace('.',',')} key="sisa" /> :
             <CurrencyFormat prefix={selectedMataUang} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.sisa)} key="sisa" />,
             pays: 
-            selectedMataUang === 'IDR ' ? 
-            <CurrencyFormat prefix={selectedMataUang} className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(item.bayar).toFixed(2).replace('.',',')} onChange={(e) => klikUbahTotal(i, e.target.value)} key="pay" /> :
+            selectedMataUang === 'IDR ' || selectedMataUang === 'Rp ' ? 
+            // <CurrencyFormat prefix={selectedMataUang} className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.bayar.toString().replace('.',',')} 
+            // onChange={(e) => klikUbahTotal(i, e.target.value)} key="pay" /> 
+            < CurrencyFormat  className=' text-start form-control form-control-sm editable-input ' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.bayar).toFixed(2).replace('.' , ',')} 
+
+renderText={value => <input 
+value={parseFloat(value.toString().replace('.', ','))}  id="colFormLabelSm"  className="form-control form-control-sm" onChange={(e) => klikUbahTotal(i, e.target.value)} key="pay" />}  />
+
+            
+            :
             <CurrencyFormat prefix={selectedMataUang} className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(item.bayar)} onChange={(e) => klikUbahTotal(i, e.target.value)} key="pay" />,
         }))
         ]
@@ -685,7 +705,7 @@ const EditPembayaranPembelian = () => {
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Total</label>
                             <div className="col-sm-7">
                                 {
-                                    selectedMataUang === 'IDR ' ? 
+                                    selectedMataUang === 'IDR ' || selectedMataUang === 'Rp'  ? 
                                     <CurrencyFormat prefix={selectedMataUang} type="danger" disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toFixed(2).replace('.',',')} key="pay" /> :
                                     <CurrencyFormat prefix={selectedMataUang} type="danger" disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir)} key="pay" />
                                 }
@@ -697,7 +717,7 @@ const EditPembayaranPembelian = () => {
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Sisa</label>
                             <div className="col-sm-7">
                                 {
-                                    selectedMataUang === 'IDR ' ? 
+                                    selectedMataUang === 'IDR ' || selectedMataUang === 'Rp' ? 
                                     <CurrencyFormat prefix={selectedMataUang} type="danger" disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(sisaAkhir).toFixed(2).replace('.',',')} key="pay" /> :
                                     <CurrencyFormat prefix={selectedMataUang} type="danger" disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(sisaAkhir)} key="pay" />
                                 }
@@ -787,6 +807,8 @@ const EditPembayaranPembelian = () => {
                             pageData.forEach(({ sisa, pays }) => {
                                 let pay =  pays.props.value
                                 let sisaa = sisa.props.value
+                                let pay2 = 0; 
+                                let sisa2 = 0;
                                if( selectedMataUang === 'IDR ' ){
                                
                                 let p1 = pay.split(',')
@@ -794,10 +816,12 @@ const EditPembayaranPembelian = () => {
                                 let s1 = sisaa.split(',')
                                 sisaAkhir += Number(s1[0])
                                }
-                               else
+                               else 
                                {
-                                totalAkhir += Number(pay.toString().replace('.',''));
-                                sisaAkhir += Number(sisaa.toString().replace('.',''))
+                                pay2 = Number(pay).toString().replace('.','')
+                                totalAkhir = totalAkhir + Number(pay2) ;
+                                sisa2 = Number(sisaa).toString().replace('.','')
+                                sisaAkhir = sisaAkhir + Number(sisa2)
                                }
 
                                // sisaAkhir += Number(sisa.props.value);
@@ -806,6 +830,7 @@ const EditPembayaranPembelian = () => {
                                
                                 console.log(pay)
                                 console.log(totalAkhir)
+                                console.log(pay2)
                             });
                             return (
                                 <>
@@ -814,7 +839,7 @@ const EditPembayaranPembelian = () => {
                                         <Table.Summary.Cell index={1}>
 
                                             {
-                                                  selectedMataUang === 'IDR ' ?
+                                                  selectedMataUang === 'IDR ' || selectedMataUang === 'Rp ' ?
                                                   <CurrencyFormat prefix={selectedMataUang} disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toFixed(2).replace('.',',')} key="pay" /> :
                                                   <CurrencyFormat prefix={selectedMataUang} disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toLocaleString('id')} key="pay" />
                                               

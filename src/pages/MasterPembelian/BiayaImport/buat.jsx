@@ -12,6 +12,7 @@ import Button from "@mui/material/Button";
 import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
 import { PageHeader, Switch} from 'antd';
+import ReactSelect from "react-select";
 
 const BuatBiayaImport = () => {
   // const token = jsCookie.get("auth");
@@ -28,6 +29,7 @@ const BuatBiayaImport = () => {
   
   const [account_id, setAccount_id] = useState('');
   const [selectedAccount, setSelectedAccount] = useState(null);
+  const [dataBiaya, setDataBiaya] = useState()
 
   const [checked, setChecked] = useState(true);
 
@@ -126,7 +128,7 @@ const BuatBiayaImport = () => {
     // select data akun
     const handleChangeAccount = (value) => {
       setSelectedAccount(value);
-      setAccount_id(value.id);
+      setAccount_id(value.value);
     };
   
     // load options using API call
@@ -138,6 +140,30 @@ const BuatBiayaImport = () => {
         },
       }).then((res) => res.json());
     };
+
+    useEffect(() => {
+        
+      axios.get(`${Url}/chart_of_accounts?induk=0`, {
+          headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+          },
+      }).then((res) => {
+          let tmp = []
+          for (let i = 0; i < res.data.data.length; i++) {
+              tmp.push({
+                  label: res.data.data[i].name,
+                  value: res.data.data[i].id
+              })
+          }
+          //console.log(res)
+          setDataBiaya(tmp)
+         console.log(dataBiaya)
+      }
+
+
+      );
+  }, [])
 
     const onChange = () => {
       setChecked(!checked)
@@ -229,14 +255,15 @@ const BuatBiayaImport = () => {
             Akun Jurnal
           </label>
           <div className="col-sm-10">
-            <AsyncSelect
+            <ReactSelect
               placeholder="Pilih Akun Jurnal..."
               cacheOptions
               defaultOptions
               value={selectedAccount}
-              getOptionLabel={(e) => e.name}
-              getOptionValue={(e) => e.id}
-              loadOptions={loadOptionsAccount}
+              getOptionLabel={(e) => e.label}
+              getOptionValue={(e) => e.value}
+              options={dataBiaya}
+              // loadOptions={loadOptionsAccount}
               onChange={handleChangeAccount}
             />
           </div>
