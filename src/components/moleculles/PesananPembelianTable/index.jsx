@@ -244,46 +244,28 @@ const PesananPembelianTable = () => {
                 console.log(mataUang)
                 console.log(namaMataUang)
                 setIsLoading(false);
-                //console.log(getData[0].can)
                 setGetData1(getData)
 
                 setPesananPembelian(getData)
 
                 let tmp = []
                 for (let i = 0; i < getData.length; i++) {
+                    // let uang = getData[i].currency.name;
                   tmp.push({
                     id: getData[i].id,
                     can: getData[i].can,
                     code: getData[i].code,
                     date:getData[i].date,
-                    //phone_number: getData[i].phone_number ? getData[i].phone_number : <div>-</div>,
-                    // customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
-                     total : namaMataUang[i] === 'Rp ' ? 
-                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={namaMataUang[i] + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].total).toFixed(2).replace('.' , ',')} key="diskon" />
-                    :   < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={namaMataUang[i] + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].total).toLocaleString('id')} key="diskon" />,
-                    // type : getData[i].type,
+                    total : getData[i].supplier._group === "Lokal" || !getData[i].currency? 
+                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={'Rp '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].total).toFixed(2).replace('.' , ',')} key="diskon" />
+                    :   < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={getData[i].currency.name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].total).toLocaleString('id')} key="diskon" />,
+                 
                     status : getData[i].status,
-                    
                     name:getData[i].name,
-                    // _group:getData[i]._group,
-                    // category:getData[i].category.name,
-                    // department : getData[i].department.name ,
-                    // position: getData[i].position.name,
-                    // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
                     supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
-                    // date: getData[i].date,
-                    // status: getData[i].status,
-                    // warehouse: getData[i].warehouse.name
                   })
                 }
-        
                 setDataTampil(tmp)
-
-
-
-
-
-          
             })
     }
 
@@ -389,6 +371,18 @@ const PesananPembelianTable = () => {
                     }
                     {
                         record.can['update-purchase_order'] ? (
+                            <Link to={`/pesananpembelian/edit/${record.id}`}>
+                                <Button
+                                    size='small'
+                                    type="success"
+                                    icon={<EditOutlined />}
+                                />
+                            </Link>
+                        ) : null
+                    }
+                    {
+                        
+                        record.can['force_done-purchase_order'] ? (
                             <Link to={`/pesananpembelian/edit/${record.id}`}>
                                 <Button
                                     size='small'

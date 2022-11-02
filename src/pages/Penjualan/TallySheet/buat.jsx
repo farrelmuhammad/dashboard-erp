@@ -149,6 +149,7 @@ const BuatTally = () => {
 
     // menghitung total tally sheet 
     useEffect(() => {
+        // console.log(totalTallySheet)
         let arrTotal = [];
         let total = [];
 
@@ -257,6 +258,7 @@ const BuatTally = () => {
                 }
             }
             setSelectedProduct(store2);
+            // console.log()
             setIdProductSelect(key);
         }
     };
@@ -753,8 +755,9 @@ const BuatTally = () => {
             dataSumber = product[idx].sales_order_details;
         }
 
-        console.log(idProductSelect)
+        // console.log(totalTallySheet)
 
+        let tmpTotalTallySheet  = [...totalTallySheet]
         let tmpSelectProduct = [...selectedProduct]
         let tmpOptionProduct = [...optionsProduct]
         let tmpIdProductSelect = [...idProductSelect]
@@ -801,6 +804,7 @@ const BuatTally = () => {
 
                 tmpOptionProduct.splice(idx, 1)
                 tmpSelectProduct.splice(idx, 1)
+                tmpTotalTallySheet.splice(idx, 1)
                 tmpIdProductSelect.splice(idx, 1)
                 tmpProduct.splice(idx, 1);
                 tmpData.splice(idx, 1)
@@ -811,28 +815,37 @@ const BuatTally = () => {
                 setIndexPO(0)
                 setIdxPesanan(0)
             } else {
+                // console.log(tmpOptionProduct)
+                let produkHapus = [...tmpProduct[idx].sales_order_details]
+                let selectHapus = [...tmpSelectProduct[idx]]
                 tmpOptionProduct[idx].splice(i, 1)
-                tmpSelectProduct[idx].splice(i, 1)
                 tmpIdProductSelect[idx].splice(i, 1)
-                // tmpProduct[idx].splice(i, 1);
+                // console.log(tmpTotalTallySheet[idx])
+                tmpTotalTallySheet[idx].splice(i, 1)
+                produkHapus.splice(i, 1);
+                selectHapus.splice(i, 1); 
                 dataSumber.splice(i, 1);
                 tmpData[idx].splice(i, 1)
                 tmpStatusSO[idx].splice(i, 1)
                 tmpQuantity[idx].splice(i, 1)
                 tmpTotalBox[idx].splice(i, 1)
 
+                tmpProduct[idx].sales_order_details = produkHapus
+                tmpSelectProduct[idx] = selectHapus
                 setIndexPO(0)
                 setIdxPesanan(0)
             }
-            setSelectedProduct(tmpSelectProduct)
-            setOptionsProduct(tmpOptionProduct)
-            console.log(tmpOptionProduct)
-            setIdProductSelect(tmpIdProductSelect)
             setProduct(tmpProduct)
+            setSelectedProduct(tmpSelectProduct)
+            setIdProductSelect(tmpIdProductSelect)
+            setTotalTallySheet(tmpTotalTallySheet)
+            // console.log(tmpTotalTallySheet)
+
             setData(tmpData)
             setStatusSO(tmpStatusSO)
             setQuantity(tmpQuantity)
             setTotalBox(tmpTotalBox)
+            setOptionsProduct(tmpOptionProduct)
             setLoadingTable(false)
 
         }
@@ -861,7 +874,7 @@ const BuatTally = () => {
             }
         }
 
-        for (let r = arr.length ; r <= oldArray.length; r++) {
+        for (let r = arr.length; r <= oldArray.length; r++) {
             arr.push(oldArray[r - 1])
         }
 
@@ -1090,7 +1103,7 @@ const BuatTally = () => {
                 }
 
                 // loop setelah data baru 
-                for (let y = tempData.length ; y <= dataSumber.length; y++) {
+                for (let y = tempData.length; y <= dataSumber.length; y++) {
                     qtyStore.push(quantity[x][y - 1])
                     boxStore.push(totalBox[x][y - 1])
                     tempData.push(data[x][y - 1])
@@ -1991,6 +2004,7 @@ const BuatTally = () => {
                     let tempId = [];
                     let tempStatus = [];
                     let tempQtyPesanan = [];
+                    // let tmpOptions [];
 
                     // pengecekan transaksi 
                     let dataSumber = [];
@@ -2271,6 +2285,7 @@ const BuatTally = () => {
             setGetDataDetailSO(updatedList.map(d => d.sales_order_details))
 
             // product pilihan 
+            console.log(nameProduk)
             setOptionsProduct(optProduk)
             setSelectedProduct(nameProduk)
             setIdProductSelect(idProduk)
@@ -2288,7 +2303,7 @@ const BuatTally = () => {
                     quantity.splice(i, 1);
                     statusSO.splice(i, 1);
                     qtyPesanan.splice(i, 1);
-
+                    optionsProduct.splice(i, 1);
                 }
             }
             setIdxPesanan(0)
@@ -2300,288 +2315,292 @@ const BuatTally = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if(!date){
+        if (!date) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if (!warehouse){
+        else if (!warehouse) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Gudang kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(sumber == 'SO' && !customer){
-              
+        else if (sumber == 'SO' && !customer) {
+
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Customer kosong, Silahkan Lengkapi datanya ",
-              });
-    
-            }
-            else if(sumber == 'Retur' && !supplier){
-            
+            });
+
+        }
+        else if (sumber == 'Retur' && !supplier) {
+
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
-              });
-            }   
-        else{
-
-
-        const userData = new FormData();
-        userData.append("tanggal", date);
-        userData.append("gudang", warehouse);
-        userData.append("catatan", description);
-        userData.append("status", "Submitted");
-        product.map((p, pi) => {
-            if (sumber == 'SO') {
-                p.sales_order_details.map((po, i) => {
-                    if(!customer){
-                        Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: "Data Customer kosong, Silahkan Lengkapi datanya ",
-                          });
-                    }
-                    else{
-
-                    userData.append("pelanggan", customer);
-                    userData.append("id_pesanan_penjualan[]", p.id);
-                    userData.append("id_produk[]", idProductSelect[pi][i]);
-                    userData.append("aksi[]", statusSO[pi][i]);
-                    userData.append("jumlah_box[]", totalBox[pi][i]);
-                    userData.append("satuan_box[]", po.unit);
-                    // userData.append("kuantitas_product_box[]", totalTallySheet[pi][i]);
-             } })
-            }
-            else {
-                p.purchase_return_details.map((po, i) => {
-                    if(!supplier){
-                        Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
-                          });
-                    }
-                    else{
-                    userData.append("pemasok", supplier);
-                    userData.append("id_retur_pembelian[]", p.id);
-                    userData.append("id_produk[]", po.product_id);
-                    userData.append("aksi[]", statusSO[pi][i]);
-                    userData.append("jumlah_box[]", totalBox[pi][i]);
-                    userData.append("satuan_box[]", po.unit);
-                    // userData.append("kuantitas_product_box[]", totalTallySheet[pi][i]);
-            }})
-            }
-
-        });
-        let key = 0;
-        for (let idx = 0; idx < kuantitasBox.length; idx++) {
-            for (let x = 0; x < kuantitasBox[idx].length; x++) {
-                for (let y = 0; y < kuantitasBox[idx][x].length; y++) {
-                    userData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + y + "]", kuantitasBox[idx][x][y].toString().replace(',', '.'))
-                }
-                key++;
-            }
-        }
-
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
-
-        axios({
-            method: "post",
-            url: `${Url}/tally_sheets`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/tally");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text:"Data belum lengkap, silahkan lengkapi datanya",
-                        //text: err.response.data.error,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
             });
-     } };
+        }
+        else {
+
+
+            const userData = new FormData();
+            userData.append("tanggal", date);
+            userData.append("gudang", warehouse);
+            userData.append("catatan", description);
+            userData.append("status", "Submitted");
+            product.map((p, pi) => {
+                if (sumber == 'SO') {
+                    p.sales_order_details.map((po, i) => {
+                        if (!customer) {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Oops...",
+                                text: "Data Customer kosong, Silahkan Lengkapi datanya ",
+                            });
+                        }
+                        else {
+
+                            userData.append("pelanggan", customer);
+                            userData.append("id_pesanan_penjualan[]", p.id);
+                            userData.append("id_produk[]", idProductSelect[pi][i]);
+                            userData.append("aksi[]", statusSO[pi][i]);
+                            userData.append("jumlah_box[]", totalBox[pi][i]);
+                            userData.append("satuan_box[]", po.unit);
+                            // userData.append("kuantitas_product_box[]", totalTallySheet[pi][i]);
+                        }
+                    })
+                }
+                else {
+                    p.purchase_return_details.map((po, i) => {
+                        if (!supplier) {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Oops...",
+                                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+                            });
+                        }
+                        else {
+                            userData.append("pemasok", supplier);
+                            userData.append("id_retur_pembelian[]", p.id);
+                            userData.append("id_produk[]", po.product_id);
+                            userData.append("aksi[]", statusSO[pi][i]);
+                            userData.append("jumlah_box[]", totalBox[pi][i]);
+                            userData.append("satuan_box[]", po.unit);
+                            // userData.append("kuantitas_product_box[]", totalTallySheet[pi][i]);
+                        }
+                    })
+                }
+
+            });
+            let key = 0;
+            for (let idx = 0; idx < kuantitasBox.length; idx++) {
+                for (let x = 0; x < kuantitasBox[idx].length; x++) {
+                    for (let y = 0; y < kuantitasBox[idx][x].length; y++) {
+                        userData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + y + "]", kuantitasBox[idx][x][y].toString().replace(',', '.'))
+                    }
+                    key++;
+                }
+            }
+
+            // for (var pair of userData.entries()) {
+            //     console.log(pair[0] + ', ' + pair[1]);
+            // }
+
+            axios({
+                method: "post",
+                url: `${Url}/tally_sheets`,
+                data: userData,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            })
+                .then(function (response) {
+                    //handle success
+                    Swal.fire(
+                        "Berhasil Ditambahkan",
+                        ` Masuk dalam list`,
+                        "success"
+                    );
+                    navigate("/tally");
+                })
+                .catch((err) => {
+                    if (err.response) {
+                        console.log("err.response ", err.response);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Data belum lengkap, silahkan lengkapi datanya",
+                            //text: err.response.data.error,
+                        });
+                    } else if (err.request) {
+                        console.log("err.request ", err.request);
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    } else if (err.message) {
+                        // do something other than the other two
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    }
+                });
+        }
+    };
 
     const handleDraft = async (e) => {
         e.preventDefault();
 
         console.log("hai")
-        
-        if(!date){
+
+        if (!date) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if (!warehouse){
+        else if (!warehouse) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Gudang kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        else if(sumber == 'SO' && !customer){
-              
-                        Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: "Data Customer kosong, Silahkan Lengkapi datanya ",
-                          });
-                
-        }
-        else if(sumber == 'Retur' && !supplier){
-              
-                        Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
-                          });
-                        }   
-        else{
-
-        const userData = new FormData();
-        userData.append("tanggal", date);
-        userData.append("gudang", warehouse);
-        userData.append("catatan", description);
-        userData.append("status", "Draft");
-
-        product.map((p, pi) => {
-            if (sumber == 'SO') {
-                p.sales_order_details.map((po, i) => {
-                    // if(!customer){
-                    //     Swal.fire({
-                    //         icon: "error",
-                    //         title: "Oops...",
-                    //         text: "Data Customer kosong, Silahkan Lengkapi datanya ",
-                    //       });
-                    // }
-                    // else{
-                    userData.append("pelanggan", customer);
-                    userData.append("id_pesanan_penjualan[]", p.id);
-                    userData.append("id_produk[]", idProductSelect[pi][i]);
-                    userData.append("aksi[]", statusSO[pi][i]);
-                    userData.append("jumlah_box[]", totalBox[pi][i]);
-                    userData.append("satuan_box[]", po.unit);
-           //  } 
-            })
-            }
-            else {
-                p.purchase_return_details.map((po, i) => {
-                    // if(!supplier){
-                    //     Swal.fire({
-                    //         icon: "error",
-                    //         title: "Oops...",
-                    //         text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
-                    //       });
-                    // }
-                    // else{
-                    userData.append("pemasok", supplier);
-                    userData.append("id_retur_pembelian[]", p.id);
-                    userData.append("id_produk[]", po.product_id);
-                    userData.append("aksi[]", statusSO[pi][i]);
-                    userData.append("jumlah_box[]", totalBox[pi][i]);
-                    userData.append("satuan_box[]", po.unit);
-                    // userData.append("kuantitas_produk_box" + "[" + pi + "]" + "[" + i + "]", totalTallySheet[pi][i]);
-             //}
-             })
-            }
-
-        });
-
-
-        let key = 0;
-        for (let idx = 0; idx < kuantitasBox.length; idx++) {
-            for (let x = 0; x < kuantitasBox[idx].length; x++) {
-                for (let y = 0; y < kuantitasBox[idx][x].length; y++) {
-                    userData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + y + "]", kuantitasBox[idx][x][y].toString().replace(',', '.'))
-                }
-                key++;
-            }
-        }
-
-
-        axios({
-            method: "post",
-            url: `${Url}/tally_sheets`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/tally");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text:"Data belum lengkap, silahkan lengkapi datanya"
-                        //text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
             });
-      }  };
+        }
+        else if (sumber == 'SO' && !customer) {
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Customer kosong, Silahkan Lengkapi datanya ",
+            });
+
+        }
+        else if (sumber == 'Retur' && !supplier) {
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+        else {
+
+            const userData = new FormData();
+            userData.append("tanggal", date);
+            userData.append("gudang", warehouse);
+            userData.append("catatan", description);
+            userData.append("status", "Draft");
+
+            product.map((p, pi) => {
+                if (sumber == 'SO') {
+                    p.sales_order_details.map((po, i) => {
+                        // if(!customer){
+                        //     Swal.fire({
+                        //         icon: "error",
+                        //         title: "Oops...",
+                        //         text: "Data Customer kosong, Silahkan Lengkapi datanya ",
+                        //       });
+                        // }
+                        // else{
+                        userData.append("pelanggan", customer);
+                        userData.append("id_pesanan_penjualan[]", p.id);
+                        userData.append("id_produk[]", idProductSelect[pi][i]);
+                        userData.append("aksi[]", statusSO[pi][i]);
+                        userData.append("jumlah_box[]", totalBox[pi][i]);
+                        userData.append("satuan_box[]", po.unit);
+                        //  } 
+                    })
+                }
+                else {
+                    p.purchase_return_details.map((po, i) => {
+                        // if(!supplier){
+                        //     Swal.fire({
+                        //         icon: "error",
+                        //         title: "Oops...",
+                        //         text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+                        //       });
+                        // }
+                        // else{
+                        userData.append("pemasok", supplier);
+                        userData.append("id_retur_pembelian[]", p.id);
+                        userData.append("id_produk[]", po.product_id);
+                        userData.append("aksi[]", statusSO[pi][i]);
+                        userData.append("jumlah_box[]", totalBox[pi][i]);
+                        userData.append("satuan_box[]", po.unit);
+                        // userData.append("kuantitas_produk_box" + "[" + pi + "]" + "[" + i + "]", totalTallySheet[pi][i]);
+                        //}
+                    })
+                }
+
+            });
+
+
+            let key = 0;
+            for (let idx = 0; idx < kuantitasBox.length; idx++) {
+                for (let x = 0; x < kuantitasBox[idx].length; x++) {
+                    for (let y = 0; y < kuantitasBox[idx][x].length; y++) {
+                        userData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + y + "]", kuantitasBox[idx][x][y].toString().replace(',', '.'))
+                    }
+                    key++;
+                }
+            }
+
+
+            axios({
+                method: "post",
+                url: `${Url}/tally_sheets`,
+                data: userData,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            })
+                .then(function (response) {
+                    //handle success
+                    Swal.fire(
+                        "Berhasil Ditambahkan",
+                        ` Masuk dalam list`,
+                        "success"
+                    );
+                    navigate("/tally");
+                })
+                .catch((err) => {
+                    if (err.response) {
+                        console.log("err.response ", err.response);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Data belum lengkap, silahkan lengkapi datanya"
+                            //text: err.response.data.error.nama,
+                        });
+                    } else if (err.request) {
+                        console.log("err.request ", err.request);
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    } else if (err.message) {
+                        // do something other than the other two
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    }
+                });
+        }
+    };
 
     function klikUbahSumber(value) {
-        if(!value){
+        if (!value) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Jenis Transaksi kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else{
-        setSumber(value);
-        setProduct([])
-        setSelectedSupplier('');
-        setSelectedCustomer('')
-    }
+        else {
+            setSumber(value);
+            setProduct([])
+            setSelectedSupplier('');
+            setSelectedCustomer('')
+        }
     }
 
     return (
@@ -2740,7 +2759,7 @@ const BuatTally = () => {
                             <div className="row">
                                 <div className="col mb-3">
                                     <Search
-                                        placeholder= {sumber == 'SO' ? 'Cari Pesanan Penjualan...' : 'Cari Retur Pembelian...' }
+                                        placeholder={sumber == 'SO' ? 'Cari Pesanan Penjualan...' : 'Cari Retur Pembelian...'}
                                         style={{
                                             width: 400,
                                         }}

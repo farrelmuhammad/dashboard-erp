@@ -101,6 +101,11 @@ const EditableCell = ({
 };
 
 const BuatPesananPembelian = () => {
+    function klikEnter(event) {
+        if (event.code == "Enter") {
+            event.target.blur()
+        }
+    }
     const auth = useSelector(state => state.auth);
     const [date, setDate] = useState(null);
     const [referensi, setReferensi] = useState('');
@@ -120,6 +125,7 @@ const BuatPesananPembelian = () => {
     const [subTotal, setSubTotal] = useState("");
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
     const [totalPpn, setTotalPpn] = useState(0);
+    const [tampilPPN, setTampilPPN] = useState(0);
     const [grandTotal, setGrandTotal] = useState("");
     const [checked, setChecked] = useState("");
     const [selectedValue, setSelectedSupplier] = useState(null);
@@ -170,22 +176,25 @@ const BuatPesananPembelian = () => {
             })
             let tmp = []
             for (let i = 0; i < res.data.length; i++) {
-                if (tmpCentang[i]) {
+                if (tmpCentang.indexOf(res.data[i].id) >= 0) {
                     tmp.push({
                         detail: res.data[i],
                         statusCek: true
                     });
                 }
-                else {
+            }
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentang.indexOf(res.data[i].id) < 0) {
                     tmp.push({
                         detail: res.data[i],
                         statusCek: false
                     });
                 }
 
-
             }
-            // setGetDataProduct(res.data);
+
+            // let urut = tmp.sort()
+            // console.log(urut)
             setGetDataProduct(tmp);
         };
 
@@ -264,6 +273,16 @@ const BuatPesananPembelian = () => {
             )
         },
     ];
+
+    
+    function tambahPPN(value) {
+        let hasil = value.toString().replace('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',', '.');
+        console.log(hasil)
+        setTotalPpn(hasil);
+        setTampilPPN(value)
+
+    }
+
 
     function gantiPilihanDiskon(value, index) {
         console.log(product);
@@ -631,8 +650,8 @@ const BuatPesananPembelian = () => {
         let data = event.target.value
 
         let tmpDataBaru = []
-        let tmpJumlah = [...jumlah]
-        let tmpDataCentang = []
+        // let tmpJumlah = [...jumlah]
+        let tmpDataCentang = [...tmpCentang]
         for (let i = 0; i < getDataProduct.length; i++) {
             if (i == index) {
                 tmpDataBaru.push({
@@ -645,19 +664,22 @@ const BuatPesananPembelian = () => {
             }
 
             if (tmpDataBaru[i].statusCek == true) {
-                tmpDataCentang.push(tmpDataBaru[i].detail.code)
+                tmpDataCentang.push(tmpDataBaru[i].detail.id)
             }
             else {
-                tmpDataCentang.push('')
+                let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.id);
+                if (index >= 0) {
+                    tmpDataCentang.splice(index, 1)
+                }
             }
         }
-        setTmpCentang(tmpDataCentang)
+
+        let unikTmpCentang = [...new Set(tmpDataCentang)]
+        setTmpCentang(unikTmpCentang)
         setGetDataProduct(tmpDataBaru)
         var updatedList = [...product];
-
-        // var updatedList = [...product];
-        if (event.target.checked) {
-            updatedList = [...product, event.target.value];
+        if (tmpDataBaru[index].statusCek) {
+            updatedList = [...product, data.detail];
             let tmp = [];
             let tmpJumlah = [];
             for (let i = 0; i < updatedList.length; i++) {
@@ -678,7 +700,7 @@ const BuatPesananPembelian = () => {
         } else {
             console.log(updatedList)
             for (let i = 0; i < updatedList.length; i++) {
-                if (updatedList[i].id == event.target.value.id) {
+                if (updatedList[i].id == data.detail.id) {
                     updatedList.splice(i, 1);
                     jumlahDiskon.splice(i, 1);
                     pilihanDiskon.splice(i, 1)
@@ -883,20 +905,20 @@ const BuatPesananPembelian = () => {
                 text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
             });
         }
-        else if (!tanggalAwal) {
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
-            });
-        }
-        else if (!tanggalAkhir) {
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
-            });
-        }
+        // else if (!tanggalAwal) {
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
+        //     });
+        // }
+        // else if (!tanggalAkhir) {
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
+        //     });
+        // }
         else if (!totalPpn) {
             Swal.fire({
                 icon: "error",
@@ -1017,7 +1039,7 @@ const BuatPesananPembelian = () => {
                                         Lokal
                                     </option>
                                     <option value="Impor" checked={grup === "Impor"}>
-                                        Import
+                                        Impor
                                     </option>
 
                                 </select>
@@ -1099,7 +1121,7 @@ const BuatPesananPembelian = () => {
                     </div>
                     <div className="col">
 
-                        <label htmlFor="inputPassword3" className="col-sm-6 col-form-label">Estimasi Diterima</label>
+                        <label htmlFor="inputPassword3" className="col-sm-6 col-form-label">Estimasi Pengiriman</label>
                         <div className="row mb-3">
                             <div className="d-flex col-sm-10">
                                 <input
@@ -1212,16 +1234,15 @@ const BuatPesananPembelian = () => {
                         <div className="row mb-3" id="ppn" style={{ display: "none" }}>
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">PPN</label>
                             <div className="col-sm-6">
-                                <input
-                                    onChange={(e) => setTotalPpn(e.target.value)}
-                                    // readOnly="true"
-                                    // defaultValue={}
-                                    // render=(text, record, index) => index + 1,
-                                    type="number"
-                                    className="form-control form-control-sm"
-                                    id="colFormLabelSm"
-                                // placeholder='ppn per item di total semua row'
-                                />
+                                <CurrencyFormat
+                                    className='form-control form-control-sm'
+                                    style={{width:"70%"}}
+                                    thousandSeparator={'.'}
+                                    decimalSeparator={','}
+                                    prefix={namaMataUang + ' '}
+                                    onKeyDown={(event) => klikEnter(event)}
+                                    value={tampilPPN}
+                                    onChange={(e) => tambahPPN(e.target.value)} />
                             </div>
                         </div>
                         <div className="row mb-3">

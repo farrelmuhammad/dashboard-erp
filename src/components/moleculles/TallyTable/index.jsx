@@ -98,7 +98,7 @@ const TallyTable = () => {
             Authorization: `Bearer ${auth.token}`,
           },
         });
-        getTallySheet()
+        fetchData()
         Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
 
       }
@@ -127,7 +127,7 @@ const TallyTable = () => {
             },
           })
 
-          getTallySheet();
+          fetchData();
           Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
         }
         catch (err) {
@@ -276,22 +276,6 @@ const TallyTable = () => {
         else {
           setSumber('SO')
         }
-
-        // // agar bisa di search 
-        // let tmp = []
-        // for (let i = 0; i < getData.length; i++) {
-        //   tmp.push({
-        //     id: getData[i].id,
-        //     can: getData[i].can,
-        //     code: getData[i].code,
-        //     customer_name: getData[i].customer_name ? getData[i].customer_name : '',
-        //     supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
-        //     date: getData[i].date,
-        //     status: getData[i].status,
-        //     warehouse: getData[i].warehouse.name
-        //   })
-        // }
-        // setDataTampil(tmp)
         setIsLoading(false);
       })
   }
