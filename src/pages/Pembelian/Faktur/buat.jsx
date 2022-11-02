@@ -590,6 +590,7 @@ const BuatFakturPembelian = () => {
    <CurrencyFormat className=' text-center editable-input'  thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={data[i].quantity.replace('.', ',')} 
    
   
+   
   
    onChange={e => {
       // value = parseFloat(value.toString().replace('.', ',')
