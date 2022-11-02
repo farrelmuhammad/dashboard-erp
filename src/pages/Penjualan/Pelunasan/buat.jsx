@@ -98,6 +98,11 @@ const EditableCell = ({
 };
 
 const BuatPelunasan = () => {
+    function klikEnter(event) {
+        if (event.code == "Enter") {
+            event.target.blur()
+        }
+    }
     // const auth.token = jsCookie.get("auth");
     const [date, setDate] = useState(null);
     const [referensi, setReferensi] = useState('');
@@ -124,7 +129,7 @@ const BuatPelunasan = () => {
     const [grandTotal, setGrandTotal] = useState("");
     const [checked, setChecked] = useState("");
     const [tmpCentang, setTmpCentang] = useState([]);
-
+    const [jumlah, setJumlah] = useState([])
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [selectedValue2, setSelectedCOA] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
@@ -133,6 +138,9 @@ const BuatPelunasan = () => {
         console.log(value)
         setSelectedCustomer(value);
         setCustomer(value.id);
+        setProduct([])
+        setTmpCentang([])
+        setJumlah([])
     };
     // load options using API call
     const loadOptionsCustomer = (inputValue) => {
@@ -161,12 +169,12 @@ const BuatPelunasan = () => {
     };
     // load options using API call
     const loadOptionsCOA = (inputValue) => {
-        return fetch(`${Url}/select_chart_of_accounts?limit=10&nama=${inputValue}&parent=null`, {
+        return axios.get(`${Url}/chart_of_accounts?induk=0&limit=10&nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => res.data.data);
     };
 
     // useEffect(() => {
@@ -199,7 +207,7 @@ const BuatPelunasan = () => {
 
 
             }
-          
+
             setGetDataProduct(tmp);
         };
 
@@ -212,17 +220,17 @@ const BuatPelunasan = () => {
             title: 'No. Faktur',
             align: 'center',
             dataIndex: 'code',
-            // render: (_, record) => {
-            //     return <>{record.detail.code}</>
-            // }
+            render: (_, record) => {
+                return <>{record.detail.code}</>
+            }
         },
         {
             title: 'Customer',
             dataIndex: 'recipient',
             align: 'center',
-            // render: (_, record) => {
-            //     return <>{record.detail.recipient.name}</>
-            // }
+            render: (_, record) => {
+                return <>{record.detail.recipient.name}</>
+            }
             // render: (recipient) => recipient.name
         },
         {
@@ -230,24 +238,24 @@ const BuatPelunasan = () => {
             dataIndex: 'total',
             width: '20%',
             align: 'center',
-            // render: (_, record) => (
-            //     <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(record.detail.total).toString().replace('.', ',')} />
-            // )
+            render: (_, record) => (
+                <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(record.detail.total).toString().replace('.', ',')} />
+            )
         },
         {
             title: 'actions',
             dataIndex: 'address',
             width: '15%',
             align: 'center',
-            // render: (_, record, index) => (
-            //     <>
-            //         <Checkbox
-            //             value={record}
-            //             checked={record.statusCek}
-            //             onChange={(e) => handleCheck(e, index)}
-            //         />
-            //     </>
-            // )
+            render: (_, record, index) => (
+                <>
+                    <Checkbox
+                        value={record}
+                        checked={record.statusCek}
+                        onChange={(e) => handleCheck(e, index)}
+                    />
+                </>
+            )
         },
     ];
 
@@ -274,33 +282,59 @@ const BuatPelunasan = () => {
             dataIndex: 'total',
             width: '25%',
             align: 'center',
-            render: (_, record) => (
-                <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(record.total).toString().replace('.', ',')} />
-            )
+            // render: (_, record) => (
+            //     <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(record.total).toString().replace('.', ',')} />
+            // )
         },
         {
             title: 'Sisa',
             dataIndex: 'sisa',
             width: '25%',
             align: 'center',
-            render: (text, record, index) => {
-                let sisa = 0;
-                sisa = (record.total - record.pays);
+            // render: (text, record, index) => {
+            //     let sisa = 0;
+            //     sisa = (record.total - record.pays);
 
-                return <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(sisa).toString().replace('.', ',')} /> || 0
-            }
+            //     return <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(sisa).toString().replace('.', ',')} /> || 0
+            // }
         },
         {
             title: 'Dibayarkan',
-            dataIndex: 'pays',
+            dataIndex: 'paid',
             width: '25%',
             align: 'center',
-            render: (text, record, index) => {
+            // render: (text, record, index) => {
 
-                return <CurrencyFormat className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(record.total).toString().replace('.', ',')} /> || 0
-            }
+            //     return <CurrencyFormat className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(record.total).toString().replace('.', ',')} /> || 0
+            // }
         },
     ];
+
+    function klikUbahBayar(value, index) {
+        let hasilValue = value.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "");
+        console.log(hasilValue)
+        let tmpData = [...product];
+        for (let i = 0; i < product.length; i++) {
+            let sisaBaru = Number(product[i].total.toString().replace(',', '.')) - Number(hasilValue.toString().replace(',', '.'));
+            console.log(sisaBaru)
+            if (i == index) {
+                tmpData[i].remains = sisaBaru;
+                jumlah[i] = hasilValue;
+            }
+        }
+        setProduct(tmpData)
+        console.log(product)
+    }
+
+    const data =
+        [...product.map((item, i) => ({
+            code: item.code,
+            total: <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(item.total).toFixed(2).toString().replace('.', ',')} />,
+            sisa: <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(item.remains).toFixed(2).toString().replace('.', ',')} />,
+            paid: <CurrencyFormat onKeyDown={(event) => klikEnter(event)} className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={jumlah[i]} onChange={(e) => klikUbahBayar(e.target.value, i)} />
+        })
+
+        )]
 
     // const handleChange = () => {
     //     setChecked(!checked);
@@ -374,6 +408,7 @@ const BuatPelunasan = () => {
         let data = event.target.value
 
         let tmpDataBaru = []
+        let tmpJumlah = [...jumlah]
         let tmpDataCentang = []
         for (let i = 0; i < getDataProduct.length; i++) {
             if (i == index) {
@@ -389,7 +424,7 @@ const BuatPelunasan = () => {
             if (tmpDataBaru[i].statusCek == true) {
                 tmpDataCentang.push(tmpDataBaru[i].detail.code)
             }
-            else{
+            else {
                 tmpDataCentang.push('')
             }
         }
@@ -398,14 +433,29 @@ const BuatPelunasan = () => {
         var updatedList = [...product];
         if (tmpDataBaru[index].statusCek) {
             updatedList = [...product, data.detail];
+
+            for (let i = 0; i < updatedList.length; i++) {
+                if (i >= product.length) {
+                    tmpJumlah.push(0)
+                }
+
+            }
+            console.log(tmpJumlah)
         } else {
             for (let i = 0; i < updatedList.length; i++) {
                 if (updatedList[i].code == data.detail.code) {
                     updatedList.splice(i, 1);
+                    tmpJumlah.splice(i, 1)
                 }
             }
         }
         setProduct(updatedList);
+        setJumlah(tmpJumlah)
+
+
+        // for(let )
+        console.log(updatedList);
+
     };
 
     const handleSubmit = async (e) => {
@@ -441,10 +491,10 @@ const BuatPelunasan = () => {
             userData.append("bagan_akun", chartOfAcc);
             userData.append("pelanggan", customer);
             userData.append("status", "Submitted");
-            product.map((p) => {
+            product.map((p, i) => {
                 console.log(p);
                 userData.append("id_faktur_penjualan[]", p.id);
-                userData.append("terbayar[]", p.pays);
+                userData.append("terbayar[]", jumlah[i]);
             });
 
             // for (var pair of userData.entries()) {
@@ -521,10 +571,12 @@ const BuatPelunasan = () => {
             userData.append("bagan_akun", chartOfAcc);
             userData.append("pelanggan", customer);
             userData.append("status", "Draft");
-            product.map((p) => {
+            product.map((p, i) => {
                 console.log(p);
                 userData.append("id_faktur_penjualan[]", p.id);
-                userData.append("terbayar[]", p.pays);
+                userData.append("terbayar[]", jumlah[i]);
+
+                // userData.append("terbayar[]", p.pays);
             });
 
             // for (var pair of userData.entries()) {
@@ -695,7 +747,7 @@ const BuatPelunasan = () => {
                     rowClassName={() => 'editable-row'}
                     bordered
                     pagination={false}
-                    dataSource={product}
+                    dataSource={data}
                     columns={defaultColumns}
                     onChange={(e) => setProduct(e.target.value)}
                     summary={(pageData) => {
@@ -704,15 +756,17 @@ const BuatPelunasan = () => {
                         //     totalTotal += total;
                         // });
                         let totalTotal = 0;
-                        pageData.forEach(({ pays }) => {
-                            totalTotal += pays;
+                        pageData.forEach(({ paid }) => {
+                            totalTotal = Number(totalTotal) + Number(paid.props.value.toString().replace(',', '.'));
                         });
                         return (
                             <>
                                 <Table.Summary.Row>
                                     <Table.Summary.Cell index={0} colSpan={3}>Total yang dibayarkan</Table.Summary.Cell>
                                     <Table.Summary.Cell index={1}>
-                                        <Text >Rp {totalTotal || 0}</Text>
+                                        <CurrencyFormat disabled onKeyDown={(event) => klikEnter(event)} className='edit-disabled  text-center editable-input ' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(totalTotal).toFixed(2).toString().replace('.', ',')} />
+
+                                        {/* <Text >Rp {totalTotal || 0}</Text> */}
                                     </Table.Summary.Cell>
                                 </Table.Summary.Row>
                             </>

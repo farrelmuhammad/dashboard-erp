@@ -893,7 +893,7 @@ const BuatReturPembelian = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Retur</label>
                             <div className="col-sm-7">
                                 <input
-                                    value="OTOMATIS"
+                                    value="Otomatis"
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"

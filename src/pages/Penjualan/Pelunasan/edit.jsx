@@ -130,10 +130,12 @@ const EditPelunasan = () => {
     const [totalPpn, setTotalPpn] = useState("");
     const [grandTotal, setGrandTotal] = useState("");
     const [checked, setChecked] = useState("");
+    const [tmpCentang, setTmpCentang] = useState([])
 
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [selectedPembayaran, setSelectedPembayaran] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
+    const [loading, setLoading] = useState(true)
 
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
@@ -165,36 +167,32 @@ const EditPelunasan = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/sales_invoice_payments_available_sales_invoices?include_sales_invoice_payment_sales_invoices=${id}&nama_alias=${query}&penerima=${customer}`, {
+            const res = await axios.get(`${Url}/sales_invoice_payments_available_sales_invoices?include_sales_invoice_payment_sales_invoices=${id}&kode=${query}&penerima=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            // let tmp = [];
-            // for (let i = 0; i < res.data.data.length; i++) {
-            //     for (let x = 0; x < product.length; x++) {
+            let tmp = []
+            console.log(res.data.data)
+            for (let i = 0; i < res.data.data.length; i++) {
+                if (dataTampil[i] || res.data.data[i].id == id) {
+                    tmp.push({
+                        detail: res.data.data[i],
+                        statusCek: true
+                    });
+                }
+                else {
+                    tmp.push({
+                        detail: res.data.data[i],
+                        statusCek: false
+                    });
+                }
 
-            //         if (res.data.data[i].code == product[x].code) {
-            //             tmp.push({
-            //                 detail: res.data.data[i],
-            //                 statusCek: true
-            //             });
-            //         }
-            //         else {
-            //             tmp.push({
-            //                 detail: res.data.data.[i],
-            //                 statusCek: false
-            //             });
-            //         }
 
-            //     }
-
-            // }
-            // console.log(tmp)
-            // setGetDataProduct(tmp)
+            }
+            
             setGetDataProduct(res.data.data);
-            // console.log(res.data);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -213,11 +211,13 @@ const EditPelunasan = () => {
         })
             .then((res) => {
                 const getData = res.data.data[0]
+                console.log(getData)
                 setGetCode(getData.code)
                 setDate(getData.date)
                 setReferensi(getData.reference);
                 setSelectedPembayaran(getData.chart_of_account)
                 setStatus(getData.status)
+                setCustomer(getData.customer_id)
                 setSelectedCustomer(getData.customer)
                 let tmpData = [];
                 let data = getData.sales_invoice_payment_details;
@@ -232,14 +232,16 @@ const EditPelunasan = () => {
                         sales_invoice_total_payment: data[i].sales_invoice_total_payment,
                         total: Number(data[i].total).toString().replace('.', ',')
                     })
+                    // tmpCentang[i] = data[i].sales_invoice_code
                 }
-                console.log(tmpData)
+                // console.log(tmpCentang)
                 setDataTampil(tmpData)
-                setCustomer(getData.recipient.id)
-                setCustomerName(getData.recipient.name)
+                setLoading(false)
+                // setCustomerName(getData.recipient.name)
             })
     }
 
+  
     // Column for modal input product
     const columnsModal = [
         {
@@ -547,6 +549,10 @@ const EditPelunasan = () => {
             });
     };
 
+    if(loading){
+        return <div></div>
+    }
+
     return (
         <>
             <form className="p-2 mb-3 bg-body rounded">
@@ -587,16 +593,25 @@ const EditPelunasan = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pelanggan</label>
                             <div className="col-sm-7">
-                                <AsyncSelect
+                                <input
+                                    value={selectedCustomer.name}
+                                    type="Nama"
+                                    className="form-control"
+                                    id="inputNama3"
+                                    disabled
+                                />
+
+                                {/* <AsyncSelect
                                     placeholder="Pilih Pelanggan..."
                                     cacheOptions
                                     defaultOptions
+                                    disabled
                                     value={selectedCustomer}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsCustomer}
                                     onChange={handleChangeCustomer}
-                                />
+                                /> */}
                             </div>
                         </div>
 
@@ -711,7 +726,7 @@ const EditPelunasan = () => {
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={3}>Total yang dibayarkan</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat onKeyDown={(event) => klikEnter(event)} className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={totalTotal} />
+                                            <CurrencyFormat disabled onKeyDown={(event) => klikEnter(event)} className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={totalTotal} />
                                         </Table.Summary.Cell>
                                         {/* <Table.Summary.Cell index={2}>
                                             <Text>{totalRepayment}</Text>
