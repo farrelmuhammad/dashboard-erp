@@ -703,7 +703,7 @@ const EditReturPembelian = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/'returpembelian'");
+                navigate("/returpembelian");
             })
             .catch((err) => {
                 if (err.response) {

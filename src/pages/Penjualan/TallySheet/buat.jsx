@@ -13,86 +13,6 @@ import { useSelector } from 'react-redux';
 import ReactDataSheet from 'react-datasheet';
 import "react-datasheet/lib/react-datasheet.css";
 
-const EditableContext = createContext(null);
-
-const EditableRow = ({ index, ...props }) => {
-    const [form] = Form.useForm();
-    return (
-        <Form form={form} component={false}>
-            <EditableContext.Provider value={form}>
-                <tr {...props} />
-            </EditableContext.Provider>
-        </Form>
-    );
-};
-
-const EditableCell = ({
-    title,
-    editable,
-    children,
-    dataIndex,
-    record,
-    handleSave,
-    ...restProps
-}) => {
-    const [editing, setEditing] = useState(false);
-    const inputRef = useRef(null);
-    const form = useContext(EditableContext);
-    useEffect(() => {
-        if (editing) {
-            inputRef.current.focus();
-        }
-    }, [editing]);
-
-    const toggleEdit = () => {
-        setEditing(!editing);
-        form.setFieldsValue({
-            [dataIndex]: record[dataIndex],
-        });
-    };
-
-    const save = async () => {
-        try {
-            const values = await form.validateFields();
-            toggleEdit();
-            handleSave({ ...record, ...values });
-        } catch (errInfo) {
-            console.log('Save failed:', errInfo);
-        }
-    };
-
-    let childNode = children;
-
-    if (editable) {
-        childNode = editing ? (
-            <Form.Item
-                style={{
-                    margin: 0,
-                }}
-                name={dataIndex}
-                rules={[
-                    {
-                        required: true,
-                        message: `${title} is required.`,
-                    },
-                ]}
-            >
-                {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} />
-            </Form.Item>
-        ) : (
-            <div
-                className="editable-cell-value-wrap"
-                onClick={toggleEdit}
-            >
-                {children}
-            </div>
-        );
-    }
-
-    return <td {...restProps}>{childNode}</td>;
-};
-
 const BuatTally = () => {
     // const auth.token = jsCookie.get("auth");
     const auth = useSelector(state => state.auth);
@@ -104,6 +24,7 @@ const BuatTally = () => {
     const [warehouse, setWarehouse] = useState("");
     const [product, setProduct] = useState([]);
     const [idProductSelect, setIdProductSelect] = useState([]);
+    const [dataTampil, setDataTampil] = useState([])
     const [query, setQuery] = useState("");
     const [getCode, setGetCode] = useState('');
     const navigate = useNavigate();
@@ -149,23 +70,13 @@ const BuatTally = () => {
 
     // menghitung total tally sheet 
     useEffect(() => {
-        // console.log(totalTallySheet)
         let arrTotal = [];
         let total = [];
 
         for (let x = 0; x < product.length; x++) {
             total = [];
-            // pengecekan transaksi 
-            let dataSumber = [];
-            if (sumber == 'Retur') {
-                dataSumber = product[x].purchase_return_details;
-            }
-            else if (sumber == 'SO') {
-                dataSumber = product[x].sales_order_details;
-            }
 
-
-            for (let i = 0; i < dataSumber.length; i++) {
+            for (let i = 0; i < dataTampil[x].length; i++) {
                 total[i] = 0;
                 for (let a = 1; a < data[x][i].length; a++) {
                     for (let b = 1; b < data[x][i][a].length; b++) {
@@ -513,7 +424,7 @@ const BuatTally = () => {
 
 
     function simpanTallySheet(i) {
-        console.log(i)
+        // console.log(i)
         let tmp = [];
         let arrtmp = [];
         let stts = [];
@@ -533,8 +444,8 @@ const BuatTally = () => {
             qtySebelumnya = product[idxPesanan].sales_order_details[i].tally_sheets_qty;
         }
 
-        console.log(qtySO)
-        console.log(qtySebelumnya)
+        // console.log(qtySO)
+        // console.log(qtySebelumnya)
 
         for (let x = 0; x < product.length; x++) {
             tmp = [];
@@ -574,7 +485,7 @@ const BuatTally = () => {
             }
         }
 
-        console.log(product)
+        // console.log(product)
         // pengecekan status atasnya 
         for (let x = 0; x < product.length; x++) {
             tmp = [];
@@ -614,7 +525,7 @@ const BuatTally = () => {
             cancelButtonColor: '#d33',
             confirmButtonText: 'Ya'
         }).then((result) => {
-            console.log(product)
+            // console.log(product)
             if (result.isConfirmed) {
                 let newStatus = []
                 let dataSumber = []
@@ -651,7 +562,7 @@ const BuatTally = () => {
     }
 
     function forceNexDeliveryProduct(baris, kolom) {
-        console.log(product)
+        // console.log(product)
         // console.log(product[index].tally_sheets_qty)
         // console.log(product[index].boxes_quantity)
 
@@ -712,7 +623,7 @@ const BuatTally = () => {
 
                     }
                     setStatusSO(newStatus)
-                    console.log(newStatus)
+                    // console.log(newStatus)
                     // let newProduct = []
                     // for (let i = 0; i < product.length; i++) {
                     //     if (i == index) {
@@ -755,9 +666,8 @@ const BuatTally = () => {
             dataSumber = product[idx].sales_order_details;
         }
 
-        // console.log(totalTallySheet)
-
-        let tmpTotalTallySheet  = [...totalTallySheet]
+        // console.log(dataTampil)
+        let tmpTotalTallySheet = [...totalTallySheet]
         let tmpSelectProduct = [...selectedProduct]
         let tmpOptionProduct = [...optionsProduct]
         let tmpIdProductSelect = [...idProductSelect]
@@ -766,8 +676,9 @@ const BuatTally = () => {
         let tmpStatusSO = [...statusSO]
         let tmpQuantity = [...quantity]
         let tmpTotalBox = [...totalBox]
+        let tmpDataTampil = [...dataTampil]
         if (i >= 0) {
-            if (dataSumber.length == 1) {
+            if (dataTampil[idx].length == 1) {
                 // pengecekan centang 
                 if (sumber == 'Retur') {
                     let tmp = [];
@@ -811,36 +722,36 @@ const BuatTally = () => {
                 tmpStatusSO.splice(idx, 1)
                 tmpQuantity.splice(idx, 1)
                 tmpTotalBox.splice(idx, 1)
-
+                tmpDataTampil.splice(idx, 1)
                 setIndexPO(0)
                 setIdxPesanan(0)
-            } else {
-                // console.log(tmpOptionProduct)
-                let produkHapus = [...tmpProduct[idx].sales_order_details]
+            }
+
+            else {
+                // let produkHapus = [...tmpProduct[idx].sales_order_details]
                 let selectHapus = [...tmpSelectProduct[idx]]
                 tmpOptionProduct[idx].splice(i, 1)
                 tmpIdProductSelect[idx].splice(i, 1)
-                // console.log(tmpTotalTallySheet[idx])
                 tmpTotalTallySheet[idx].splice(i, 1)
-                produkHapus.splice(i, 1);
-                selectHapus.splice(i, 1); 
-                dataSumber.splice(i, 1);
+                // tmpDataTampil.splice(i, 1);
+                selectHapus.splice(i, 1);
+                // dataSumber.splice(i, 1);
                 tmpData[idx].splice(i, 1)
                 tmpStatusSO[idx].splice(i, 1)
                 tmpQuantity[idx].splice(i, 1)
                 tmpTotalBox[idx].splice(i, 1)
-
-                tmpProduct[idx].sales_order_details = produkHapus
+                tmpDataTampil[idx].splice(i, 1)
                 tmpSelectProduct[idx] = selectHapus
                 setIndexPO(0)
                 setIdxPesanan(0)
             }
+            // console.log(tmpProduct)
             setProduct(tmpProduct)
             setSelectedProduct(tmpSelectProduct)
             setIdProductSelect(tmpIdProductSelect)
             setTotalTallySheet(tmpTotalTallySheet)
-            // console.log(tmpTotalTallySheet)
-
+            // console.log
+            setDataTampil(tmpDataTampil)
             setData(tmpData)
             setStatusSO(tmpStatusSO)
             setQuantity(tmpQuantity)
@@ -853,13 +764,7 @@ const BuatTally = () => {
 
     function tambahIndexProduct(kolom, baris) {
         setLoadingTable(true);
-        let dataSumber = [];
-        if (sumber == 'Retur') {
-            dataSumber = product[baris].purchase_return_details;
-        }
-        else if (sumber == 'SO') {
-            dataSumber = product[baris].sales_order_details;
-        }
+        let dataSumber = dataTampil[baris]
 
         const oldArray = dataSumber;
         const newArray = dataSumber[kolom];
@@ -900,13 +805,7 @@ const BuatTally = () => {
 
 
         for (let x = 0; x < product.length; x++) {
-            let dataSumber = [];
-            if (sumber == 'Retur') {
-                dataSumber = product[x].purchase_return_details;
-            }
-            else if (sumber == 'SO') {
-                dataSumber = product[x].sales_order_details;
-            }
+            let dataSumber = dataTampil[x];
 
             if (x == baris) {
                 for (let y = 0; y <= kolom + 1; y++) {
@@ -924,7 +823,7 @@ const BuatTally = () => {
                                 Authorization: `Bearer ${auth.token}`,
                             },
                         }).then((res) => {
-                            console.log(res.data)
+                            // console.log(res.data)
                             for (let idxProduk = 0; idxProduk < res.data.length; idxProduk++) {
                                 dataOption.push({
                                     value: res.data[idxProduk].id,
@@ -1124,66 +1023,13 @@ const BuatTally = () => {
                 value.push(valueStore)
                 status.push(statusStore)
                 qtyBox_tmp.push(temp_qtyBox)
-                console.log(product)
+                tmp.push(arr)
 
-                if (sumber == 'SO') {
-                    tmp.push({
-                        code: product[x].code,
-                        created_at: product[x].created_at,
-                        customer: product[x].customer,
-                        customer_id: product[x].customer_id,
-                        date: product[x].date,
-                        discount: product[x].discount,
-                        done_at: product[x].done_at,
-                        done_by: product[x].done_by,
-                        drafted_by: product[x].drafted_by,
-                        id: product[x].id,
-                        last_edited_at: product[x].last_edited_at,
-                        last_edited_by: product[x].last_edited_by,
-                        notes: product[x].notes,
-                        ppn: product[x].ppn,
-                        reference: product[x].reference,
-                        sales_order_details: arr,
-                        status: product[x].status,
-                        submitted_at: product[x].submitted_at,
-                        submitted_by: product[x].submitted_by,
-                        subtotal: product[x].subtotal,
-                        tax_included: product[x].tax_included,
-                        total: product[x].total,
-                        updated_at: product[x].updated_at,
-                    })
-                }
-                else {
-                    tmp.push({
-                        code: product[x].code,
-                        created_at: product[x].created_at,
-                        customer: product[x].customer,
-                        customer_id: product[x].customer_id,
-                        date: product[x].date,
-                        discount: product[x].discount,
-                        done_at: product[x].done_at,
-                        done_by: product[x].done_by,
-                        drafted_by: product[x].drafted_by,
-                        id: product[x].id,
-                        last_edited_at: product[x].last_edited_at,
-                        last_edited_by: product[x].last_edited_by,
-                        notes: product[x].notes,
-                        ppn: product[x].ppn,
-                        reference: product[x].reference,
-                        purchase_return_details: arr,
-                        status: product[x].status,
-                        submitted_at: product[x].submitted_at,
-                        submitted_by: product[x].submitted_by,
-                        subtotal: product[x].subtotal,
-                        tax_included: product[x].tax_included,
-                        total: product[x].total,
-                        updated_at: product[x].updated_at,
-                    })
-                }
 
             }
             else {
-                tmp.push(product[x])
+
+                tmp.push(dataTampil[x])
                 qty.push(quantity[x])
                 box.push(totalBox[x])
                 temp.push(data[x])
@@ -1195,18 +1041,16 @@ const BuatTally = () => {
                 qtyBox_tmp.push(kuantitasBox[x])
             }
         }
-        console.log(tmp)
         setQuantity(qty)
         setTotalBox(box)
         setData(temp)
         setOptionsProduct(option)
-        console.log(option)
         setSelectedProduct(value)
         setIdProductSelect(id)
         setStatusSO(status)
         setKuantitasBox(qtyBox_tmp)
         setQtyPesanan(qtyPes)
-        setProduct(tmp)
+        setDataTampil(tmp)
         setLoadingTable(false)
     }
 
@@ -1284,330 +1128,331 @@ const BuatTally = () => {
             },
         ];
 
-        let dataTampil;
-        if (sumber == 'SO') {
-            dataTampil =
-                [...product[record.key].sales_order_details.map((item, i) => ({
-                    product_alias_name: item.product_alias_name,
-                    product_name: <>
-                        <ReactSelect
-                            className="basic-single"
-                            placeholder="Pilih Produk..."
-                            classNamePrefix="select"
-                            value={selectedProduct[record.key][i]}
-                            isLoading={isLoading}
-                            isSearchable
-                            options={optionsProduct[record.key][i]}
-                            //  onChange={handleChangeTipe}
-                            // placeholder="Pilih Produk..."
-                            // cacheOptions
-                            // defaultOptions
-                            // value={selectedProduct[record.key][i]}
-                            // getOptionLabel={(e) => e.name}
-                            // getOptionValue={(e) => e.id}
-                            // loadOptions={optionsProduct}
-                            onChange={(value) => handleChangeProduct(value, record.key, i)}
-                        />
+        // console.log(record)
+        // console.log(dataTampil[record.key])
+        let source = dataTampil[record.key]
+        // console.log(totalTallySheet)
+        // let tabelData;
+        // if (sumber == 'SO') {
+        let tabelData =
+            [...source.map((item, i) => ({
+                product_alias_name: item.product_alias_name,
+                product_name: 
+                
+                sumber == 'Retur' ? item.product_name :
+                
+                <>
+                    
+                    <ReactSelect
+                        className="basic-single"
+                        placeholder="Pilih Produk..."
+                        classNamePrefix="select"
+                        value={selectedProduct[record.key][i]}
+                        isLoading={isLoading}
+                        isSearchable
+                        options={optionsProduct[record.key][i]}
+                        onChange={(value) => handleChangeProduct(value, record.key, i)}
+                    />
+                </>,
+                quantity: quantity[record.key][i],
+                unit: item.unit,
+                box:
+                    <>
+                        <a onClick={() => klikTampilSheet(record.key, i)}>
+                            {totalBox[record.key][i]}
+                        </a>
+                        <Modal
+                            centered
+                            visible={modal2Visible2}
+                            onCancel={() => setModal2Visible2(false)}
+                            width={1000}
+                            footer={[
+                                <Button
+                                    key="submit"
+                                    type="primary"
+                                    style={{ background: "green", borderColor: "white" }}
+                                    onClick={() => simpanTallySheet(indexPO)}
+                                >
+                                    Simpan
+                                </Button>,
+                            ]}
+                        >
+                            <div className="text-title text-start">
+                                <div className="row">
+                                    <div className="col">
+                                        <div className="row">
+                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
+                                            <div className="col-sm-3">
+                                                <input
+                                                    value={product[idxPesanan].code}
+                                                    type="Nama"
+                                                    className="form-control"
+                                                    id="inputNama3"
+                                                    disabled
+                                                />
+                                            </div>
+                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
+                                            <div className="col-sm-3">
+                                                <input
+                                                    value={Number(qtyPesanan[idxPesanan][indexPO]).toFixed(2).toString().replace('.', ',')}
+                                                    type="Nama"
+                                                    className="form-control"
+                                                    id="inputNama3"
+                                                    disabled
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="row mb-1 mt-2">
+                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
+                                            <div className="col-sm-3">
+                                                <input
+                                                    value={selectedProduct[idxPesanan][indexPO] == "" ? "" : selectedProduct[idxPesanan][indexPO].label}
+                                                    type="Nama"
+                                                    className="form-control"
+                                                    id="inputNama3"
+                                                    disabled
+                                                />
+
+                                            </div>
+                                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
+                                            <div className="col-sm-3">
+                                                <input
+                                                    value={Number(totalTallySheet[idxPesanan][indexPO]).toFixed(2).replace('.', ',')}
+                                                    type="Nama"
+                                                    className="form-control"
+                                                    id="inputNama3"
+                                                    disabled
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="w-10" style={{ overflowY: "scroll", height: "300px", display: loadingSpreedSheet ? "none" : 'block' }}>
+                                        <ReactDataSheet
+                                            data={data[idxPesanan][indexPO]}
+                                            valueRenderer={valueRenderer}
+                                            onCellsChanged={onCellsChanged}
+                                            onContextMenu={onContextMenu}
+                                        />
+                                    </div>
+                                    <div className='mt-2 d-flex'>
+                                        <Button
+                                            size='small'
+                                            type="primary"
+                                            icon={<PlusOutlined />}
+                                            onClick={() => klikTambahBaris()}
+                                        />
+                                        {
+                                            data[idxPesanan][indexPO].length - 2 > 0 ?
+                                                <Button
+                                                    className='ms-2'
+                                                    size='small'
+                                                    type="danger"
+                                                    icon={<MinusOutlined />}
+                                                    onClick={() => klikHapusBaris()}
+                                                /> :
+                                                <Button
+                                                    disabled
+                                                    className='ms-2'
+                                                    size='small'
+                                                    type="danger"
+                                                    icon={<MinusOutlined />}
+                                                    onClick={() => klikHapusBaris()}
+                                                />
+                                        }
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </Modal>
                     </>,
-                    quantity: quantity[record.key][i],
-                    unit: item.unit,
-                    box:
-                        <>
-                            <a onClick={() => klikTampilSheet(record.key, i)}>
-                                {totalBox[record.key][i]}
-                            </a>
-                            <Modal
-                                centered
-                                visible={modal2Visible2}
-                                onCancel={() => setModal2Visible2(false)}
-                                width={1000}
-                                footer={[
-                                    <Button
-                                        key="submit"
-                                        type="primary"
-                                        style={{ background: "green", borderColor: "white" }}
-                                        onClick={() => simpanTallySheet(indexPO)}
-                                    >
-                                        Simpan
-                                    </Button>,
-                                ]}
-                            >
-                                <div className="text-title text-start">
-                                    <div className="row">
-                                        <div className="col">
-                                            <div className="row">
-                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
-                                                <div className="col-sm-3">
-                                                    <input
-                                                        value={product[idxPesanan].code}
-                                                        type="Nama"
-                                                        className="form-control"
-                                                        id="inputNama3"
-                                                        disabled
-                                                    />
-                                                </div>
-                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
-                                                <div className="col-sm-3">
-                                                    <input
-                                                        value={Number(qtyPesanan[idxPesanan][indexPO]).toFixed(2).toString().replace('.', ',')}
-                                                        type="Nama"
-                                                        className="form-control"
-                                                        id="inputNama3"
-                                                        disabled
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="row mb-1 mt-2">
-                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
-                                                <div className="col-sm-3">
-                                                    <input
-                                                        value={selectedProduct[idxPesanan][indexPO] == "" ? "" : selectedProduct[idxPesanan][indexPO].label}
-                                                        type="Nama"
-                                                        className="form-control"
-                                                        id="inputNama3"
-                                                        disabled
-                                                    />
-
-                                                </div>
-                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
-                                                <div className="col-sm-3">
-                                                    <input
-                                                        value={Number(totalTallySheet[idxPesanan][indexPO]).toFixed(2).replace('.', ',')}
-                                                        type="Nama"
-                                                        className="form-control"
-                                                        id="inputNama3"
-                                                        disabled
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="w-10" style={{ overflowY: "scroll", height: "300px", display: loadingSpreedSheet ? "none" : 'block' }}>
-                                            <ReactDataSheet
-                                                data={data[idxPesanan][indexPO]}
-                                                valueRenderer={valueRenderer}
-                                                onCellsChanged={onCellsChanged}
-                                                onContextMenu={onContextMenu}
-                                            />
-                                        </div>
-                                        <div className='mt-2 d-flex'>
-                                            <Button
-                                                size='small'
-                                                type="primary"
-                                                icon={<PlusOutlined />}
-                                                onClick={() => klikTambahBaris()}
-                                            />
-                                            {
-                                                data[idxPesanan][indexPO].length - 2 > 0 ?
-                                                    <Button
-                                                        className='ms-2'
-                                                        size='small'
-                                                        type="danger"
-                                                        icon={<MinusOutlined />}
-                                                        onClick={() => klikHapusBaris()}
-                                                    /> :
-                                                    <Button
-                                                        disabled
-                                                        className='ms-2'
-                                                        size='small'
-                                                        type="danger"
-                                                        icon={<MinusOutlined />}
-                                                        onClick={() => klikHapusBaris()}
-                                                    />
-                                            }
+                status: statusSO[record.key][i] === 'Done' ? <Tag color="green" type="button" onClick={() => forceNexDeliveryProduct(record.key, i)}>{statusSO[record.key][i]}</Tag> : statusSO[record.key][i] === 'Next delivery' ? <Tag color="orange" type="button" onClick={() => forceDoneProduct(record.key, i)}>{statusSO[record.key][i]}</Tag> : <Tag color="red">{statusSO[record.key][i]}</Tag>,
 
 
-                                        </div>
-                                    </div>
-                                </div>
-                            </Modal>
-                        </>,
-                    status: statusSO[record.key][i] === 'Done' ? <Tag color="green" type="button" onClick={() => forceNexDeliveryProduct(record.key, i)}>{statusSO[record.key][i]}</Tag> : statusSO[record.key][i] === 'Next delivery' ? <Tag color="orange" type="button" onClick={() => forceDoneProduct(record.key, i)}>{statusSO[record.key][i]}</Tag> : <Tag color="red">{statusSO[record.key][i]}</Tag>,
+                action:
+                    <Space size="middle">
+                        <Button
+                            size='small'
+                            type="danger"
+                            icon={<DeleteOutlined />}
+                            onClick={() => {
+                                // setLoadingTable(true)
+                                hapusIndexProduct(i, record.key)
+                                // setLoadingTable(false)
+
+                            }}
+                        />
+                        <Button
+                            size='small'
+                            type="primary"
+                            icon={<PlusOutlined />}
+                            onClick={() => tambahIndexProduct(i, record.key)}
+                        />
+                    </Space>,
+            }))
+
+            ];
+        // }
+        // else {
+        //     // console.log(product)
+        //     tabelData =
+        //         [...source.map((item, i) => ({
+        //             // product_alias_name: item.product_alias_name,
+        //             // key: [record.key]
+        //             product_alias_name: item.product_alias_name,
+        //             product_name: item.product_name,
+        //             quantity: quantity[record.key][i].toString().replace('.', ','),
+        //             unit: item.unit,
+        //             box:
+        //                 <>
+        //                     <a onClick={() => klikTampilSheet(record.key, i)}>
+        //                         {totalBox[record.key][i]}
+        //                     </a>
+        //                     <Modal
+        //                         centered
+        //                         visible={modal2Visible2}
+        //                         onCancel={() => setModal2Visible2(false)}
+        //                         width={1000}
+        //                         footer={[
+        //                             <Button
+        //                                 key="submit"
+        //                                 type="primary"
+        //                                 style={{ background: "green", borderColor: "white" }}
+        //                                 onClick={() => simpanTallySheet(indexPO)}
+        //                             >
+        //                                 Simpan
+        //                             </Button>,
+        //                         ]}
+        //                     >
+        //                         <div className="text-title text-start">
+        //                             <div className="row">
+        //                                 <div className="col">
+        //                                     <div className="row">
+        //                                         <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
+        //                                         <div className="col-sm-3">
+        //                                             <input
+        //                                                 value={product[idxPesanan].code}
+        //                                                 type="Nama"
+        //                                                 className="form-control"
+        //                                                 id="inputNama3"
+        //                                                 disabled
+        //                                             />
+        //                                         </div>
+        //                                         <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
+        //                                         <div className="col-sm-3">
+        //                                             <input
+        //                                                 value={Number(qtyPesanan[idxPesanan][indexPO]).toFixed(2).toString().replace('.', ',')}
+        //                                                 type="Nama"
+        //                                                 className="form-control"
+        //                                                 id="inputNama3"
+        //                                                 disabled
+        //                                             />
+        //                                         </div>
+        //                                     </div>
+        //                                     <div className="row mb-1 mt-2">
+        //                                         <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
+        //                                         <div className="col-sm-3">
+        //                                             <input
+        //                                                 value={sumber == 'Retur' ? product[idxPesanan].purchase_return_details[indexPO].product_name : selectedProduct[idxPesanan][indexPO] == "" ? "" : selectedProduct[idxPesanan][indexPO].name}
+        //                                                 type="Nama"
+        //                                                 className="form-control"
+        //                                                 id="inputNama3"
+        //                                                 disabled
+        //                                             />
+
+        //                                         </div>
+        //                                         <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
+        //                                         <div className="col-sm-3">
+        //                                             <input
+        //                                                 value={totalTallySheet[idxPesanan][indexPO].toString().replace('.', ',')}
+        //                                                 type="Nama"
+        //                                                 className="form-control"
+        //                                                 id="inputNama3"
+        //                                                 disabled
+        //                                             />
+        //                                         </div>
+        //                                     </div>
+        //                                 </div>
+
+        //                                 <div className="w-10" style={{ overflowY: "scroll", height: "300px", display: loadingSpreedSheet ? "none" : 'block' }}>
+        //                                     <ReactDataSheet
+        //                                         data={data[idxPesanan][indexPO]}
+        //                                         valueRenderer={valueRenderer}
+        //                                         onCellsChanged={onCellsChanged}
+        //                                         onContextMenu={onContextMenu}
+        //                                     />
+        //                                 </div>
+        //                                 <div className='mt-2 d-flex'>
+        //                                     <Button
+        //                                         size='small'
+        //                                         type="primary"
+        //                                         icon={<PlusOutlined />}
+        //                                         onClick={() => klikTambahBaris()}
+        //                                     />
+        //                                     {
+        //                                         data[idxPesanan][indexPO].length - 2 > 0 ?
+        //                                             <Button
+        //                                                 className='ms-2'
+        //                                                 size='small'
+        //                                                 type="danger"
+        //                                                 icon={<MinusOutlined />}
+        //                                                 onClick={() => klikHapusBaris()}
+        //                                             /> :
+        //                                             <Button
+        //                                                 disabled
+        //                                                 className='ms-2'
+        //                                                 size='small'
+        //                                                 type="danger"
+        //                                                 icon={<MinusOutlined />}
+        //                                                 onClick={() => klikHapusBaris()}
+        //                                             />
+        //                                     }
 
 
-                    action:
-                        <Space size="middle">
-                            <Button
-                                size='small'
-                                type="danger"
-                                icon={<DeleteOutlined />}
-                                onClick={() => {
-                                    // setLoadingTable(true)
-                                    hapusIndexProduct(i, record.key)
-                                    // setLoadingTable(false)
+        //                                 </div>
+        //                             </div>
+        //                         </div>
+        //                     </Modal>
+        //                 </>,
+        //             status: statusSO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusSO[record.key][i] === 'Next delivery' ? <Tag color="orange">{statusSO[record.key][i]}</Tag> : statusSO[record.key][i] === 'Done' ? <Tag color="green">{statusSO[record.key][i]}</Tag> : null,
+        //             action:
+        //                 <Space size="middle">
+        //                     <Button
+        //                         size='small'
+        //                         type="danger"
+        //                         icon={<DeleteOutlined />}
+        //                         onClick={() => hapusIndexProduct(i, record.key)}
+        //                     />
+        //                 </Space>,
+        //         }))
 
-                                }}
-                            />
-                            <Button
-                                size='small'
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => tambahIndexProduct(i, record.key)}
-                            />
-                        </Space>,
-                }))
+        //         ];
 
-                ];
-        }
-        else {
-            // console.log(product)
-            dataTampil =
-                [...product[record.key].purchase_return_details.map((item, i) => ({
-                    // product_alias_name: item.product_alias_name,
-                    // key: [record.key]
-                    product_alias_name: item.product_alias_name,
-                    product_name: item.product_name,
-                    quantity: quantity[record.key][i].toString().replace('.', ','),
-                    unit: item.unit,
-                    box:
-                        <>
-                            <a onClick={() => klikTampilSheet(record.key, i)}>
-                                {totalBox[record.key][i]}
-                            </a>
-                            <Modal
-                                centered
-                                visible={modal2Visible2}
-                                onCancel={() => setModal2Visible2(false)}
-                                width={1000}
-                                footer={[
-                                    <Button
-                                        key="submit"
-                                        type="primary"
-                                        style={{ background: "green", borderColor: "white" }}
-                                        onClick={() => simpanTallySheet(indexPO)}
-                                    >
-                                        Simpan
-                                    </Button>,
-                                ]}
-                            >
-                                <div className="text-title text-start">
-                                    <div className="row">
-                                        <div className="col">
-                                            <div className="row">
-                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
-                                                <div className="col-sm-3">
-                                                    <input
-                                                        value={product[idxPesanan].code}
-                                                        type="Nama"
-                                                        className="form-control"
-                                                        id="inputNama3"
-                                                        disabled
-                                                    />
-                                                </div>
-                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
-                                                <div className="col-sm-3">
-                                                    <input
-                                                        value={Number(qtyPesanan[idxPesanan][indexPO]).toFixed(2).toString().replace('.', ',')}
-                                                        type="Nama"
-                                                        className="form-control"
-                                                        id="inputNama3"
-                                                        disabled
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="row mb-1 mt-2">
-                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
-                                                <div className="col-sm-3">
-                                                    <input
-                                                        value={sumber == 'Retur' ? product[idxPesanan].purchase_return_details[indexPO].product_name : selectedProduct[idxPesanan][indexPO] == "" ? "" : selectedProduct[idxPesanan][indexPO].name}
-                                                        type="Nama"
-                                                        className="form-control"
-                                                        id="inputNama3"
-                                                        disabled
-                                                    />
-
-                                                </div>
-                                                <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
-                                                <div className="col-sm-3">
-                                                    <input
-                                                        value={totalTallySheet[idxPesanan][indexPO].toString().replace('.', ',')}
-                                                        type="Nama"
-                                                        className="form-control"
-                                                        id="inputNama3"
-                                                        disabled
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="w-10" style={{ overflowY: "scroll", height: "300px", display: loadingSpreedSheet ? "none" : 'block' }}>
-                                            <ReactDataSheet
-                                                data={data[idxPesanan][indexPO]}
-                                                valueRenderer={valueRenderer}
-                                                onCellsChanged={onCellsChanged}
-                                                onContextMenu={onContextMenu}
-                                            />
-                                        </div>
-                                        <div className='mt-2 d-flex'>
-                                            <Button
-                                                size='small'
-                                                type="primary"
-                                                icon={<PlusOutlined />}
-                                                onClick={() => klikTambahBaris()}
-                                            />
-                                            {
-                                                data[idxPesanan][indexPO].length - 2 > 0 ?
-                                                    <Button
-                                                        className='ms-2'
-                                                        size='small'
-                                                        type="danger"
-                                                        icon={<MinusOutlined />}
-                                                        onClick={() => klikHapusBaris()}
-                                                    /> :
-                                                    <Button
-                                                        disabled
-                                                        className='ms-2'
-                                                        size='small'
-                                                        type="danger"
-                                                        icon={<MinusOutlined />}
-                                                        onClick={() => klikHapusBaris()}
-                                                    />
-                                            }
+        //     // console.log(dataTampil)
+        // }
 
 
-                                        </div>
-                                    </div>
-                                </div>
-                            </Modal>
-                        </>,
-                    status: statusSO[record.key][i] == '' ? <Tag color="red">Waiting</Tag> : statusSO[record.key][i] === 'Next delivery' ? <Tag color="orange">{statusSO[record.key][i]}</Tag> : statusSO[record.key][i] === 'Done' ? <Tag color="green">{statusSO[record.key][i]}</Tag> : null,
-                    action:
-                        <Space size="middle">
-                            <Button
-                                size='small'
-                                type="danger"
-                                icon={<DeleteOutlined />}
-                                onClick={() => hapusIndexProduct(i, record.key)}
-                            />
-                        </Space>,
-                }))
-
-                ];
-
-            // console.log(dataTampil)
-        }
-
-
-        if (sumber == 'SO') {
-            return <Table
-                style={{ display: loadingTable ? "none" : 'block' }}
-                columns={columns}
-                dataSource={dataTampil}
-                pagination={false}
-                isLoading={true}
-                rowClassName={() => 'editable-row'}
-            />
-        }
-        else if (sumber == 'Retur') {
-            return <Table
-                style={{ display: loadingTable ? "none" : 'block' }}
-                columns={columns}
-                dataSource={dataTampil}
-                pagination={false}
-                isLoading={true}
-                rowClassName={() => 'editable-row'}
-            />;
-        }
+        // if (sumber == 'SO') {
+        return <Table
+            style={{ display: loadingTable ? "none" : 'block' }}
+            columns={columns}
+            dataSource={tabelData}
+            pagination={false}
+            isLoading={true}
+            rowClassName={() => 'editable-row'}
+        />
+        // }
+        // else if (sumber == 'Retur') {
+        //     return <Table
+        //         style={{ display: loadingTable ? "none" : 'block' }}
+        //         columns={columns}
+        //         dataSource={tabelData}
+        //         pagination={false}
+        //         isLoading={true}
+        //         rowClassName={() => 'editable-row'}
+        //     />;
+        // }
 
 
         // }
@@ -1737,6 +1582,8 @@ const BuatTally = () => {
     ];
 
     const handleCheck = (event, index) => {
+        // console.log(data)
+        // console.log(event.target.value.detail)
         var updatedList = [...product];
         let arrData = [];
         let arrBox = [];
@@ -1745,6 +1592,7 @@ const BuatTally = () => {
         let arrStatus = [];
         let arrQtyPesanan = [];
         let tmpDataBaru = [];
+        // let tmpTotalTally = []
 
 
         // perubahan data dan status ceked 
@@ -1762,7 +1610,6 @@ const BuatTally = () => {
             }
             setGetDataRetur(tmpDataBaru)
         }
-
         else if (sumber == 'SO') {
             for (let i = 0; i < getDataProduct.length; i++) {
                 if (i == index) {
@@ -1781,16 +1628,18 @@ const BuatTally = () => {
 
         if (tmpDataBaru[index].statusCek) {
             updatedList = [...product, event.target.value.detail];
-
+            // console.log(data)
 
             // tambah data pas di checked 
+            let arrTotalTally = []
             let optProduk = [];
             let idProduk = [];
             let nameProduk = []
+            let arrDataTampil = []
             let status_tmp = [];
             if (data.length == 0) {
-
                 for (let i = 0; i < updatedList.length; i++) {
+                    let tmpTotalTally = []
                     let tempData = [];
                     let tempKuantitas = [];
                     let qty = [];
@@ -1799,6 +1648,7 @@ const BuatTally = () => {
                     let qtyPesanan = [];
                     let values = [];
                     let id = [];
+                    let tmpDataTampil = []
 
                     // pengecekan transaksi 
                     let dataSumber = [];
@@ -1961,11 +1811,13 @@ const BuatTally = () => {
                         else if (dataSumber[x].tally_sheets_qty < dataSumber[x].quantity) {
                             stts.push('Next delivery')
                         }
+                        tmpTotalTally.push(0)
                         tempKuantitas.push(0);
                         qty.push(0);
                         tempBox.push(0);
+                        tmpDataTampil.push(dataSumber[x])
 
-                        // ngambil jenis produk 
+                        // mengambil pilihan produk 
                         let dataOption = []
                         axios.get(`${Url}/select_products?nama_alias=${dataSumber[x].product_alias_name}`, {
                             headers: {
@@ -1973,7 +1825,7 @@ const BuatTally = () => {
                                 Authorization: `Bearer ${auth.token}`,
                             },
                         }).then((res) => {
-                            console.log(res.data)
+                            // console.log(res.data)
                             for (let idxProduk = 0; idxProduk < res.data.length; idxProduk++) {
                                 dataOption.push({
                                     value: res.data[idxProduk].id,
@@ -1986,9 +1838,11 @@ const BuatTally = () => {
                         id.push("")
                         qtyPesanan.push(dataSumber[x].quantity)
                     }
+                    arrDataTampil.push(tmpDataTampil)
                     arrStatus.push(stts);
                     arrData.push(tempData);
                     arrKuantitas[i] = tempKuantitas;
+                    arrTotalTally.push(tmpTotalTally)
                     arrqty[i] = qty;
                     arrBox[i] = tempBox;
                     optProduk.push(values)
@@ -2004,6 +1858,9 @@ const BuatTally = () => {
                     let tempId = [];
                     let tempStatus = [];
                     let tempQtyPesanan = [];
+                    let tmpDataTampil = []
+                    let tmpTotalTally = []
+
                     // let tmpOptions [];
 
                     // pengecekan transaksi 
@@ -2028,7 +1885,7 @@ const BuatTally = () => {
                                     Authorization: `Bearer ${auth.token}`,
                                 },
                             }).then((res) => {
-                                console.log(res.data)
+                                // console.log(res.data)
                                 for (let idxProduk = 0; idxProduk < res.data.length; idxProduk++) {
                                     dataOption.push({
                                         value: res.data[idxProduk].id,
@@ -2048,15 +1905,17 @@ const BuatTally = () => {
 
                             }
 
+                            tmpDataTampil.push(dataSumber[x])
                             tempQtyPesanan.push(dataSumber[x].quantity)
+                            tmpTotalTally.push(0)
                         }
                         arrKuantitas[i] = tempKuantitas;
-
-
                         optProduk.push(tempValues)
                         idProduk.push(tempId)
                         nameProduk.push(tempId)
                         arrStatus.push(tempStatus)
+                        arrDataTampil.push(tmpDataTampil)
+                        arrTotalTally.push(tmpTotalTally)
                         arrQtyPesanan.push(tempQtyPesanan)
                     }
                     else {
@@ -2065,7 +1924,9 @@ const BuatTally = () => {
                         idProduk.push(idProductSelect[i])
                         nameProduk.push(selectedProduct[i])
                         arrStatus.push(statusSO[i])
+                        arrDataTampil.push(dataTampil[i])
                         arrQtyPesanan.push(qtyPesanan[i])
+                        arrTotalTally.push(totalTallySheet[i])
                     }
                 }
 
@@ -2278,6 +2139,8 @@ const BuatTally = () => {
             }
             setKuantitasBox(arrKuantitas);
             setData(arrData);
+            // console.log(arrData)
+            setTotalTallySheet(arrTotalTally)
             setTotalBox(arrBox);
             setQuantity(arrqty);
             setQtyPesanan(arrQtyPesanan);
@@ -2285,10 +2148,11 @@ const BuatTally = () => {
             setGetDataDetailSO(updatedList.map(d => d.sales_order_details))
 
             // product pilihan 
-            console.log(nameProduk)
             setOptionsProduct(optProduk)
             setSelectedProduct(nameProduk)
             setIdProductSelect(idProduk)
+            setDataTampil(arrDataTampil)
+            // console.log(arrDataTampil)
         }
 
         // non cek 
@@ -2302,6 +2166,8 @@ const BuatTally = () => {
                     totalBox.splice(i, 1);
                     quantity.splice(i, 1);
                     statusSO.splice(i, 1);
+                    totalTallySheet.splice(i, 1)
+                    dataTampil.splice(i, 1)
                     qtyPesanan.splice(i, 1);
                     optionsProduct.splice(i, 1);
                 }
@@ -2309,6 +2175,7 @@ const BuatTally = () => {
             setIdxPesanan(0)
 
         }
+
         setProduct(updatedList);
     };
 
@@ -2453,7 +2320,7 @@ const BuatTally = () => {
     const handleDraft = async (e) => {
         e.preventDefault();
 
-        console.log("hai")
+        // console.log("hai")
 
         if (!date) {
             Swal.fire({

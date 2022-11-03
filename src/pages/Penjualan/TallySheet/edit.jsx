@@ -11,9 +11,11 @@ import { useSelector } from 'react-redux'
 import ReactDataSheet from 'react-datasheet'
 import Swal from 'sweetalert2';
 import AsyncSelect from "react-select/async";
+import ReactSelect from 'react-select';
 import { PageHeader } from 'antd';
 import { number } from 'yup/lib/locale'
 import { getElementError } from '@testing-library/react'
+import { display } from '@mui/system'
 
 const EditTally = () => {
     const { id } = useParams();
@@ -37,6 +39,8 @@ const EditTally = () => {
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [selectedValue2, setSelectedWarehouse] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState([]);
+    const [optionsProduct, setOptionsProduct] = useState([]);
+    const [dataTampil, setDataTampil] = useState([]);
     const [selectedProductNoEdit, setSelectedProductNoEdit] = useState([]);
     const [data, setData] = useState([]);
     const [loadingSpreedSheet, setLoadingSpreadSheet] = useState(false);
@@ -48,6 +52,7 @@ const EditTally = () => {
     const [selectedSupplier, setSelectedSupplier] = useState(null);
     const [modal2Visible2, setModal2Visible2] = useState(false);
     const [getDataProduct, setGetDataProduct] = useState()
+    const [codeProduct, setCodeProduct] = useState([])
     const [getDataRetur, setGetDataRetur] = useState()
     const [getDataDetailPO, setGetDataDetailPO] = useState('');
     const [detailTallySheet, setDetailTallySheet] = useState([])
@@ -63,6 +68,7 @@ const EditTally = () => {
     const [productIdNoEdit, setProductIdNoEdit] = useState([]);
     const [sumber, setSumber] = useState()
     const [productSelectName, setProductSelectName] = useState([]);
+    const [tampil, setTampil] = useState(true)
 
     // const [quantityTally, setQuantityPO] = useState()
     const valueRenderer = (cell) => cell.value;
@@ -90,7 +96,10 @@ const EditTally = () => {
                     setSupplier(getData.supplier_id)
                     setSumber('Retur')
                 }
-                setCatatan(getData.notes)
+                if (getData.notes || getData.notes != null) {
+                    setCatatan(getData.notes)
+
+                }
                 setWarehouse(getData.warehouse.id)
                 setWarehouseName(getData.warehouse.name)
                 setProductSelectName(dataTallySheet[0].product_name)
@@ -107,6 +116,9 @@ const EditTally = () => {
                 let tmpProductId = []
                 let kuantitas = [];
                 let tmp = []
+                let dataOption = []
+                let values = []
+                let tmpCodeProduk = []
                 let huruf = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 
                 if (data.length == 0) {
@@ -115,6 +127,7 @@ const EditTally = () => {
                         let tempData = []
                         let tempDataLama = []
                         kuantitas = []
+                        // dataOption = []
                         let id_pesanan_pembelian;
                         let number_order_qty;
                         let code;
@@ -145,7 +158,25 @@ const EditTally = () => {
                             key: "lama"
                         })
 
-                        console.log(tmp[i].tally_sheets_qty)
+                        // mengambil pilihan produk 
+                        // console.log(dataTallySheet[i].product_alias_name)
+                        axios.get(`${Url}/select_products?nama_alias=${dataTallySheet[i].product_alias_name}`, {
+                            headers: {
+                                Accept: "application/json",
+                                Authorization: `Bearer ${auth.token}`,
+                            },
+                        }).then((res) => {
+                            dataOption = []
+
+                            for (let idxProduk = 0; idxProduk < res.data.length; idxProduk++) {
+                                dataOption.push({
+                                    value: res.data[idxProduk].id,
+                                    label: res.data[idxProduk].name
+                                })
+                            }
+                            values.push(dataOption)
+                        });
+
                         let jumlahBaris = (Number(getData.tally_sheet_details[i].boxes.length) / 10) + 1;
                         let jumlahKolom = getData.tally_sheet_details[i].boxes.length;
                         let buatKolom = 0
@@ -153,7 +184,10 @@ const EditTally = () => {
                         let statusEdit = getData.tally_sheet_details[i].editable;
 
                         tmpProductId.push(dataTallySheet[i].product_id)
-                        tmpProductName.push(dataTallySheet[i].product_name)
+                        tmpProductName.push({
+                            value: dataTallySheet[i].product_id,
+                            label: dataTallySheet[i].product_name
+                        })
                         tmpBox.push(dataTallySheet[i].number_of_boxes);
                         tmpTally.push(dataTallySheet[i].boxes_quantity)
                         for (let x = 0; x <= jumlahBaris.toFixed(); x++) {
@@ -230,7 +264,14 @@ const EditTally = () => {
                         arrKuantitas.push(kuantitas);
                         arrData.push(tempData)
                         arrDataLama.push(tempDataLama)
+                        console.log(dataTallySheet[i])
+                        tmpCodeProduk.push(code)
                     }
+                    // console.log(values[0])
+                    // let value = [...values]
+                    let unik = [...new Set(tmpCodeProduk)]
+                    setCodeProduct(unik)
+                    setOptionsProduct(values)
                     setSelectedProduct(tmpProductName)
                     setSelectedProductNoEdit(tmpProductName)
                     setProductId(tmpProductId)
@@ -291,37 +332,40 @@ const EditTally = () => {
     };
     // load options using API call
     const loadOptionsWarehouse = (inputValue) => {
-        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}`, {
+        return axios.get(`${Url}/warehouses?virtual=0&nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => res.data.data);
     };
 
     const handleChangeProduct = (value, idx) => {
+        console.log(value)
+        console.log(selectedProduct)
         let status = ''
-        for (let i = 0; i < productId.length; i++) {
-            if (productId[i] == value.id) {
+        for (let i = 0; i < selectedProduct.length; i++) {
+            if (selectedProduct[i].value == value.value && selectedProduct[idx].value != value.value) {
                 status = 'ada'
-                Swal.fire("Data Sudah Ada!", `${value.name} sudah ada di baris ${i + 1}`, "error");
+                Swal.fire("Data Sudah Ada!", `${value.label} sudah ada di baris ${i + 1}`, "error");
             }
         }
 
         // jika data belum dipilih sebelumnya 
         if (status != 'ada') {
-            let idKey = [];
             let key = [];
-            let store = [];
             let store2 = [];
 
             for (let x = 0; x < data.length; x++) {
                 if (x == idx) {
-                    key.push(value.id)
+                    key.push(value.value)
+                    // store2.push(value)
                     store2.push(value)
                 } else {
                     key.push(productId[x])
+                    // store2.push(selectedProduct[x])
                     store2.push(selectedProduct[x])
+
                 }
             }
             setSelectedProduct(store2);
@@ -332,6 +376,8 @@ const EditTally = () => {
 
     // load options using API call
     const loadOptionsProduct = (inputValue, alias) => {
+        console.log(alias)
+        console.log(inputValue)
         return fetch(`${Url}/select_products?limit=10&nama=${inputValue}&nama_alias=${alias}`, {
             headers: {
                 Accept: "application/json",
@@ -348,33 +394,37 @@ const EditTally = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
+            // console.log(product)
+            // console.log(res.data)
 
             let tmp = []
             for (let i = 0; i < res.data.length; i++) {
-                for (let x = 0; x < product.length; x++) {
+                // for (let x = 0; x < product.length; x++) {
 
-                    if (res.data[i].code == product[x].code) {
-                        tmp.push({
-                            detail: res.data[i],
-                            statusCek: true
-                        });
-                    }
-                    else {
-                        tmp.push({
-                            detail: res.data[i],
-                            statusCek: false
-                        });
-                    }
-
+                // console.log(product.indexOf(res.data[i].code))
+                if (codeProduct.indexOf(res.data[i].code) >= 0) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: true
+                    });
+                }
+                else {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: false
+                    });
                 }
 
+                // }
+
             }
-            console.log(tmp)
+            // let tmpUnik = new Set(tmp)
+            // console.log(tmpUnik)
             setGetDataProduct(tmp)
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
-    }, [query, getTallySheet, customer])
+    }, [query, getTallySheet, customer, codeProduct])
 
     useEffect(() => {
         const getProduct = async () => {
@@ -603,89 +653,89 @@ const EditTally = () => {
         }
         setData(arrData);
 
-          // mencari jumlah qty dan total box 
-          let total = [];
-          let kuantitas = [];
-          let arrKuantitas = [];
-  
-          for (let x = 0; x < product.length; x++) {
-              kuantitas = [];
-              if (x == indexSO) {
-                  total[x] = 0;
-                  for (let a = 1; a < data[x].length; a++) {
-                      for (let b = 1; b < data[x][a].length; b++) {
-                          if (data[x][a][b].value != 0) {
-                              kuantitas.push(data[x][a][b].value);
-  
-                              total[x] = Number(total[x]) + Number(1);
-                          }
-                      }
-                  }
-                  arrKuantitas.push(kuantitas)
-  
-              }
-              else {
-                  total.push(box[x]);
-                  console.log(box[x])
-                  arrKuantitas.push(kuantitasBox[x]);
-              }
-          }
-          setBox(total);
-          setKuantitasBox(arrKuantitas);
-  
-          let tmp = []
-          for (let i = 0; i < product.length; i++) {
-              if (i == indexSO) {
-                  console.log(product[i].tally_sheets_qty)
-                  console.log(totTly[i])
-                  console.log(product[i].number_order_qty)
-                  tmp.push({
-                      id_produk: product[i].id_produk,
-                      id_pesanan_pembelian: product[i].id_pesanan_pembelian,
-                      code: product[i].code,
-                      boxes_quantity: totTly[i].toString(),
-                      number_of_boxes: total[i],
-                      boxes_unit: product[i].boxes_unit,
-                      product_alias_name: product[i].product_alias_name,
-                      product_name: product[i].product_name,
-                      action: product[i].key == 'lama' ? Number(totTly[i]) + Number(product[i].tally_sheets_qty_NoEdit) >= product[i].number_order_qty ? 'Done' : 'Next delivery' : Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty) >= product[i].number_order_qty ? 'Done' : 'Next delivery',
-                      number_order_qty: product[i].number_order_qty,
-                      tally_sheets_qty: product[i].key == 'lama' ? totTly[i].toString() : Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty),
-                      tally_sheets_qty_NoEdit: product[i].tally_sheets_qty_NoEdit,
-                      key: product[i].key
-                  })
-              }
-              else {
-                  tmp.push(product[i])
-              }
-          }
-  
-          // pengecekan status yang alias dan id nya sama 
-          let tmpAKhir = []
-          for (let i = 0; i < tmp.length; i++) {
-              if (tmp[i].id_pesanan_pembelian == tmp[indexSO].id_pesanan_pembelian && tmp[i].product_alias_name == tmp[indexSO].product_alias_name) {
-                  tmpAKhir.push({
-                      id_produk: tmp[i].id_produk,
-                      id_pesanan_pembelian: tmp[i].id_pesanan_pembelian,
-                      code: tmp[i].code,
-                      boxes_quantity: tmp[i].boxes_quantity,
-                      number_of_boxes: tmp[i].number_of_boxes,
-                      boxes_unit: tmp[i].boxes_unit,
-                      product_alias_name: tmp[i].product_alias_name,
-                      product_name: tmp[i].product_name,
-                      action: tmp[indexSO].action,
-                      number_order_qty: tmp[i].number_order_qty,
-                      tally_sheets_qty: tmp[i].tally_sheets_qty,
-                      tally_sheets_qty_NoEdit: tmp[i].tally_sheets_qty_NoEdit,
-                      key: tmp[i].key
-                  })
-              }
-              else {
-                  tmpAKhir.push(tmp[i])
-              }
-          }
-          setProduct(tmpAKhir)
-          console.log(sheetNoEdit)
+        // mencari jumlah qty dan total box 
+        let total = [];
+        let kuantitas = [];
+        let arrKuantitas = [];
+
+        for (let x = 0; x < product.length; x++) {
+            kuantitas = [];
+            if (x == indexSO) {
+                total[x] = 0;
+                for (let a = 1; a < data[x].length; a++) {
+                    for (let b = 1; b < data[x][a].length; b++) {
+                        if (data[x][a][b].value != 0) {
+                            kuantitas.push(data[x][a][b].value);
+
+                            total[x] = Number(total[x]) + Number(1);
+                        }
+                    }
+                }
+                arrKuantitas.push(kuantitas)
+
+            }
+            else {
+                total.push(box[x]);
+                console.log(box[x])
+                arrKuantitas.push(kuantitasBox[x]);
+            }
+        }
+        setBox(total);
+        setKuantitasBox(arrKuantitas);
+
+        let tmp = []
+        for (let i = 0; i < product.length; i++) {
+            if (i == indexSO) {
+                console.log(product[i].tally_sheets_qty)
+                console.log(totTly[i])
+                console.log(product[i].number_order_qty)
+                tmp.push({
+                    id_produk: product[i].id_produk,
+                    id_pesanan_pembelian: product[i].id_pesanan_pembelian,
+                    code: product[i].code,
+                    boxes_quantity: totTly[i].toString(),
+                    number_of_boxes: total[i],
+                    boxes_unit: product[i].boxes_unit,
+                    product_alias_name: product[i].product_alias_name,
+                    product_name: product[i].product_name,
+                    action: product[i].key == 'lama' ? Number(totTly[i]) + Number(product[i].tally_sheets_qty_NoEdit) >= product[i].number_order_qty ? 'Done' : 'Next delivery' : Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty) >= product[i].number_order_qty ? 'Done' : 'Next delivery',
+                    number_order_qty: product[i].number_order_qty,
+                    tally_sheets_qty: product[i].key == 'lama' ? totTly[i].toString() : Number(totTly[i]) + Number(product[i - 1].tally_sheets_qty),
+                    tally_sheets_qty_NoEdit: product[i].tally_sheets_qty_NoEdit,
+                    key: product[i].key
+                })
+            }
+            else {
+                tmp.push(product[i])
+            }
+        }
+
+        // pengecekan status yang alias dan id nya sama 
+        let tmpAKhir = []
+        for (let i = 0; i < tmp.length; i++) {
+            if (tmp[i].id_pesanan_pembelian == tmp[indexSO].id_pesanan_pembelian && tmp[i].product_alias_name == tmp[indexSO].product_alias_name) {
+                tmpAKhir.push({
+                    id_produk: tmp[i].id_produk,
+                    id_pesanan_pembelian: tmp[i].id_pesanan_pembelian,
+                    code: tmp[i].code,
+                    boxes_quantity: tmp[i].boxes_quantity,
+                    number_of_boxes: tmp[i].number_of_boxes,
+                    boxes_unit: tmp[i].boxes_unit,
+                    product_alias_name: tmp[i].product_alias_name,
+                    product_name: tmp[i].product_name,
+                    action: tmp[indexSO].action,
+                    number_order_qty: tmp[i].number_order_qty,
+                    tally_sheets_qty: tmp[i].tally_sheets_qty,
+                    tally_sheets_qty_NoEdit: tmp[i].tally_sheets_qty_NoEdit,
+                    key: tmp[i].key
+                })
+            }
+            else {
+                tmpAKhir.push(tmp[i])
+            }
+        }
+        setProduct(tmpAKhir)
+        console.log(sheetNoEdit)
 
     };
 
@@ -837,17 +887,37 @@ const EditTally = () => {
     }
 
     function hapusIndexProduct(index) {
-        // console.log(index)
+        console.log(product)
         let code = product[index].code;
+        let jumlah = 0;
+        // cek jumlah baris per produk 
+        for (let i = 0; i < product.length; i++) {
+            if (product[i].code == code) {
+                jumlah++
+            }
+        }
+        console.log(jumlah)
+
         setLoadingTable(true);
         if (sumber == 'Retur') {
             let tmp = [];
             for (let j = 0; j < getDataRetur.length; j++) {
                 if (getDataRetur[j].detail.code == code) {
-                    tmp.push({
-                        detail: getDataRetur[j].detail,
-                        statusCek: false
-                    })
+                    if (jumlah == 1) {
+                        let idxCode = codeProduct.indexOf(getDataRetur[j].detail.code)
+                        codeProduct.splice(idxCode, 1)
+                        tmp.push({
+                            detail: getDataRetur[j].detail,
+                            statusCek: false
+                        })
+                    }
+                    else {
+                        tmp.push({
+                            detail: getDataRetur[j].detail,
+                            statusCek: true
+                        })
+                    }
+
                 }
                 else {
                     tmp.push(getDataRetur[j])
@@ -861,10 +931,21 @@ const EditTally = () => {
             let tmp = [];
             for (let j = 0; j < getDataProduct.length; j++) {
                 if (getDataProduct[j].detail.code == code) {
-                    tmp.push({
-                        detail: getDataProduct[j].detail,
-                        statusCek: false
-                    })
+                    if (jumlah == 1) {
+                        let idxCode = codeProduct.indexOf(getDataProduct[j].detail.code)
+                        codeProduct.splice(idxCode, 1)
+                        tmp.push({
+                            detail: getDataProduct[j].detail,
+                            statusCek: false
+                        })
+                    }
+                    else {
+                        tmp.push({
+                            detail: getDataProduct[j].detail,
+                            statusCek: true
+                        })
+                    }
+
                 }
                 else {
                     tmp.push(getDataProduct[j])
@@ -919,17 +1000,20 @@ const EditTally = () => {
 
     // console.log(product);
 
-    function tambahIndexProduct(i, idx) {
+
+    function tambahIndexProduct(i) {
+        setTampil(false)
+        // let dataOption = [...optionsProduct]
+        console.log(selectedProduct)
         setLoadingTable(true);
 
         if (product[i].action == 'Done') {
             Swal.fire("Gagal!", `Jumlah sudah memenuhi pesanan`, "error");
-
         }
         else {
             // data baris baru 
             let arr = [];
-            for (let r = 0; r <= product.length; r++) {
+            for (let r = 0; r <= i + 1; r++) {
                 if (r == i + 1) {
                     arr.push({
                         action: product[i].action,
@@ -946,41 +1030,33 @@ const EditTally = () => {
                         tally_sheets_qty: product[i].tally_sheets_qty,
                         tally_sheets_qty_NoEdit: product[i].tally_sheets_qty_NoEdit
                     })
-                } else if (r == product.length) {
-                    arr.push(product[r - 1])
                 }
                 else {
+
                     arr.push(product[r])
                 }
             }
 
-
-            // product name 
-            let tmpProductName = []
-            for (let x = 0; x < arr.length; x++) {
-                if (x == i + 1) {
-                    tmpProductName.push('')
-                }
-                else if (x == arr.length) {
-                    tmpProductName.push(selectedProduct[x - 1])
-                }
-                else {
-                    tmpProductName.push(selectedProduct[x])
-                }
+            for (let r = arr.length; r <= product.length; r++) {
+                // arr.push({
+                //     action: product[r - 1].action,
+                //     boxes_quantity: product[r - 1].boxes_quantity,
+                //     boxes_unit: product[r - 1].boxes_unit,
+                //     code: product[r - 1].code,
+                //     id_pesanan_pembelian: product[r - 1].id_pesanan_pembelian,
+                //     id_produk: product[r - 1].id_produk,
+                //     key: "baru",
+                //     number_of_boxes: product[r - 1].number_of_boxes,
+                //     number_order_qty: product[r - 1].number_order_qty,
+                //     product_alias_name: product[r - 1].product_alias_name,
+                //     product_name: product[r - 1].product_name,
+                //     tally_sheets_qty: product[r - 1].tally_sheets_qty,
+                //     tally_sheets_qty_NoEdit: product[r - 1].tally_sheets_qty_NoEdit
+                // })
+                arr.push(product[r - 1])
             }
 
-            console.log(tmpProductName)
-            setSelectedProduct(tmpProductName)
-            // let tmp = [];
-            // let qty = [];
-            // let box = [];
-            // let qtyBox = [];
-            // let temp = [];
-            // let id = [];
-            // let value = [];
-            // let qtyPes = [];
-            // let status = [];
-            // let qtyBox_tmp = [];
+            let optionStore = [];
             let qtyStore = [];
             let boxStore = [];
             let tempData = [];
@@ -989,7 +1065,7 @@ const EditTally = () => {
             let statusStore = [];
             let temp_qtyBox = [];
             let qtyPesStore = [];
-
+            let option = []
             for (let x = 0; x < arr.length; x++) {
 
                 if (x == i + 1) {
@@ -997,7 +1073,10 @@ const EditTally = () => {
                     qtyStore.push(0)
                     boxStore.push(0)
                     idStore.push("")
-                    valueStore.push("")
+                    option.push(optionsProduct[i])
+                    console.log(option)
+
+                    valueStore.push({ id: '', name: '' })
                     temp_qtyBox.push(0)
                     if (quantity[x] + arr[x].tally_sheets_qty >= arr[x].boxes_quantity) {
                         statusStore.push('Done')
@@ -1152,56 +1231,51 @@ const EditTally = () => {
                         ]
                     ]);
                 }
-                // data yang terakhir 
-                else if (x == product.length) {
+
+
+                // data lainnya 
+                else if (x <= i) {
+                    qtyStore.push(quantity[x])
+                    boxStore.push(totalBox[x])
+                    qtyPesStore.push(qtyPesanan[x])
+                    tempData.push(data[x])
+                    valueStore.push(selectedProduct[x])
+                    option.push(optionsProduct[x])
+                    idStore.push(productId[x])
+                    statusStore.push(statusSO[x])
+                    temp_qtyBox.push(kuantitasBox[x])
+                }
+                else {
+                    option.push(optionsProduct[x - 1])
                     qtyStore.push(quantity[x - 1])
                     boxStore.push(totalBox[x - 1])
                     tempData.push(data[x - 1])
-                    // console.log(data[x][y - 1])
                     valueStore.push(selectedProduct[x - 1])
                     idStore.push(productId[x - 1])
                     statusStore.push(statusSO[x - 1])
                     qtyPesStore.push(qtyPesanan[x - 1])
                     temp_qtyBox.push(kuantitasBox[x - 1])
                 }
-                // data lainnya 
-                else {
-                    qtyStore.push(quantity[x])
-                    boxStore.push(totalBox[x])
-                    qtyPesStore.push(qtyPesanan[x])
-                    tempData.push(data[x])
-                    console.log(data[x])
-                    valueStore.push(selectedProduct[x])
-                    idStore.push(productId[x])
-                    statusStore.push(statusSO[x])
-                    temp_qtyBox.push(kuantitasBox[x])
-                }
-            }
-            // qty.push(qtyStore)
-            // box.push(boxStore)
-            // temp.push(tempData)
-            // qtyPes.push(qtyPesStore)
-            // id.push(idStore)
-            // value.push(valueStore)
-            // status.push(statusStore)
-            // qtyBox_tmp.push(temp_qtyBox)
-            // tmp.push(arr)
 
-            console.log(valueStore)
-            // console.log()
+            }
             setQuantity(qtyStore)
             setTotalBox(boxStore)
+
+            console.log(valueStore)
+            setOptionsProduct(option)
+            console.log(option)
+            // setIdProductSelect(id)
+            setProductId(idStore)
             setData(tempData)
             setSelectedProduct(valueStore)
             setStatusSO(statusStore)
             setKuantitasBox(temp_qtyBox)
             setQtyPesanan(qtyPesStore)
+            setDataTampil(arr)
             setProduct(arr)
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: 'Data berhasil ditambah',
-            }).then(() => setLoadingTable(false));
+            setLoadingTable(false)
+            setTampil(true)
+
         }
     }
 
@@ -1210,22 +1284,45 @@ const EditTally = () => {
             code: item.code,
             product_alias_name: item.product_alias_name,
             product_name:
+                sumber == 'Retur' ? selectedProduct[i].label :
+                    // item.key == 'lama' ?
+                    // <ReactSelect
+                    // key={item.key + i}
 
-                sumber == 'Retur' ? selectedProduct[i] :
-                    <>
-                        <AsyncSelect
-                            placeholder="Pilih Produk..."
-                            cacheOptions
-                            defaultOptions
-                            id="produk"
-                            defaultInputValue={selectedProduct[i]}
-                            value={selectedProduct[i]}
-                            getOptionLabel={(e) => e.name}
-                            getOptionValue={(e) => e.id}
-                            loadOptions={(value) => loadOptionsProduct(value, item.product_alias_name)}
-                            onChange={(value) => handleChangeProduct(value, i)}
-                        />
-                    </>
+                    //     className='select-antd'
+                    //     placeholder="Pilih Produk..."
+                    //     classNamePrefix="select"
+                    //     defaultInputValue={selectedProduct[i].label}
+                    //     isLoading={isLoading}
+                    //     isSearchable
+                    //     options={optionsProduct[i]}
+                    //     onChange={(value) => handleChangeProduct(value, i)}
+                    // />
+                    //     :
+
+                    <Select
+                        key={item.product_alias_name + item.key + i}
+                        defaultValue={selectedProduct[i].label}
+                        style={{
+                            width: "100%",
+                        }}
+                        // onChange={handleChange}
+                        onChange={(_, value) => handleChangeProduct(value, i)}
+
+                        options={optionsProduct[i]}
+                    />
+
+            // <ReactSelect
+            //         className={'basic-single'}
+            //         placeholder="Pilih lah aku..."
+            //         classNamePrefix="select"
+            //         defaultInputValue=''
+            //         value={selectedProduct[i].label}
+            //         isLoading={isLoading}
+            //         isSearchable
+            //         options={optionsProduct[i]}
+            //         onChange={(value) => handleChangeProduct(value, i)}
+            //     />
 
             ,
             quantity: Number(item.boxes_quantity).toFixed(2).toString().replace('.', ','),
@@ -1361,6 +1458,7 @@ const EditTally = () => {
                         onClick={() => { tambahIndexProduct(i) }}
                     /> : null
                 }
+
 
             </Space>
 
@@ -1687,27 +1785,28 @@ const EditTally = () => {
             let arrProductId = [...productId]
             let jumlah = 0
 
+            console.log(value)
             // menghitung baris yang no pesanannya sama 
             for (let i = 0; i < updatedList.length; i++) {
-                for (let x = 0; x < dataSumber.length; x++) {
-                    if (updatedList[i].id_pesanan_pembelian == value.id) {
+                // for (let x = 0; x < dataSumber.length; x++) {
+                    if (updatedList[i].code == value.code) {
                         jumlah += 1;
                     }
-                }
+                // }
             }
 
             // menghapus baris sesuai jumlah 
             if (jumlah != 0) {
                 for (let i = 0; i < updatedList.length; i++) {
-                    for (let x = 0; x < dataSumber.length; x++) {
-                        if (updatedList[i].id_pesanan_pembelian == value.id) {
+                    // for (let x = 0; x < dataSumber.length; x++) {
+                        if (updatedList[i].code == value.code) {
                             updatedList.splice(i, jumlah);
                             arrData.splice(i, jumlah);
                             arrProduct.splice(i, jumlah)
                             arrProductId.splice(i, jumlah)
                             setIndexSO(0)
                         }
-                    }
+                    // }
                 }
                 setSelectedProduct(arrProduct)
                 setProductId(arrProductId)
@@ -1719,6 +1818,8 @@ const EditTally = () => {
     }
 
     const handleSubmit = async (e) => {
+        console.log(product)
+
         e.preventDefault();
         const tallySheetData = new URLSearchParams();
         tallySheetData.append("tanggal", getTallySheet.date);
@@ -1809,6 +1910,7 @@ const EditTally = () => {
         tallySheetData.append("gudang", getTallySheet.warehouse_id);
         tallySheetData.append("catatan", catatan);
         tallySheetData.append("status", "Draft");
+        console.log(product)
         product.map((p, pi) => {
             tallySheetData.append("id_produk[]", productId[pi]);
             tallySheetData.append("jumlah_box[]", p.number_of_boxes);
@@ -2031,7 +2133,7 @@ const EditTally = () => {
                             <div className="row">
                                 <div className="col mb-3">
                                     <Search
-                                        placeholder={sumber == 'SO' ? 'Cari Pesanan Penjualan...' : 'Cari Retur Pembelian...' }
+                                        placeholder={sumber == 'SO' ? 'Cari Pesanan Penjualan...' : 'Cari Retur Pembelian...'}
                                         style={{
                                             width: 400,
                                         }}
@@ -2066,10 +2168,12 @@ const EditTally = () => {
                     </Modal>
                 ]}
             >
+
                 <Table
                     bordered
                     pagination={false}
                     dataSource={dataPurchase}
+                    style={{ display: tampil ? 'flex' : 'none' }}
                     // expandable={{ expandedRowRender }}
                     // defaultExpandAllRows
                     columns={columns}

@@ -177,6 +177,7 @@ const BuatSuratJalan = () => {
 
     const handleChangeSupplier = (value) => {
         setSupplier(value.id);
+        setCustomer('')
         setProduct([])
         setSelectedSupplier(value);
         setAddress(value.supplier_addresses)
@@ -195,6 +196,7 @@ const BuatSuratJalan = () => {
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
         setCustomer(value.id);
+        setSupplier('')
         setAddress(value.customer_addresses)
     };
 
@@ -270,11 +272,11 @@ const BuatSuratJalan = () => {
             width: '20%',
             align: 'center',
             render: (_, record) => {
-                if (sumber == 'SO') {
+                if (sumber == 'SO' && record.customer) {
                     return record.customer.name
 
                 }
-                else {
+                else if(sumber == 'Retur' && record.supplier){
                     return record.supplier.name
 
                 }
@@ -673,11 +675,13 @@ const BuatSuratJalan = () => {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
-                text: "Data Jenis Transaksi kosong, Silahkan Lengkapi datanya ",
+                text: "Pilih Transaksi",
               });
         }else{
         setSumber(value);
         setProduct([])
+        setCustomer('')
+        setSupplier('')
         setSelectedAddress('')
         setSelectedSupplier('');
         setSelectedCustomer('')
@@ -832,6 +836,10 @@ const BuatSuratJalan = () => {
                         onClick={() => {
                             if(sumber == ''){
                                 Swal.fire("Gagal", "Mohon Pilih Transaksi Dahulu..", "error")
+                            }
+                            else if(customer == '' && supplier == ''){
+                                Swal.fire("Gagal", "Mohon Pilih Customer/Supplier Dahulu..", "error")
+
                             }
                             else{
                                 setModal2Visible(true)

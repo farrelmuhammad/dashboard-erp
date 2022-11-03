@@ -13,3 +13,15 @@ color: black!important;
     background: white!important;
     color: black!important;
 }
+
+.select-antd{
+    position: relative;
+    background-color: #fff;
+    border: 0px solid #d9d9d9!important;
+    border-radius: 0px!important;
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.css-1okebmr-indicatorSeparator {
+    display: none!important;
+}
