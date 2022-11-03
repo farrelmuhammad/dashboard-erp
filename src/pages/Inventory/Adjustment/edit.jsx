@@ -118,9 +118,12 @@ const EditAdjustment = () => {
     const navigate = useNavigate();
     const { id } = useParams();
 
-    const [getDataProduct, setGetDataProduct] = useState();
+    const [getDataProduct, setGetDataProduct] = useState([]);
+    const [getAdjustment, setGetAdjustment] = useState([])
     const [loading, setLoading] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
+    const [tmpCentang, setTmpCentang] = useState([]);
+    const [jumlah, setJumlah] = useState([])
 
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
@@ -142,9 +145,10 @@ const EditAdjustment = () => {
         })
             .then((res) => {
                 const getData = res.data.data[0];
+                setGetAdjustment(getData);
                 setGetCode(getData.code);
                 setAdjustmentDate(getData.adjustment_date);
-                setAdjustmentNotes(getData.notes);
+                setAdjustmentNotes(getData.notes || "");
                 setWarehouse(getData.warehouse_id);
                 setWarehouseName(getData.warehouse_name);
                 setStatus(getData.status);
@@ -158,10 +162,10 @@ const EditAdjustment = () => {
     }
 
     useEffect(() => {
-        getGoodsRequestDetail()
+        getAdjustmentDetails()
     }, [])
 
-    const getGoodsRequestDetail = async (params = {}) => {
+    const getAdjustmentDetails = async (params = {}) => {
         setIsLoading(true);
         await axios.get(`${Url}/adjustment_details/${id}`, {
             headers: {
@@ -198,10 +202,30 @@ const EditAdjustment = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
+            let tmp = []
+                for (let x = 0; x < product.length; x++) {
+                    for (let i = 0; i < res.data.length; i++) {
+
+                    if (res.data[i].product_id == product[x].product_id) {
+                        tmp.push({
+                            detail: res.data[i],
+                            statusCek: true
+                        });
+                    }
+                    else {
+                        tmp.push({
+                            detail: res.data[i],
+                            statusCek: false
+                        });
+                    }
+
+                }
+
+            }
+            setGetDataProduct(tmp)
         };
-        if (query.length === 0 || query.length > 2) getProduct();
-    }, [query])
+        if (query.length >= 0) getProduct();
+    }, [query,warehouse_id,getAdjustment])
 
     // Column for modal input product
     const columnsModal = [
@@ -224,20 +248,6 @@ const EditAdjustment = () => {
             dataIndex: 'actions',
             width: '15%',
             align: 'center',
-            render: (_, record) => (
-                <>
-                    <Checkbox
-                        value={record}
-                        // checked
-                        onChange={handleCheck}
-                    />
-                    {/* <CheckBox
-          type="checkbox"
-          checked={selected}
-          onChange={handleOnChange} 
-        ></CheckBox> */}
-                </>
-            )
         },
     ];
     const defaultColumns = [
@@ -253,7 +263,7 @@ const EditAdjustment = () => {
             dataIndex: 'product_name',
         },
         {
-            title: 'QTY Sistem',
+            title: 'Qty Sistem',
             dataIndex: 'qty_before',
             width: '30%',
             align: 'center',
@@ -273,6 +283,23 @@ const EditAdjustment = () => {
             }
         },
     ];
+
+    const columnDataProduct =
+        [...getDataProduct.map((item, i) => ({
+            product_name: item.detail.product_name,
+            qty_before: item.detail.qty_before,
+            notes: item.detail.notes,
+            actions:
+                <>
+                    <Checkbox
+                        value={item}
+                        checked={item.statusCek}
+                        onChange={(e) => handleCheck(e, i)}
+                    />
+                </>
+        }))
+
+        ]
     const checkWarehouse = () => {
         if (warehouse_id == "") {
             Swal.fire({
@@ -324,15 +351,67 @@ const EditAdjustment = () => {
         };
     });
 
-    const handleCheck = (event) => {
-        var updatedList = [...product];
-        if (event.target.checked) {
-            updatedList = [...product, event.target.value];
-        } else {
-            updatedList.splice(product.indexOf(event.target.value), 1);
+    const handleCheck = (event, index) => {
+        let data = event.target.value
+
+        let tmpDataBaru = []
+        let tmpJumlah = [...jumlah]
+        let tmpDataCentang = [...tmpCentang]
+        for (let i = 0; i < getDataProduct.length; i++) {
+            if (i == index) {
+                tmpDataBaru.push({
+                    detail: getDataProduct[i].detail,
+                    statusCek: !getDataProduct[i].statusCek
+                })
+                // tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+
+            }
+            else {
+                tmpDataBaru.push(getDataProduct[i])
+            }
+
+
+            if (tmpDataBaru[i].statusCek == true) {
+                tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+            }
+            else {
+                let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.product_id);
+                if(index>=0){
+                    tmpDataCentang.splice(index, 1)
+                }
+                // tmpDataCentang.push('')
+            }
         }
-        console.log(product.indexOf(event.target.value))
+        let unikTmpCentang = [...new Set(tmpDataCentang)]
+        console.log(unikTmpCentang)
+        setTmpCentang(unikTmpCentang)
+        setGetDataProduct(tmpDataBaru)
+        var updatedList = [...product];
+        if (tmpDataBaru[index].statusCek) {
+            updatedList = [...product, data.detail];
+
+            for (let i = 0; i < updatedList.length; i++) {
+                if (i >= product.length) {
+                    tmpJumlah.push(0)
+                }
+
+            }
+            console.log(tmpJumlah)
+        } else {
+            for (let i = 0; i < updatedList.length; i++) {
+                if (updatedList[i].product_id == data.detail.product_id) {
+                    updatedList.splice(i, 1);
+                    tmpJumlah.splice(i, 1)
+                }
+            }
+        }
         setProduct(updatedList);
+        setJumlah(tmpJumlah)
+
+
+        // for(let )
+        console.log(updatedList);
+
     };
 
     const handleSubmit = async (e) => {
@@ -562,7 +641,7 @@ const EditAdjustment = () => {
                                                 </div>
                                                 <Table
                                                     columns={columnsModal}
-                                                    dataSource={getDataProduct}
+                                                    dataSource={columnDataProduct}
                                                     scroll={{
                                                         y: 250,
                                                     }}

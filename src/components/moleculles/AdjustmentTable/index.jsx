@@ -28,14 +28,29 @@ const AdjustmentTable = () => {
     });
 
     const deleteAdjustment = async (id) => {
-        await axios.delete(`${Url}/adjustments/${id}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        });
-        // getAdjustment()
-        Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Data ini akan dihapus",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios.delete(`${Url}/adjustments/${id}`, {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${auth.token}`,
+                    },
+                });
+                fetchData();
+                Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+
+            }
+        })
+
+
     };
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -169,6 +184,7 @@ const AdjustmentTable = () => {
         }).then((res) => res.json())
             .then(({ data }) => {
                 setGetDataAdjustment(data);
+                console.log(data)
                 setIsLoading(false);
                 setTableParams({
                     ...tableParams,

@@ -253,7 +253,7 @@ const EditAdjustment = () => {
             dataIndex: 'product_name',
         },
         {
-            title: 'QTY Sistem',
+            title: 'Qty Sistem',
             dataIndex: 'qty_before',
             width: '30%',
             align: 'center',
