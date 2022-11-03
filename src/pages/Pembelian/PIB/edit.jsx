@@ -308,13 +308,13 @@ const EditPIB = () => {
         setSelectedBank(value);
         setBankId(value.id);
     };
-    const loadOptionsBank = (inputValue) => {
-        return fetch(`${Url}/select_chart_of_accounts?nama=${inputValue}`, {
+    const loadOptionsBank = () => {
+        return axios.get(`${Url}/chart_of_accounts?induk=0&kode_kategori[]=111`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => res.data.data);
     };
 
     const columnProduk = [

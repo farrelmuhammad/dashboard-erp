@@ -128,6 +128,7 @@ const BuatFaktur = () => {
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
     const [totalPpn, setTotalPpn] = useState("");
     const [grandTotal, setGrandTotal] = useState("");
+    const[total1Produk, setTotal1Produk] = useState([]);
     const [checked, setChecked] = useState(false);
 
     const [selectedValue, setSelectedCustomer] = useState('');
@@ -848,7 +849,10 @@ const BuatFaktur = () => {
                                 </div>
                             </div> : null,
             ppn: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} suffix={'%'} onKeyDown={(event) => klikEnter(event)} value={Number(item.ppn)} onChange={(e) => klikUbahData(i, e.target.value, "ppn")} />,
-            total: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].total)} />,
+            total: 
+            checked === true ? 
+            <CurrencyFormat disabled className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} onKeyDown={(event) => klikEnter(event)} value={Number(total1Produk[i].detail).toFixed(2).replace('.',',')} /> :
+            <CurrencyFormat disabled className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].total).toFixed(2).replace('.',',')} />,
         }))]
 
     const handleChange = () => {
@@ -876,27 +880,60 @@ const BuatFaktur = () => {
         let rowDiscount = 0;
         let subTotalDiscount = 0;
         let totalDiscount = 0;
+        let totalProdPpn = 0;
+
+        let total1 = 0; 
+        let diskon2 = 0;
+        let totalDiskon2 =0;
+        let subTotDiskon2 = 0;
+        let subtotal2 = 0;
+
+        let databaru = [];
+
         product.map((values, i) => {
             // termasuk pajak 
             if (check_checked) {
                 total += (Number(values.quantity) * Number(values.price));
                 totalPerProduk = (Number(values.quantity) * Number(values.price));
 
+                total1 = (Number(data[i].quantity) * Number(data[i].price));
+                //console.log(total1) 
+                
                 if (values.pilihanDiskon == 'persen') {
                     hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
                     rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+
+                    diskon2 = (Number(total1) * Number(data[i].discount_percentage) / 100);
                 }
                 else if (values.pilihanDiskon == 'nominal') {
                     hasilDiskon += Number(values.fixed_discount);
                     rowDiscount = Number(values.fixed_discount);
+
+                    diskon2 = (Number(data[i].fixed_discount));
                 }
+
+                
+
                 totalDiscount += ((rowDiscount * 100) / (100 + Number(values.ppn)));
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 subTotal += (subTotalDiscount * 100) / (100 + Number(values.ppn));
                 totalPpn = (subTotal * Number(values.ppn)) / 100;
-
-
                 grandTotal = subTotal - hasilDiskon + Number(totalPpn);
+
+
+                totalDiskon2 += ((diskon2 * 100) / (100 + Number(data[i].ppn)));
+                subTotDiskon2 = total1 - diskon2;
+                subtotal2 = (subTotDiskon2 * 100) / (100 + Number(data[i].ppn));
+
+                databaru.push({
+                    detail: subtotal2
+                })
+
+
+                console.log(subtotal2)
+               // console.log(databaru[i].detail)
+
+                setTotal1Produk(databaru);
 
                 setSubTotal(subTotal)
                 setGrandTotalDiscount(totalDiscount);

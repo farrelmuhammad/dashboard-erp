@@ -398,6 +398,7 @@ const BuatTallySheet = () => {
         let hasilData = [];
         let tmpData = [];
         for (let x = 0; x < product.length; x++) {
+            let dataProduk;
             if (sumber == 'Retur') {
                 dataProduk = product[x].sales_return_details;
             }
@@ -447,6 +448,7 @@ const BuatTallySheet = () => {
         let hasilData = [];
         let tmpData = [];
         for (let x = 0; x < product.length; x++) {
+            let dataProduk;
             if (sumber == 'Retur') {
                 dataProduk = product[x].sales_return_details;
             }

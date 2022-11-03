@@ -181,6 +181,7 @@ const BuatSuratJalan = () => {
         setSelectedSupplier(value);
         setAddress(value.supplier_addresses)
         setGrup(value._group)
+        console.log(value)
     };
     // load options using API call
     const loadOptionsSupplier = (inputValue) => {
@@ -238,7 +239,7 @@ const BuatSuratJalan = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/delivery_notes_available_tally_sheets?nama_alias=${query}&pemasok=${supplier}`, {
+            const res = await axios.get(`${Url}/delivery_notes_available_tally_sheets?nama_alias=${query}&id_pemasok=${supplier}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -252,6 +253,7 @@ const BuatSuratJalan = () => {
             //     });
             // }
             setGetDataRetur(res.data.data)
+            console.log(getDataRetur)
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -830,12 +832,9 @@ const BuatSuratJalan = () => {
                         type="primary"
                         icon={<PlusOutlined />}
                         onClick={() => {
-                            if(sumber == ''){
-                                Swal.fire("Gagal", "Mohon Pilih Transaksi Dahulu..", "error")
-                            }
-                            else{
+                          
                                 setModal2Visible(true)
-                            }
+                           
                         }}
                     />,
                     <Modal

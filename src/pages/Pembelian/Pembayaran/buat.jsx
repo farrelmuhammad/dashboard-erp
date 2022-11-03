@@ -108,12 +108,13 @@ const BuatPembayaranPembelian = () => {
         setBankId(value.id);
     };
     const loadOptionsBank = (inputValue) => {
-        return fetch(`${Url}/select_chart_of_accounts?nama=${inputValue}`, {
+
+        return axios.get(`${Url}/chart_of_accounts?induk=0&kode_kategori[]=111&nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => res.data.data);
     };
 
 

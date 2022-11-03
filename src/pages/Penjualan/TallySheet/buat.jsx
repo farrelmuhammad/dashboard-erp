@@ -12,6 +12,7 @@ import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
 import ReactDataSheet from 'react-datasheet';
 import "react-datasheet/lib/react-datasheet.css";
+import CurrencyFormat from 'react-currency-format';
 
 const EditableContext = createContext(null);
 
@@ -1248,7 +1249,9 @@ const BuatTally = () => {
                     return {
                         props: {
                         },
-                        children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
+                        children: 
+                        <CurrencyFormat  className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(text).toFixed(2).replace('.',',')} />
+                       // <div>{Number(text).toFixed(2).replace('.', ',')}</div>
                     };
                 }
             },
@@ -1371,13 +1374,17 @@ const BuatTally = () => {
                                                 </div>
                                                 <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Tally Sheet</label>
                                                 <div className="col-sm-3">
-                                                    <input
-                                                        value={Number(totalTallySheet[idxPesanan][indexPO]).toFixed(2).replace('.', ',')}
+                                                    {/* <input
+                                                        value={
+                                                            <CurrencyFormat  className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(totalTallySheet[idxPesanan][indexPO]).toFixed(2).replace('.',',')} />
+                                                            //Number(totalTallySheet[idxPesanan][indexPO]).toFixed(2).replace('.', ',')}
+                                                        }
                                                         type="Nama"
                                                         className="form-control"
                                                         id="inputNama3"
                                                         disabled
-                                                    />
+                                                    /> */}
+ < CurrencyFormat disabled className=' text-start form-control editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalTallySheet[idxPesanan][indexPO]).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control" />} />
                                                 </div>
                                             </div>
                                         </div>

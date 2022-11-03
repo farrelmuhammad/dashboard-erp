@@ -1644,7 +1644,7 @@ const BuatFakturPembelian = () => {
 
     function getAkun() {
         let tmp = [];
-        axios.get(`${Url}/filter_chart_of_accounts?kode_kategori[]=511&kode_kategori[]=512&kode_kategori[]=611&kode_kategori[]=612&kode_kategori[]=811`, {
+        axios.get(`${Url}/filter_chart_of_accounts?induk=0&kode_kategori[]=511&kode_kategori[]=512&kode_kategori[]=611&kode_kategori[]=612&kode_kategori[]=811`, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${auth.token}`
