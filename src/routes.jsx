@@ -202,6 +202,7 @@ import PIB from './pages/Pembelian/PIB'
 import BuatPIB from './pages/Pembelian/PIB/buat'
 import EditPIB from './pages/Pembelian/PIB/edit'
 import DetailPIB from './pages/Pembelian/PIB/detail'
+import UserSetting from './pages/UserSetting';
 
 // modules pelanggan datamaster 
 
@@ -228,6 +229,8 @@ const RouteApp = () => {
     }, [])
 
     const adminRoute = <>
+        <Route path="/user" exact element={<UserSetting />} />
+
         {/* Data Master */}
         <Route path="/grup" exact element={<Grup />} />
         <Route path="/grup/buat" exact element={<BuatGrup />} />
@@ -434,6 +437,8 @@ const RouteApp = () => {
     </>
 
     const userRoute = <>
+        <Route path="/user" exact element={<UserSetting />} />
+
         {/* Data Master */}
         <Route path="/grup" exact element={<Grup />} />
         <Route path="/grup/buat" exact element={<BuatGrup />} />
