@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
 import { useSelector } from "react-redux";
-import { Button, Form, Input, PageHeader, Popconfirm, Skeleton, Switch, Table } from "antd";
+import { Button, Form, Input, PageHeader, Popconfirm, Radio, Skeleton, Switch, Table } from "antd";
 import { DeleteOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
 import ReactSelect from "react-select";
 
@@ -131,7 +131,7 @@ const EditPelanggan = () => {
     userData.append("status", status);
     dataSource.map((address) => {
       console.log(address);
-      userData.append("id_alamat_pelanggan[]", address.id ``);
+      userData.append("id_alamat_pelanggan[]", address.id);
       userData.append("alamat[]", address.address);
       userData.append("kota[]", address.city);
       userData.append("kecamatan[]", address.sub_district);
@@ -139,37 +139,37 @@ const EditPelanggan = () => {
       userData.append("kode_pos[]", address.postal_code);
     });
 
-    for (var pair of userData.entries()) {
-      console.log(pair[0] + ", " + pair[1]);
-    }
+    // for (var pair of userData.entries()) {
+    //   console.log(pair[0] + ", " + pair[1]);
+    // }
 
-    // axios({
-    //   method: "put",
-    //   url: `${Url}/customers/${id}`,
-    //   data: userData,
-    //   headers: {
-    //     Accept: "application/json",
-    //     Authorization: `Bearer ${auth.token}`,
-    //   },
-    // })
-    //   .then(function (res) {
-    //     //handle success
-    //     // console.log(res);
-    //     Swal.fire("Berhasil Diedit", `${code} Masuk dalam list`, "success");
-    //     navigate("/pelanggan");
-    //   })
-    //   .catch((err) => {
-    //     if (err.response) {
-    //       console.log("err.response ", err.response);
-    //       Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-    //     } else if (err.request) {
-    //       console.log("err.request ", err.request);
-    //       Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-    //     } else if (err.message) {
-    //       // do something other than the other two
-    //       Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-    //     }
-    //   });
+    axios({
+      method: "put",
+      url: `${Url}/customers/${id}`,
+      data: userData,
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    })
+      .then(function (res) {
+        //handle success
+        // console.log(res);
+        Swal.fire("Berhasil Diedit", `${code} Masuk dalam list`, "success");
+        navigate("/pelanggan");
+      })
+      .catch((err) => {
+        if (err.response) {
+          console.log("err.response ", err.response);
+          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+        } else if (err.request) {
+          console.log("err.request ", err.request);
+          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+        } else if (err.message) {
+          // do something other than the other two
+          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+        }
+      });
   };
 
   const onChange = () => {
@@ -199,17 +199,16 @@ const EditPelanggan = () => {
         const getData = res.data.data[0];
         //setLoading(false)
         setCode(getData.code);
-        setName(getData.name);
+        setName(getData.name || "");
         setBussinessName(getData.business_entity);
-        setPhone_number(getData.phone_number);
-        setEmail(getData.email);
-        setNpwp(getData.npwp);
-        setTerm(getData.term);
-        setDiscount(getData.discount);
+        setPhone_number(getData.phone_number || "");
+        setEmail(getData.email || "");
+        setNpwp(getData.npwp || "");
+        setTerm(getData.term || "");
+        setDiscount(getData.discount || "");
         setStatus(getData.status);
         setDataSource(getData.customer_addresses)
         console.log(getData);
-        console.log(bussinessName)
         setLoading(false)
       })
       .catch((err) => {
@@ -226,10 +225,10 @@ const EditPelanggan = () => {
   const defaultColumns = [
     {
       title: 'No.',
-      dataIndex: 'id',
+      dataIndex: 'index',
       width: '3%',
       align: 'center',
-      // render: (text, record, index) => index + 1
+      render: (text, record, index) => index + 1
     },
     {
       title: 'Alamat',
@@ -276,6 +275,11 @@ const EditPelanggan = () => {
   ];
 
   const handleAdd = () => {
+    let idAddress = []
+    for (let i = 0; i < dataSource.length; i++) {
+      // console.log(dataSource[i].id + 1);
+      console.log(i + 1);
+    }
     const newData = {
       key: count,
       id: '',
@@ -285,8 +289,8 @@ const EditPelanggan = () => {
       city: ``,
       postal_code: ``,
     };
-    
-    console.log(newData);
+
+    // console.log(newData);
     setDataSource([...dataSource, newData]);
     setCount(count + 1);
   };
@@ -337,7 +341,6 @@ const EditPelanggan = () => {
     }
   ];
 
-
   const options = [
     { value: 'PT', label: 'PT' },
     { value: 'CV', label: 'CV' },
@@ -353,6 +356,24 @@ const EditPelanggan = () => {
     //setSupplierId(value.id);
     setBussiness_ent(value);
     // setBussinessName(value)
+  };
+
+  const optionsStatus = [
+    {
+      label: 'Aktif',
+      value: 'Active',
+    },
+    {
+      label: 'Nonaktif',
+      value: 'Inactive',
+    },
+  ];
+
+  // const [value4, setValue4] = useState('');
+
+  const onChange4 = ({ target: { value } }) => {
+    console.log('radio4 checked', value);
+    setStatus(value);
   };
 
   if (loading) {
@@ -517,20 +538,27 @@ const EditPelanggan = () => {
         <div className="row mb-3">
           <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
           <div className="col-sm-7">
-            <Switch defaultChecked={status} onChange={onChange} />
+            <Radio.Group
+              options={optionsStatus}
+              onChange={onChange4}
+              value={status}
+              optionType="button"
+              buttonStyle="solid"
+            />
+            {/* <Switch defaultChecked={status} onChange={onChange} />
             <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
               {
                 checked ? "Nonaktif"
                   : "Aktif"
               }
-            </label>
+            </label> */}
           </div>
         </div>
       </PageHeader>
 
       <PageHeader
         ghost={false}
-        className="bg-body rounded"
+        className="bg-body rounded mb-2"
         title="Tambah Alamat Pelanggan"
         extra={[
           <Button
@@ -544,12 +572,14 @@ const EditPelanggan = () => {
         ]}
       >
         <Table
+          size="small"
           components={components}
           rowClassName={() => 'editable-row'}
           bordered
           dataSource={dataSource}
           columns={columns}
         />
+
         <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
           <Button
             type="primary"

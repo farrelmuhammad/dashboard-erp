@@ -1662,10 +1662,10 @@ const BuatFaktur = () => {
                                 >
                                     <option value="">Pilih Transaksi</option>
                                     <option value="SO">
-                                        Penjualan
+                                        Uang Muka
                                     </option>
                                     <option value="Surat" >
-                                        Surat Jalan
+                                        Penjualan
                                     </option>
                                 </select>
                             </div>
@@ -1691,10 +1691,10 @@ const BuatFaktur = () => {
                         {
                             sumber == 'SO' ?
                                 <div className="row mb-3">
-                                    <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
+                                    <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
                                     <div className="col-sm-7">
                                         <AsyncSelect
-                                            placeholder="Pilih Penerima..."
+                                            placeholder="Pilih Customer..."
                                             cacheOptions
                                             defaultOptions
                                             value={selectedValue}
@@ -1710,10 +1710,10 @@ const BuatFaktur = () => {
                         {
                             sumber == 'Surat' ?
                             <div className="row mb-3">
-                                <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
+                                <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
                                 <div className="col-sm-7">
                                     <AsyncSelect
-                                        placeholder="Pilih Penerima..."
+                                        placeholder="Pilih Customer..."
                                         cacheOptions
                                         defaultOptions
                                         value={selectedValue}

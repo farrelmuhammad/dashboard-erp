@@ -9,7 +9,7 @@ import Url from "../../../Config";
 import "./form.css";
 import SendIcon from "@mui/icons-material/Send";
 import { useSelector } from "react-redux";
-import { PageHeader, Skeleton, Switch, Table } from "antd";
+import { PageHeader, Skeleton, Switch, Table, Tag } from "antd";
 
 const DetailPelanggan = () => {
   // const token = jsCookie.get("auth");
@@ -82,18 +82,6 @@ const DetailPelanggan = () => {
       dataIndex: 'postal_code',
     },
   ];
-
-  const onChange = () => {
-    checked ? setChecked(false) : setChecked(true)
-
-    if (checked === false) {
-      setStatus("Inactive");
-      // console.log('Active');
-    } else {
-      setStatus("Active");
-      // console.log('Inactive');
-    }
-  };
 
   if (loading) {
     return (
@@ -232,13 +220,7 @@ const DetailPelanggan = () => {
         <div className="row mb-3">
           <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
           <div className="col-sm-7">
-            <Switch disabled defaultChecked={status} onChange={onChange} />
-            <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
-              {
-                checked ? "Nonaktif"
-                  : "Aktif"
-              }
-            </label>
+            {data.status === 'Active' ? <Tag color="blue">{data.status}</Tag> : <Tag color="red">{data.status}</Tag>}
           </div>
         </div>
       </PageHeader>
@@ -249,6 +231,7 @@ const DetailPelanggan = () => {
         title="Alamat Pelanggan"
       >
         <Table
+          size="small"
           columns={columns}
           dataSource={address}
         />

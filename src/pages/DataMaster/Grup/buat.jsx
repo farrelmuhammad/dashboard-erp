@@ -27,7 +27,7 @@ const BuatGrup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if(!name){
+    if (!name) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -37,58 +37,59 @@ const BuatGrup = () => {
     // else if(!description){
     //   userData.append("deskripsi", Edescription)
     // }
-else{
-    const userData = new FormData();
-    userData.append("nama", name);
-    if(!description){
-      userData.append("deskripsi", Edescription)
-    }
-    else{
-      userData.append("deskripsi", description);
-    }
-   
-    access.map((acc) => userData.append("hak_akses[]", acc));
+    else {
+      const userData = new FormData();
+      userData.append("nama", name);
+      if (!description) {
+        userData.append("deskripsi", description)
+      }
+      else {
+        userData.append("deskripsi", description);
+      }
 
-    // for (var pair of userData.entries()) {
-    //   console.log(pair[0] + ", " + pair[1]);
-    // }
+      access.map((acc) => userData.append("hak_akses[]", acc));
 
-    axios({
-      method: "post",
-      url: `${Url}/groups`,
-      data: userData,
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    })
-      .then(function (response) {
-        //handle success
-        console.log(response);
-        Swal.fire(
-          "Berhasil Di Update",
-          `${getGroup} Masuk dalam list`,
-          "success"
-        );
-        navigate("/grup");
+      // for (var pair of userData.entries()) {
+      //   console.log(pair[0] + ", " + pair[1]);
+      // }
+
+      axios({
+        method: "post",
+        url: `${Url}/groups`,
+        data: userData,
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${auth.token}`,
+        },
       })
-      .catch((err) => {
-        if (err.response) {
-          console.log("err.response ", err.response);
-          Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: err.response.data.error,
-          });
-        } else if (err.request) {
-          console.log("err.request ", err.request);
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        } else if (err.message) {
-          // do something other than the other two
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        }
-      });
-   } };
+        .then(function (response) {
+          //handle success
+          console.log(response);
+          Swal.fire(
+            "Berhasil Di Update",
+            `${getGroup} Masuk dalam list`,
+            "success"
+          );
+          navigate("/grup");
+        })
+        .catch((err) => {
+          if (err.response) {
+            console.log("err.response ", err.response);
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: err.response.data.error,
+            });
+          } else if (err.request) {
+            console.log("err.request ", err.request);
+            Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+          } else if (err.message) {
+            // do something other than the other two
+            Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+          }
+        });
+    }
+  };
 
   const handleCheck = (event) => {
     var updatedList = [...access];
