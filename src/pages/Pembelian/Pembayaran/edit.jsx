@@ -180,12 +180,12 @@ const EditPembayaranPembelian = () => {
         setBankId(value.id);
     };
     const loadOptionsBank = (inputValue) => {
-        return fetch(`${Url}/select_chart_of_accounts?nama=${inputValue}`, {
+        return axios.get(`${Url}/chart_of_accounts?induk=0&kode_kategori[]=111&nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => res.data.data);
     };
 
 
@@ -538,7 +538,8 @@ const EditPembayaranPembelian = () => {
 
     function klikUbahTotal(index, value) {
         let tmp = []
-        let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+        let hasil = value.replaceAll('.', '').replace( /^[-+]?[0-9]+\.[^0-9]+$/, '')
+        //let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
         // setting data baru 
         for (let i = 0; i < dataDetail.length; i++) {
             if (i == index) {
@@ -557,6 +558,7 @@ const EditPembayaranPembelian = () => {
         }
         setDataDetail(tmp)
 
+        console.log(value)
     }
 
     const dataFaktur =
@@ -576,10 +578,10 @@ const EditPembayaranPembelian = () => {
             selectedMataUang === 'IDR ' || selectedMataUang === 'Rp ' ? 
             // <CurrencyFormat prefix={selectedMataUang} className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.bayar.toString().replace('.',',')} 
             // onChange={(e) => klikUbahTotal(i, e.target.value)} key="pay" /> 
-            < CurrencyFormat  className=' text-start form-control form-control-sm editable-input ' style={{ width: "70%", fontSize: "10px!important" }} prefix={selectedMataUang} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.bayar).toFixed(2).replace('.' , ',')} 
+            < CurrencyFormat fixedDecimalScale decimalScale={2}  className=' text-start form-control  editable-input ' style={{ width: "100%", fontSize: "10px!important" }} prefix={selectedMataUang} thousandSeparator={'.'} decimalSeparator={','} value={item.bayar} 
 
-renderText={value => <input 
-value={parseFloat(value.toString().replace('.', ','))}  id="colFormLabelSm"  className="form-control form-control-sm" onChange={(e) => klikUbahTotal(i, e.target.value)} key="pay" />}  />
+            renderText={value => <input 
+            value={Number(value)*100}  id="colFormLabelSm"  className="form-control form-control-sm editable-input" onChange={(e) =>klikUbahTotal(i, e.target.value)} key="pays" />}  />
 
             
             :
@@ -657,8 +659,8 @@ value={parseFloat(value.toString().replace('.', ','))}  id="colFormLabelSm"  cla
                                     value={selectedBank}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsSupplier}
-                                    onChange={handleChangeSupplier}
+                                    loadOptions={loadOptionsBank}
+                                    onChange={handleChangeBank}
                                 />
                             </div>
                         </div>
@@ -811,10 +813,14 @@ value={parseFloat(value.toString().replace('.', ','))}  id="colFormLabelSm"  cla
                                 let sisa2 = 0;
                                if( selectedMataUang === 'IDR ' ){
                                
-                                let p1 = pay.split(',')
-                                totalAkhir += Number(p1[0]) 
+                                let p1 = pays.props.value.toString().replace(',','')
+                                totalAkhir = totalAkhir + Number(p1)
+
                                 let s1 = sisaa.split(',')
                                 sisaAkhir += Number(s1[0])
+
+                                console.log(pays.props.value)
+
                                }
                                else 
                                {
@@ -828,9 +834,9 @@ value={parseFloat(value.toString().replace('.', ','))}  id="colFormLabelSm"  cla
                                 setTotalAkhir(totalAkhir)
                                 setSisaAkhir(sisaAkhir)
                                
-                                console.log(pay)
-                                console.log(totalAkhir)
-                                console.log(pay2)
+                                // console.log(pay)
+                                 console.log(totalAkhir)
+                                // console.log(pay2)
                             });
                             return (
                                 <>
@@ -840,7 +846,12 @@ value={parseFloat(value.toString().replace('.', ','))}  id="colFormLabelSm"  cla
 
                                             {
                                                   selectedMataUang === 'IDR ' || selectedMataUang === 'Rp ' ?
-                                                  <CurrencyFormat prefix={selectedMataUang} disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toFixed(2).replace('.',',')} key="pay" /> :
+                                                  <CurrencyFormat prefix={selectedMataUang} fixedDecimalScale decimalScale={2} disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={
+                                                   // totalAkhir.toLocaleString(undefined, {maximumFractionDigits:2}).replace('.',',')
+                                                   // parseInt(totalAkhir).toString().replace(/\B(?=(\d{2})+(?!\d))/g, ",")
+                                                   // totalAkhir.toFixed(2)
+                                                   totalAkhir
+                                                  } key="pay" /> :
                                                   <CurrencyFormat prefix={selectedMataUang} disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toLocaleString('id')} key="pay" />
                                               
                                             }

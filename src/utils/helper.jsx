@@ -11,18 +11,21 @@ export const formatRupiah = (angka) =>
 //Untuk mengubah string menjadi title case
 export const toTitleCase = (str) => {
 	//console.log(str)
-	if(str != null){
+	if (str != null) {
 		return str.replace(
 			/\w\S*/g,
 			(txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
 		);
 	}
 }
-	
+
+export const formatDecimals = (str) => {
+	parseFloat(str.replace(',', '.').replace(' ', ''))
+}
 
 
 export const formatQuantity = (angka) =>
-	parseFloat(angka).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+	parseFloat(angka).toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".").replace('.', ',');
 
 export const formatDate = (str) =>
 	str.toString().replace(!/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/)

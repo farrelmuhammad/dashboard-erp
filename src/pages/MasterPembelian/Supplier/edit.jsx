@@ -5,9 +5,10 @@ import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
 import { useSelector } from "react-redux";
-import { Button, Form, Input, PageHeader, Popconfirm, Skeleton, Switch, Table } from "antd";
+import { Button, Form, Input, PageHeader, Popconfirm, Radio, Skeleton, Switch, Table } from "antd";
 import { DeleteOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
 import axios from "axios";
+import ReactSelect from "react-select";
 
 const EditableContext = React.createContext(null);
 
@@ -96,12 +97,14 @@ const EditSupplier = () => {
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [bussiness_ent, setBussiness_ent] = useState('');
+  const [bussinessName, setBussinessName] = useState('');
   const [grup, setGrup] = useState('');
   const [phone_number, setPhone_number] = useState('');
   const [email, setEmail] = useState('');
   const [npwp, setNpwp] = useState('');
   const [status, setStatus] = useState('');
-  const [checked, setChecked] = useState(false);
+  // const [checked, setChecked] = useState();
+  const [check, setCheck] = useState(null);
   const navigate = useNavigate();
   const { id } = useParams();
   const [count, setCount] = useState(2);
@@ -114,10 +117,14 @@ const EditSupplier = () => {
   const handleAdd = () => {
     const newData = {
       key: count,
-      name: ``,
-      age: '',
-      address: ``,
+      id: '',
+      address: '',
+      urban_village: ``,
+      sub_district: ``,
+      city: ``,
+      postal_code: ``,
     };
+    console.log(newData);
     setDataSource([...dataSource, newData]);
     setCount(count + 1);
   };
@@ -183,7 +190,7 @@ const EditSupplier = () => {
       width: '5%',
       render: (_, record) =>
         dataSource.length >= 1 ? (
-          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
+          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.id)}>
             <Button
               size='small'
               type="danger"
@@ -213,9 +220,10 @@ const EditSupplier = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    const userData = new FormData();
+    // console.log(status)
+    const userData = new URLSearchParams();
     userData.append("nama", name);
-    userData.append("badan_usaha", bussiness_ent);
+    userData.append("badan_usaha", bussinessName);
     userData.append("grup", grup);
     userData.append("nomor_telepon", phone_number);
     userData.append("email", email);
@@ -223,7 +231,7 @@ const EditSupplier = () => {
     userData.append("status", status);
 
     dataSource.map((address) => {
-      console.log(address);
+      userData.append("id_alamat_pemasok[]", address.id);
       userData.append("alamat[]", address.address);
       userData.append("kota[]", address.city);
       userData.append("kecamatan[]", address.sub_district);
@@ -237,19 +245,19 @@ const EditSupplier = () => {
 
     axios({
       method: "put",
-      url: `${Url}/suppliers`,
+      url: `${Url}/suppliers/${id}`,
       data: userData,
       headers: {
         Accept: "application/json",
         Authorization: `Bearer ${auth.token}`,
       },
     })
-      .then(function (res) {
+      .then((res) => {
         //handle success
         console.log(res);
         Swal.fire(
           "Berhasil Ditambahkan",
-          `${getSupplier} Masuk dalam list`,
+          `${code} Masuk dalam list`,
           "success"
         );
         navigate("/supplier");
@@ -272,18 +280,6 @@ const EditSupplier = () => {
       });
   };
 
-  const onChange = () => {
-    checked ? setChecked(false) : setChecked(true)
-
-    if (checked === false) {
-      setStatus("Active");
-      // console.log('Active');
-    } else {
-      setStatus("Inactive");
-      // console.log('Inactive');
-    }
-  };
-
   useEffect(() => {
     getSupplierById()
   }, []);
@@ -297,12 +293,13 @@ const EditSupplier = () => {
     })
       .then((res) => {
         const getData = res.data.data[0];
+        console.log(getData);
         setCode(getData.code);
-        setName(getData.name);
-        setBussiness_ent(getData.business_entity);
-        setPhone_number(getData.phone_number);
-        setEmail(getData.email);
-        setNpwp(getData.npwp);
+        setName(getData.name || "");
+        setBussinessName(getData.business_entity);
+        setPhone_number(getData.phone_number || "");
+        setEmail(getData.email || "");
+        setNpwp(getData.npwp || "");
         setGrup(getData._group);
         setStatus(getData.status);
         setDataSource(getData.supplier_addresses);
@@ -313,6 +310,34 @@ const EditSupplier = () => {
         console.log(err);
       });
   }
+
+  const optionsStatus = [
+    {
+      label: 'Aktif',
+      value: 'Active',
+    },
+    {
+      label: 'Nonaktif',
+      value: 'Inactive',
+    },
+  ];
+
+  // const [value4, setValue4] = useState('');
+
+  const onChange4 = ({ target: { value } }) => {
+    console.log('radio4 checked', value);
+    setStatus(value);
+  };
+
+  const options = [
+    { value: 'PT', label: 'PT' },
+    { value: 'CV', label: 'CV' },
+    { value: 'Lainnya...', label: 'Lainnya...' },
+  ];
+
+  const handleSingleChange = (e) => {
+    setBussiness_ent(e.value);
+  };
 
   if (loading) {
     return (
@@ -393,6 +418,34 @@ const EditSupplier = () => {
         </div>
         <div className="row mb-3">
           <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            Badan Usaha
+          </label>
+          <div className="col-sm-10">
+            <ReactSelect
+              placeholder="Pilih Badan Usaha..."
+              className="basic-single"
+              classNamePrefix="select"
+              //defaultInputValue={bussinessName}
+              // value={{ value: bussinessName, label: bussinessName }}
+              value={{ value: bussinessName, label: bussinessName }}
+              // isDisabled={isDisabled}
+              // isLoading={isLoading}
+              // isClearable={isClearable}
+              // isRtl={isRtl}
+              isSearchable
+              name="color"
+              options={options}
+              onChange={(item) => {
+                console.log(item);
+
+                // set item instead of item.value
+                setBussinessName(item.value);
+              }}
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
             NPWP
           </label>
           <div className="col-sm-10">
@@ -400,32 +453,8 @@ const EditSupplier = () => {
               type="Nama"
               className="form-control"
               id="inputNama3"
-              defaultValue={npwp}
               onChange={(e) => setNpwp(e.target.value)}
             />
-          </div>
-        </div>
-        <div className="row mb-3">
-          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-            Badan Usaha
-          </label>
-          <div className="col-sm-10">
-            <select
-              onChange={(e) => setBussiness_ent(e.target.value)}
-              id="bussinessSelect"
-              className="form-select"
-            >
-              <option>Pilih Badan Usaha</option>
-              <option value="PT" selected={bussiness_ent === "PT"}>
-                PT
-              </option>
-              <option value="CV" selected={bussiness_ent === "CV"}>
-                CV
-              </option>
-              <option value="Lainnya" selected={bussiness_ent === "Lainnya.."}>
-                Lainnya..
-              </option>
-            </select>
           </div>
         </div>
         <div className="row mb-3">
@@ -435,14 +464,14 @@ const EditSupplier = () => {
           <div className="col-sm-10">
             <select
               onChange={(e) => setGrup(e.target.value)}
-              id="grupSelct"
+              id="grupSelect"
               className="form-select"
             >
               <option>Pilih Grup</option>
-              <option value="Lokal" selected={grup === "Lokal"}>
+              <option value="Lokal" checked={grup === "Lokal"}>
                 Lokal
               </option>
-              <option value="Impor" selected={grup === "Impor"}>
+              <option value="Impor" checked={grup === "Impor"}>
                 Impor
               </option>
             </select>
@@ -451,13 +480,20 @@ const EditSupplier = () => {
         <div className="row mb-3">
           <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
           <div className="col-sm-7">
-            <Switch defaultChecked={checked} onChange={onChange} />
+            <Radio.Group
+              options={optionsStatus}
+              onChange={onChange4}
+              value={status}
+              optionType="button"
+              buttonStyle="solid"
+            />
+            {/* <Switch defaultChecked={status} onChange={onChange} />
             <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
               {
-                checked ? "Aktif"
+                check === true ? "Aktif"
                   : "Nonaktif"
               }
-            </label>
+            </label> */}
           </div>
         </div>
       </PageHeader>
@@ -478,6 +514,7 @@ const EditSupplier = () => {
         ]}
       >
         <Table
+          size="small"
           components={components}
           rowClassName={() => 'editable-row'}
           bordered

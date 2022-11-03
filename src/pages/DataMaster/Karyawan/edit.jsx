@@ -406,6 +406,7 @@ const EditKaryawan = () => {
               className="form-control"
               id="inputNama3"
               defaultValue={phone_number}
+              placeholder="08x-xxx-xxx-xxx"
               onChange={(e) => setPhone_number(e.target.value)}
             />
           </div>
@@ -419,6 +420,7 @@ const EditKaryawan = () => {
               type="Nama"
               className="form-control"
               id="inputNama3"
+              placeholder="mail@mail.com"
               defaultValue={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -466,6 +468,7 @@ const EditKaryawan = () => {
               className="form-control"
               id="inputNama3"
               defaultValue={npwp}
+              placeholder="Masukkan Nomor NPWP"
               onChange={(e) => setNpwp(e.target.value)}
             />
           </div>

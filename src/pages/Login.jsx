@@ -17,7 +17,7 @@ export default function Login() {
   const [password, setPassword] = useState();
   const navigate = useNavigate();
   // const isLoggedIn = jsCookie.get('auth')
-  const isLoggedIn = !!useSelector((state) => state.auth.token);
+  // const isLoggedIn = !!useSelector((state) => state.auth.token);
   const dispatch = useDispatch();
 
   const [passwordShown, setPasswordShown] = useState(false);
@@ -61,9 +61,9 @@ export default function Login() {
               token: res.data,
             })
           );
-
-          navigate("/");
-          // setTimeout(window.location.reload.bind(window.location), 300);
+          navigate(location.state?.referrer || '/');
+          // navigate("/");
+          setTimeout(window.location.reload.bind(window.location), 10);
           toastMixin.fire({
             animation: true,
             title: "Signed in Successfully",
@@ -80,11 +80,11 @@ export default function Login() {
       });
   };
 
-  if (isLoggedIn) {
-    return (
-        <Dashboard />
-    );
-  }
+  // if (isLoggedIn) {
+  //   return (
+  //     <Dashboard />
+  //   );
+  // }
 
   return (
     <>

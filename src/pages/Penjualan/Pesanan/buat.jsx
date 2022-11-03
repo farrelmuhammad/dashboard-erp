@@ -82,12 +82,12 @@ const EditableCell = ({
             >
                 {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
                 <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
-    //               formatter={value => `${value.replace('.',',')}`} 
-      decimalSeparator = {','}
-    onChange={value => {
-        value = parseFloat(value.toString().replace('.', ','))
-      }}
-      
+                    //               formatter={value => `${value.replace('.',',')}`} 
+                    decimalSeparator={','}
+                    onChange={value => {
+                        value = parseFloat(value.toString().replace('.', ','))
+                    }}
+
                 />
             </Form.Item>
         ) : (
@@ -145,7 +145,7 @@ const BuatPesanan = () => {
             },
         }).then((res) => res.json());
     };
-    
+
     useEffect(() => {
         const getProduct = async () => {
             const res = await axios.get(`${Url}/select_product_alias?nama_alias=${query}`, {
@@ -171,7 +171,7 @@ const BuatPesanan = () => {
                     });
                 }
             }
-           
+
             // console.log(tmp.statusCek.sort())
             setGetDataProduct(tmp)
         };
@@ -440,12 +440,12 @@ const BuatPesanan = () => {
         // />
 
         return <>
-        {
-            namaMataUang === 'Rp' ?
-                < CurrencyFormat disabled className='edit-disabled text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
-                : < CurrencyFormat disabled className='edit-disabled text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
-        }
-    </>
+            {
+                namaMataUang === 'Rp' ?
+                    < CurrencyFormat disabled className='edit-disabled text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                    : < CurrencyFormat disabled className='edit-disabled text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+            }
+        </>
 
     }
     const tableToRupiah = (angka, namaMataUang) => {
@@ -551,7 +551,7 @@ const BuatPesanan = () => {
                 return {
                     props: {
                     },
-                    children: <div>{Number(text).toFixed(2).replace('.',',')}</div>
+                    children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
                 };
             }
         },
@@ -579,7 +579,7 @@ const BuatPesanan = () => {
                 return {
                     props: {
                     },
-                    children: <div>{tableToRupiah(text,"Rp")}</div>
+                    children: <div>{tableToRupiah(text, "Rp")}</div>
                 };
             }
         },
@@ -851,215 +851,217 @@ const BuatPesanan = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if(!date){
+        if (!date) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if (!customer){
+        else if (!customer) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Customer kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        else{
-
-     
-
-
-
-        const userData = new FormData();
-        userData.append("tanggal", date);
-        userData.append("referensi", referensi);
-        userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("termasuk_pajak", checked);
-        userData.append("status", "Submitted");
-        product.map((p, i) => {
-
-            // if(!p.alias_name){
-            //     Swal.fire({
-            //         icon: "error",
-            //         title: "Oops...",
-            //         text: "Data Produk kosong, Silahkan Lengkapi datanya ",
-            //       });
-            // }
-            // else if(!p.quantity){
-            //     Swal.fire({
-            //         icon: "error",
-            //         title: "Oops...",
-            //         text: "Data Kuantiti Produk kosong, Silahkan Lengkapi datanya ",
-            //       });
-            // }
-            // else if(!p.unit){
-            //     Swal.fire({
-            //         icon: "error",
-            //         title: "Oops...",
-            //         text: "Data Produk kosong, Silahkan Lengkapi datanya ",
-            //       });
-            // }
-            // else if(!p.price){
-            //     Swal.fire({
-            //         icon: "error",
-            //         title: "Oops...",
-            //         text: "Data Harga Produk kosong, Silahkan Lengkapi datanya ",
-            //       });
-            // }
-            // else if(!p.ppn){
-            //     Swal.fire({
-            //         icon: "error",
-            //         title: "Oops...",
-            //         text: "Data PPN Produk kosong, Silahkan Lengkapi datanya ",
-            //       });
-            // }
-           
-
-            userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("harga[]", p.price);
-            if (pilihanDiskon[i] == 'percent') {
-                userData.append("persentase_diskon[]", jumlahDiskon[i]);
-                userData.append("diskon_tetap[]", 0);
-            }
-            else if (pilihanDiskon[i] == 'nominal') {
-                userData.append("diskon_tetap[]", jumlahDiskon[i]);
-                userData.append("persentase_diskon[]", 0);
-            }
-            userData.append("ppn[]", p.ppn);
-        });
-        userData.append("termasuk_pajak", checked);
-
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
-
-        axios({
-            method: "post",
-            url: `${Url}/sales_orders`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/pesanan");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text:"Data Produk belum lengkap, silahkan lengkapi datanya",
-                        // text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
             });
-     } };
+        }
+        else {
+
+
+
+
+
+            const userData = new FormData();
+            userData.append("tanggal", date);
+            userData.append("referensi", referensi);
+            userData.append("catatan", description);
+            userData.append("pelanggan", customer);
+            userData.append("termasuk_pajak", checked);
+            userData.append("status", "Submitted");
+            product.map((p, i) => {
+
+                // if(!p.alias_name){
+                //     Swal.fire({
+                //         icon: "error",
+                //         title: "Oops...",
+                //         text: "Data Produk kosong, Silahkan Lengkapi datanya ",
+                //       });
+                // }
+                // else if(!p.quantity){
+                //     Swal.fire({
+                //         icon: "error",
+                //         title: "Oops...",
+                //         text: "Data Kuantiti Produk kosong, Silahkan Lengkapi datanya ",
+                //       });
+                // }
+                // else if(!p.unit){
+                //     Swal.fire({
+                //         icon: "error",
+                //         title: "Oops...",
+                //         text: "Data Produk kosong, Silahkan Lengkapi datanya ",
+                //       });
+                // }
+                // else if(!p.price){
+                //     Swal.fire({
+                //         icon: "error",
+                //         title: "Oops...",
+                //         text: "Data Harga Produk kosong, Silahkan Lengkapi datanya ",
+                //       });
+                // }
+                // else if(!p.ppn){
+                //     Swal.fire({
+                //         icon: "error",
+                //         title: "Oops...",
+                //         text: "Data PPN Produk kosong, Silahkan Lengkapi datanya ",
+                //       });
+                // }
+
+
+                userData.append("nama_alias_produk[]", p.alias_name);
+                userData.append("kuantitas[]", p.quantity);
+                userData.append("satuan[]", p.unit);
+                userData.append("harga[]", p.price);
+                if (pilihanDiskon[i] == 'percent') {
+                    userData.append("persentase_diskon[]", jumlahDiskon[i]);
+                    userData.append("diskon_tetap[]", 0);
+                }
+                else if (pilihanDiskon[i] == 'nominal') {
+                    userData.append("diskon_tetap[]", jumlahDiskon[i]);
+                    userData.append("persentase_diskon[]", 0);
+                }
+                userData.append("ppn[]", p.ppn);
+            });
+            userData.append("termasuk_pajak", checked);
+
+            // for (var pair of userData.entries()) {
+            //     console.log(pair[0] + ', ' + pair[1]);
+            // }
+
+            axios({
+                method: "post",
+                url: `${Url}/sales_orders`,
+                data: userData,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            })
+                .then(function (response) {
+                    //handle success
+                    Swal.fire(
+                        "Berhasil Ditambahkan",
+                        ` Masuk dalam list`,
+                        "success"
+                    );
+                    navigate("/pesanan");
+                })
+                .catch((err) => {
+                    if (err.response) {
+                        console.log("err.response ", err.response);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Data Produk belum lengkap, silahkan lengkapi datanya",
+                            // text: err.response.data.error.nama,
+                        });
+                    } else if (err.request) {
+                        console.log("err.request ", err.request);
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    } else if (err.message) {
+                        // do something other than the other two
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    }
+                });
+        }
+    };
 
     const handleDraft = async (e) => {
         e.preventDefault();
 
-        if(!date){
+        if (!date) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if (!customer){
+        else if (!customer) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Customer kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        else{
-
-        const userData = new FormData();
-        userData.append("tanggal", date);
-        userData.append("referensi", referensi);
-        userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("termasuk_pajak", checked);
-        userData.append("status", "Draft");
-        product.map((p, i) => {
-            console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("harga[]", p.price);
-            if (pilihanDiskon[i] == 'percent') {
-                userData.append("persentase_diskon[]", jumlahDiskon[i]);
-
-                userData.append("diskon_tetap[]", 0);
-            }
-            else if (pilihanDiskon[i] == 'nominal') {
-                userData.append("diskon_tetap[]", jumlahDiskon[i]);
-
-                userData.append("persentase_diskon[]", 0);
-            }
-            userData.append("ppn[]", p.ppn);
-        });
-        userData.append("termasuk_pajak", checked);
-
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
-
-        axios({
-            method: "post",
-            url: `${Url}/sales_orders`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/pesanan");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text:"Data Produk belum lengkap, silahkan lengkapi datanya",
-                        // text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
             });
-    }};
+        }
+        else {
+
+            const userData = new FormData();
+            userData.append("tanggal", date);
+            userData.append("referensi", referensi);
+            userData.append("catatan", description);
+            userData.append("pelanggan", customer);
+            userData.append("termasuk_pajak", checked);
+            userData.append("status", "Draft");
+            product.map((p, i) => {
+                console.log(p);
+                userData.append("nama_alias_produk[]", p.alias_name);
+                userData.append("kuantitas[]", p.quantity);
+                userData.append("satuan[]", p.unit);
+                userData.append("harga[]", p.price);
+                if (pilihanDiskon[i] == 'percent') {
+                    userData.append("persentase_diskon[]", jumlahDiskon[i]);
+
+                    userData.append("diskon_tetap[]", 0);
+                }
+                else if (pilihanDiskon[i] == 'nominal') {
+                    userData.append("diskon_tetap[]", jumlahDiskon[i]);
+
+                    userData.append("persentase_diskon[]", 0);
+                }
+                userData.append("ppn[]", p.ppn);
+            });
+            userData.append("termasuk_pajak", checked);
+
+            // for (var pair of userData.entries()) {
+            //     console.log(pair[0] + ', ' + pair[1]);
+            // }
+
+            axios({
+                method: "post",
+                url: `${Url}/sales_orders`,
+                data: userData,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            })
+                .then(function (response) {
+                    //handle success
+                    Swal.fire(
+                        "Berhasil Ditambahkan",
+                        ` Masuk dalam list`,
+                        "success"
+                    );
+                    navigate("/pesanan");
+                })
+                .catch((err) => {
+                    if (err.response) {
+                        console.log("err.response ", err.response);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Data Produk belum lengkap, silahkan lengkapi datanya",
+                            // text: err.response.data.error.nama,
+                        });
+                    } else if (err.request) {
+                        console.log("err.request ", err.request);
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    } else if (err.message) {
+                        // do something other than the other two
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    }
+                });
+        }
+    };
 
     return (
         <>
@@ -1252,7 +1254,7 @@ const BuatPesanan = () => {
                         </div>
                     </div>
                 </div>
-                <br/>
+                <br />
                 <div className="btn-group mt-2" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"

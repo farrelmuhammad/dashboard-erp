@@ -228,7 +228,7 @@ const CreateAdjustment = () => {
             dataIndex: 'product_name',
         },
         {
-            title: 'QTY Sistem',
+            title: 'Qty Sistem',
             dataIndex: 'qty_before',
             width: '30%',
             align: 'center',
@@ -377,16 +377,6 @@ const CreateAdjustment = () => {
                 // tmpDataCentang.push('')
             }
         }
-
-        // for(let x=0; x<dataNoEdit.length; x++){
-
-        //     if (tmpDataBaru[i].statusCek == true) {
-        //         tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
-        //     }
-        //     else {
-        //         tmpDataCentang.push('')
-        //     }
-        // }
         let unikTmpCentang = [...new Set(tmpDataCentang)]
         console.log(unikTmpCentang)
         setTmpCentang(unikTmpCentang)

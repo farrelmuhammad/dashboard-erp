@@ -177,8 +177,8 @@ const BuatSuratJalan = () => {
 
     const handleChangeSupplier = (value) => {
         setSupplier(value.id);
+        setProduct([])  
         setCustomer('')
-        setProduct([])
         setSelectedSupplier(value);
         setAddress(value.supplier_addresses)
         setGrup(value._group)
@@ -196,8 +196,8 @@ const BuatSuratJalan = () => {
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
         setCustomer(value.id);
-        setSupplier('')
         setAddress(value.customer_addresses)
+        setSupplier('')
     };
 
     // load options using API call
@@ -280,8 +280,7 @@ const BuatSuratJalan = () => {
                     return record.supplier.name
 
                 }
-            }
-        },
+        }},
         {
             title: 'Gudang',
             dataIndex: 'warehouse',
@@ -675,7 +674,7 @@ const BuatSuratJalan = () => {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
-                text: "Pilih Transaksi",
+                text: "Data Jenis Transaksi kosong, Silahkan Lengkapi datanya ",
               });
         }else{
         setSumber(value);

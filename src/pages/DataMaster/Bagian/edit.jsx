@@ -154,7 +154,7 @@ const EditBagian = () => {
               className="form-control"
               id="form4Example3"
               rows="4"
-              value={description}
+              defaultValue={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>

@@ -85,8 +85,10 @@ const BuatPIB = () => {
     const [optionsFaktur, setOptionsFaktur] = useState([])
     const [dataFaktur, setDataFaktur] = useState([])
     const [tampil, setTampil] = useState(true)
+    const [dataBank, setDataBank] = useState([])
 
-
+    const [labelCode, setLabelCode] = useState([])
+    const [coe, setCoe] = useState()
 
 
     function klikEnter(event) {
@@ -117,10 +119,14 @@ const BuatPIB = () => {
                 })
             }
             setOptionsFaktur(tmp)
+            console.log(optionsFaktur)
+            setLabelCode(tmp)
 
         }
         );
     }, [supplierId])
+
+
 
     const getNewCode = async () => {
         await axios.get(`${Url}/get_new_goods_import_declaration_code?tanggal=${date}`, {
@@ -141,6 +147,12 @@ const BuatPIB = () => {
     const handleChangePilih = (value) => {
         console.log(value)
         setTerm(value.term)
+
+        
+
+
+
+
         let dataDouble = [];
         // console.log(tampilProduk)
         for (let i = 0; i < tampilProduk.length; i++) {
@@ -183,6 +195,8 @@ const BuatPIB = () => {
             setTampilProduk(newData);
             setSelectedMataUang(newData[0].currency_name)
             setMataUangId(newData[0].currency_id)
+
+            //console.log(dataFaktur)
         }
 
 
@@ -236,16 +250,56 @@ const BuatPIB = () => {
         setSelectedBank(value);
         setBankId(value.id);
     };
-    const loadOptionsBank = (inputValue) => {
-        return fetch(`${Url}/select_chart_of_accounts?nama=${inputValue}`, {
+
+    const loadOptionsBank = () => {
+
+        return axios.get(`${Url}/chart_of_accounts?induk=0&kode_kategori[]=111`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => console.log(res.data.data));
     };
 
+    // const loadOptionsBank = (inputValue) => {
+    //     return axios.get(`${Url}/chart_of_accounts?induk=0&kode_kategori[]=111&nama=${inputValue}`, {
+    //         headers: {
+    //             Accept: "application/json",
+    //             Authorization: `Bearer ${auth.token}`,
+    //         },
+    //     }).then((res) => res.data.data);
+    // };
+
+    useEffect(() => {
+        axios.get(`${Url}/chart_of_accounts?induk=0&kode_kategori[]=111`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => {
+            let tmp = []
+            //let data = res.data.data
+            for (let x = 0; x < res.data.data.length; x++) {
+                tmp.push({
+                    value: res.data.data[x].id,
+                    label: res.data.data[x].name,
+                })
+            }
+            setDataBank(tmp)
+            console.log(tmp)
+            console.log(res)
+           // setLabelCode(tmp)
+
+        }
+        );
+    }, [])
+
     const columnProduk = [
+        {
+            title:"Nomor Faktur",
+            width:"15%",
+            dataIndex:'code',
+        },
         {
             title: 'Nama Produk',
             width: '20%',
@@ -408,8 +462,26 @@ const BuatPIB = () => {
         );
         // console.log(tampilProduk[index])
     }
+
+
+    function ambilCode(id){
+        for(let i=0; i<optionsFaktur.length; i++){
+            if(optionsFaktur[i].value === id){
+                return(optionsFaktur[i].label)
+            }
+            else{
+                null
+            }      
+        }
+
+    }
+
+
     const dataProduk =
         [...tampilProduk.map((item, i) => ({
+            
+            
+            code : ambilCode(item.purchase_invoice_id),
             nama: item.product_name,
             qty: Number(item.quantity).toFixed(2).replace('.', ','),
             // hrg: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.price} key="total" />,
@@ -871,14 +943,14 @@ const BuatPIB = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Kas/Bank</label>
                             <div className="col-sm-7">
-                                <AsyncSelect
+                                <ReactSelect
                                     placeholder="Pilih Bank..."
                                     cacheOptions
                                     defaultOptions
                                     value={selectedBank}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsBank}
+                                    getOptionLabel={(e) => e.label}
+                                    getOptionValue={(e) => e.value}
+                                    options={dataBank}
                                     onChange={handleChangeBank}
                                 />
                             </div>
