@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import "./form.css";
 import { useSelector } from "react-redux";
-import { Button, Form, Input, PageHeader, Popconfirm, Switch, Table } from 'antd';
+import { Button, Form, Input, PageHeader, Popconfirm, Radio, Switch, Table } from 'antd';
 import Url from "../../../Config";
 import { DeleteOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
 import ReactSelect from "react-select";
@@ -227,7 +227,7 @@ const BuatPelanggan = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if(!name){
+    if (!name) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -241,7 +241,7 @@ const BuatPelanggan = () => {
     //     text: "Data Nomor Telepon kosong, Silahkan Lengkapi datanya ",
     //   });
     // }
-    else if(phone_number.length > 20){
+    else if (phone_number.length > 20) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
@@ -262,96 +262,97 @@ const BuatPelanggan = () => {
     //     text: "Data NPWP kosong, Silahkan Lengkapi datanya ",
     //   });
     // }
-    else if(npwp.length > 25){
+    else if (npwp.length > 25) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "NPWP maksimal 25 karakter, Silahkan periksa kembali ",
       });
     }
-    else if(!term){
+    else if (!term) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Data Termin kosong, Silahkan Lengkapi datanya ",
       });
     }
-    else if(!bussiness_ent){
+    else if (!bussiness_ent) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Data Badan Usaha kosong, Silahkan Lengkapi datanya ",
       });
     }
-    else if(!discount){
+    else if (!discount) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Data Diskon kosong, Silahkan Lengkapi datanya ",
       });
     }
-    else{
+    else {
 
-    const userData = new FormData();
+      const userData = new FormData();
 
-    userData.append("nama", name);
-    userData.append("badan_usaha", bussiness_ent);
-    userData.append("nomor_telepon", phone_number);
-    userData.append("email", email);
-    userData.append("npwp", npwp);
-    userData.append("term", term);
-    userData.append("diskon", discount);
-    userData.append("status", status);
+      userData.append("nama", name);
+      userData.append("badan_usaha", bussiness_ent);
+      userData.append("nomor_telepon", phone_number);
+      userData.append("email", email);
+      userData.append("npwp", npwp);
+      userData.append("term", term);
+      userData.append("diskon", discount);
+      userData.append("status", status);
 
-    dataSource.map((address) => {
-      console.log(address);
-      userData.append("alamat[]", address.address);
-      userData.append("kota[]", address.city);
-      userData.append("kecamatan[]", address.sub_district);
-      userData.append("kelurahan[]", address.urban_village);
-      userData.append("kode_pos[]", address.postal_code);
-    });
-
-    // for (var pair of userData.entries()) {
-    //   console.log(pair[0] + ", " + pair[1]);
-    // }
-
-    axios({
-      method: "post",
-      url: `${Url}/customers`,
-      data: userData,
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    })
-      .then(function (res) {
-        //handle success
-        console.log(res);
-        Swal.fire(
-          "Berhasil Ditambahkan",
-          `${getCustomer} Masuk dalam list`,
-          "success"
-        );
-        navigate("/pelanggan");
-      })
-      .catch((err) => {
-        if (err.response) {
-          console.log("err.response ", err.response);
-          Swal.fire({
-            icon: "error",
-            title: "Oops...",
-            text: err.response.data.error.nama,
-          });
-        } else if (err.request) {
-          console.log("err.request ", err.request);
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        } else if (err.message) {
-          // do something other than the other two
-          Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        }
+      dataSource.map((address) => {
+        console.log(address);
+        userData.append("alamat[]", address.address);
+        userData.append("kota[]", address.city);
+        userData.append("kecamatan[]", address.sub_district);
+        userData.append("kelurahan[]", address.urban_village);
+        userData.append("kode_pos[]", address.postal_code);
       });
-  }};
+
+      // for (var pair of userData.entries()) {
+      //   console.log(pair[0] + ", " + pair[1]);
+      // }
+
+      axios({
+        method: "post",
+        url: `${Url}/customers`,
+        data: userData,
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${auth.token}`,
+        },
+      })
+        .then(function (res) {
+          //handle success
+          console.log(res);
+          Swal.fire(
+            "Berhasil Ditambahkan",
+            `${getCustomer} Masuk dalam list`,
+            "success"
+          );
+          navigate("/pelanggan");
+        })
+        .catch((err) => {
+          if (err.response) {
+            console.log("err.response ", err.response);
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: err.response.data.error.nama,
+            });
+          } else if (err.request) {
+            console.log("err.request ", err.request);
+            Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+          } else if (err.message) {
+            // do something other than the other two
+            Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+          }
+        });
+    }
+  };
 
   useEffect(() => {
     axios
@@ -387,6 +388,22 @@ const BuatPelanggan = () => {
 
   const handleSingleChange = (e) => {
     setBussiness_ent(e.value);
+  };
+
+  const optionsStatus = [
+    {
+      label: 'Aktif',
+      value: 'Active',
+    },
+    {
+      label: 'Nonaktif',
+      value: 'Inactive',
+    },
+  ];
+
+  const onChange4 = ({ target: { value } }) => {
+    // console.log('radio4 checked', value);
+    setStatus(value);
   };
 
   return (
@@ -507,13 +524,20 @@ const BuatPelanggan = () => {
         <div className="row mb-3">
           <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
           <div className="col-sm-7">
-            <Switch defaultChecked={checked} onChange={onChange} />
+            <Radio.Group
+              options={optionsStatus}
+              onChange={onChange4}
+              value={status}
+              optionType="button"
+              buttonStyle="solid"
+            />
+            {/* <Switch defaultChecked={checked} onChange={onChange} />
             <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
               {
                 checked ? "Aktif"
                   : "Nonaktif"
               }
-            </label>
+            </label> */}
           </div>
         </div>
       </PageHeader>
@@ -534,6 +558,7 @@ const BuatPelanggan = () => {
         ]}
       >
         <Table
+          size="small"
           components={components}
           rowClassName={() => 'editable-row'}
           bordered

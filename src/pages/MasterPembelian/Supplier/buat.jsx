@@ -5,10 +5,11 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
-import { Button, Form, Input, Popconfirm, Switch, Table } from 'antd';
+import { Button, Form, Input, Popconfirm, Radio, Switch, Table } from 'antd';
 import { useSelector } from "react-redux";
 import { DeleteOutlined, PlusOutlined, SendOutlined } from "@ant-design/icons";
 import { PageHeader } from 'antd';
+import ReactSelect from "react-select";
 
 const EditableContext = React.createContext(null);
 
@@ -227,6 +228,27 @@ const BuatSupplier = () => {
 
   const [getSupplier, setGetSupplier] = useState();
 
+  // const [loadings, setLoadings] = useState([]);
+  // const enterLoading = (index) => {
+  //   setLoadings((prevLoadings) => {
+  //     const newLoadings = [...prevLoadings];
+  //     newLoadings[index] = true;
+  //     return newLoadings;
+  //   });
+  //   setTimeout(() => {
+  //     setLoadings((prevLoadings) => {
+  //       const newLoadings = [...prevLoadings];
+  //       newLoadings[index] = false;
+  //       return newLoadings;
+  //     });
+  //     handleSubmit()
+  //     setName("")
+  //     setPhone_number("")
+  //     setEmail("")
+  //     setNpwp("")
+  //   }, 2000);
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -265,16 +287,14 @@ const BuatSupplier = () => {
         text: "Nomor telepon tidak lebih dari 20 karakter, Silahkan periksa kembali datanya ",
       });
     }
-    // else if (!address) {
-    //   Swal.fire({
-    //     icon: "error",
-    //     title: "Oops...",
-    //     text: "Data Alamat kosong, Silahkan Lengkapi datanya ",
-    //   });
-    // }
+    else if (!dataSource) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Data Alamat kosong, Silahkan Lengkapi datanya ",
+      });
+    }
     else {
-
-
       const userData = new FormData();
       userData.append("nama", name);
       userData.append("badan_usaha", bussiness_ent);
@@ -354,6 +374,41 @@ const BuatSupplier = () => {
       });
   }, []);
 
+  const optionsBussiness = [
+    {
+      label: "PT",
+      value: "PT"
+    },
+    {
+      label: "CV",
+      value: "CV"
+    },
+    {
+      label: "Lainnya...",
+      value: "Lainnya..."
+    }
+  ];
+
+  const handleSingleChange = (e) => {
+    setBussiness_ent(e.value);
+  };
+
+  const optionsStatus = [
+    {
+      label: 'Aktif',
+      value: 'Active',
+    },
+    {
+      label: 'Nonaktif',
+      value: 'Inactive',
+    },
+  ];
+
+  const onChange4 = ({ target: { value } }) => {
+    // console.log('radio4 checked', value);
+    setStatus(value);
+  };
+
   return (
     <>
       <PageHeader
@@ -417,6 +472,21 @@ const BuatSupplier = () => {
         </div>
         <div className="row mb-3">
           <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+            Badan Usaha
+          </label>
+          <div className="col-sm-10">
+            <ReactSelect
+              className="basic-single"
+              placeholder="Pilih Badan Usaha..."
+              classNamePrefix="select"
+              isSearchable
+              onChange={handleSingleChange}
+              options={optionsBussiness}
+            />
+          </div>
+        </div>
+        <div className="row mb-3">
+          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
             NPWP
           </label>
           <div className="col-sm-10">
@@ -426,29 +496,6 @@ const BuatSupplier = () => {
               id="inputNama3"
               onChange={(e) => setNpwp(e.target.value)}
             />
-          </div>
-        </div>
-        <div className="row mb-3">
-          <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
-            Badan Usaha
-          </label>
-          <div className="col-sm-10">
-            <select
-              onChange={(e) => setBussiness_ent(e.target.value)}
-              id="bussinessSelect"
-              className="form-select"
-            >
-              <option>Pilih Badan Usaha</option>
-              <option value="PT" checked={bussiness_ent === "PT"}>
-                PT
-              </option>
-              <option value="CV" checked={bussiness_ent === "CV"}>
-                CV
-              </option>
-              <option value="Lainnya" checked={bussiness_ent === "Lainnya.."}>
-                Lainnya..
-              </option>
-            </select>
           </div>
         </div>
         <div className="row mb-3">
@@ -465,24 +512,29 @@ const BuatSupplier = () => {
               <option value="Lokal" checked={grup === "Lokal"}>
                 Lokal
               </option>
-              <option value="Impor" checked={grup === "Import"}>
-                Import
+              <option value="Impor" checked={grup === "Impor"}>
+                Impor
               </option>
-
             </select>
           </div>
         </div>
-
         <div className="row mb-3">
           <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
           <div className="col-sm-7">
-            <Switch defaultChecked={checked} onChange={onChange} />
+            <Radio.Group
+              options={optionsStatus}
+              onChange={onChange4}
+              value={status}
+              optionType="button"
+              buttonStyle="solid"
+            />
+            {/* <Switch defaultChecked={checked} onChange={onChange} />
             <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
               {
                 checked ? "Aktif"
                   : "Nonaktif"
               }
-            </label>
+            </label> */}
           </div>
         </div>
       </PageHeader>
@@ -503,6 +555,7 @@ const BuatSupplier = () => {
         ]}
       >
         <Table
+          size="small"
           components={components}
           rowClassName={() => 'editable-row'}
           bordered
@@ -510,6 +563,14 @@ const BuatSupplier = () => {
           columns={columns}
         />
         <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2">
+          {/* <Button
+            type="primary"
+            icon={<SendOutlined />}
+            loading={loadings[1]}
+            onClick={() => enterLoading(1)}
+          >
+            Submit
+          </Button> */}
           <Button
             type="primary"
             icon={<SendOutlined />}

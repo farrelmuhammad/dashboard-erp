@@ -17,7 +17,7 @@ const SupplierTable = () => {
   const searchInput = useRef(null);
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [dataTampil, setDataTampil] = useState([]);
 
   const { id } = useParams();
@@ -114,7 +114,7 @@ const SupplierTable = () => {
       ...getColumnSearchProps('code'),
       sorter: true,
       sortDirections: ['descend', 'ascend'],
-      
+
     },
     {
       title: 'Nama Pemasok',
@@ -172,7 +172,7 @@ const SupplierTable = () => {
               size='small'
               type="danger"
               icon={<DeleteOutlined />}
-              onClick={() => deleteSuppliers(record.id)}
+              onClick={() => deleteSuppliers(record.id, record.code)}
             />
           </Space>
         </>
@@ -194,6 +194,7 @@ const SupplierTable = () => {
       })
       .then(res => {
         const getData = res.data.data
+        setIsLoading(false);
         setSuppliers(getData)
 
         let tmp = []
@@ -202,14 +203,14 @@ const SupplierTable = () => {
             id: getData[i].id,
             can: getData[i].can,
             code: getData[i].code,
-            date:getData[i].date,
+            date: getData[i].date,
             phone_number: getData[i].phone_number ? getData[i].phone_number : <div>-</div>,
             // customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
             // total : getData[i].total,
             // type : getData[i].type,
-            status : getData[i].status,
-            
-            name:getData[i].name,
+            status: getData[i].status,
+
+            name: getData[i].name,
             // _group:getData[i]._group,
             // category:getData[i].category.name,
             // department : getData[i].department.name ,
@@ -232,30 +233,50 @@ const SupplierTable = () => {
       })
   };
 
-  const deleteSuppliers = async (id) => {
-    await axios.delete(`${Url}/suppliers/${id}`, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    });
-    getSuppliers();
-    Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+  const deleteSuppliers = async (id, code) => {
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Data akan dihapus",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    })
+      .then((result) => {
+        if (result.isConfirmed) {
+          axios.delete(`${Url}/suppliers/${id}`, {
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          })
+            .then((res) => {
+              Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+              getSuppliers();
+            })
+            .catch((err) => {
+              // console.log(res);
+              Swal.fire("Tidak Bisa Dihapus", `${code} Sudah Diambil`, "error");
+              getSuppliers();
+            })
+        }
+      })
   };
 
   return (
-   
-      <Table
-        size="small"
-        loading={isLoading}
-        columns={columns}
-        pagination={{ pageSize: 10 }}
-        dataSource={dataTampil}
-        scroll={{
-          y: 295,
-        }}
-      />
-  
+
+    <Table
+      size="small"
+      loading={isLoading}
+      columns={columns}
+      pagination={{ pageSize: 10 }}
+      dataSource={dataTampil}
+      scroll={{
+        y: 295,
+      }}
+    />
+
   );
 }
 
