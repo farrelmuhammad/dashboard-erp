@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Modal, PageHeader, Popconfirm, Select, Space, Table, Tag } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Modal, PageHeader, Popconfirm, Select, Skeleton, Space, Table, Tag } from 'antd'
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
@@ -528,11 +528,20 @@ const EditGoodsRequest = () => {
                 }
             });
     };
+
     if (loading) {
         return (
-            <div></div>
+            <>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+            </>
         )
     }
+
     return (
         <>
             <PageHeader

@@ -274,7 +274,7 @@ const App = () => {
       </Menu.Item>
       <Menu.Item key="46">
         <Link to="/goodstransfer" />
-        Transfer Gudang
+        Transfer Barang
       </Menu.Item>
       <Menu.Item key="47">
         <Link to="/tallytransfer" />
@@ -736,7 +736,7 @@ const App = () => {
       </Menu.Item>
       <Menu.Item key="46">
         <Link to="/goodstransfer" />
-        Transfer Gudang
+        Transfer Barang
       </Menu.Item>
 
       <Menu.Item key="48">
