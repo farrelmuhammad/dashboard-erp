@@ -238,7 +238,7 @@ const App = () => {
       </Menu.Item>
       <Menu.Item key="38">
         <Link to="/pembayaranpembelian" />
-        Pelunasan Pembelian
+        Pembayaran Pembelian
       </Menu.Item>
       <Menu.Item key="39">
         <Link to="/pib" />
@@ -716,7 +716,7 @@ const App = () => {
       </Menu.Item>
       <Menu.Item key="38">
         <Link to="/pembayaranpembelian" />
-        Pelunasan Pembelian
+        Pembayaran Pembelian
       </Menu.Item>
 
       <Menu.Item key="40">
