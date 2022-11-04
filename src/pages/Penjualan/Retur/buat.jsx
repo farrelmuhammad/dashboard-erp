@@ -135,7 +135,7 @@ const BuatRetur = () => {
 
     const [pilihanDiskon, setPilihanDiskon] = useState('');
     const [jumlahDiskon, setJumlahDiskon] = useState([]);
-    const [fakturId, setFakturId] = useState('')
+    const [fakturId, setFakturId] = useState()
     const [selectedFaktur, setSelectedFaktur] = useState()
 
     function klikEnter(event) {
@@ -189,6 +189,7 @@ const BuatRetur = () => {
             }
 
             setGetDataFaktur(tmp)
+            //console.log(getDataFaktur)
 
         }
         );
@@ -205,27 +206,23 @@ const BuatRetur = () => {
 
     const handleChangeFaktur = (value) => {
 
-        if (!value) {
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Faktur kosong, Silahkan Lengkapi datanya ",
-            });
-        }
-        else {
+     
 
             // console.log(value)
             setSelectedFaktur(value);
             setChecked(value.info.tax_included)
             console.log(value)
             setFakturId(value.value);
+            //console.log(value.info.id)
+            console.log(value.value)
             setTampilPilihProduk(true)
-        }
+     
     };
 
     // produkFaktur 
     const [produkFaktur, setProdukFaktur] = useState([])
     const [mataUang, setMataUang] = useState("Rp ")
+    
     useEffect(() => {
         axios.get(`${Url}/sales_returns_available_products?id_faktur_penjualan=${fakturId}`, {
             headers: {
@@ -236,6 +233,7 @@ const BuatRetur = () => {
             let tmp = []
             let data = res.data
             setProdukFaktur(data)
+                console.log(produkFaktur)
         }
         );
     }, [fakturId])

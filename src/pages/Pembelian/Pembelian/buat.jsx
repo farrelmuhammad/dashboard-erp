@@ -571,8 +571,8 @@ const BuatPesananPembelian = () => {
         return <>
             {
                 namaMataUang === 'Rp' ?
-                    < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
-                    : < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                    < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                    : < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
             }
         </>
     }
@@ -747,15 +747,15 @@ const BuatPesananPembelian = () => {
                 text: "Data Grup kosong, Silahkan Lengkapi datanya ",
             });
         }
-        else if (grup == "Impor") {
-            if (!matauang) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Data Mata Uang kosong, Silahkan Lengkapi datanya ",
-                });
-            }
-        }
+        // else if (grup == "Impor") {
+        //     if (!matauang) {
+        //         Swal.fire({
+        //             icon: "error",
+        //             title: "Oops...",
+        //             text: "Data Mata Uang kosong, Silahkan Lengkapi datanya ",
+        //         });
+        //     }
+        // }
         else if (!supplier) {
             Swal.fire({
                 icon: "error",
@@ -777,7 +777,7 @@ const BuatPesananPembelian = () => {
         //         text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
         //       });
         // }
-        else if(!totalPpn){
+        else if(!totalPpn && grup=='Lokal'){
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
@@ -824,12 +824,12 @@ const BuatPesananPembelian = () => {
 
                     OrderData.append("persentase_diskon[]", 0);
                 }
-                // else if(pilihanDiskon[i]=="pilih"){
+                else {
 
-                //     OrderData.append("diskon_tetap[]", 0);
+                    OrderData.append("diskon_tetap[]", 0);
 
-                //     OrderData.append("persentase_diskon[]", 0);
-                // }
+                    OrderData.append("persentase_diskon[]", 0);
+                }
             });
             OrderData.append("termasuk_pajak", checked);
 
@@ -889,15 +889,15 @@ const BuatPesananPembelian = () => {
                 text: "Data Grup kosong, Silahkan Lengkapi datanya ",
             });
         }
-        else if (grup == "Impor") {
-            if (!matauang) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Data Mata Uang kosong, Silahkan Lengkapi datanya ",
-                });
-            }
-        }
+        // else if (grup == "Impor") {
+        //     if (!matauang) {
+        //         Swal.fire({
+        //             icon: "error",
+        //             title: "Oops...",
+        //             text: "Data Mata Uang kosong, Silahkan Lengkapi datanya ",
+        //         });
+        //     }
+        // }
         else if (!supplier) {
             Swal.fire({
                 icon: "error",
@@ -919,7 +919,7 @@ const BuatPesananPembelian = () => {
         //         text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
         //     });
         // }
-        else if (!totalPpn) {
+        else if (!totalPpn && grup == 'Lokal') {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
@@ -959,12 +959,12 @@ const BuatPesananPembelian = () => {
 
                     OrderData.append("persentase_diskon[]", 0);
                 }
-                // else if (pilihanDiskon[i]=="pilih"){
+                else {
 
-                //     OrderData.append("diskon_tetap[]", 0);
+                    OrderData.append("diskon_tetap[]", 0);
 
-                //     OrderData.append("persentase_diskon[]", 0);
-                // }
+                    OrderData.append("persentase_diskon[]", 0);
+                }
             });
             axios({
                 method: "post",
