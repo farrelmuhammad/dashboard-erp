@@ -115,8 +115,10 @@ const EditSupplier = () => {
   const [dataSource, setDataSource] = useState([]);
 
   const handleAdd = () => {
+    const idData = dataSource.map((data, i) => i)
+
     const newData = {
-      key: count,
+      key: idData.length + 1,
       id: '',
       address: '',
       urban_village: ``,
@@ -129,8 +131,8 @@ const EditSupplier = () => {
     setCount(count + 1);
   };
 
-  const handleDelete = (id) => {
-    const newData = dataSource.filter((item) => item.id !== id);
+  const handleDelete = (key) => {
+    const newData = dataSource.filter((item) => item.key !== key);
     setDataSource(newData);
   };
 
@@ -190,7 +192,7 @@ const EditSupplier = () => {
       width: '5%',
       render: (_, record) =>
         dataSource.length >= 1 ? (
-          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.id)}>
+          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
             <Button
               size='small'
               type="danger"
@@ -200,6 +202,43 @@ const EditSupplier = () => {
         ) : null,
     },
   ];
+
+  const keyAdd = () => {
+    let keyData = [];
+
+    for (let i = 0; i < dataSource.length; i++) {
+      keyData.push({
+        key: i + 1,
+        id: dataSource[i].id,
+        address: dataSource[i].address,
+        urban_village: dataSource[i].urban_village,
+        sub_district: dataSource[i].sub_district,
+        city: dataSource[i].city,
+        postal_code: dataSource[i].postal_code,
+      })
+      setDataSource(keyData)
+    }
+    // console.log(dataSource);
+  }
+
+  const [scrollY, setScrollY] = useState(0);
+
+  function logit() {
+    setScrollY(window.pageYOffset);
+    // console.log(new Date().getTime());
+  }
+
+  useEffect(() => {
+    function watchScroll() {
+      window.addEventListener("scroll", logit);
+      keyAdd()
+    }
+    watchScroll();
+    return () => {
+      window.removeEventListener("scroll", logit);
+      keyAdd()
+    };
+  });
 
   const columns = defaultColumns.map((col) => {
     if (!col.editable) {
@@ -332,7 +371,7 @@ const EditSupplier = () => {
   const options = [
     { value: 'PT', label: 'PT' },
     { value: 'CV', label: 'CV' },
-    { value: 'Lainnya...', label: 'Lainnya...' },
+    { value: 'Lainnya...', label: 'Lainnya' },
   ];
 
   const handleSingleChange = (e) => {

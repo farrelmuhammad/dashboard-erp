@@ -378,7 +378,6 @@ const CreateAdjustment = () => {
             }
         }
         let unikTmpCentang = [...new Set(tmpDataCentang)]
-        console.log(unikTmpCentang)
         setTmpCentang(unikTmpCentang)
         setGetDataProduct(tmpDataBaru)
         var updatedList = [...product];
@@ -402,11 +401,7 @@ const CreateAdjustment = () => {
         }
         setProduct(updatedList);
         setJumlah(tmpJumlah)
-
-
-        // for(let )
-        console.log(updatedList);
-
+        console.log(tmpDataBaru,"Cekk",updatedList)
     };
 
     const handleSubmit = async (e) => {

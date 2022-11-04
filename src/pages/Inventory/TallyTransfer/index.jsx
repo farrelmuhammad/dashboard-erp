@@ -32,7 +32,7 @@ const TallySheetPembelian = () => {
       <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
         <div className="row">
           <div className="col text-title text-start">
-            <h3 className="title fw-bold">Tally Transfer</h3>
+            <h3 className="title fw-bold">Daftar Tally Transfer</h3>
           </div>
           {userAccess?.map(d => {
             if (d.ability_name === "create-tax") {
@@ -57,7 +57,7 @@ const TallySheetPembelian = () => {
   } else {
     <div>
       <div className="text-title text-start">
-        <h3 className="title fw-bold">Tally Transfer</h3>
+        <h3 className="title fw-bold">Daftar Tally Transfer</h3>
       </div>
       <TallyTransferTable />
     </div>

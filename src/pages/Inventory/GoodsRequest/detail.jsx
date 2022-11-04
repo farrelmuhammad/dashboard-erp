@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Modal, PageHeader, Select, Skeleton, Space, Table, Tag } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
@@ -80,12 +80,12 @@ const EditableCell = ({
             >
                 {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
                 <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
-    //               formatter={value => `${value.replace('.',',')}`} 
-      decimalSeparator = {','}
-    onChange={value => {
-        value = parseFloat(value.toString().replace('.', ','))
-      }}
-      
+                    //               formatter={value => `${value.replace('.',',')}`} 
+                    decimalSeparator={','}
+                    onChange={value => {
+                        value = parseFloat(value.toString().replace('.', ','))
+                    }}
+
                 />
             </Form.Item>
         ) : (
@@ -287,7 +287,7 @@ const EditGoodsRequest = () => {
                 return {
                     props: {
                     },
-                    children: <div>{Number(text).toFixed(2).replace('.',',')}</div>
+                    children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
                 };
             }
         },
@@ -320,7 +320,7 @@ const EditGoodsRequest = () => {
         setProduct(newData);
         // console.log(index,item,newData)
         console.log(newData)
-      };
+    };
 
     const checkWarehouse = () => {
         // var updatedList = [...product];
@@ -375,8 +375,8 @@ const EditGoodsRequest = () => {
             updatedList.splice(product.indexOf(event.target.value), 1);
         }
         setProduct(updatedList);
-            // updatedList.map((p) => (console.log(p.product_id )));
-            // console.log(event.target.value.product_id)
+        // updatedList.map((p) => (console.log(p.product_id )));
+        // console.log(event.target.value.product_id)
     };
 
     const handleSubmit = async (e) => {
@@ -484,50 +484,58 @@ const EditGoodsRequest = () => {
                 }
             });
     };
+
     if (loading) {
         return (
-            <div></div>
+            <>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+            </>
         )
     }
+
     return (
         <>
-            <form className="p-3 mb-3 bg-body rounded">
-                <div className="p-3 mb-3">
-                    <div className="card" style={cardOutline}>
-                        <div className="card-header bg-white">
-                            <h6 className="title fw-bold">Detail Permintaan Barang</h6>
+            <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                onBack={() => window.history.back()}
+                title="Detail Permintaan Barang"
+            >
+                <div className="row">
+                    <div className="col-md-6">
+                        <div className="form-group row mb-1">
+                            <label for="code" className="col-sm-4 col-form-label">No</label>
+                            <div className="col-sm-8">
+                                <input type="text" className="form-control" id="code" disabled defaultValue={code} name="code" placeholder="Otomatis" readOnly />
+                            </div>
                         </div>
-                        <div className="card-body">
-                            <div className="row">
-                                <div className="col-md-6">
-                                    <div className="form-group row mb-1">
-                                        <label for="code" className="col-sm-4 col-form-label">No</label>
-                                        <div className="col-sm-8">
-                                            <input type="text" className="form-control" id="code" disabled defaultValue={code} name="code" placeholder="Otomatis" readOnly />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label for="date" className="col-sm-4 col-form-label">Tanggal</label>
-                                        <div className="col-sm-8">
-                                            <input type="date" className="form-control" id="date" disabled name="date" defaultValue={date} onChange={(e) => setDate(e.target.value)} />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label for="type" className="col-sm-4 col-form-label">Tipe</label>
-                                        <div className="col-sm-8">
-                                            <select onChange={e => setType(e.target.value)} id="type" disabled name="type" className="form-select">
-                                                <option>Pilih Tipe</option>
-                                                <option value="send" selected={type === "send"}>Kirim</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Asal</label>
-                                        <div className="col-sm-8">
-                                        <select disabled name="warehouse_source" className="form-select">
-                                                <option selected>{warehouseSourceName}</option>
-                                        </select>
-                                            {/* <AsyncSelect
+                        <div className="form-group row mb-1">
+                            <label for="date" className="col-sm-4 col-form-label">Tanggal</label>
+                            <div className="col-sm-8">
+                                <input type="date" className="form-control" id="date" disabled name="date" defaultValue={date} onChange={(e) => setDate(e.target.value)} />
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label for="type" className="col-sm-4 col-form-label">Tipe</label>
+                            <div className="col-sm-8">
+                                <select onChange={e => setType(e.target.value)} id="type" disabled name="type" className="form-select">
+                                    <option>Pilih Tipe</option>
+                                    <option value="send" selected={type === "send"}>Kirim</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Asal</label>
+                            <div className="col-sm-8">
+                                <select disabled name="warehouse_source" className="form-select">
+                                    <option selected>{warehouseSourceName}</option>
+                                </select>
+                                {/* <AsyncSelect
                                                 placeholder="Pilih Gudang Asal..."
                                                 cacheOptions
                                                 defaultOptions
@@ -539,30 +547,30 @@ const EditGoodsRequest = () => {
                                                 onChange={handleChangeWarehouseSource}
                                                 isDisabled
                                             /> */}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-6">
-                                    <div className="form-group row mb-1">
-                                        <label for="notes" className="col-sm-4 col-form-label">Catatan</label>
-                                        <div className="col-sm-8">
-                                            <textarea
-                                                className="form-control"
-                                                name="notes" id="notes"
-                                                rows="3"
-                                                defaultValue={notes}
-                                                onChange={(e) => setNotes(e.target.value)}
-                                                disabled
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Tujuan</label>
-                                        <div className="col-sm-8">
-                                          <select id="type" disabled name="type" className="form-select">
-                                                  <option selected>{warehouseDestinationName}</option>
-                                          </select>
-                                            {/* <AsyncSelect
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-md-6">
+                        <div className="form-group row mb-1">
+                            <label for="notes" className="col-sm-4 col-form-label">Catatan</label>
+                            <div className="col-sm-8">
+                                <textarea
+                                    className="form-control"
+                                    name="notes" id="notes"
+                                    rows="3"
+                                    defaultValue={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                    disabled
+                                />
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Tujuan</label>
+                            <div className="col-sm-8">
+                                <select id="type" disabled name="type" className="form-select">
+                                    <option selected>{warehouseDestinationName}</option>
+                                </select>
+                                {/* <AsyncSelect
                                                 placeholder="Pilih Gudang Tujuan..."
                                                 cacheOptions
                                                 defaultOptions
@@ -573,83 +581,81 @@ const EditGoodsRequest = () => {
                                                 loadOptions={loadOptionsWarehouse}
                                                 onChange={handleChangeWarehouseDestination}
                                             /> */}
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
-                                        <div className="col-sm-8">
-                                            {/* <h3 className="badge bg-danger text-center m-1">
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
+                            <div className="col-sm-8">
+                                {/* <h3 className="badge bg-danger text-center m-1">
                                                 {status}
                                             </h3> */}
-                                            {status === 'Submitted' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'Draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
-                                        </div>
-                                    </div>
-                                </div>
+                                {status === 'Submitted' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'Draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="p-3 mb-3">
-                    <div className="card" style={cardOutline}>
-                        <div className="card-header bg-white">
-                            <h6 className="title fw-bold">Daftar Produk</h6>
-                        </div>
-                        <div className="card-body">
-                            <div className="row">
-                                <div className="col text-end me-2">
-                                    <Modal
-                                        title="Tambah Produk"
-                                        centered
-                                        visible={modal2Visible}
-                                        onCancel={() => setModal2Visible(false)}
-                                        // footer={[
-                                        //     <Button
-                                        //         key="submit"
-                                        //         type="primary"
+            </PageHeader>
 
-                                        //     >
-                                        //         Tambah
-                                        //     </Button>,
-                                        // ]}
-                                        footer={null}
-                                    >
-                                        <div className="text-title text-start">
-                                            <div className="row">
-                                                <div className="col mb-3">
-                                                    <Search
-                                                        placeholder="Cari Produk..."
-                                                        style={{
-                                                            width: 400,
-                                                        }}
-                                                        onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                                    />
-                                                </div>
-                                                <Table
-                                                    columns={columnsModal}
-                                                    dataSource={getDataProduct}
-                                                    scroll={{
-                                                        y: 250,
-                                                    }}
-                                                    pagination={false}
-                                                    loading={isLoading}
-                                                    size="middle"
-                                                />
-                                            </div>
-                                        </div>
-                                    </Modal>
+            <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                title="Detail Produk"
+            >
+                <div className="row">
+                    <div className="col text-end me-2">
+                        <Modal
+                            title="Tambah Produk"
+                            centered
+                            visible={modal2Visible}
+                            onCancel={() => setModal2Visible(false)}
+                            // footer={[
+                            //     <Button
+                            //         key="submit"
+                            //         type="primary"
+
+                            //     >
+                            //         Tambah
+                            //     </Button>,
+                            // ]}
+                            footer={null}
+                        >
+                            <div className="text-title text-start">
+                                <div className="row">
+                                    <div className="col mb-3">
+                                        <Search
+                                            placeholder="Cari Produk..."
+                                            style={{
+                                                width: 400,
+                                            }}
+                                            onChange={(e) => setQuery(e.target.value.toLowerCase())}
+                                        />
+                                    </div>
+                                    <Table
+                                        columns={columnsModal}
+                                        dataSource={getDataProduct}
+                                        scroll={{
+                                            y: 250,
+                                        }}
+                                        pagination={false}
+                                        loading={isLoading}
+                                        size="middle"
+                                    />
                                 </div>
                             </div>
-                            <Table
-                                loading={isLoading}
-                                components={components}
-                                rowClassName={() => 'editable-row'}
-                                bordered
-                                pagination={false}
-                                columns={columns}
-                                dataSource={product}
-                                onChange={(e) => setProduct(e.target.value)}
-                            />
-                            {/* <Table
+                        </Modal>
+                    </div>
+                </div>
+                <Table
+                    loading={isLoading}
+                    components={components}
+                    rowClassName={() => 'editable-row'}
+                    bordered
+                    pagination={false}
+                    columns={columns}
+                    dataSource={product}
+                    onChange={(e) => setProduct(e.target.value)}
+                />
+                {/* <Table
                           components={components}
                           rowClassName={() => 'editable-row'}
                           bordered
@@ -658,10 +664,7 @@ const EditGoodsRequest = () => {
                           columns={columns}
                           onChange={(e) => setProduct(e.target.value)}
                       /> */}
-                        </div>
-                    </div>
-                </div>
-            </form>
+            </PageHeader>
         </>
     )
 }

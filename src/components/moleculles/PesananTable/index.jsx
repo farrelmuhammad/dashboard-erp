@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import 'antd/dist/antd.css';
-import { CloseOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, CloseOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Tag , Tooltip} from 'antd';
 import axios from 'axios';
 import Url from '../../../Config';
@@ -10,6 +10,9 @@ import { Link, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { formatRupiah } from '../../../utils/helper';
 import CurrencyFormat from 'react-currency-format';
+import { CheckCircleOutline } from '@mui/icons-material';
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
+import { get } from 'lodash';
 
 const PesananTable = () => {
     const [searchText, setSearchText] = useState('');
@@ -36,6 +39,76 @@ const PesananTable = () => {
     //     Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
     // };
 
+
+    const [tableParams, setTableParams] = useState({
+        pagination: {
+          current: 1,
+          pageSize: 10,
+        },
+      });
+    
+      const getParams = (params) => ({
+        results: params.pagination?.pageSize,
+        page: params.pagination?.current,
+        ...params,
+      });
+    
+      const fetchData = () => {
+        setIsLoading(true);
+        console.log(qs.stringify(getParams(tableParams)))
+        fetch(`${Url}/sales_orders?${qs.stringify(getParams(tableParams))}`, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }).then((res) => res.json()
+        )
+          .then(({ data }) => {
+             console.log(data)
+            // setGetDataTally(data);
+            // agar bisa di search 
+            let tmp = []
+            for (let i = 0; i < data.length; i++) {
+              tmp.push({
+                // id: data[i].id,
+                // can: data[i].can,
+                // code: data[i].code,
+                // customer_name: data[i].customer_name ? data[i].customer_name : '',
+                // supplier_name: data[i].supplier_name ? data[i].supplier_name : '',
+                // date: data[i].date,
+                // status: data[i].status,
+                // warehouse_name: data[i].warehouse.name
+
+
+                id: data[i].id,
+                can: data[i].can,
+                date:data[i].date,
+                code: data[i].code,
+                customer:data[i].customer.name,
+                status:data[i].status,
+                total: data[i].total,
+
+              })
+            }
+            setGetDataSO(tmp)
+            console.log(tmp)
+    
+            setIsLoading(false);
+            setTableParams({
+              ...tableParams,
+              pagination: {
+                ...tableParams.pagination,
+                total: 200,
+              },
+            });
+          });
+      };
+    
+    
+      useEffect(() => {
+        fetchData();
+      }, [JSON.stringify(tableParams)]);
+    
     
     const deleteSalesOrder = async (id, code) => {
         Swal.fire({
@@ -61,6 +134,33 @@ const PesananTable = () => {
         })
     
       };
+
+      const forceDoneSalesOrder = async (id, code) => {
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Status akan diubah menjadi done",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios({
+                    method: "patch",
+                    url: `${Url}/sales_orders/force_done/${id}`,
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${auth.token}`,
+                    },
+                })
+
+                getSalesOrder()
+                Swal.fire("Berhasil Diubah!", `${code} Done`, "success");
+
+            }
+        })
+    }
 
       const cancelSalesOrder = async (id, code) => {
         Swal.fire({
@@ -298,12 +398,23 @@ const PesananTable = () => {
             })
     }
 
+    
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
     const columns = [
         {
             title: 'Tanggal',
             dataIndex: 'date',
             key: 'date',
             width: '15%',
+            sorter: (a, b) => a.date.length - b.date.length,
+            sortDirections: ['descend', 'ascend'],
             ...getColumnSearchProps('date'),
         },
         {
@@ -312,8 +423,9 @@ const PesananTable = () => {
             key: 'code',
             width: '20%',
             ...getColumnSearchProps('code'),
-            // sorter: true,
-            // sortDirections: ['descend', 'ascend'],
+            //sorter:( a,b ) => a.code.length - b.code.length,
+             sorter: true,
+             sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Customer',
@@ -322,7 +434,8 @@ const PesananTable = () => {
             ...getColumnSearchProps('customer'),
             // render: (customer) => customer.name
             // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
-            // sortDirections: ['descend', 'ascend'],
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Total',
@@ -330,9 +443,11 @@ const PesananTable = () => {
             key: 'total',
             width: '20%',
             align:'center',
+            sorter:(a,b) => a.total - b.total,
+            sortDirections:['descend','ascend'],
             ...getColumnSearchProps('total'),
             render: (text) => 
-            < CurrencyFormat  className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.' , ',')} key="diskon" />,
+            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.' , ',')} key="diskon" />,
         },
         {
             title: 'Status',
@@ -343,10 +458,11 @@ const PesananTable = () => {
             render: (_, { status }) => (
                 <>
                    
-                     {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="volcano">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Processed' ? <Tag color="orange">{status}</Tag> : status == 'Cancelled' ? <Tag color="red">{status}</Tag> : null}
+                     {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="volcano">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Processed' ? <Tag color="purple">{status}</Tag> : status == 'Cancelled' ? <Tag color="red">{status}</Tag> : null}
                 </>
             ),
             ...getColumnSearchProps('status'),
+            sorter:(a,b) => a.status.length - b.status.length
         },
         {
             title: 'Actions',
@@ -402,6 +518,18 @@ const PesananTable = () => {
                       />
                       </Tooltip>
                 ):null}
+
+                {record.can['force_done-sales_order'] ? (
+                        <Tooltip title="Force Done" placement="bottom">
+                        <Button
+                            size='small'
+                            type="success"
+                            icon={<CheckCircleOutlined />}
+                            onClick={() => forceDoneSalesOrder(record.id, record.code)}
+                        />
+                        </Tooltip>
+
+                ) : null}
                    
                 </Space>
            
@@ -533,8 +661,9 @@ const PesananTable = () => {
         size="small"
         loading={isLoading}
         columns={columns}
-        pagination={{ pageSize: 10 }}
-        dataSource={dataTampil}
+        onChange={handleTableChange}
+        //pagination={{ pageSize: 10 }}
+        dataSource={getDataSO}
         scroll={{
             y: 240,
         }}

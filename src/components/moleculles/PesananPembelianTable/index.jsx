@@ -383,13 +383,19 @@ const PesananPembelianTable = () => {
                     {
                         
                         record.can['force_done-purchase_order'] ? (
-                            <Link to={`/pesananpembelian/edit/${record.id}`}>
-                                <Button
-                                    size='small'
-                                    type="success"
-                                    icon={<EditOutlined />}
-                                />
-                            </Link>
+                            <Button
+                            size='small'
+                            type="success"
+                            icon={<CheckCircleOutlined />}
+                            onClick={() => forceDonePurchaseOrder(record.id, record.code)}
+                        />
+                                // <Button
+                                //     size='small'
+                                //     type="success"
+                                //     icon={<CheckCircleOutlined />}
+                                //     oncClick = {() => forceDonePurchaseOrder(record.id, record.code)}
+                                // />
+                            
                         ) : null
                     }
                     

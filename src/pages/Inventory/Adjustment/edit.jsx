@@ -5,8 +5,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd'
-import { PlusOutlined,ArrowLeftOutlined } from '@ant-design/icons'
+import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Skeleton, Space, Table, Tag } from 'antd'
+import { PlusOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
@@ -80,11 +80,11 @@ const EditableCell = ({
                 ]}
             >
                 <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
-                    decimalSeparator = {','}
+                    decimalSeparator={','}
                     onChange={value => {
                         value = parseFloat(value.toString().replace('.', ','))
-                      }}
-                      
+                    }}
+
                 />
             </Form.Item>
         ) : (
@@ -133,9 +133,9 @@ const EditAdjustment = () => {
     }
 
     useEffect(() => {
-      getAdjustmentById()
+        getAdjustmentById()
     }, [])
-  
+
     const getAdjustmentById = async (e) => {
         await axios.get(`${Url}/adjustments?id=${id}`, {
             headers: {
@@ -203,8 +203,8 @@ const EditAdjustment = () => {
                 }
             })
             let tmp = []
-                for (let x = 0; x < product.length; x++) {
-                    for (let i = 0; i < res.data.length; i++) {
+            for (let x = 0; x < product.length; x++) {
+                for (let i = 0; i < res.data.length; i++) {
 
                     if (res.data[i].product_id == product[x].product_id) {
                         tmp.push({
@@ -225,7 +225,7 @@ const EditAdjustment = () => {
             setGetDataProduct(tmp)
         };
         if (query.length >= 0) getProduct();
-    }, [query,warehouse_id,getAdjustment])
+    }, [query, warehouse_id, getAdjustment])
 
     // Column for modal input product
     const columnsModal = [
@@ -267,10 +267,10 @@ const EditAdjustment = () => {
             dataIndex: 'qty_before',
             width: '30%',
             align: 'center',
-            render: (text) => {
-                return <>{text.toString().replace('.', ',')}</>
+            // render: (text) => {
+            //     return <>{text.toString().replace('.', ',')}</>
 
-            }
+            // }
         },
         {
             title: 'Qty saat ini',
@@ -314,10 +314,10 @@ const EditAdjustment = () => {
 
     const convertToRupiahTabel = (angka) => {
         return <>
-        {
-            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} />
-            
-        }
+            {
+                < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} />
+
+            }
         </>
     }
 
@@ -376,15 +376,15 @@ const EditAdjustment = () => {
             }
             else {
                 let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.product_id);
-                if(index>=0){
+                if (index >= 0) {
                     tmpDataCentang.splice(index, 1)
                 }
                 // tmpDataCentang.push('')
             }
         }
         let unikTmpCentang = [...new Set(tmpDataCentang)]
-        console.log(unikTmpCentang)
         setTmpCentang(unikTmpCentang)
+        setGetDataProduct(tmpDataBaru)
         setGetDataProduct(tmpDataBaru)
         var updatedList = [...product];
         if (tmpDataBaru[index].statusCek) {
@@ -407,11 +407,6 @@ const EditAdjustment = () => {
         }
         setProduct(updatedList);
         setJumlah(tmpJumlah)
-
-
-        // for(let )
-        console.log(updatedList);
-
     };
 
     const handleSubmit = async (e) => {
@@ -524,7 +519,14 @@ const EditAdjustment = () => {
     };
     if (loading) {
         return (
-            <div></div>
+            <>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+            </>
         )
     }
     return (
@@ -535,7 +537,7 @@ const EditAdjustment = () => {
                         <div className="card-header bg-white">
                             <h6 className="title fw-bold">
                                 <Button
-                                    style={{border: 'none'}}
+                                    style={{ border: 'none' }}
                                     icon={<ArrowLeftOutlined />}
                                     onClick={() => navigate(-1)}
                                 />
@@ -578,7 +580,7 @@ const EditAdjustment = () => {
                                     <div className="form-group row mb-1">
                                         <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
                                         <div className="col-sm-8">
-                                        {status === 'Submitted' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'Draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
+                                            {status === 'Submitted' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'Draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
                                         </div>
                                     </div>
                                     <div className="form-group row mb-1">

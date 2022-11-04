@@ -143,17 +143,17 @@ const BuatBiayaImport = () => {
 
     useEffect(() => {
         
-      axios.get(`${Url}/chart_of_accounts?induk=0`, {
+      axios.get(`${Url}/select_chart_of_accounts?anak_terakhir=1&kode_kategori[]=111`, {
           headers: {
               Accept: "application/json",
               Authorization: `Bearer ${auth.token}`,
           },
       }).then((res) => {
           let tmp = []
-          for (let i = 0; i < res.data.data.length; i++) {
+          for (let i = 0; i < res.data.length; i++) {
               tmp.push({
-                  label: res.data.data[i].name,
-                  value: res.data.data[i].id
+                  label: res.data[i].name,
+                  value: res.data[i].id
               })
           }
           //console.log(res)

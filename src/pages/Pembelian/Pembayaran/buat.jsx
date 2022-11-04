@@ -109,12 +109,12 @@ const BuatPembayaranPembelian = () => {
     };
     const loadOptionsBank = (inputValue) => {
 
-        return axios.get(`${Url}/chart_of_accounts?induk=0&kode_kategori[]=111&nama=${inputValue}`, {
+        return axios.get(`${Url}/select_chart_of_accounts?anak_terakhir=1&kode_kategori[]=111&nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.data.data);
+        }).then((res) => res.data);
     };
 
 

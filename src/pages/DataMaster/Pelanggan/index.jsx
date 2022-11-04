@@ -57,6 +57,7 @@ const Pelanggan = () => {
     <>
       <PageHeader
         ghost={false}
+        className="bg-body rounded mb-2"
         title="Daftar Produk"
       >
         <PelangganTable />

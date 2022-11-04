@@ -6,7 +6,7 @@ import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
 import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, Typography, PageHeader } from 'antd'
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
+import { DeleteOutlined, PlusOutlined , SendOutlined} from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
@@ -14,6 +14,7 @@ import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
 // import { formatRupiah } from '../../../utils/helper';
 import CurrencyFormat from 'react-currency-format';
+import ReactSelect from 'react-select/async';
 
 const { Text } = Typography;
 
@@ -116,6 +117,7 @@ const BuatPelunasan = () => {
     const [getCode, setGetCode] = useState('');
     const navigate = useNavigate();
     const auth = useSelector(state => state.auth);
+    const [dataCOA, setDataCOA] = useState([]);
 
     const [getDataProduct, setGetDataProduct] = useState();
     const [isLoading, setIsLoading] = useState(false);
@@ -134,6 +136,46 @@ const BuatPelunasan = () => {
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [selectedValue2, setSelectedCOA] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
+
+
+    const [loadings, setLoadings] = useState([]);
+    const [loadings2, setLoadings2] = useState([]);
+
+    const enterLoading = (index) => {
+      setLoadings((prevLoadings) => {
+        const newLoadings = [...prevLoadings];
+        newLoadings[index] = true;
+        return newLoadings;
+      });
+      setTimeout(() => {
+        setLoadings((prevLoadings) => {
+          const newLoadings = [...prevLoadings];
+          newLoadings[index] = false;
+          return newLoadings;
+        });
+        handleSubmit()
+        // setName('');
+        // setDescription('');
+      }, 2000);
+    };
+
+    const enterLoading2 = (index) => {
+        setLoadings2((prevLoadings) => {
+          const newLoadings = [...prevLoadings];
+          newLoadings[index] = true;
+          return newLoadings;
+        });
+        setTimeout(() => {
+          setLoadings((prevLoadings) => {
+            const newLoadings = [...prevLoadings];
+            newLoadings[index] = false;
+            return newLoadings;
+          });
+          handleDraft()
+          // setName('');
+          // setDescription('');
+        }, 2000);
+      };
 
     const handleChangeCustomer = (value) => {
         console.log(value)
@@ -170,13 +212,44 @@ const BuatPelunasan = () => {
     };
     // load options using API call
     const loadOptionsCOA = (inputValue) => {
-        return axios.get(`${Url}/chart_of_accounts?induk=0&kode_kategori[]=111&nama=${inputValue}`, {
+        return axios.get(`${Url}/select_chart_of_accounts?anak_terakhir=1&kode_kategori[]=111&nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.data.data);
+        }).then((res) => res.data);
     };
+
+    
+  const coaGrup = dataCOA.map((d) => {
+    return {
+      label: d.name,
+      value: d.code,
+    };
+  });
+
+
+    useEffect(() => {
+        axios.get(`${Url}/select_chart_of_accounts?anak_terakhir=1&kode_kategori[]=111`, {
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${auth.token}`
+            }
+        }).then((res) => {
+            
+            let tmp = []
+            for (let i = 0; i < res.data.length; i++) {
+                    tmp.push({
+                        label: res.data[i].name,
+                        value: res.data[i].id
+                    });
+              
+            }
+             
+            setDataCOA(tmp)
+            console.log(dataCOA)
+        })
+    }, [])
 
     useEffect(() => {
         axios.get(`${Url}/sales_invoice_payments_available_sales_invoices?penerima=${customer}`, {
@@ -473,7 +546,7 @@ const BuatPelunasan = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        //e.preventDefault();
 
         if (!date) {
             Swal.fire({
@@ -554,7 +627,7 @@ const BuatPelunasan = () => {
     };
 
     const handleDraft = async (e) => {
-        e.preventDefault();
+        //e.preventDefault();
 
         if (!date) {
             Swal.fire({
@@ -782,22 +855,44 @@ const BuatPelunasan = () => {
                     }}
                 />
                 <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2" role="group" aria-label="Basic mixed styles example">
-                    <button
+                    {/* <button
                         type="button"
                         className="btn btn-success rounded m-1"
                         value="Draft"
                         onClick={handleDraft}
                     >
                         Simpan
-                    </button>
-                    <button
+                    </button> */}
+                    <Button
+                    type="button"
+                    className="btn btn-success rounded m-1 justify-content"
+                    value="Draft"
+                    // icon={<SendOutlined />}
+                    loading={loadings2[1]}
+                    onClick={() => enterLoading2(1)}
+                    style={{paddingBottom:"2px"}}
+                    >Simpan
+                    </Button>
+
+                    {/* <button
                         type="button"
                         className="btn btn-primary rounded m-1"
                         value="Submitted"
                         onClick={handleSubmit}
                     >
                         Submit
-                    </button>
+                    </button> */}
+
+                    <Button
+                    type="button"
+                    className="btn btn-primary rounded m-1 justify-content"
+                    value="Submitted"
+                    // icon={<SendOutlined />}
+                    loading={loadings[1]}
+                    onClick={() => enterLoading(1)}
+                    >
+                    Submit
+                    </Button>
                 </div>
             </PageHeader>
         </>

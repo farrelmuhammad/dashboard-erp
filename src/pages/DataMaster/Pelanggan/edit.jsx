@@ -186,6 +186,7 @@ const EditPelanggan = () => {
 
   useEffect(() => {
     getCustomerById()
+
   }, []);
 
   const getCustomerById = async () => {
@@ -208,17 +209,56 @@ const EditPelanggan = () => {
         setDiscount(getData.discount || "");
         setStatus(getData.status);
         setDataSource(getData.customer_addresses)
-        console.log(getData);
-        setLoading(false)
       })
       .catch((err) => {
         // Jika Gagal
         console.log(err);
-      });
+      })
+      .finally((res) => {
+        setLoading(false)
+      })
   }
 
-  const handleDelete = (id) => {
-    const newData = dataSource.filter((item) => item.id !== id);
+  const keyAdd = () => {
+    let keyData = [];
+
+    for (let i = 0; i < dataSource.length; i++) {
+      keyData.push({
+        key: i + 1,
+        id: dataSource[i].id,
+        address: dataSource[i].address,
+        urban_village: dataSource[i].urban_village,
+        sub_district: dataSource[i].sub_district,
+        city: dataSource[i].city,
+        postal_code: dataSource[i].postal_code,
+      })
+      setDataSource(keyData)
+    }
+    // console.log(dataSource);
+  }
+
+  const [scrollY, setScrollY] = useState(0);
+
+  function logit() {
+    setScrollY(window.pageYOffset);
+    // console.log(new Date().getTime());
+  }
+
+  useEffect(() => {
+    function watchScroll() {
+      window.addEventListener("scroll", logit);
+      keyAdd()
+    }
+    watchScroll();
+    return () => {
+      window.removeEventListener("scroll", logit);
+      keyAdd()
+    };
+  });
+
+  const handleDelete = (key) => {
+    const newData = dataSource.filter((item) => item.key !== key);
+    console.log(newData)
     setDataSource(newData);
   };
 
@@ -263,11 +303,13 @@ const EditPelanggan = () => {
       width: '5%',
       render: (_, record) =>
         dataSource.length >= 1 ? (
-          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.id)}>
+          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
             <Button
               size='small'
               type="danger"
               icon={<DeleteOutlined />}
+            // onClick={() => keyAdd(record.key)}
+            // onClick={keyAdd}
             />
           </Popconfirm>
         ) : null,
@@ -275,13 +317,10 @@ const EditPelanggan = () => {
   ];
 
   const handleAdd = () => {
-    let idAddress = []
-    for (let i = 0; i < dataSource.length; i++) {
-      // console.log(dataSource[i].id + 1);
-      console.log(i + 1);
-    }
+    const idData = dataSource.map((data, i) => i)
+
     const newData = {
-      key: count,
+      key: idData.length + 1,
       id: '',
       address: '',
       urban_village: ``,
@@ -290,10 +329,11 @@ const EditPelanggan = () => {
       postal_code: ``,
     };
 
-    // console.log(newData);
     setDataSource([...dataSource, newData]);
     setCount(count + 1);
   };
+
+  // console.log(dataSource);
 
   const handleSave = (row) => {
     const newData = [...dataSource];
@@ -344,7 +384,7 @@ const EditPelanggan = () => {
   const options = [
     { value: 'PT', label: 'PT' },
     { value: 'CV', label: 'CV' },
-    { value: 'Lainnya...', label: 'Lainnya...' },
+    { value: 'Lainnya', label: 'Lainnya...' },
   ];
 
 
@@ -513,7 +553,7 @@ const EditPelanggan = () => {
           </label>
           <div className="col-sm-10">
             <input
-              type="Nama"
+              type="number"
               className="form-control"
               id="inputNama3"
               value={term}
@@ -527,7 +567,7 @@ const EditPelanggan = () => {
           </label>
           <div className="col-sm-10">
             <input
-              type="Nama"
+              type="number"
               className="form-control"
               id="inputNama3"
               value={discount}

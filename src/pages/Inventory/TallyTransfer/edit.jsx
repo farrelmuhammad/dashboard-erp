@@ -111,6 +111,7 @@ const EditTallyTransfer = () => {
     const [loading, setLoading] = useState(true);
     const [productNoEdit, setProductNoEdit] = useState([]);
     const [sheetNoEdit, setSheetNoEdit] = useState([]);
+    const [qty, setQty] = useState([]);
     const [box, setBox] = useState([])
 
     const [sumber, setSumber] = useState('PO');
@@ -346,7 +347,7 @@ const EditTallyTransfer = () => {
 
 
     const onCellsChanged = (changes) => {
-        // console.log(sheetNoEdit)
+        console.log(sheetNoEdit)
         const newGrid = [];
         newGrid[indexPO] = data[indexPO];
 
@@ -549,83 +550,42 @@ const EditTallyTransfer = () => {
         setModal2Visible2(false)
     }
 
-    function hapusIndexProduct(i, idx) {
-        setLoadingTable(true)
-
-        // console.log(getDataProduct)
+    function hapusIndexProduct(index) {
+        let code = product[index].code;
+        let status;
+        setLoadingTable(true);
 
         for (let x = 0; x < product.length; x++) {
-            let dataDetail;
-            if (sumber == 'PO') {
-                dataDetail = product[x].goods_request_details;
-            }
+            if (product[x].code == code) {
 
-
-            for (let y = 0; y < dataDetail.length; y++) {
-                if (x == i && y == idx) {
-
-                    if (dataDetail.length == 1) {
-
-                        // pengecekan centang 
-                        if (sumber == 'PO') {
-                            // hapus cek 
-                            let tmp = [];
-                            for (let j = 0; j < getDataProduct.length; j++) {
-                                if (getDataProduct[j].detail.code == product[x].code) {
-                                    tmp.push({
-                                        detail: getDataProduct[j].detail,
-                                        statusCek: false
-                                    })
-                                }
-                                else {
-                                    tmp.push(getDataProduct[j])
-                                }
-                            }
-                            setGetDataProduct(tmp)
+                // pengecekan centang 
+                if (sumber == 'PO') {
+                    // hapus cek 
+                    let tmp = [];
+                    for (let j = 0; j < getDataProduct.length; j++) {
+                        if (getDataProduct[j].detail.code == code) {
+                            tmp.push({
+                                detail: getDataProduct[j].detail,
+                                statusCek: false
+                            })
                         }
-
-                        // hapus data 
-                        data.splice(x, 1)
-                        quantity.splice(x, 1)
-                        totalBox.splice(x, 1)
-                        product.splice(x, 1);
-                        statusPO.splice(x, 1)
-
-                        setIndexPO(0)
-                        setIdxPesanan(0)
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil',
-                            text: 'Data berhasil dihapus',
-                        }).then(() => {
-                            setLoadingTable(false)
-                        });
-
+                        else {
+                            tmp.push(getDataProduct[j])
+                        }
                     }
-                    else {
-                        data[x].splice(y, 1)
-                        statusPO[x].splice(y, 1)
-                        quantity[x].splice(y, 1)
-                        totalBox[x].splice(y, 1)
-                        dataDetail.splice(y, 1);
-                        setIndexPO(0)
-                        setIdxPesanan(0)
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil',
-                            text: 'Data berhasil dihapus',
-                        }).then(() => {
-                            console.log(statusPO)
-                            setLoadingTable(false)
-                        });
-
-                    }
-
+                    setGetDataProduct(tmp)
                 }
+
+                product.splice(index, 1);
+                data.splice(index, 1);
+                setIndexPO(0)
             }
-
-
         }
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil',
+            text: 'Data berhasil dihapus',
+        }).then(() => setLoadingTable(false));
 
 
     }
@@ -702,27 +662,38 @@ const EditTallyTransfer = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/tally_sheet_tf_available_goods_request?kode=${query}&id_pemasok=${supplier}`, {
+            const res = await axios.get(`${Url}/tally_sheet_tf_available_goods_request?kode=${query}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
+
             let tmp = []
             for (let i = 0; i < res.data.data.length; i++) {
-                tmp.push({
-                    detail: res.data.data[i],
-                    statusCek: false
-                });
+                for (let x = 0; x < product.length; x++) {
+
+                    if (res.data.data[i].code == product[x].code) {
+                        tmp.push({
+                            detail: res.data.data[i],
+                            statusCek: true
+                        });
+                    }
+                    else {
+                        tmp.push({
+                            detail: res.data.data[i],
+                            statusCek: false
+                        });
+                    }
+
+                }
+
             }
             setGetDataProduct(tmp)
-
-            // setGetDataProduct(res.data.data);
-            // setGetDataDetailPO(res.data.data.map(d => d.goods_request_details))
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
-    }, [query, supplier])
+    }, [query, warehouse])
 
     const handleCheck = (event, indexTransaksi) => {
         console.log(data)
@@ -985,26 +956,37 @@ const EditTallyTransfer = () => {
         [...product.map((item, i) => ({
             code: item.code,
             product_name: item.product_name,
-            quantity: item.boxes_quantity.toString().replace('.', ','),
+            quantity: Number(item.boxes_quantity).toFixed(2).replace('.', ','),
             unit: item.boxes_unit,
             box:
                 <>
 
-                    <a onClick={() => klikTampilSheet(i)} style={{ color: "#1890ff" }}>
+                    <a onClick={() =>
+                        klikTampilSheet(i)} style={{ color: "#1890ff" }}>
                         {item.number_of_boxes}
                     </a>
                     <Modal
                         centered
                         visible={modal2Visible2}
                         onCancel={() => setModal2Visible2(false)}
-                        onOk={() => setModal2Visible2(false)}
+                        footer={[
+                            <Button
+                                key="submit"
+                                type="primary"
+                                style={{ background: "green", borderColor: "white" }}
+                                onClick={() => setModal2Visible2(false)}
+                            >
+                                OK
+                            </Button>,
+                        ]}  
+                        // onOk={() => setModal2Visible2(false)}
                         width={1000}
                     >
                         <div className="text-title text-start">
                             <div className="row">
                                 <div className="col">
                                     <div className="row">
-                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Permintaan</label>
+                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label">No. Pesanan</label>
                                         <div className="col-sm-3">
                                             <input
                                                 value={product[indexPO].code}
@@ -1014,7 +996,7 @@ const EditTallyTransfer = () => {
                                                 disabled
                                             />
                                         </div>
-                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Permintaan</label>
+                                        <label htmlFor="inputNama3" className="col-sm-2 col-form-label ms-5">Qty Pesanan</label>
                                         <div className="col-sm-3">
                                             <input
 
@@ -1109,11 +1091,11 @@ const EditTallyTransfer = () => {
         {
             title: 'Tanggal',
             width: '20%',
-            dataIndex: 'code',
+            dataIndex: 'date',
         },
         {
             title: 'No. Permintaan',
-            dataIndex: 'nama',
+            dataIndex: 'code',
             width: '15%',
             align: 'center',
         },
@@ -1142,8 +1124,8 @@ const EditTallyTransfer = () => {
 
     const columnDataPO =
         [...getDataProduct.map((item, i) => ({
+            date: item.detail.date,
             code: item.detail.code,
-            nama: item.detail.code,
             notes: item.detail.notes,
             action:
                 <>

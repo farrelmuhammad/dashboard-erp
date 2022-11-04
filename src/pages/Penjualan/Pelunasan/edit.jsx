@@ -112,7 +112,7 @@ const EditPelunasan = () => {
     const [customer, setCustomer] = useState("");
     const [dataTampil, setDataTampil] = useState([]);
     const [customerName, setCustomerName] = useState("");
-    const [COA, setCOA] = useState("");
+    const [chartOfAcc, setChartOfAcc] = useState("");
     const [COAName, setCOAName] = useState("");
     const [product, setProduct] = useState([]);
     const [query, setQuery] = useState("");
@@ -133,7 +133,7 @@ const EditPelunasan = () => {
     const [tmpCentang, setTmpCentang] = useState([])
 
     const [selectedCustomer, setSelectedCustomer] = useState(null);
-    const [selectedPembayaran, setSelectedPembayaran] = useState(null);
+    const [selectedValue2, setSelectedCOA] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
     const [loading, setLoading] = useState(true)
 
@@ -153,11 +153,11 @@ const EditPelunasan = () => {
 
     const handleChangeCOA = (value) => {
         setSelectedCOA(value);
-        setCOA(value.id);
+        setChartOfAcc(value.id);
     };
     // load options using API call
     const loadOptionsCOA = (inputValue) => {
-        return fetch(`${Url}/select_chart_of_accounts?limit=10&nama=${inputValue}`, {
+        return fetch(`${Url}/select_chart_of_accounts?anak_terakhir=1&kode_kategori[]=111&kode_kategori[]=112&nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -188,10 +188,7 @@ const EditPelunasan = () => {
                         statusCek: false
                     });
                 }
-
-
             }
-
             setGetDataProduct(res.data.data);
         };
 
@@ -242,7 +239,6 @@ const EditPelunasan = () => {
                 // setCustomerName(getData.recipient.name)
             })
     }
-
 
     // Column for modal input product
     const columnsModal = [
@@ -433,32 +429,28 @@ const EditPelunasan = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const userData = new FormData();
+        const userData = new URLSearchParams();
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
         userData.append("catatan", description);
         userData.append("bagan_akun", COA);
         userData.append("pelanggan", customer);
         userData.append("status", "Submitted");
-        product.map((p) => {
+        product.map((p, i) => {
             console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("harga[]", p.price);
-            userData.append("persentase_diskon[]", p.discount);
-            userData.append("diskon_tetap[]", p.nominal_disc);
-            userData.append("ppn[]", p.ppn);
+            userData.append("id_faktur_penjualan[]", p.id);
+            userData.append("terbayar[]", jumlah[i]);
+
+            // userData.append("terbayar[]", p.pays);
         });
-        userData.append("termasuk_pajak", checked);
 
         // for (var pair of userData.entries()) {
         //     console.log(pair[0] + ', ' + pair[1]);
         // }
 
         axios({
-            method: "post",
-            url: `${Url}/sales_invoice_payments`,
+            method: "put",
+            url: `${Url}/sales_invoice_payments/${id}`,
             data: userData,
             headers: {
                 Accept: "application/json",
@@ -495,10 +487,10 @@ const EditPelunasan = () => {
     const handleDraft = async (e) => {
         console.log(dataTampil)
         e.preventDefault();
-        const userData = new FormData();
+        const userData = new URLSearchParams();
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
-        userData.append("catatan", description);
+        userData.append("bagan_akun", chartOfAcc);
         userData.append("pelanggan", customer);
         userData.append("bagan_akun", COA);
         userData.append("status", "Draft");
@@ -507,11 +499,11 @@ const EditPelunasan = () => {
             userData.append("id_faktur_penjualan[]", p.sales_invoice_id)
             userData.append("terbayar[]", p.total);
         });
-        userData.append("termasuk_pajak", checked);
+        // userData.append("termasuk_pajak", checked);
 
         axios({
-            method: "post",
-            url: `${Url}/sales_invoice_payments`,
+            method: "put",
+            url: `${Url}/sales_invoice_payments/${id}`,
             data: userData,
             headers: {
                 Accept: "application/json",
@@ -533,7 +525,7 @@ const EditPelunasan = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text: err.response.data.error,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -551,15 +543,11 @@ const EditPelunasan = () => {
 
     return (
         <>
-            <form className="p-2 mb-3 bg-body rounded">
-                <PageHeader
-                    className="bg-body rounded mb-2"
-                    onBack={() => window.history.back()}
-                    title="Edit Pelunasan"
-                ></PageHeader>
-                {/* <div className="text-title text-start mb-4">
-                    <h4 className="title fw-bold">Buat Pelunasan</h4>
-                </div> */}
+            <PageHeader
+                className="bg-body rounded mb-2"
+                onBack={() => window.history.back()}
+                title="Edit Pelunasan"
+            >
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -632,7 +620,7 @@ const EditPelunasan = () => {
                                     placeholder="Pilih Pembayaran"
                                     cacheOptions
                                     defaultOptions
-                                    value={selectedPembayaran}
+                                    value={selectedValue2}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsCOA}
@@ -648,99 +636,96 @@ const EditPelunasan = () => {
                         </div>
                     </div>
                 </div>
-            </form>
-            <form className="p-3 mb-5 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <div className="row">
-                        <div className="col">
-                            <h4 className="title fw-normal">Cari Faktur</h4>
-                        </div>
-                        <div className="col text-end me-2">
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
-                            />
-                            <Modal
-                                title="Tambah Faktur Penjualan"
-                                centered
-                                visible={modal2Visible}
-                                onCancel={() => setModal2Visible(false)}
-                                // footer={[
-                                //     <Button
-                                //         key="submit"
-                                //         type="primary"
+            </PageHeader>
 
-                                //     >
-                                //         Tambah
-                                //     </Button>,
-                                // ]}
-                                footer={null}
-                            >
-                                <div className="text-title text-start">
-                                    <div className="row">
-                                        <div className="col mb-3">
-                                            <Search
-                                                placeholder="Cari Nama Faktur..."
-                                                style={{
-                                                    width: 400,
-                                                }}
-                                                onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                            />
-                                        </div>
-                                        <Table
-                                            columns={columnsModal}
-                                            dataSource={getDataProduct}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
-                                    </div>
+            <PageHeader
+                className="bg-body rounded mb-2"
+                title="Cari Faktur"
+                extra={[
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => setModal2Visible(true)}
+                    />,
+                    <Modal
+                        title="Tambah Faktur Penjualan"
+                        centered
+                        visible={modal2Visible}
+                        onCancel={() => setModal2Visible(false)}
+                        // footer={[
+                        //     <Button
+                        //         key="submit"
+                        //         type="primary"
+
+                        //     >
+                        //         Tambah
+                        //     </Button>,
+                        // ]}
+                        footer={null}
+                    >
+                        <div className="text-title text-start">
+                            <div className="row">
+                                <div className="col mb-3">
+                                    <Search
+                                        placeholder="Cari Nama Faktur..."
+                                        style={{
+                                            width: 400,
+                                        }}
+                                        onChange={(e) => setQuery(e.target.value.toLowerCase())}
+                                    />
                                 </div>
-                            </Modal>
+                                <Table
+                                    columns={columnsModal}
+                                    dataSource={getDataProduct}
+                                    scroll={{
+                                        y: 250,
+                                    }}
+                                    pagination={false}
+                                    loading={isLoading}
+                                    size="middle"
+                                />
+                            </div>
                         </div>
-                    </div>
-                    <Table
-                        components={components}
-                        rowClassName={() => 'editable-row'}
-                        bordered
-                        pagination={false}
-                        dataSource={data}
-                        columns={defaultColumns}
-                        onChange={(e) => setProduct(e.target.value)}
-                        summary={(pageData) => {
-                            let totalTotal = 0;
+                    </Modal>
+                ]}
+            >
+                <Table
+                    components={components}
+                    rowClassName={() => 'editable-row'}
+                    bordered
+                    pagination={false}
+                    dataSource={data}
+                    columns={defaultColumns}
+                    onChange={(e) => setProduct(e.target.value)}
+                    summary={(pageData) => {
+                        let totalTotal = 0;
 
-                            pageData.forEach(({ paid }) => {
-                                totalTotal = Number(totalTotal) + Number(paid.props.value.replace(',', '.'));
-                            });
-                            return (
-                                <>
-                                    <Table.Summary.Row>
-                                        <Table.Summary.Cell index={0} colSpan={3}>Total yang dibayarkan</Table.Summary.Cell>
-                                        <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat disabled onKeyDown={(event) => klikEnter(event)} className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={totalTotal} />
-                                        </Table.Summary.Cell>
-                                        {/* <Table.Summary.Cell index={2}>
+                        pageData.forEach(({ paid }) => {
+                            totalTotal = Number(totalTotal) + Number(paid.props.value.replace(',', '.'));
+                        });
+                        return (
+                            <>
+                                <Table.Summary.Row>
+                                    <Table.Summary.Cell index={0} colSpan={3}>Total yang dibayarkan</Table.Summary.Cell>
+                                    <Table.Summary.Cell index={1}>
+                                        <CurrencyFormat disabled onKeyDown={(event) => klikEnter(event)} className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={totalTotal} />
+                                    </Table.Summary.Cell>
+                                    {/* <Table.Summary.Cell index={2}>
                                             <Text>{totalRepayment}</Text>
                                         </Table.Summary.Cell> */}
-                                    </Table.Summary.Row>
-                                    {/* <Table.Summary.Row>
+                                </Table.Summary.Row>
+                                {/* <Table.Summary.Row>
                                         <Table.Summary.Cell index={0}>Balance</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1} colSpan={2}>
                                             <Text type="danger">{totalBorrow - totalRepayment}</Text>
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row> */}
-                                </>
-                            );
-                        }}
-                    />
-                </div>
+                            </>
+                        );
+                    }}
+                />
 
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: "right", position: "relative" }}>
+                <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2" role="group" aria-label="Basic mixed styles example">
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -763,8 +748,7 @@ const EditPelunasan = () => {
                         Cetak
                     </button> */}
                 </div>
-                <div style={{ clear: "both" }}></div>
-            </form>
+            </PageHeader>
         </>
     )
 }

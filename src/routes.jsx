@@ -318,12 +318,12 @@ const RouteApp = () => {
         <Route path="/tallytransfer" exact element={<TallyTransfer />} />
         <Route path="/tallytransfer/create" exact element={<CreateTallyTransfer />} />
         <Route path="/tallytransfer/edit/:id" exact element={<EditTallyTransfer />} />
-        <Route path="/tallytransfer/detail" exact element={<DetailTallyTransfer />} />
+        <Route path="/tallytransfer/detail/:id" exact element={<DetailTallyTransfer />} />
 
         <Route path="/goodstransfer" exact element={<GoodsTransfer />} />
         <Route path="/goodstransfer/create" exact element={<CreateGoodsTransfer />} />
         <Route path="/goodstransfer/edit/:id" exact element={<EditGoodsTransfer />} />
-        <Route path="/goodstransfer/detail" exact element={<DetailGoodsTransfer />} />
+        <Route path="/goodstransfer/detail/:id" exact element={<DetailGoodsTransfer />} />
 
         <Route path="/produksi" exact element={<Production />} />
         <Route path="/produksi/create" exact element={<CreateProduction />} />
@@ -526,7 +526,7 @@ const RouteApp = () => {
         <Route path="/tallytransfer" exact element={<TallyTransfer />} />
         <Route path="/tallytransfer/create" exact element={<CreateTallyTransfer />} />
         <Route path="/tallytransfer/edit/:id" exact element={<EditTallyTransfer />} />
-        <Route path="/tallytransfer/detail" exact element={<DetailTallyTransfer />} />
+        <Route path="/tallytransfer/detail/:id" exact element={<DetailTallyTransfer />} />
 
         <Route path="/goodstransfer" exact element={<GoodsTransfer />} />
         <Route path="/goodstransfer/create" exact element={<CreateGoodsTransfer />} />
