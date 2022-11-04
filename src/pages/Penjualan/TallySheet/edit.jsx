@@ -38,6 +38,7 @@ const EditTally = () => {
     const [delIndex, setDelIndex] = useState([]);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [selectedValue2, setSelectedWarehouse] = useState(null);
+    const [date, setDate] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState([]);
     const [optionsProduct, setOptionsProduct] = useState([]);
     const [dataTampil, setDataTampil] = useState([]);
@@ -53,6 +54,7 @@ const EditTally = () => {
     const [modal2Visible2, setModal2Visible2] = useState(false);
     const [getDataProduct, setGetDataProduct] = useState()
     const [codeProduct, setCodeProduct] = useState([])
+    const [codeProductNoEdit, setCodeProductNoEdit] = useState([])
     const [getDataRetur, setGetDataRetur] = useState()
     const [getDataDetailPO, setGetDataDetailPO] = useState('');
     const [detailTallySheet, setDetailTallySheet] = useState([])
@@ -86,6 +88,7 @@ const EditTally = () => {
                 const getData = res.data.data[0];
                 let dataTallySheet = getData.tally_sheet_details;
                 setGetTallySheet(getData)
+                setDate(getData.date)
                 if (getData.customer_id) {
                     setSelectedCustomer(getData.customer_name)
                     setCustomer(getData.customer_id)
@@ -158,24 +161,15 @@ const EditTally = () => {
                             key: "lama"
                         })
 
-                        // mengambil pilihan produk 
-                        // console.log(dataTallySheet[i].product_alias_name)
-                        axios.get(`${Url}/select_products?nama_alias=${dataTallySheet[i].product_alias_name}`, {
-                            headers: {
-                                Accept: "application/json",
-                                Authorization: `Bearer ${auth.token}`,
-                            },
-                        }).then((res) => {
-                            dataOption = []
-
-                            for (let idxProduk = 0; idxProduk < res.data.length; idxProduk++) {
-                                dataOption.push({
-                                    value: res.data[idxProduk].id,
-                                    label: res.data[idxProduk].name
-                                })
-                            }
-                            values.push(dataOption)
-                        });
+                        // // mengambil pilihan produk 
+                        dataOption = []
+                        for (let x = 0; x < dataTallySheet[i].product_list.length; x++) {
+                            dataOption.push({
+                                value: dataTallySheet[i].product_list[x].id,
+                                label: dataTallySheet[i].product_list[x].name,
+                            })
+                        }
+                        values.push(dataOption)
 
                         let jumlahBaris = (Number(getData.tally_sheet_details[i].boxes.length) / 10) + 1;
                         let jumlahKolom = getData.tally_sheet_details[i].boxes.length;
@@ -267,11 +261,11 @@ const EditTally = () => {
                         console.log(dataTallySheet[i])
                         tmpCodeProduk.push(code)
                     }
-                    // console.log(values[0])
-                    // let value = [...values]
+                    setOptionsProduct(values)
+
                     let unik = [...new Set(tmpCodeProduk)]
                     setCodeProduct(unik)
-                    setOptionsProduct(values)
+                    setCodeProductNoEdit(unik)
                     setSelectedProduct(tmpProductName)
                     setSelectedProductNoEdit(tmpProductName)
                     setProductId(tmpProductId)
@@ -284,9 +278,8 @@ const EditTally = () => {
                     setData(arrData);
                     setQty(tmpQty);
                     setBox(tmpBox);
-                    console.log(arrData)
-                    console.log(arrDataLama)
 
+                    console.log(values)
                     setLoading(false);
                 }
             })
@@ -341,9 +334,10 @@ const EditTally = () => {
     };
 
     const handleChangeProduct = (value, idx) => {
-        console.log(value)
+        // console.log(value)
         console.log(selectedProduct)
         let status = ''
+        let tmp = []
         for (let i = 0; i < selectedProduct.length; i++) {
             if (selectedProduct[i].value == value.value && selectedProduct[idx].value != value.value) {
                 status = 'ada'
@@ -359,11 +353,9 @@ const EditTally = () => {
             for (let x = 0; x < data.length; x++) {
                 if (x == idx) {
                     key.push(value.value)
-                    // store2.push(value)
                     store2.push(value)
                 } else {
                     key.push(productId[x])
-                    // store2.push(selectedProduct[x])
                     store2.push(selectedProduct[x])
 
                 }
@@ -394,14 +386,10 @@ const EditTally = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            // console.log(product)
-            // console.log(res.data)
 
             let tmp = []
             for (let i = 0; i < res.data.length; i++) {
-                // for (let x = 0; x < product.length; x++) {
 
-                // console.log(product.indexOf(res.data[i].code))
                 if (codeProduct.indexOf(res.data[i].code) >= 0) {
                     tmp.push({
                         detail: res.data[i],
@@ -415,11 +403,7 @@ const EditTally = () => {
                     });
                 }
 
-                // }
-
             }
-            // let tmpUnik = new Set(tmp)
-            // console.log(tmpUnik)
             setGetDataProduct(tmp)
         };
 
@@ -887,7 +871,6 @@ const EditTally = () => {
     }
 
     function hapusIndexProduct(index) {
-        console.log(product)
         let code = product[index].code;
         let jumlah = 0;
         // cek jumlah baris per produk 
@@ -955,55 +938,33 @@ const EditTally = () => {
             setGetDataProduct(tmp)
         }
 
-        // for (let x = 0; x < product.length; x++) {
-        //     if (product[x].code == code) {
         if (index == 0 && product.length == 1) {
-
+            setOptionsProduct([])
+            setSelectedProduct([])
             setProduct([]);
             setData([])
             setIndexSO(0)
         }
         else {
-
+            selectedProduct.splice(index, 1)
+            optionsProduct.splice(index, 1)
             product.splice(index, 1);
             data.splice(index, 1);
             setIndexSO(0)
         }
-        // }
-        // }
 
-        Swal.fire({
-            icon: 'success',
-            title: 'Berhasil',
-            text: 'Data berhasil dihapus',
-        }).then(() => setLoadingTable(false));
+        console.log(optionsProduct)
+
+        setLoadingTable(false)
 
 
-        // console.log(index)
-        // setLoadingTable(true);
-        // // for (let x = 0; x < dataTS.length; x++) {
-        // product.splice(index, 1);
-        // data.splice(index, 1);
-        // setIndexSO(0)
-        // console.log(product)
 
-        // Swal.fire({
-        //     icon: 'success',
-        //     title: 'Berhasil',
-        //     text: 'Data berhasil dihapus',
-        // }).then(() => setLoadingTable(false));
-        // }
-
-        // console.log(dataTS)
 
     }
-
-    // console.log(product);
 
 
     function tambahIndexProduct(i) {
         setTampil(false)
-        // let dataOption = [...optionsProduct]
         console.log(selectedProduct)
         setLoadingTable(true);
 
@@ -1038,22 +999,22 @@ const EditTally = () => {
             }
 
             for (let r = arr.length; r <= product.length; r++) {
-                // arr.push({
-                //     action: product[r - 1].action,
-                //     boxes_quantity: product[r - 1].boxes_quantity,
-                //     boxes_unit: product[r - 1].boxes_unit,
-                //     code: product[r - 1].code,
-                //     id_pesanan_pembelian: product[r - 1].id_pesanan_pembelian,
-                //     id_produk: product[r - 1].id_produk,
-                //     key: "baru",
-                //     number_of_boxes: product[r - 1].number_of_boxes,
-                //     number_order_qty: product[r - 1].number_order_qty,
-                //     product_alias_name: product[r - 1].product_alias_name,
-                //     product_name: product[r - 1].product_name,
-                //     tally_sheets_qty: product[r - 1].tally_sheets_qty,
-                //     tally_sheets_qty_NoEdit: product[r - 1].tally_sheets_qty_NoEdit
-                // })
-                arr.push(product[r - 1])
+                arr.push({
+                    action: product[r - 1].action,
+                    boxes_quantity: product[r - 1].boxes_quantity,
+                    boxes_unit: product[r - 1].boxes_unit,
+                    code: product[r - 1].code,
+                    id_pesanan_pembelian: product[r - 1].id_pesanan_pembelian,
+                    id_produk: product[r - 1].id_produk,
+                    key: "lama-baru",
+                    number_of_boxes: product[r - 1].number_of_boxes,
+                    number_order_qty: product[r - 1].number_order_qty,
+                    product_alias_name: product[r - 1].product_alias_name,
+                    product_name: product[r - 1].product_name,
+                    tally_sheets_qty: product[r - 1].tally_sheets_qty,
+                    tally_sheets_qty_NoEdit: product[r - 1].tally_sheets_qty_NoEdit
+                })
+                // arr.push(product[r - 1])
             }
 
             let optionStore = [];
@@ -1076,7 +1037,7 @@ const EditTally = () => {
                     option.push(optionsProduct[i])
                     console.log(option)
 
-                    valueStore.push({ id: '', name: '' })
+                    valueStore.push({ value: '', label: '' })
                     temp_qtyBox.push(0)
                     if (quantity[x] + arr[x].tally_sheets_qty >= arr[x].boxes_quantity) {
                         statusStore.push('Done')
@@ -1261,7 +1222,7 @@ const EditTally = () => {
             setQuantity(qtyStore)
             setTotalBox(boxStore)
 
-            console.log(valueStore)
+            // console.log(valueStore)
             setOptionsProduct(option)
             console.log(option)
             // setIdProductSelect(id)
@@ -1279,50 +1240,30 @@ const EditTally = () => {
         }
     }
 
+    function cekOption(i) {
+        console.log(i)
+        return optionsProduct[i]
+    }
+
     const dataPurchase =
         [...product.map((item, i) => ({
             code: item.code,
             product_alias_name: item.product_alias_name,
             product_name:
                 sumber == 'Retur' ? selectedProduct[i].label :
-                    // item.key == 'lama' ?
-                    // <ReactSelect
-                    // key={item.key + i}
 
-                    //     className='select-antd'
-                    //     placeholder="Pilih Produk..."
-                    //     classNamePrefix="select"
-                    //     defaultInputValue={selectedProduct[i].label}
-                    //     isLoading={isLoading}
-                    //     isSearchable
-                    //     options={optionsProduct[i]}
-                    //     onChange={(value) => handleChangeProduct(value, i)}
-                    // />
-                    //     :
 
                     <Select
-                        key={item.product_alias_name + item.key + i}
+                        key={item.product_alias_name + item.key + i + item.code}
                         defaultValue={selectedProduct[i].label}
                         style={{
                             width: "100%",
                         }}
-                        // onChange={handleChange}
                         onChange={(_, value) => handleChangeProduct(value, i)}
 
                         options={optionsProduct[i]}
                     />
 
-            // <ReactSelect
-            //         className={'basic-single'}
-            //         placeholder="Pilih lah aku..."
-            //         classNamePrefix="select"
-            //         defaultInputValue=''
-            //         value={selectedProduct[i].label}
-            //         isLoading={isLoading}
-            //         isSearchable
-            //         options={optionsProduct[i]}
-            //         onChange={(value) => handleChangeProduct(value, i)}
-            //     />
 
             ,
             quantity: Number(item.boxes_quantity).toFixed(2).toString().replace('.', ','),
@@ -1381,7 +1322,7 @@ const EditTally = () => {
                                         <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Produk</label>
                                         <div className="col-sm-3">
                                             <input
-                                                value={product[indexSO].product_name}
+                                                value={selectedProduct[indexSO].label}
                                                 type="Nama"
                                                 className="form-control"
                                                 id="inputNama3"
@@ -1454,6 +1395,7 @@ const EditTally = () => {
                     sumber == 'SO' ? <Button
                         size='small'
                         type="primary"
+                        // disabled={loading ? true : false}
                         icon={<PlusOutlined />}
                         onClick={() => { tambahIndexProduct(i) }}
                     /> : null
@@ -1477,7 +1419,7 @@ const EditTally = () => {
             }
         },
         {
-            title: sumber == 'SO' ? 'Pelanggan' : 'Supplier',
+            title: sumber == 'SO' ? 'Customer' : 'Supplier',
             dataIndex: 'customer',
             width: '15%',
             align: 'center',
@@ -1525,6 +1467,7 @@ const EditTally = () => {
         let tmpDataBaru = []
         const value = event.target.value.detail;
 
+        console.log(value)
         if (sumber == 'Retur') {
             dataSumber = value.purchase_return_details;
             for (let i = 0; i < getDataRetur.length; i++) {
@@ -1563,24 +1506,59 @@ const EditTally = () => {
 
             let tmp = [];
             let tmpProductName = []
+            let values = [];
             let tmpProductId = []
             for (let i = 0; i <= updatedList.length; i++) {
-                if (i == updatedList.length) {
-                    for (let x = 0; x < dataSumber.length; x++) {
-                        let qtyAwal = dataSumber[x].quantity;
-                        let qtyAkhir = dataSumber[x].tally_sheets_qty;
 
+
+
+                // data baru 
+                if (i == updatedList.length) {
+                    // jika yang dicentang data awal 
+                    if (codeProductNoEdit.indexOf(value.code) >= 0) {
+                        // console.log('ytes')
                         for (let j = 0; j < productNoEdit.length; j++) {
-                            // console.log(productNoEdit)
-                            // jika data lama yg dipilih
-                            if (value.code == productNoEdit[j].code) {
+
+                            if (productNoEdit[j].code == value.code) {
                                 tmp.push(
                                     productNoEdit[j]
                                 )
-                                tmpProductName.push(selectedProductNoEdit)
+                                // console.log(selectedProductNoEdit[j])
+                                tmpProductName.push(selectedProductNoEdit[j])
                                 tmpProductId.push(productIdNoEdit)
+
+                                // mengambil pilihan produk 
+                                let dataOption = []
+                                axios.get(`${Url}/select_products?nama_alias=${productNoEdit[j].product_alias_name}`, {
+                                    headers: {
+                                        Accept: "application/json",
+                                        Authorization: `Bearer ${auth.token}`,
+                                    },
+                                }).then((res) => {
+                                    for (let idxProduk = 0; idxProduk < res.data.length; idxProduk++) {
+                                        dataOption.push({
+                                            value: res.data[idxProduk].id,
+                                            label: res.data[idxProduk].name
+                                        })
+                                    }
+                                    values.push(dataOption)
+
+
+                                });
                             }
-                            else if (qtyAkhir < qtyAwal) {
+
+
+                        }
+                    }
+
+                    // jika yang dicentang belum pernah dicentang 
+                    else {
+                        for (let x = 0; x < dataSumber.length; x++) {
+                            let qtyAwal = dataSumber[x].quantity;
+                            let qtyAkhir = dataSumber[x].tally_sheets_qty;
+
+
+                            if (qtyAkhir < qtyAwal) {
                                 tmp.push({
                                     id_produk: dataSumber[x].product_id,
                                     id_pesanan_pembelian: value.id,
@@ -1596,21 +1574,49 @@ const EditTally = () => {
                                     tally_sheets_qty_NoEdit: qtyAkhir,
                                     key: "baru"
                                 })
+                                tmpProductName.push({ value: '', label: '' })
+                                // mengambil pilihan produk 
+                                let dataOption = []
+                                axios.get(`${Url}/select_products?nama_alias=${dataSumber[x].product_alias_name}`, {
+                                    headers: {
+                                        Accept: "application/json",
+                                        Authorization: `Bearer ${auth.token}`,
+                                    },
+                                }).then((res) => {
+                                    for (let idxProduk = 0; idxProduk < res.data.length; idxProduk++) {
+                                        dataOption.push({
+                                            value: res.data[idxProduk].id,
+                                            label: res.data[idxProduk].name
+                                        })
+                                    }
+                                    values.push(dataOption)
+
+
+                                });
                             }
+
+
+
                         }
-
-
-
                     }
+
+
+
+
                 }
+                // data lama 
                 else {
+                    values.push(optionsProduct[i])
                     tmp.push(product[i])
                     tmpProductId.push(productId)
-                    tmpProductName.push(selectedProductNoEdit[i])
+                    // console.log(selectedProductNoEdit[i])
+
+                    tmpProductName.push(selectedProduct[i])
                 }
             }
             updatedList = tmp
             setSelectedProduct(tmpProductName)
+            setOptionsProduct(values)
             setProductId(tmpProductId)
 
             // setting data 
@@ -1774,7 +1780,6 @@ const EditTally = () => {
 
                 }
             }
-            console.log(updatedList)
             setProduct(updatedList);
             setData(arrData);
 
@@ -1782,47 +1787,44 @@ const EditTally = () => {
         else {
             arrData = [...data]
             let arrProduct = [...selectedProduct]
+            let arrOption = [...optionsProduct]
             let arrProductId = [...productId]
             let jumlah = 0
 
-            console.log(value)
             // menghitung baris yang no pesanannya sama 
             for (let i = 0; i < updatedList.length; i++) {
-                // for (let x = 0; x < dataSumber.length; x++) {
-                    if (updatedList[i].code == value.code) {
-                        jumlah += 1;
-                    }
-                // }
+                if (updatedList[i].code == value.code) {
+                    jumlah += 1;
+                }
             }
 
             // menghapus baris sesuai jumlah 
             if (jumlah != 0) {
                 for (let i = 0; i < updatedList.length; i++) {
-                    // for (let x = 0; x < dataSumber.length; x++) {
-                        if (updatedList[i].code == value.code) {
-                            updatedList.splice(i, jumlah);
-                            arrData.splice(i, jumlah);
-                            arrProduct.splice(i, jumlah)
-                            arrProductId.splice(i, jumlah)
-                            setIndexSO(0)
-                        }
-                    // }
+                    if (updatedList[i].code == value.code) {
+                        updatedList.splice(i, jumlah);
+                        arrData.splice(i, jumlah);
+                        arrOption.splice(i, jumlah)
+                        arrProduct.splice(i, jumlah)
+                        arrProductId.splice(i, jumlah)
+                        setIndexSO(0)
+                    }
                 }
+                setOptionsProduct(arrOption)
                 setSelectedProduct(arrProduct)
                 setProductId(arrProductId)
-                console.log(arrProduct)
                 setProduct(updatedList);
                 setData(arrData)
             }
         };
+        console.log(updatedList)
     }
 
     const handleSubmit = async (e) => {
-        console.log(product)
 
         e.preventDefault();
         const tallySheetData = new URLSearchParams();
-        tallySheetData.append("tanggal", getTallySheet.date);
+        tallySheetData.append("tanggal", date);
         if (sumber == 'SO') {
             tallySheetData.append("pelanggan", getTallySheet.customer_id);
 
@@ -1831,11 +1833,11 @@ const EditTally = () => {
             tallySheetData.append("pemasok", getTallySheet.supplier_id);
 
         }
-        tallySheetData.append("gudang", getTallySheet.warehouse_id);
+        tallySheetData.append("gudang", warehouse);
         tallySheetData.append("catatan", catatan);
         tallySheetData.append("status", "Submitted");
         product.map((p, pi) => {
-            tallySheetData.append("id_produk[]", productId[pi]);
+            tallySheetData.append("id_produk[]", selectedProduct[pi].value);
             tallySheetData.append("jumlah_box[]", p.number_of_boxes);
             tallySheetData.append("satuan_box[]", p.boxes_unit);
             tallySheetData.append("kuantitas_box[]", p.boxes_quantity);
@@ -1898,7 +1900,7 @@ const EditTally = () => {
     const handleDraft = async (e) => {
         e.preventDefault();
         const tallySheetData = new URLSearchParams();
-        tallySheetData.append("tanggal", getTallySheet.date);
+        tallySheetData.append("tanggal", date);
         if (sumber == 'SO') {
             tallySheetData.append("pelanggan", getTallySheet.customer_id);
 
@@ -1907,12 +1909,12 @@ const EditTally = () => {
             tallySheetData.append("pemasok", getTallySheet.supplier_id);
 
         }
-        tallySheetData.append("gudang", getTallySheet.warehouse_id);
+        tallySheetData.append("gudang", warehouse);
         tallySheetData.append("catatan", catatan);
         tallySheetData.append("status", "Draft");
         console.log(product)
         product.map((p, pi) => {
-            tallySheetData.append("id_produk[]", productId[pi]);
+            tallySheetData.append("id_produk[]", selectedProduct[pi].value);
             tallySheetData.append("jumlah_box[]", p.number_of_boxes);
             tallySheetData.append("satuan_box[]", p.boxes_unit);
             tallySheetData.append("kuantitas_box[]", p.boxes_quantity);
@@ -1973,9 +1975,6 @@ const EditTally = () => {
     };
 
     function klikTampilSheet(indexSO) {
-        console.log(data)
-        // console.log(product[indexSO].number_order_qty)
-        // setQuantityTally(product[indexSO].boxes_quantity)
         setQuantityPO(product[indexSO].number_order_qty)
         setIndexSO(indexSO);
         setModal2Visible2(true);
@@ -2009,10 +2008,9 @@ const EditTally = () => {
                             <div className="col-sm-4">
                                 <input
                                     id="startDate"
-                                    value={getTallySheet.date}
+                                    value={date}
                                     className="form-control"
                                     type="date"
-                                    disabled
                                     onChange={(e) => setDate(e.target.value)}
                                 />
                             </div>
@@ -2044,8 +2042,15 @@ const EditTally = () => {
                         <div className="row mb-3" style={{ display: sumber == 'Retur' ? 'flex' : 'none' }}>
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                             <div className="col-sm-7">
+                                <input
+                                    value={selectedSupplier}
+                                    type="Nama"
+                                    className="form-control"
+                                    id="inputNama3"
+                                    disabled
+                                />
 
-                                <AsyncSelect
+                                {/* <AsyncSelect
                                     placeholder="Pilih Supplier..."
                                     cacheOptions
                                     defaultOptions
@@ -2055,15 +2060,22 @@ const EditTally = () => {
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsSupplier}
                                     onChange={handleChangeSupplier}
-                                />
+                                /> */}
 
                             </div>
                         </div>
                         <div className="row mb-3" style={{ display: sumber == 'SO' ? 'flex' : 'none' }}>
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pelanggan</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
                             <div className="col-sm-7">
-                                <AsyncSelect
-                                    placeholder="Pilih Pelanggan..."
+                                <input
+                                    value={selectedCustomer}
+                                    type="Nama"
+                                    className="form-control"
+                                    id="inputNama3"
+                                    disabled
+                                />
+                                {/* <AsyncSelect
+                                    placeholder="Pilih Customer..."
                                     cacheOptions
                                     defaultOptions
                                     defaultInputValue={selectedCustomer}
@@ -2072,7 +2084,7 @@ const EditTally = () => {
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsCustomer}
                                     onChange={handleChangeCustomer}
-                                />
+                                /> */}
                             </div>
                         </div>
 
@@ -2173,9 +2185,7 @@ const EditTally = () => {
                     bordered
                     pagination={false}
                     dataSource={dataPurchase}
-                    style={{ display: tampil ? 'flex' : 'none' }}
-                    // expandable={{ expandedRowRender }}
-                    // defaultExpandAllRows
+                    style={{ display: tampil ? 'block' : 'none' }}
                     columns={columns}
                     onChange={(e) => setProduct(e.target.value)}
                 />
@@ -2218,73 +2228,10 @@ const EditTally = () => {
                                 </button>
                             </>
                     }
-                    {/* <button
-                        type="button"
-                        width="100px"
-                        className="btn btn-warning rounded m-1">
-                        Cetak
-                    </button> */}
                 </div>
                 <div style={{ clear: 'both' }}></div>
             </PageHeader>
 
-            {/* <form className="  p-3 mb-5 bg-body rounded">
-                <div className="text-title text-start mb-4">
-                    <div className="row">
-                        <div className="col">
-                            <h4 className="title fw-normal">Cari Produk</h4>
-                        </div>
-                        <div className="col-sm-3 me-5">
-                        <div className="input-group">
-                            <input type="text" className="form-control" id="inlineFormInputGroupUsername" placeholder="Type..."/>
-                            <div className="input-group-text">Search</div>
-                        </div>
-                        </div>
-                    </div>
-                <ProdukPesananTable />
-                </div>
-            <div className="row p-0">
-                <div className="col ms-5">
-                    <div className="form-check">
-                        <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault"/>
-                        <label className="form-check-label" for="flexCheckDefault">
-                            Harga Termasuk Pajak
-                        </label>
-                    </div>
-                </div>
-                <div className="col">
-                    <div className="row mb-3">
-                        <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>
-                        <div className="col-sm-6">
-                            <input type="email" className="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                    <div className="row mb-3">
-                        <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Diskon</label>
-                        <div className="col-sm-6">
-                            <input type="email" className="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                    <div className="row mb-3">
-                        <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">PPN</label>
-                        <div className="col-sm-6">
-                            <input type="email" className="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                    <div className="row mb-3">
-                        <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Total</label>
-                        <div className="col-sm-6">
-                            <input type="email" className="form-control form-control-sm" id="colFormLabelSm"/>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="btn-group" role="group" aria-label="Basic mixed styles example">
-                <button type="button" className="btn btn-success rounded m-1">Simpan</button>
-                <button type="button" className="btn btn-primary rounded m-1">Submit</button>
-                <button type="button" className="btn btn-warning rounded m-1">Cetak</button>
-            </div>
-            </form> */}
         </>
     )
 }

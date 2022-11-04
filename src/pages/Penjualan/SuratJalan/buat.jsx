@@ -180,6 +180,7 @@ const BuatSuratJalan = () => {
         setProduct([])  
         setCustomer('')
         setSelectedSupplier(value);
+        console.log(value)
         setAddress(value.supplier_addresses)
         setGrup(value._group)
     };
