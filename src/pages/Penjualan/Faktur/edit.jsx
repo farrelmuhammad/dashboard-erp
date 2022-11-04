@@ -116,6 +116,7 @@ const EditFaktur = () => {
     const [description, setDescription] = useState('');
     const [address, setAddress] = useState("");
     const [customer, setCustomer] = useState("");
+    const [total1Produk, setTotal1Produk] = useState([]);
     const [catatan, setCatatan] = useState("");
     const [product, setProduct] = useState([]);
     const [loadingTable, setLoadingTable] = useState(false);
@@ -228,7 +229,7 @@ const EditFaktur = () => {
                 setDataHeader(getData);
                 setCode(getData.code)
                 setDate(getData.date)
-                setStatusDelivery()
+                setStatusDelivery(getData)
                 setSubTotal(getData.subtotal)
                 setGrandTotal(getData.total)
                 setUangMuka(getData.down_payment);
@@ -246,18 +247,18 @@ const EditFaktur = () => {
                 setCustomer(getData.recipient.id)
                 setCatatan(getData.notes)
 
-                console.log(getData.delivery_notes.length)
+                console.log(getData)
                 let dataSumber;
                 if (getData.delivery_notes && getData.delivery_notes.length < 0) {
                     setSumber('Surat')
-                    setDataBarang(getData.sales_invoice_details)
-                    dataSumber = getData.delivery_notes
+                    setDataBarang(getData.delivery_notes_details)
+                    dataSumber = getData.delivery_notes_details
 
                 }
                 else if (getData.sales_orders) {
                     setSumber('SO')
                     setDataBarang(getData.sales_invoice_details)
-                    dataSumber = getData.sales_orders
+                    dataSumber = getData.sales_invoice_details
                 }
                 let total = Number(getData.ppn) - Number(getData.down_payment) + Number(getData.subtotal) - Number(getData.discount)
                 setTotalKeseluruhan(total)
@@ -291,6 +292,7 @@ const EditFaktur = () => {
                     tmpTandaTerima.push(dataSumber[i].id)
                 }
                 setIdTandaTerima(tmpTandaTerima)
+                console.log(tmpTandaTerima)
 
                 setLoading(false);
             })
@@ -321,7 +323,7 @@ const EditFaktur = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/sales_invoices_available_sales_orders?nama_alias=${query}`, {
+            const res = await axios.get(`${Url}/sales_invoices_available_sales_orders?nama_alias=${query}&id_penerima=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -344,7 +346,7 @@ const EditFaktur = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?nama_alias=${query}`, {
+            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?nama_alias=${query}&id_pelanggan=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -417,13 +419,13 @@ const EditFaktur = () => {
             width: '10%',
             align: 'center',
             editable: true,
-            render(text, record) {
-                return {
-                    props: {
-                    },
-                    children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
-                };
-            }
+            // render(text, record) {
+            //     return {
+            //         props: {
+            //         },
+            //         children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
+            //     };
+            // }
         },
         {
             title: 'Stn',
@@ -490,7 +492,6 @@ const EditFaktur = () => {
         let tmpData = [];
         if (key == 'qty') {
             let hasil = value.replaceAll('.', '');
-            console.log(value)
             for (let i = 0; i < data.length; i++) {
                 if (i == y) {
                     tmpData.push(
@@ -514,6 +515,7 @@ const EditFaktur = () => {
                 }
 
             }
+            // console.log(hasil)
             setData(tmpData);
         }
         else if (key == 'price') {
@@ -732,6 +734,7 @@ const EditFaktur = () => {
             }
         }
 
+        console.log(arrTotal)
         setProduct(arrTotal)
         calculate(arrTotal, checked);
         setData(arrTotal)
@@ -821,20 +824,48 @@ const EditFaktur = () => {
         let rowDiscount = 0;
         let subTotalDiscount = 0;
         let totalDiscount = 0;
+        let total1 = 0;
+        let diskon1 = 0;
+        let totalDiskon2 = 0;
+        let subTotDiskon2 = 0;
+        let subtotal2 = 0;
+
+        let databaru = [];
+
         product.map((values, i) => {
             // termasuk pajak 
             if (check_checked) {
                 total += (Number(values.quantity.replace(',', '.')) * Number(values.price.replace(',', '.')));
                 totalPerProduk = (Number(values.quantity.replace(',', '.')) * Number(values.price.replace(',', '.')));
+                total1 = (Number(product[i].quantity.replace(',', '.')) * Number(product[i].price.replace(',', '.')));
 
                 if (values.pilihanDiskon == 'persen') {
                     hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage.toString().replace(',', '.')) / 100);
                     rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage.toString().replace(',', '.')) / 100);
+
+                    diskon1 = (Number(total1) * Number(product[i].discount_percentage.replace(',', '.')) / 100);
                 }
                 else if (values.pilihanDiskon == 'nominal') {
                     hasilDiskon += Number(values.fixed_discount.toString().replace(',', '.'));
                     rowDiscount = Number(values.fixed_discount.toString().replace(',', '.'));
+
+                    diskon1 = (Number(product[i].fixed_discount.replace(',', '.')));
+
                 }
+
+                // total per produk 
+                totalDiskon2 += ((diskon1 * 100) / (100 + Number(product[i].ppn.replace(',', '.'))));
+                subTotDiskon2 = total1 - diskon1
+                subtotal2 = (subTotDiskon2 * 100) / (100 + Number(product[i].ppn.replace(',', '.')));
+
+                databaru.push({
+                    detail: subtotal2
+                })
+
+                console.log(databaru)
+                setTotal1Produk(databaru);
+
+
                 totalDiscount += ((rowDiscount * 100) / (100 + Number(values.ppn.toString().replace(',', '.'))));
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 subTotal += (subTotalDiscount * 100) / (100 + Number(values.ppn.toString().replace(',', '.')));
@@ -852,6 +883,7 @@ const EditFaktur = () => {
             // tidak termasuk pajak 
             else {
                 total += (Number(values.quantity.replace(',', '.')) * Number(values.price.replace(',', '.')));
+                console.log(total)
                 totalPerProduk = (Number(values.quantity.replace(',', '.')) * Number(values.price.replace(',', '.')));
 
                 if (values.pilihanDiskon == 'persen') {
@@ -863,6 +895,7 @@ const EditFaktur = () => {
                     hasilDiskon += Number(values.fixed_discount.toString().replace(',', '.'));
                     rowDiscount = Number(values.fixed_discount.toString().replace(',', '.'));
                 }
+
                 subTotal = total - (Number(totalPerProduk) * Number(rowDiscount) / 100);
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 totalPpn += (subTotalDiscount * Number(values.ppn.toString().replace(',', '.'))) / 100;
@@ -1203,28 +1236,6 @@ const EditFaktur = () => {
             userData.append("termasuk_pajak", 0);
 
         }
-        userData.append("status", "Submitted");
-        product.map((p, i) => {
-            userData.append("nama_alias_produk[]", p.product_alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("tipe", selectedType.value);
-            userData.append("harga[]", p.price);
-            userData.append("diskon_tetap[]", p.fixed_discount);
-            userData.append("persentase_diskon[]", p.discount_percentage);
-            if (p.pilihanDiskon == 'persen') {
-                userData.append("persentase_diskon[]", p.discount_percentage);
-
-                userData.append("diskon_tetap[]", 0);
-            }
-            else if (p.pilihanDiskon == 'nominal') {
-                userData.append("diskon_tetap[]", p.fixed_discount);
-
-                userData.append("persentase_diskon[]", 0);
-            }
-            userData.append("ppn[]", p.ppn);
-        });
-
         idTandaTerima.map((item, i) => {
             if (sumber == 'SO') {
                 userData.append("id_pesanan_penjualan[]", item);
@@ -1235,6 +1246,27 @@ const EditFaktur = () => {
 
             }
         })
+        userData.append("status", "Submitted");
+        product.map((p, i) => {
+            userData.append("nama_alias_produk[]", p.product_alias_name);
+            userData.append("kuantitas[]", p.quantity.replace(',', '.'));
+            userData.append("satuan[]", p.unit);
+            userData.append("tipe", selectedType.value);
+            userData.append("harga[]", p.price.replace(',', '.'));
+            // userData.append("diskon_tetap[]", p.fixed_discount);
+            // userData.append("persentase_diskon[]", p.discount_percentage);
+            if (p.pilihanDiskon == 'persen') {
+                userData.append("persentase_diskon[]", p.discount_percentage.replace(',', '.'));
+
+                userData.append("diskon_tetap[]", 0);
+            }
+            else if (p.pilihanDiskon == 'nominal') {
+                userData.append("diskon_tetap[]", p.fixed_discount.replace(',', '.'));
+
+                userData.append("persentase_diskon[]", 0);
+            }
+            userData.append("ppn[]", p.ppn.replace(',', '.'));
+        });
 
         axios({
             method: "put",
@@ -1257,11 +1289,20 @@ const EditFaktur = () => {
             .catch((err) => {
                 if (err.response) {
                     console.log("err.response ", err.response);
+                    // if (err.response.data.message == 'Surat jalan tidak valid.') {
+                    //     Swal.fire({
+                    //         icon: "error",
+                    //         title: "Oops...",
+                    //         text: 'Surat Jalan Sudah digunakan',
+                    //     });
+                    // }
+                    // else {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
                         text: err.response.data.error.nama,
                     });
+                    // }
                 } else if (err.request) {
                     console.log("err.request ", err.request);
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
@@ -1275,7 +1316,7 @@ const EditFaktur = () => {
     const handleDraft = async (e) => {
         e.preventDefault();
         const userData = new URLSearchParams();
-        console.log(selectedType)
+        console.log(idTandaTerima)
         userData.append("tanggal", date);
         // userData.append("referensi", referensi);
         userData.append("tipe", selectedType.value);
@@ -1292,27 +1333,6 @@ const EditFaktur = () => {
             userData.append("termasuk_pajak", 0);
 
         }
-        userData.append("status", "Draft");
-        product.map((p, i) => {
-            userData.append("nama_alias_produk[]", p.product_alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("harga[]", p.price);
-            // userData.append("diskon_tetap[]", p.fixed_discount);
-            // userData.append("persentase_diskon[]", p.discount_percentage);
-            if (p.pilihanDiskon == 'persen') {
-                userData.append("persentase_diskon[]", p.discount_percentage);
-
-                userData.append("diskon_tetap[]", 0);
-            }
-            else if (p.pilihanDiskon == 'nominal') {
-                userData.append("diskon_tetap[]", p.fixed_discount);
-
-                userData.append("persentase_diskon[]", 0);
-            }
-            userData.append("ppn[]", p.ppn);
-        });
-
         idTandaTerima.map((item, i) => {
             if (sumber == 'SO') {
                 userData.append("id_pesanan_penjualan[]", item);
@@ -1323,7 +1343,26 @@ const EditFaktur = () => {
 
             }
         })
+        userData.append("status", "Draft");
+        product.map((p, i) => {
+            userData.append("nama_alias_produk[]", p.product_alias_name);
+            userData.append("kuantitas[]", p.quantity.replace(',', '.'));
+            userData.append("satuan[]", p.unit);
+            userData.append("harga[]", p.price.replace(',', '.'));
+            // userData.append("diskon_tetap[]", p.fixed_discount);
+            // userData.append("persentase_diskon[]", p.discount_percentage);
+            if (p.pilihanDiskon == 'persen') {
+                userData.append("persentase_diskon[]", p.discount_percentage.replace(',', '.'));
 
+                userData.append("diskon_tetap[]", 0);
+            }
+            else if (p.pilihanDiskon == 'nominal') {
+                userData.append("diskon_tetap[]", p.fixed_discount.replace(',', '.'));
+
+                userData.append("persentase_diskon[]", 0);
+            }
+            userData.append("ppn[]", p.ppn.replace(',', '.'));
+        });
 
         axios({
             method: "put",
@@ -1346,11 +1385,21 @@ const EditFaktur = () => {
             .catch((err) => {
                 if (err.response) {
                     console.log("err.response ", err.response);
+                    // if (err.response.data.message == 'Surat jalan tidak valid.') {
+                    //     Swal.fire({
+                    //         icon: "error",
+                    //         title: "Oops...",
+                    //         text: 'Surat Jalan Sudah digunakan',
+                    //     });
+                    // }
+                    // else {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
                         text: err.response.data.error.nama,
                     });
+                    // }
+
                 } else if (err.request) {
                     console.log("err.request ", err.request);
                     Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
@@ -1378,11 +1427,12 @@ const EditFaktur = () => {
         [...product.map((item, i) => ({
             no: i + 1,
             product_alias_name: item.product_alias_name,
-            quantity: item.quantity,
-            // quantity: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].quantity).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "qty")} key="qty" />,
+            // quantity: item.quantity,
+            quantity: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={data[i].quantity} onChange={(e) => klikUbahData(i, e.target.value, "qty")} />,
+
             unit: item.unit,
             price:
-                <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang} onKeyDown={(event) => klikEnter(event)} value={Number(item.price)} onChange={(e) => klikUbahData(i, e.target.value, "price")} />,
+                <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang} onKeyDown={(event) => klikEnter(event)} value={data[i].price} onChange={(e) => klikUbahData(i, e.target.value, "price")} />,
             discount:
                 data[i].pilihanDiskon == 'noDisc' ?
                     <div className='d-flex p-1' style={{ height: "100%" }}>
@@ -1424,7 +1474,7 @@ const EditFaktur = () => {
                         :
                         data[i].pilihanDiskon == 'nominal' ?
                             <div className='d-flex p-1' style={{ height: "100%" }}>
-                                <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].fixed_discount)} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
+                                <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={data[i].fixed_discount} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
 
                                 <div className="input-group-prepend" >
                                     <select
@@ -1442,8 +1492,11 @@ const EditFaktur = () => {
                                     </select>
                                 </div>
                             </div> : null,
-            ppn: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} suffix={'%'} onKeyDown={(event) => klikEnter(event)} value={Number(item.ppn)} onChange={(e) => klikUbahData(i, e.target.value, "ppn")} />,
-            total: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].total)} />,
+            ppn: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} suffix={'%'} onKeyDown={(event) => klikEnter(event)} value={item.ppn} onChange={(e) => klikUbahData(i, e.target.value, "ppn")} />,
+            total:
+                checked === true ?
+                    <CurrencyFormat disabled className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} onKeyDown={(event) => klikEnter(event)} value={Number(total1Produk[i].detail).toFixed(2).replace('.', ',')} /> :
+                    <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} onKeyDown={(event) => klikEnter(event)} value={data[i].total} />,
         }))]
 
 
@@ -1492,7 +1545,7 @@ const EditFaktur = () => {
                                 <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pilih Transaksi</label>
                                 <div className="col-sm-7">
                                     <input
-                                        value={sumber == 'SO' ? 'Penjualan' : 'Surat Jalan'}
+                                        value={sumber == 'SO' ? 'Uang Muka' : 'Penjualan'}
                                         type="Nama"
                                         className="form-control"
                                         id="inputNama3"

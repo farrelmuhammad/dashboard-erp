@@ -589,13 +589,7 @@ const BuatPelunasan = () => {
                 console.log(p);
                 userData.append("id_faktur_penjualan[]", p.id);
                 userData.append("terbayar[]", jumlah[i]);
-
-                // userData.append("terbayar[]", p.pays);
             });
-
-            // for (var pair of userData.entries()) {
-            //     console.log(pair[0] + ', ' + pair[1]);
-            // }
 
             axios({
                 method: "post",

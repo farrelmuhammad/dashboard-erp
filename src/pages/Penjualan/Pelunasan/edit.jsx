@@ -191,7 +191,7 @@ const EditPelunasan = () => {
 
 
             }
-            
+
             setGetDataProduct(res.data.data);
         };
 
@@ -216,6 +216,8 @@ const EditPelunasan = () => {
                 setDate(getData.date)
                 setReferensi(getData.reference);
                 setSelectedPembayaran(getData.chart_of_account)
+                // setSelectedCOA(getData.chart_of_account.name);
+                setCOA(getData.chart_of_account.id);
                 setStatus(getData.status)
                 setCustomer(getData.customer_id)
                 setSelectedCustomer(getData.customer)
@@ -241,7 +243,7 @@ const EditPelunasan = () => {
             })
     }
 
-  
+
     // Column for modal input product
     const columnsModal = [
         {
@@ -435,6 +437,7 @@ const EditPelunasan = () => {
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
         userData.append("catatan", description);
+        userData.append("bagan_akun", COA);
         userData.append("pelanggan", customer);
         userData.append("status", "Submitted");
         product.map((p) => {
@@ -490,28 +493,21 @@ const EditPelunasan = () => {
     };
 
     const handleDraft = async (e) => {
+        console.log(dataTampil)
         e.preventDefault();
         const userData = new FormData();
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
         userData.append("catatan", description);
         userData.append("pelanggan", customer);
+        userData.append("bagan_akun", COA);
         userData.append("status", "Draft");
-        product.map((p) => {
+        dataTampil.map((p) => {
             console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.unit);
-            userData.append("harga[]", p.price);
-            userData.append("persentase_diskon[]", p.discount);
-            userData.append("diskon_tetap[]", p.nominal_disc);
-            userData.append("ppn[]", p.ppn);
+            userData.append("id_faktur_penjualan[]", p.sales_invoice_id)
+            userData.append("terbayar[]", p.total);
         });
         userData.append("termasuk_pajak", checked);
-
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
 
         axios({
             method: "post",
@@ -549,7 +545,7 @@ const EditPelunasan = () => {
             });
     };
 
-    if(loading){
+    if (loading) {
         return <div></div>
     }
 
