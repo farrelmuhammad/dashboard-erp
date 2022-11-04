@@ -180,6 +180,7 @@ const BuatSuratJalan = () => {
         setProduct([])  
         setCustomer('')
         setSelectedSupplier(value);
+        console.log(value)
         setAddress(value.supplier_addresses)
         setGrup(value._group)
     };
@@ -240,7 +241,7 @@ const BuatSuratJalan = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/delivery_notes_available_tally_sheets?nama_alias=${query}&pemasok=${supplier}`, {
+            const res = await axios.get(`${Url}/delivery_notes_available_tally_sheets?nama_alias=${query}&id_pemasok=${supplier}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
