@@ -1418,11 +1418,11 @@ const CreateTallyTransfer = () => {
         {
             title: 'Tanggal',
             width: '20%',
-            dataIndex: 'code',
+            dataIndex: 'date',
         },
         {
             title: 'No. Permintaan',
-            dataIndex: 'nama',
+            dataIndex: 'code',
             width: '15%',
             align: 'center',
         },
@@ -1451,8 +1451,8 @@ const CreateTallyTransfer = () => {
 
     const columnDataPO =
         [...getDataProduct.map((item, i) => ({
+            date: item.detail.date,
             code: item.detail.code,
-            nama: item.detail.code,
             notes: item.detail.notes,
             action:
                 <>

@@ -124,6 +124,10 @@ const CreateProduction = () => {
     const [getDataProduct, setGetDataProduct] = useState();
     const [getDataOutput, setGetDataOutput] = useState();
     const [isLoading, setIsLoading] = useState(false);
+    const [tmpCentangInput, setTmpCentangInput] = useState([]);
+    const [jumlahInput, setJumlahInput] = useState([])
+    const [tmpCentangOutput, setTmpCentangOutput] = useState([]);
+    const [jumlahOutput, setJumlahOutput] = useState([])
 
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
@@ -155,43 +159,84 @@ const CreateProduction = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_stock_warehouses?product_name=${query}`, {
+            const res = await axios.get(`${Url}/select_stock_warehouses?product_name=${query}&warehouse_id=${warehouse_input}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
+            let tmp = []
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentangInput.indexOf(res.data[i].product_id) >= 0) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: true
+                    });
+                }
+                else {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: false
+                    });
+                }
+
+
+            }
+            setGetDataProduct(tmp);
         };
 
-        if (query.length === 0 || query.length > 2) getProduct();
-    }, [query])
+        if (query.length >= 0) getProduct();
+    }, [query,warehouse_input])
 
     useEffect(() => {
         const getProductOut = async () => {
-            const res = await axios.get(`${Url}/select_stock_warehouses?product_name=${query_out}`, {
+            const res = await axios.get(`${Url}/select_stock_warehouses?product_name=${query_out}&warehouse_id=${warehouse_output}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataOutput(res.data);
+            let tmp = []
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentangOutput.indexOf(res.data[i].product_id) >= 0) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: true
+                    });
+                }
+                else {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: false
+                    });
+                }
+
+
+            }
+            setGetDataOutput(tmp);
         };
 
-        if (query_out.length === 0 || query_out.length > 2) getProductOut();
-    }, [query_out])
+        if (query_out.length >= 0) getProductOut();
+    }, [query_out,warehouse_output])
 
     // Column for modal input product
     const columnsModal = [
         {
             title: 'Nama Produk',
             dataIndex: 'product_name',
+            render: (_, record) => {
+                return <>{record.detail.product_name}</>
+            }
         },
         {
             title: 'Stok',
             dataIndex: 'qty',
             width: '15%',
             align: 'center',
+            render: (_,record) => {
+                return <>{record.detail.qty.toString().replace('.', ',')}</>
+
+            }
         },
         {
             title: 'actions',
@@ -199,11 +244,11 @@ const CreateProduction = () => {
             width: '15%',
             align: 'center',
             render:
-                (text, record, index) => {
+                (_, record, index) => {
                     if (checked === "input") {
-                        return <Checkbox value={record} onChange={ event  => handleCheck(event, 'input')}/>
+                        return <Checkbox value={record} onChange={ event  => handleCheck(event, index,'input')}/>
                     } else if (record) {
-                        return <Checkbox value={record} onChange={ event  => handleCheck(event, 'output')}/>
+                        return <Checkbox value={record} onChange={ event  => handleCheck(event, index,'output')}/>
                     }
                 }
         },
@@ -326,25 +371,114 @@ const CreateProduction = () => {
         };
     });
 
-    const handleCheck = (event, param) => {
+    const handleCheck = (event, index,param) => {
         
         if (param === "input") {
+            let data = event.target.value
+
+            let tmpDataBaru = []
+            let tmpJumlah = [...jumlahInput]
+            let tmpDataCentang = [...tmpCentangInput]
+            for (let i = 0; i < getDataProduct.length; i++) {
+                if (i == index) {
+                    tmpDataBaru.push({
+                        detail: getDataProduct[i].detail,
+                        statusCek: !getDataProduct[i].statusCek
+                    })
+                    // tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+
+                }
+                else {
+                    tmpDataBaru.push(getDataProduct[i])
+                }
+                if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+                }
+                else {
+                    let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.product_id);
+                    if(index>=0){
+                        tmpDataCentang.splice(index, 1)
+                    }
+                    // tmpDataCentang.push('')
+                }
+            }
+            let unikTmpCentang = [...new Set(tmpDataCentang)]
+            setTmpCentangInput(unikTmpCentang)
+            setGetDataProduct(tmpDataBaru)
             var updatedList = [...product];
-            // console.log(event.target.checked, param,updatedList);
-            if (event.target.checked) {
-                updatedList = [...product, event.target.value];
+            if (tmpDataBaru[index].statusCek) {
+                updatedList = [...product, data.detail];
+
+                for (let i = 0; i < updatedList.length; i++) {
+                    if (i >= product.length) {
+                        tmpJumlah.push(0)
+                    }
+
+                }
+                console.log(tmpJumlah)
             } else {
-                updatedList.splice(product.indexOf(event.target.value), 1);
+                for (let i = 0; i < updatedList.length; i++) {
+                    if (updatedList[i].product_id == data.detail.product_id) {
+                        updatedList.splice(i, 1);
+                        tmpJumlah.splice(i, 1)
+                    }
+                }
             }
             setProduct(updatedList);
+            setJumlahInput(tmpJumlah)
         } else {
-            var updatedListOutput = [...productOutput];
-            if (event.target.checked) {
-                updatedListOutput = [...productOutput, event.target.value];
-            } else {
-                updatedListOutput.splice(productOutput.indexOf(event.target.value), 1);
+            let data = event.target.value
+
+            let tmpDataBaru = []
+            let tmpJumlah = [...jumlahOutput]
+            let tmpDataCentang = [...tmpCentangOutput]
+            for (let i = 0; i < getDataOutput.length; i++) {
+                if (i == index) {
+                    tmpDataBaru.push({
+                        detail: getDataOutput[i].detail,
+                        statusCek: !getDataOutput[i].statusCek
+                    })
+                    // tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+
+                }
+                else {
+                    tmpDataBaru.push(getDataOutput[i])
+                }
+                if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+                }
+                else {
+                    let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.product_id);
+                    if(index>=0){
+                        tmpDataCentang.splice(index, 1)
+                    }
+                    // tmpDataCentang.push('')
+                }
             }
-        setProductOutput(updatedListOutput);
+            let unikTmpCentang = [...new Set(tmpDataCentang)]
+            setTmpCentangOutput(unikTmpCentang)
+            setGetDataOutput(tmpDataBaru)
+            var updatedListOutput = [...productOutput];
+            if (tmpDataBaru[index].statusCek) {
+                updatedListOutput = [...productOutput, data.detail];
+
+                for (let i = 0; i < updatedListOutput.length; i++) {
+                    if (i >= productOutput.length) {
+                        tmpJumlah.push(0)
+                    }
+
+                }
+                console.log(tmpJumlah)
+            } else {
+                for (let i = 0; i < updatedListOutput.length; i++) {
+                    if (updatedListOutput[i].product_id == data.detail.product_id) {
+                        updatedListOutput.splice(i, 1);
+                        tmpJumlah.splice(i, 1)
+                    }
+                }
+            }
+            setProductOutput(updatedListOutput);
+            setJumlahOutput(tmpJumlah)
         }
     };
 

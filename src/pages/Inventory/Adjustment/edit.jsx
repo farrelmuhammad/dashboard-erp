@@ -267,10 +267,10 @@ const EditAdjustment = () => {
             dataIndex: 'qty_before',
             width: '30%',
             align: 'center',
-            render: (text) => {
-                return <>{text.toString().replace('.', ',')}</>
+            // render: (text) => {
+            //     return <>{text.toString().replace('.', ',')}</>
 
-            }
+            // }
         },
         {
             title: 'Qty saat ini',
@@ -383,8 +383,8 @@ const EditAdjustment = () => {
             }
         }
         let unikTmpCentang = [...new Set(tmpDataCentang)]
-        console.log(unikTmpCentang)
         setTmpCentang(unikTmpCentang)
+        setGetDataProduct(tmpDataBaru)
         setGetDataProduct(tmpDataBaru)
         var updatedList = [...product];
         if (tmpDataBaru[index].statusCek) {
@@ -407,11 +407,6 @@ const EditAdjustment = () => {
         }
         setProduct(updatedList);
         setJumlah(tmpJumlah)
-
-
-        // for(let )
-        console.log(updatedList);
-
     };
 
     const handleSubmit = async (e) => {
