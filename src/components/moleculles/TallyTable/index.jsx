@@ -47,6 +47,7 @@ const TallyTable = () => {
       },
     }).then((res) => res.json())
       .then(({ data }) => {
+        //console.log(data)
         // setGetDataTally(data);
         // agar bisa di search 
         let tmp = []

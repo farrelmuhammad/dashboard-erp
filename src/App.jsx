@@ -238,7 +238,7 @@ const App = () => {
       </Menu.Item>
       <Menu.Item key="38">
         <Link to="/pembayaranpembelian" />
-        Pelunasan Pembelian
+        Pembayaran Pembelian
       </Menu.Item>
       <Menu.Item key="39">
         <Link to="/pib" />
@@ -274,7 +274,7 @@ const App = () => {
       </Menu.Item>
       <Menu.Item key="46">
         <Link to="/goodstransfer" />
-        Transfer Gudang
+        Transfer Barang
       </Menu.Item>
       <Menu.Item key="47">
         <Link to="/tallytransfer" />
@@ -716,7 +716,7 @@ const App = () => {
       </Menu.Item>
       <Menu.Item key="38">
         <Link to="/pembayaranpembelian" />
-        Pelunasan Pembelian
+        Pembayaran Pembelian
       </Menu.Item>
 
       <Menu.Item key="40">
@@ -736,7 +736,7 @@ const App = () => {
       </Menu.Item>
       <Menu.Item key="46">
         <Link to="/goodstransfer" />
-        Transfer Gudang
+        Transfer Barang
       </Menu.Item>
 
       <Menu.Item key="48">

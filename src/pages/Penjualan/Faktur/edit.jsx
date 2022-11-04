@@ -126,6 +126,7 @@ const EditFaktur = () => {
     const [data, setData] = useState("");
     const [uangMuka, setUangMuka] = useState()
     const [statusDelvery, setStatusDelivery] = useState()
+    const [taxIncluded, setTaxIncluded] = useState(null);
 
     const navigate = useNavigate();
 
@@ -245,6 +246,10 @@ const EditFaktur = () => {
                 setSelectedPenerima(getData.recipient)
                 setCustomer(getData.recipient.id)
                 setCatatan(getData.notes)
+                setChecked(getData.tax_included)
+                setTaxIncluded(getData.tax_included)
+
+                console.log(checked)
 
                 console.log(getData.delivery_notes.length)
                 let dataSumber;
@@ -1643,7 +1648,7 @@ const EditFaktur = () => {
                 <div className="row p-0">
                     <div className="col ms-5">
                         <div className="form-check">
-                            <input className="form-check-input" type="checkbox" id="flexCheckDefault" onChange={handleChange} />
+                            <input className="form-check-input" type="checkbox" id="flexCheckDefault" onChange={handleChange} defaultChecked={taxIncluded} />
                             <label className="form-check-label" for="flexCheckDefault">
                                 Harga Termasuk PPN
                             </label>

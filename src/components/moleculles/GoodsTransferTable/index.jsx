@@ -12,7 +12,7 @@ import { toTitleCase } from '../../../utils/helper';
 import qs from "https://cdn.skypack.dev/qs@6.11.0";
 
 const GoodsTransferTable = () => {
-  const [searchText, setSearchText] = useState('');
+    const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);
     const [getDataGoodsTransfer, setGetDataGoodsTransfer] = useState([]);
@@ -23,12 +23,12 @@ const GoodsTransferTable = () => {
 
     const [tableParams, setTableParams] = useState({
         pagination: {
-          current: 1,
-          pageSize: 10,
+            current: 1,
+            pageSize: 10,
         },
-      });
+    });
 
-    const deleteGoodsTransfer= async (id) => {
+    const deleteGoodsTransfer = async (id) => {
         await axios.delete(`${Url}/goodstransfers/${id}`, {
             headers: {
                 Accept: "application/json",
@@ -137,9 +137,9 @@ const GoodsTransferTable = () => {
 
     const handleTableChange = (pagination, filters, sorter) => {
         setTableParams({
-          pagination,
-          filters,
-          ...sorter,
+            pagination,
+            filters,
+            ...sorter,
         });
     };
     const getParams = (params) => ({
@@ -148,7 +148,7 @@ const GoodsTransferTable = () => {
         ...params,
     });
 
-    const getGoodsTransfer= async (params = {}) => {
+    const getGoodsTransfer = async (params = {}) => {
         setIsLoading(true);
         await axios.get(`${Url}/goodstransfers?${qs.stringify(getParams(tableParams))}`, {
             headers: {
@@ -164,16 +164,16 @@ const GoodsTransferTable = () => {
                 setTableParams({
                     ...tableParams,
                     pagination: {
-                      ...tableParams.pagination,
-                      total: 200,
+                        ...tableParams.pagination,
+                        total: 200,
                     },
-                  });
+                });
             })
     }
 
     useEffect(() => {
         getGoodsTransfer();
-      }, [JSON.stringify(tableParams)]);
+    }, [JSON.stringify(tableParams)]);
 
     const columns = [
         {
@@ -225,14 +225,14 @@ const GoodsTransferTable = () => {
             title: 'Tipe',
             dataIndex: 'type_process',
             key: 'type_process',
+            align: 'center',
             width: '20%',
             ...getColumnSearchProps('type_process'),
             sorter: true,
             sortDirections: ['descend', 'ascend'],
             render: (_, { type_process }) => (
                 <>
-                    {type_process === 'publish' ? <div>{toTitleCase(type_process)}</div> :  <div>{toTitleCase(type_process)}</div>}
-
+                    {type_process === 'send' ? <Tag color="#2db7f5">{"Kirim"}</Tag> : <Tag color="#87d068">{"Terima"}</Tag>}
                 </>
             ),
         },
@@ -260,37 +260,37 @@ const GoodsTransferTable = () => {
                 <>
                     {record.status === 'publish' ? (
                         <Space size="middle">
-                        <Link to={`/goodstransfer/detail/${record.id}`}>
-                            <Button
-                                size='small'
-                                type="primary"
-                                icon={<InfoCircleOutlined />}
-                            />
-                        </Link>
-                    </Space>
+                            <Link to={`/goodstransfer/detail/${record.id}`}>
+                                <Button
+                                    size='small'
+                                    type="primary"
+                                    icon={<InfoCircleOutlined />}
+                                />
+                            </Link>
+                        </Space>
                     ) : (
                         <Space size="middle">
-                        <Link to={`/goodstransfer/detail/${record.id}`}>
+                            <Link to={`/goodstransfer/detail/${record.id}`}>
+                                <Button
+                                    size='small'
+                                    type="primary"
+                                    icon={<InfoCircleOutlined />}
+                                />
+                            </Link>
+                            <Link to={`/goodstransfer/edit/${record.id}`}>
+                                <Button
+                                    size='small'
+                                    type="success"
+                                    icon={<EditOutlined />}
+                                />
+                            </Link>
                             <Button
                                 size='small'
-                                type="primary"
-                                icon={<InfoCircleOutlined />}
+                                type="danger"
+                                icon={<DeleteOutlined />}
+                                onClick={() => deleteGoodsTransfer(record.id)}
                             />
-                        </Link>
-                        <Link to={`/goodstransfer/edit/${record.id}`}>
-                            <Button
-                                size='small'
-                                type="success"
-                                icon={<EditOutlined />}
-                            />
-                        </Link>
-                        <Button
-                            size='small'
-                            type="danger"
-                            icon={<DeleteOutlined />}
-                            onClick={() => deleteGoodsTransfer(record.id)}
-                        />
-                    </Space>
+                        </Space>
                     )}
                 </>
             ),

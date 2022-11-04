@@ -5,13 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Modal, PageHeader, Select, Space, Table, Tag } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
+import CurrencyFormat from 'react-currency-format';
 
 const EditableContext = createContext(null);
 
@@ -79,12 +80,12 @@ const EditableCell = ({
             >
                 {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
                 <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
-    //               formatter={value => `${value.replace('.',',')}`} 
-      decimalSeparator = {','}
-    onChange={value => {
-        value = parseFloat(value.toString().replace('.', ','))
-      }}
-      
+                    //               formatter={value => `${value.replace('.',',')}`} 
+                    decimalSeparator={','}
+                    onChange={value => {
+                        value = parseFloat(value.toString().replace('.', ','))
+                    }}
+
                 />
             </Form.Item>
         ) : (
@@ -219,12 +220,8 @@ const CreateGoodsRequest = () => {
             width: '30%',
             align: 'center',
             editable: true,
-            render(text, record) {
-                return {
-                    props: {
-                    },
-                    children: <div>{Number(text).toFixed(2).replace('.',',')}</div>
-                };
+            render: (text) => {
+                return convertToRupiahTabel(text)
             }
         },
         {
@@ -234,6 +231,16 @@ const CreateGoodsRequest = () => {
             align: 'center',
         },
     ];
+
+    const convertToRupiahTabel = (angka) => {
+        return <>
+            {
+                < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} />
+
+            }
+        </>
+    }
+
     const checkWarehouse = () => {
         // var updatedList = [...product];
         // updatedList = []
@@ -453,161 +460,153 @@ const CreateGoodsRequest = () => {
 
     return (
         <>
-            <form className="p-3 mb-3 bg-body rounded">
-                <div className="p-3 mb-3">
-                    <div className="card" style={cardOutline}>
-                        <div className="card-header bg-white">
-                            <h6 className="title fw-bold">Buat Permintaan Barang</h6>
+            <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                onBack={() => window.history.back()}
+                title="Buat Permintaan Barang"
+            >
+                <div className="row">
+                    <div className="col-md-6">
+                        <div className="form-group row mb-1">
+                            <label for="code" className="col-sm-4 col-form-label">No</label>
+                            <div className="col-sm-8">
+                                <input type="text" className="form-control" id="code" name="code" placeholder="Otomatis" readOnly />
+                            </div>
                         </div>
-                        <div className="card-body">
-                            <div className="row">
-                                <div className="col-md-6">
-                                    <div className="form-group row mb-1">
-                                        <label for="code" className="col-sm-4 col-form-label">No</label>
-                                        <div className="col-sm-8">
-                                            <input type="text" className="form-control" id="code" name="code" placeholder="Otomatis" readOnly />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label for="date" className="col-sm-4 col-form-label">Tanggal</label>
-                                        <div className="col-sm-8">
-                                            <input type="date" className="form-control" id="date" name="date" onChange={(e) => setDate(e.target.value)} />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label for="type" className="col-sm-4 col-form-label">Tipe</label>
-                                        <div className="col-sm-8">
-                                            <select onChange={e => setType(e.target.value)} id="type" name="type" className="form-select">
-                                                <option>Pilih Tipe</option>
-                                                <option value="send">Kirim</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Asal</label>
-                                        <div className="col-sm-8">
-                                            <AsyncSelect
-                                                placeholder="Pilih Gudang Asal..."
-                                                cacheOptions
-                                                defaultOptions
-                                                value={selectedWarehouseSource}
-                                                getOptionLabel={(e) => e.name}
-                                                getOptionValue={(e) => e.id}
-                                                loadOptions={loadOptionsWarehouse}
-                                                onChange={handleChangeWarehouseSource}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-6">
-                                    <div className="form-group row mb-1">
-                                        <label for="notes" className="col-sm-4 col-form-label">Catatan</label>
-                                        <div className="col-sm-8">
-                                            <textarea
-                                                className="form-control"
-                                                name="notes" id="notes"
-                                                rows="3"
-                                                onChange={(e) => setNotes(e.target.value)}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
-                                        <div className="col-sm-8">
-                                            <h3 className="badge bg-danger text-center m-1">
-                                                Draft
-                                            </h3>
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Tujuan</label>
-                                        <div className="col-sm-8">
-                                            <AsyncSelect
-                                                placeholder="Pilih Gudang Tujuan..."
-                                                cacheOptions
-                                                defaultOptions
-                                                value={selectedWarehouseDestination}
-                                                getOptionLabel={(e) => e.name}
-                                                getOptionValue={(e) => e.id}
-                                                loadOptions={loadOptionsWarehouse}
-                                                onChange={handleChangeWarehouseDestination}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
+                        <div className="form-group row mb-1">
+                            <label for="date" className="col-sm-4 col-form-label">Tanggal</label>
+                            <div className="col-sm-8">
+                                <input type="date" className="form-control" id="date" name="date" onChange={(e) => setDate(e.target.value)} />
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label for="type" className="col-sm-4 col-form-label">Tipe</label>
+                            <div className="col-sm-8">
+                                <select onChange={e => setType(e.target.value)} id="type" name="type" className="form-select">
+                                    <option>Pilih Tipe</option>
+                                    <option value="send">Kirim</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Asal</label>
+                            <div className="col-sm-8">
+                                <AsyncSelect
+                                    placeholder="Pilih Gudang Asal..."
+                                    cacheOptions
+                                    defaultOptions
+                                    value={selectedWarehouseSource}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsWarehouse}
+                                    onChange={handleChangeWarehouseSource}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-md-6">
+                        <div className="form-group row mb-1">
+                            <label for="notes" className="col-sm-4 col-form-label">Catatan</label>
+                            <div className="col-sm-8">
+                                <textarea
+                                    className="form-control"
+                                    name="notes" id="notes"
+                                    rows="3"
+                                    onChange={(e) => setNotes(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
+                            <div className="col-sm-8">
+                                <h3 className="badge bg-danger text-center m-1">
+                                    Draft
+                                </h3>
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Tujuan</label>
+                            <div className="col-sm-8">
+                                <AsyncSelect
+                                    placeholder="Pilih Gudang Tujuan..."
+                                    cacheOptions
+                                    defaultOptions
+                                    value={selectedWarehouseDestination}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsWarehouse}
+                                    onChange={handleChangeWarehouseDestination}
+                                />
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="p-3 mb-3">
-                    <div className="card" style={cardOutline}>
-                        <div className="card-header bg-white">
-                            <h6 className="title fw-bold">Daftar Produk</h6>
-                        </div>
-                        <div className="card-body">
-                            <div className="row">
-                                <div className="col text-end me-2">
-                                    <Button
-                                        type="primary"
-                                        icon={<PlusOutlined />}
-                                        // onClick={() => setModal2Visible(true)}
-                                        onClick={checkWarehouse}
-                                    />
-                                    <Modal
-                                        title="Tambah Produk"
-                                        centered
-                                        visible={modal2Visible}
-                                        onCancel={() => setModal2Visible(false)}
-                                        // footer={[
-                                        //     <Button
-                                        //         key="submit"
-                                        //         type="primary"
+            </PageHeader>
 
-                                        //     >
-                                        //         Tambah
-                                        //     </Button>,
-                                        // ]}
-                                        footer={null}
-                                    >
-                                        <div className="text-title text-start">
-                                            <div className="row">
-                                                <div className="col mb-3">
-                                                    <Search
-                                                        placeholder="Cari Produk..."
-                                                        style={{
-                                                            width: 400,
-                                                        }}
-                                                        onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                                    />
-                                                </div>
-                                                <Table
-                                                    columns={columnsModal}
-                                                    dataSource={getDataProduct}
-                                                    scroll={{
-                                                        y: 250,
-                                                    }}
-                                                    pagination={false}
-                                                    loading={isLoading}
-                                                    size="middle"
-                                                />
-                                            </div>
-                                        </div>
-                                    </Modal>
+            <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                title="Daftar Produk"
+                extra={[
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        // onClick={() => setModal2Visible(true)}
+                        onClick={checkWarehouse}
+                    />,
+                    <Modal
+                        title="Tambah Produk"
+                        centered
+                        visible={modal2Visible}
+                        onCancel={() => setModal2Visible(false)}
+                        // footer={[
+                        //     <Button
+                        //         key="submit"
+                        //         type="primary"
+
+                        //     >
+                        //         Tambah
+                        //     </Button>,
+                        // ]}
+                        footer={null}
+                    >
+                        <div className="text-title text-start">
+                            <div className="row">
+                                <div className="col mb-3">
+                                    <Search
+                                        placeholder="Cari Produk..."
+                                        style={{
+                                            width: 400,
+                                        }}
+                                        onChange={(e) => setQuery(e.target.value.toLowerCase())}
+                                    />
                                 </div>
+                                <Table
+                                    columns={columnsModal}
+                                    dataSource={getDataProduct}
+                                    scroll={{
+                                        y: 250,
+                                    }}
+                                    pagination={false}
+                                    loading={isLoading}
+                                    size="middle"
+                                />
                             </div>
-                            <Table
-                                components={components}
-                                rowClassName={() => 'editable-row'}
-                                bordered
-                                pagination={false}
-                                dataSource={product}
-                                columns={columns}
-                                onChange={(e) => setProduct(e.target.value)}
-                            />
                         </div>
-                    </div>
-                </div>
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                    </Modal>
+                ]}
+            >
+                <Table
+                    components={components}
+                    rowClassName={() => 'editable-row'}
+                    bordered
+                    pagination={false}
+                    dataSource={product}
+                    columns={columns}
+                    onChange={(e) => setProduct(e.target.value)}
+                />
+                <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2" role="group" aria-label="Basic mixed styles example">
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -625,7 +624,7 @@ const CreateGoodsRequest = () => {
                         Submit
                     </button>
                 </div>
-            </form>
+            </PageHeader>
         </>
     )
 }

@@ -385,7 +385,7 @@ const BuatSupplier = () => {
     },
     {
       label: "Lainnya...",
-      value: "Lainnya..."
+      value: "Lainnya"
     }
   ];
 

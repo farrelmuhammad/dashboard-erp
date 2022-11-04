@@ -1,11 +1,11 @@
 import './form.css'
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate,useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Modal, PageHeader, Select, Skeleton, Space, Table, Tag } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
@@ -247,7 +247,7 @@ const EditGoodsTransfer = () => {
     };
 
     useEffect(() => {
-        if(type === 'send'){
+        if (type === 'send') {
             const getTallySheet = async () => {
                 const res = await axios.get(`${Url}/select_stock_referece_tally_sheets?product_name=${query}&warehouse_id=${warehouse_id}&tally_sheet_id=${tally_sheet_id}`, {
                     headers: {
@@ -259,7 +259,7 @@ const EditGoodsTransfer = () => {
             };
             if (query.length === 0 || query.length > 2) getTallySheet();
         }
-        if (type === 'receive'){
+        if (type === 'receive') {
             const getGoodsTransfer = async () => {
                 const res = await axios.get(`${Url}/select_goods_transfer_details?product_name=${query}&goods_transfer_id=${goods_transfer_id}`, {
                     headers: {
@@ -271,7 +271,7 @@ const EditGoodsTransfer = () => {
             };
             if (query.length === 0 || query.length > 2) getGoodsTransfer();
         }
-    }, [query,selectedTallySheet,selectedGoodsTransfer]);
+    }, [query, selectedTallySheet, selectedGoodsTransfer]);
 
     useEffect(() => {
         if (type == "send") {
@@ -285,7 +285,7 @@ const EditGoodsTransfer = () => {
             var updatedList = [];
             setProduct(updatedList);
         }
-        if(type == "receive"){
+        if (type == "receive") {
             setType("receive");
             document.getElementById('reference_tally_sheet').style.display = "none";
 
@@ -590,205 +590,206 @@ const EditGoodsTransfer = () => {
                 }
             });
     };
+
     if (loading) {
         return (
-            <div></div>
+            <>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+            </>
         )
     }
+
     return (
         <>
-            <form className="p-3 mb-3 bg-body rounded">
-                <div className="p-3 mb-3">
-                    <div className="card" style={cardOutline}>
-                        <div className="card-header bg-white">
-                            <h6 className="title fw-bold">Buat Transfer Barang</h6>
+            <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                onBack={() => window.history.back()}
+                title="Edit Transfer Barang"
+            >
+                <div className="row">
+                    <div className="col-md-6">
+                        <div className="form-group row mb-1">
+                            <label for="code" className="col-sm-4 col-form-label">No</label>
+                            <div className="col-sm-8">
+                                <input type="text" className="form-control" id="code" name="code" defaultValue={code} placeholder="Otomatis" readOnly />
+                            </div>
                         </div>
-                        <div className="card-body">
-                            <div className="row">
-                                <div className="col-md-6">
-                                    <div className="form-group row mb-1">
-                                        <label for="code" className="col-sm-4 col-form-label">No</label>
-                                        <div className="col-sm-8">
-                                            <input type="text" className="form-control" id="code" name="code" defaultValue={code} placeholder="Otomatis" readOnly />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label for="date" className="col-sm-4 col-form-label">Tanggal</label>
-                                        <div className="col-sm-8">
-                                            <input type="date" className="form-control" id="date" name="date" defaultValue={date} onChange={(e) => setDate(e.target.value)} />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label for="type" className="col-sm-4 col-form-label">Tipe</label>
-                                        <div className="col-sm-8">
-                                            <select onChange={e => setType(e.target.value)} id="type" name="type" className="form-select">
-                                                {/* <option>Pilih Tipe</option> */}
-                                                <option value="send" selected={type === "send"}>Kirim</option>
-                                                <option value="receive" selected={type === "receive"}>Terima</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1" id="reference_tally_sheet">
-                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No Referensi</label>
-                                        <div className="col-sm-8">
-                                            <AsyncSelect
-                                                placeholder="Pilih Tally Sheet..."
-                                                cacheOptions
-                                                defaultOptions
-                                                defaultInputValue={reference_no}
-                                                value={selectedTallySheet}
-                                                getOptionLabel={(e) => e.code}
-                                                getOptionValue={(e) => e.code}
-                                                loadOptions={loadOptionsTallySheet}
-                                                onChange={handleChangeTallySheet}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1" style={{ display: "none" }} id="reference_transfer_gudang">
-                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No Referensi</label>
-                                        <div className="col-sm-8">
-                                            <AsyncSelect
-                                                placeholder="Pilih Transfer Barang..."
-                                                cacheOptions
-                                                defaultOptions
-                                                defaultInputValue={reference_no}
-                                                value={selectedGoodsTransfer}
-                                                getOptionLabel={(e) => e.code}
-                                                getOptionValue={(e) => e.code}
-                                                loadOptions={loadOptionsGoodsTransfer}
-                                                onChange={handleChangeGoodsTransfer}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-6">
-                                    <div className="form-group row mb-1">
-                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Asal</label>
-                                        <div className="col-sm-8">
-                                            <AsyncSelect
-                                                placeholder="Pilih Gudang Asal..."
-                                                cacheOptions
-                                                defaultOptions
-                                                defaultInputValue={warehouseSourceName}
-                                                value={selectedWarehouseSource}
-                                                getOptionLabel={(e) => e.name}
-                                                getOptionValue={(e) => e.id}
-                                                loadOptions={loadOptionsWarehouse}
-                                                onChange={handleChangeWarehouseSource}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Tujuan</label>
-                                        <div className="col-sm-8">
-                                            <AsyncSelect
-                                                placeholder="Pilih Gudang Tujuan..."
-                                                cacheOptions
-                                                defaultOptions
-                                                defaultInputValue={warehouseDestinationName}
-                                                value={selectedWarehouseDestination}
-                                                getOptionLabel={(e) => e.name}
-                                                getOptionValue={(e) => e.id}
-                                                loadOptions={loadOptionsWarehouse}
-                                                onChange={handleChangeWarehouseDestination}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label for="notes" className="col-sm-4 col-form-label">Catatan</label>
-                                        <div className="col-sm-8">
-                                            <textarea
-                                                className="form-control"
-                                                name="notes" id="notes"
-                                                rows="3"
-                                                defaultValue={notes}
-                                                onChange={(e) => setNotes(e.target.value)}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
-                                        <div className="col-sm-8">
-                                            <h3 className="badge bg-danger text-center m-1">
-                                                Draft
-                                            </h3>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div className="form-group row mb-1">
+                            <label for="date" className="col-sm-4 col-form-label">Tanggal</label>
+                            <div className="col-sm-8">
+                                <input type="date" className="form-control" id="date" name="date" defaultValue={date} onChange={(e) => setDate(e.target.value)} />
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label for="type" className="col-sm-4 col-form-label">Tipe</label>
+                            <div className="col-sm-8">
+                                <select onChange={e => setType(e.target.value)} id="type" name="type" className="form-select">
+                                    {/* <option>Pilih Tipe</option> */}
+                                    <option value="send" selected={type === "send"}>Kirim</option>
+                                    <option value="receive" selected={type === "receive"}>Terima</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1" id="reference_tally_sheet">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No Referensi</label>
+                            <div className="col-sm-8">
+                                <AsyncSelect
+                                    placeholder="Pilih Tally Sheet..."
+                                    cacheOptions
+                                    defaultOptions
+                                    defaultInputValue={reference_no}
+                                    value={selectedTallySheet}
+                                    getOptionLabel={(e) => e.code}
+                                    getOptionValue={(e) => e.code}
+                                    loadOptions={loadOptionsTallySheet}
+                                    onChange={handleChangeTallySheet}
+                                />
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1" style={{ display: "none" }} id="reference_transfer_gudang">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No Referensi</label>
+                            <div className="col-sm-8">
+                                <AsyncSelect
+                                    placeholder="Pilih Transfer Barang..."
+                                    cacheOptions
+                                    defaultOptions
+                                    defaultInputValue={reference_no}
+                                    value={selectedGoodsTransfer}
+                                    getOptionLabel={(e) => e.code}
+                                    getOptionValue={(e) => e.code}
+                                    loadOptions={loadOptionsGoodsTransfer}
+                                    onChange={handleChangeGoodsTransfer}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-md-6">
+                        <div className="form-group row mb-1">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Asal</label>
+                            <div className="col-sm-8">
+                                <AsyncSelect
+                                    placeholder="Pilih Gudang Asal..."
+                                    cacheOptions
+                                    defaultOptions
+                                    defaultInputValue={warehouseSourceName}
+                                    value={selectedWarehouseSource}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsWarehouse}
+                                    onChange={handleChangeWarehouseSource}
+                                />
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Tujuan</label>
+                            <div className="col-sm-8">
+                                <AsyncSelect
+                                    placeholder="Pilih Gudang Tujuan..."
+                                    cacheOptions
+                                    defaultOptions
+                                    defaultInputValue={warehouseDestinationName}
+                                    value={selectedWarehouseDestination}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsWarehouse}
+                                    onChange={handleChangeWarehouseDestination}
+                                />
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label for="notes" className="col-sm-4 col-form-label">Catatan</label>
+                            <div className="col-sm-8">
+                                <textarea
+                                    className="form-control"
+                                    name="notes" id="notes"
+                                    rows="3"
+                                    defaultValue={notes}
+                                    onChange={(e) => setNotes(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
+                            <div className="col-sm-8">
+                                <h3 className="badge bg-danger text-center m-1">
+                                    Draft
+                                </h3>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="p-3 mb-3">
-                    <div className="card" style={cardOutline}>
-                        <div className="card-header bg-white">
-                            <h6 className="title fw-bold">Daftar Produk</h6>
-                        </div>
-                        <div className="card-body">
-                            <div className="row">
-                                <div className="col text-end me-2">
-                                    <Button
-                                        type="primary"
-                                        icon={<PlusOutlined />}
-                                        // onClick={() => setModal2Visible(true)}
-                                        onClick={checkWarehouse}
-                                    />
-                                    <Modal
-                                        title="Tambah Produk"
-                                        centered
-                                        visible={modal2Visible}
-                                        onCancel={() => setModal2Visible(false)}
-                                        // footer={[
-                                        //     <Button
-                                        //         key="submit"
-                                        //         type="primary"
+            </PageHeader>
 
-                                        //     >
-                                        //         Tambah
-                                        //     </Button>,
-                                        // ]}
-                                        footer={null}
-                                    >
-                                        <div className="text-title text-start">
-                                            <div className="row">
-                                                <div className="col mb-3">
-                                                    <Search
-                                                        placeholder="Cari Produk..."
-                                                        style={{
-                                                            width: 400,
-                                                        }}
-                                                        onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                                    />
-                                                </div>
-                                                <Table
-                                                    columns={columnsModal}
-                                                    dataSource={getDataDetailWindow}
-                                                    scroll={{
-                                                        y: 250,
-                                                    }}
-                                                    pagination={false}
-                                                    loading={isLoading}
-                                                    size="middle"
-                                                />
-                                            </div>
-                                        </div>
-                                    </Modal>
+            <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                title="Daftar Produk"
+                extra={[
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        // onClick={() => setModal2Visible(true)}
+                        onClick={checkWarehouse}
+                    />,
+                    <Modal
+                        title="Tambah Produk"
+                        centered
+                        visible={modal2Visible}
+                        onCancel={() => setModal2Visible(false)}
+                        // footer={[
+                        //     <Button
+                        //         key="submit"
+                        //         type="primary"
+
+                        //     >
+                        //         Tambah
+                        //     </Button>,
+                        // ]}
+                        footer={null}
+                    >
+                        <div className="text-title text-start">
+                            <div className="row">
+                                <div className="col mb-3">
+                                    <Search
+                                        placeholder="Cari Produk..."
+                                        style={{
+                                            width: 400,
+                                        }}
+                                        onChange={(e) => setQuery(e.target.value.toLowerCase())}
+                                    />
                                 </div>
+                                <Table
+                                    columns={columnsModal}
+                                    dataSource={getDataDetailWindow}
+                                    scroll={{
+                                        y: 250,
+                                    }}
+                                    pagination={false}
+                                    loading={isLoading}
+                                    size="middle"
+                                />
                             </div>
-                            <Table
-                            loading={isLoading}
-                                components={components}
-                                rowClassName={() => 'editable-row'}
-                                bordered
-                                pagination={false}
-                                dataSource={product}
-                                columns={columns}
-                                onChange={(e) => setProduct(e.target.value)}
-                            />
                         </div>
-                    </div>
-                </div>
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                    </Modal>
+                ]}
+            >
+                <Table
+                    loading={isLoading}
+                    components={components}
+                    rowClassName={() => 'editable-row'}
+                    bordered
+                    pagination={false}
+                    dataSource={product}
+                    columns={columns}
+                    onChange={(e) => setProduct(e.target.value)}
+                />
+                <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2" role="group" aria-label="Basic mixed styles example">
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -806,7 +807,7 @@ const EditGoodsTransfer = () => {
                         Submit
                     </button>
                 </div>
-            </form>
+            </PageHeader>
         </>
     )
 }
