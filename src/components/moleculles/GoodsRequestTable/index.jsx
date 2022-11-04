@@ -223,7 +223,7 @@ const GoodsRequestTable = () => {
             sortDirections: ['descend', 'ascend'],
             render: (_, { status }) => (
                 <>
-                    {status === 'Submitted' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'Draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
+                    {status === 'Submitted' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'Draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="purple">{toTitleCase(status)}</Tag>}
 
                 </>
             ),

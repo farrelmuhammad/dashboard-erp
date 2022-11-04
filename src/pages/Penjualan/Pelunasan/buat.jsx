@@ -170,7 +170,7 @@ const BuatPelunasan = () => {
     };
     // load options using API call
     const loadOptionsCOA = (inputValue) => {
-        return axios.get(`${Url}/chart_of_accounts?induk=0&kode_kategori[]=111&nama=${inputValue}`, {
+        return axios.get(`${Url}/chart_of_accounts?anak_terakhir=1&kode_kategori[]=111&kode_kategori[]=112&nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,

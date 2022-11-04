@@ -101,8 +101,8 @@ const BuatPelanggan = () => {
   const [phone_number, setPhone_number] = useState('');
   const [email, setEmail] = useState('');
   const [npwp, setNpwp] = useState('');
-  const [term, setTerm] = useState('');
-  const [discount, setDiscount] = useState('');
+  const [term, setTerm] = useState(0);
+  const [discount, setDiscount] = useState(0);
   const [status, setStatus] = useState('Active');
   const navigate = useNavigate();
 
@@ -183,9 +183,12 @@ const BuatPelanggan = () => {
   const handleAdd = () => {
     const newData = {
       key: count,
-      name: ``,
-      age: '',
-      address: ``,
+      id: '',
+      address: '',
+      urban_village: ``,
+      sub_district: ``,
+      city: ``,
+      postal_code: ``,
     };
     setDataSource([...dataSource, newData]);
     setCount(count + 1);
@@ -269,13 +272,13 @@ const BuatPelanggan = () => {
         text: "NPWP maksimal 25 karakter, Silahkan periksa kembali ",
       });
     }
-    else if (!term) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Termin kosong, Silahkan Lengkapi datanya ",
-      });
-    }
+    // else if (!term) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Termin kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
     else if (!bussiness_ent) {
       Swal.fire({
         icon: "error",
@@ -283,13 +286,13 @@ const BuatPelanggan = () => {
         text: "Data Badan Usaha kosong, Silahkan Lengkapi datanya ",
       });
     }
-    else if (!discount) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Diskon kosong, Silahkan Lengkapi datanya ",
-      });
-    }
+    // else if (!discount) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Diskon kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
     else {
 
       const userData = new FormData();
@@ -382,7 +385,7 @@ const BuatPelanggan = () => {
     },
     {
       label: "Lainnya...",
-      value: "Lainnya..."
+      value: "Lainnya"
     }
   ];
 
@@ -504,6 +507,7 @@ const BuatPelanggan = () => {
               type="Nama"
               className="form-control"
               id="inputNama3"
+              value={term}
               onChange={(e) => setTerm(e.target.value)}
             />
           </div>
@@ -517,6 +521,7 @@ const BuatPelanggan = () => {
               type="number"
               className="form-control"
               id="inputNama3"
+              value={discount}
               onChange={(e) => setDiscount(e.target.value)}
             />
           </div>
