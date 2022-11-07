@@ -177,11 +177,9 @@ const EditGoodsTransfer = () => {
         // setGetPosition(res.data.data[0]);
         // console.log(res.data.data[0])
         const getData = res.data.data[0];
-        console.log(getData);
         setCode(getData.code);
         setType(getData.type_process);
         setReferenceNo(getData.reference_no);
-        setGoodsTransfer(getData.id);
         setDate(getData.date);
         setWarehouseSource(getData.whsource.id);
         setWarehouseSourceName(getData.whsource.name);
@@ -434,7 +432,7 @@ const EditGoodsTransfer = () => {
     newData.splice(index, 1, { ...item, ...row });
     setProduct(newData);
   };
-
+  
   const components = {
     body: {
       row: EditableRow,

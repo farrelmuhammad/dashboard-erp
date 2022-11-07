@@ -763,7 +763,7 @@ const BuatReturPembelian = () => {
                         icon: "error",
                         title: "Oops...",
                         //text:"Data Produk belum dipilih, silahkan lengkapi datanya dan coba kembali",
-                         text: err.response.data.error.message,
+                         text: err.response.data.message,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -844,8 +844,8 @@ const BuatReturPembelian = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text:"Data Produk belum dipilih, silahkan lengkapi datanya dan coba kembali",
-                        //text: err.response.data.error.nama,
+                        //text:"Data Produk belum dipilih, silahkan lengkapi datanya dan coba kembali",
+                        text: err.response.data.message,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);

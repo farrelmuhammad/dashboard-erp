@@ -215,6 +215,7 @@ export const DetailPesananPembelian = () => {
 
     const [tampilPPN, setTampilPPN] = useState(true);
     const [tampilMataUang, setTampilMataUang] = useState(false);
+    const [beCust, setBECust] = useState("")
     const [PPN, setPPN] = useState();
     useEffect(() => {
         if (grup == "Impor") {
@@ -250,6 +251,10 @@ export const DetailPesananPembelian = () => {
                 setPPN(getData[0].ppn);
                 setTotal(getData[0].total);
                 setGrup(getData[0].supplier._group);
+                setBECust(getData[0].supplier.business_entity)
+
+                console.log(getData)
+
                 if (!getData[0].currency) {
                     setNamaMataUang("Rp")
                 }
@@ -423,7 +428,12 @@ export const DetailPesananPembelian = () => {
                             </div>
                             <div className="d-flex flex-row">
                                 <label className='col-6'>TO</label>
-                                <div className='col-6'> : {supplier}</div>
+                                {
+                                    beCust == 'Lainnya' ? 
+                                    <div className='col-6'> : {supplier}</div> : 
+                                    <div className='col-6'> : {beCust} {supplier}</div>
+                                }
+                               
                             </div>
                             <div className="d-flex flex-row">
                                 <label className='col-6'>ACCORDING TO</label>

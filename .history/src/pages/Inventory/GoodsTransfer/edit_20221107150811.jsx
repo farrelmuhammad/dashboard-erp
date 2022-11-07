@@ -181,7 +181,6 @@ const EditGoodsTransfer = () => {
         setCode(getData.code);
         setType(getData.type_process);
         setReferenceNo(getData.reference_no);
-        setGoodsTransfer(getData.id);
         setDate(getData.date);
         setWarehouseSource(getData.whsource.id);
         setWarehouseSourceName(getData.whsource.name);
@@ -434,7 +433,7 @@ const EditGoodsTransfer = () => {
     newData.splice(index, 1, { ...item, ...row });
     setProduct(newData);
   };
-
+  
   const components = {
     body: {
       row: EditableRow,

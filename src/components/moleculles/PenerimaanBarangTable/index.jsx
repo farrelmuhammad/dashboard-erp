@@ -206,6 +206,7 @@ const PenerimaanBarangTable = () => {
             // total : getData[i].total,
             // type : getData[i].type,
             status : getData[i].status,
+            customer_name: getData[i].customer_name ? getData[i].customer_name : <div className="text-center">-</div>,
             
             // name:getData[i].name,
             // _group:getData[i]._group,
@@ -251,6 +252,15 @@ const PenerimaanBarangTable = () => {
       key: 'supplier_name',
       width: '20%',
       ...getColumnSearchProps('supplier_name'),
+      // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
+      // sortDirections: ['descend', 'ascend'],
+    },
+    {
+      title: 'Customer',
+      dataIndex: 'customer_name',
+      key: 'customer_name',
+      width: '20%',
+      ...getColumnSearchProps('customer_name'),
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
       // sortDirections: ['descend', 'ascend'],
     },
@@ -337,10 +347,23 @@ const PenerimaanBarangTable = () => {
                 />
               </Link>
             </Space>
-          ) : (
-            <>
-            </>
-          )}
+          ) : 
+          record.status === 'Cancelled' ? (
+            <Space size="middle">
+              <Link to={`/penerimaanbarang/detail/${record.id}`}>
+                <Button
+                  size='small'
+                  type="primary"
+                  icon={<InfoCircleOutlined />}
+                />
+              </Link>
+            </Space>
+          ):(
+            <></>
+          )
+           
+          
+          }
         </>
 
         // <>
