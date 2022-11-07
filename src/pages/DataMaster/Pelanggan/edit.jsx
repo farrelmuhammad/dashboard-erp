@@ -198,15 +198,16 @@ const EditPelanggan = () => {
     })
       .then((res) => {
         const getData = res.data.data[0];
-        //setLoading(false)
+        console.log(getData);
+        setLoading(false)
         setCode(getData.code);
         setName(getData.name || "");
         setBussinessName(getData.business_entity);
         setPhone_number(getData.phone_number || "");
         setEmail(getData.email || "");
         setNpwp(getData.npwp || "");
-        setTerm(getData.term || "");
-        setDiscount(getData.discount || "");
+        setTerm(getData.term);
+        setDiscount(getData.discount);
         setStatus(getData.status);
         setDataSource(getData.customer_addresses)
       })
