@@ -33,6 +33,7 @@ export const DetailSuratJalan = () => {
     const [details, setDetails] = useState([]);
     const [delivered, setDelivered] = useState();
     const [loading, setLoading] = useState(true);
+    const [beCust, setbeCust] = useState("");
     const componentRef = useRef();
     const columns = [
         {
@@ -95,9 +96,13 @@ export const DetailSuratJalan = () => {
                 setDataSO(getData);
                 setCode(getData.code)
                 setDate(getData.date)
+
+                console.log(getData)
                 if (getData.customer) {
                     setCustomer(getData.customer.name)
                     setAddress(getData.customer_address.address)
+                    setbeCust(getData.customer.business_entity)
+                    console.log(beCust)
                     setSumber('SO')
                 }
                 else if (getData.supplier) {
@@ -231,7 +236,7 @@ export const DetailSuratJalan = () => {
                                                     <div className='col' width="100px"></div>
 
                                                     <div className=' mt-3 mb-5 col d-flex justify-content-right ps-4 pe-4' height="100px" style={{ fontSize: "12px", fontStyle: "bold" }}>
-                                                        <div className='col-6'>
+                                                        {/* <div className='col-6'>
                                                             <div className="d-flex flex-row">
                                                                 <label className='col-8'>Tanggal</label>
                                                                 <div className='col-6'> : {date}</div>
@@ -256,10 +261,16 @@ export const DetailSuratJalan = () => {
                                                     <div className="d-flex flex-row">
                                                                 <label className='col-8'>Kepada Yth.</label>
                                                                 {
+                
                                                                     sumber === 'SO' ?
+                                                                        beCust == 'Lainnya' ? 
                                                                         <div className='col-6'>
                                                                             : {customer}
-                                                                        </div> :
+                                                                        </div>  : 
+                                                                           <div className='col-12'>
+                                                                           : {beCust} {customer}
+                                                                       </div> 
+                                                                        :
                                                                         <div className='col-6'>
                                                                             :  {supplier}
                                                                         </div>
@@ -274,29 +285,11 @@ export const DetailSuratJalan = () => {
                                               </>
                                                         }
 
-                                                            {/* <div className="d-flex flex-row">
-                                                                <label className='col-8'>Kepada Yth.</label>
-                                                                {
-                                                                    sumber === 'SO' ?
-                                                                        <div className='col-6'>
-                                                                            : {customer}
-                                                                        </div> :
-                                                                        <div className='col-6'>
-                                                                            :  {supplier}
-                                                                        </div>
-                                                                }
-
-                                                            </div>
-                                                            <div className="d-flex flex-row">
-                                                                <label className='col-8'>Alamat</label>
-                                                                <div>:</div>
-                                                                <div className='col-12' style={{overflowWrap:"break-word", maxWidth:"260px", marginLeft:"3px"}}> {address}  </div>
-                                                            </div> */}
                                                             <div className="d-flex flex-row">
                                                                 <label className='col-8'>Kendaraan</label>
                                                                 <div className='col-6'> : {vehicle} </div>
                                                             </div>
-                                                        </div>
+                                                        </div> */}
                                                     </div>
                                                 </div>
                                             </div>
@@ -304,14 +297,95 @@ export const DetailSuratJalan = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <br />
+                                {/* <br />
                                 <br />
                                 <br/>
-                                <br/>
+                                <br/> */}
                                 <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold", textAlign: "center" }}>
                                     <div className='align-items-center' style={{ fontSize: "16px", textDecoration: "underline", textAlign: "center" }}>SURAT JALAN</div>
                                     <div style={{ fontSize: "10px", marginTop: "-5px" }}>NO. {code}</div>
                                 </div>
+
+                <div className='mt-4 mb-1 col d-flex justify-content-center '  style={{ fontSize: "12px", width:"100%" }}>
+                      <div className='col-6'>
+                      <div className="d-flex flex-row">
+                                        <label className='col-8'>Tanggal</label>
+                                    <div className='col-6'> : {date}</div>
+                                    </div>
+
+                                    {delivered === true ?
+                                                    <>
+                                                   <div className="d-flex flex-row">
+                                                        <label className='col-8'>Kepada Yth.</label>
+                                                                        <div className='col-6'>
+                                                                            : {recipient}
+                                                                        </div> 
+                                                    </div>
+                                                    {/* <div className="d-flex flex-row">
+                                                        <label className='col-8'>Alamat</label>
+                                                                <div>:</div>
+                                                                <div className='col-12' style={{overflowWrap:"break-word", maxWidth:"260px", marginLeft:"3px"}}> {recipientAdd}  </div>
+                                                    </div> */}
+                                             </>
+                                                : 
+                                              <>
+                                                    <div className="d-flex flex-row">
+                                                                <label className='col-8'>Kepada Yth.</label>
+                                                                {
+                
+                                                                    sumber === 'SO' ?
+                                                                        beCust == 'Lainnya' ? 
+                                                                        <div className='col-6'>
+                                                                            : {customer}
+                                                                        </div>  : 
+                                                                           <div className='col-12'>
+                                                                           : {beCust} {customer}
+                                                                       </div> 
+                                                                        :
+                                                                        <div className='col-6'>
+                                                                            :  {supplier}
+                                                                        </div>
+                                                                }
+
+                                                            </div>
+                                                            {/* <div className="d-flex flex-row">
+                                                                <label className='col-8'>Alamat</label>
+                                                                <div>:</div>
+                                                                <div className='col-12' style={{overflowWrap:"break-word", maxWidth:"260px", marginLeft:"3px"}}> {address}  </div>
+                                                            </div> */}
+                                              </>
+                                                        }
+                     
+                          
+                      </div>
+                      <div className='col-6'>
+                        {
+                            delivered == true? 
+                            <div className="d-flex flex-row">
+                            <label className='col-6'>Alamat</label>
+                                    <div>:</div>
+                                    <div className='col-6' style={{overflowWrap:"break-word", maxWidth:"150px", marginLeft:"3px"}}> {recipientAdd}  </div>
+                        </div> :
+                           <div className="d-flex flex-row">
+                           <label className='col-6'>Alamat</label>
+                           <div>:</div>
+                           <div className='col-6' style={{overflowWrap:"break-word", maxWidth:"150px", marginLeft:"3px"}}> {address}  </div>
+                       </div>
+                        }
+                  
+                     
+
+                            <div className="d-flex flex-row">
+                                                                <label className='col-6'>Kendaraan</label>
+                                                                <div className='col-6'> : {vehicle} </div>
+                                                            </div>
+                        
+                          
+                      </div>
+                      <div>
+                        
+                      </div>
+                  </div>
 
                             </tr>
                         </thead>

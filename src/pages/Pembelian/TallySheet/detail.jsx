@@ -44,6 +44,7 @@ export const DetailTallySheet = () => {
     const [selectedProduct, setSelectedProduct] = useState([]);
     const [modal2Visible2, setModal2Visible2] = useState(false);
     const [detailTallySheet, setDetailTallySheet] = useState([]);
+    const [beCust, setBECust] = useState("")
 
     const valueRenderer = (cell) => cell.value;
     const onContextMenu = (e, cell, i, j) =>
@@ -61,7 +62,9 @@ export const DetailTallySheet = () => {
                 const getData = res.data.data[0];
                 const tallySheetDetail = getData.tally_sheet_details;
                 setGetTallySheet(getData)
-                setDetailTallySheet(getData.tally_sheet_details);
+                setDetailTallySheet(getData.tally_sheet_details); 
+
+                console.log(getData)
 
                 let arrData = [];
                 let huruf = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
@@ -78,11 +81,13 @@ export const DetailTallySheet = () => {
                             setSumber('Faktur');
                             setSelectedSupplier(getData.supplier_name);
                             setSupplier(getData.supplier_id)
+                            setBECust(getData.supplier.business_entity);
                         }
                         else if (tallySheetDetail[i].purchase_order_id) {
                             setSumber('PO')
                             setSelectedSupplier(getData.supplier_name);
                             setSupplier(getData.supplier_id)
+                            setBECust(getData.supplier.business_entity);
                         }
                         else if (tallySheetDetail[i].sales_return_id) {
                             setSumber('Retur')
@@ -465,9 +470,12 @@ export const DetailTallySheet = () => {
                           <div className="d-flex flex-row">
                               <label className='col-6'>DARI</label>
                               {
-                                sumber=='Retur' ? 
-                                <div className='col-6'> : {getTallySheet.customer_name}</div> : 
-                                <div className='col-6'> : {getTallySheet.supplier_name}</div>
+                                sumber=='Retur' ?                                 
+                                <div className='col-6'> : {getTallySheet.customer_name}</div>
+                                : 
+                                beCust == 'Lainnya' ? 
+                                <div className='col-6'> : {getTallySheet.supplier_name}</div> :
+                                <div className='col-6'> : {beCust} {getTallySheet.supplier_name}</div>
                               }
                           
                           </div>

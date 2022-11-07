@@ -85,6 +85,7 @@ const DetailPembayaranPembelian = () => {
                 }
                 setStatus(getData.status)
                 setLoading(false);
+                console.log(getData)
             })
             .catch((err) => {
                 // Jika Gagal
@@ -338,7 +339,12 @@ const DetailPembayaranPembelian = () => {
                       <div className='col-6'>
                         <div className="d-flex flex-row">
                                 <label className='col-6'>Dari</label>
-                                <div className='col-6'> : {dataHeader.supplier.name}</div>
+                                {
+                                    dataHeader.supplier.business_entity == 'Lainnya' ? 
+                                    <div className='col-6'> : {dataHeader.supplier.name}</div> : 
+                                    <div className='col-6'> : {dataHeader.supplier.business_entity} {dataHeader.supplier.name}</div>
+                                }
+                                
                             </div>
                           <div className="d-flex flex-row">
                               <label className='col-6'>Tanggal</label>

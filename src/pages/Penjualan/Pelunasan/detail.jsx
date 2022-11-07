@@ -137,6 +137,8 @@ const DetailPelunasan = () => {
     const [totalAkhir, setTotalAkhir] = useState(0)
     const [mataUangT, setMataUangT] = useState(' Rupiah')
 
+    const [beCust, setBECust] = useState("")
+
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
         setCustomer(value.id);
@@ -450,7 +452,8 @@ const DetailPelunasan = () => {
                 setNamaCust(getData.customer.name)
                 setSalesInvoicePayment(getData.sales_invoice_payment_details)
                 setGetCode(getData.code)
-                console.log(dataHeader)
+                setBECust(getData.customer.business_entity)
+                console.log(getData)
 
                 //console.log(namaCust)
                 //console.log(dataIDCoa)
@@ -751,7 +754,12 @@ const DetailPelunasan = () => {
                       <div className='col-6'>
                         <div className="d-flex flex-row">
                                 <label className='col-6'>Kepada</label>
-                                <div className='col-6'> : {namaCust}</div>
+                                {
+                                    beCust == 'Lainnya' ? 
+                                    <div className='col-6'> : {namaCust}</div> :
+                                    <div className='col-6'> : {beCust} {namaCust}</div>
+                                }
+                               
                             </div>
                           <div className="d-flex flex-row">
                               <label className='col-6'>Tanggal</label>
@@ -1055,16 +1063,30 @@ const DetailPelunasan = () => {
                  <b> Sudah Terima Dari</b>
                 </div>
                <div className="col-7 " style={{fontSize:"10px"}} >
-                   <input
-                      value={namaCust}
-                       id="inputNama3"
-                       className='form-control'
-                       type="Nama"
-                       width={"80%"}
-                       height={"30px"}
-                       fontSize={"10px"}
-                      
-                    /> 
+                {
+                    beCust == 'Lainnya' ? 
+                    <input
+                    value={namaCust}
+                     id="inputNama3"
+                     className='form-control'
+                     type="Nama"
+                     width={"80%"}
+                     height={"30px"}
+                     fontSize={"10px"}
+                    
+                  /> : 
+                  <input
+                  value= {beCust + " " + namaCust}
+                   id="inputNama3"
+                   className='form-control'
+                   type="Nama"
+                   width={"80%"}
+                   height={"30px"}
+                   fontSize={"10px"}
+                  
+                /> 
+                }
+                 
             </div>
             </div>
 

@@ -149,6 +149,7 @@ const DetailFaktur = () => {
     const [getProduct, setGetProduct] = useState([])
     const [term, setTerm] = useState([])
     const [selectedSupplier, setSelectedSupplier] = useState()
+    const [beCust, setbeCust] = useState("")
     // const [sumber, setSumber] = useState('')
 
     useEffect(() => {
@@ -182,6 +183,7 @@ const DetailFaktur = () => {
                 setSelectedAddress(getData.recipient_address)
                 setSelectedPenerima(getData.recipient)
                 setCustomer(getData.recipient.id)
+                setbeCust(getData.recipient.business_entity)
                 setCatatan(getData.notes)
 
                 let dataSumber;
@@ -891,7 +893,12 @@ const DetailFaktur = () => {
                                                 </div>
                                                 <div className="d-flex flex-row">
                                                     <label className='col-6'>Kepada Yth.</label>
-                                                    <div className='col-6'> : {customer} </div>
+                                                    {
+                                                        beCust == 'Lainnya' ? 
+                                                        <div className='col-6'> : {selectedPenerima.name} </div> : 
+                                                        <div className='col-6'> : {beCust} {selectedPenerima.name} </div>
+                                                    }
+                                                    
                                                 </div>
                                             </div>
 

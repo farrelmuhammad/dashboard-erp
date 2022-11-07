@@ -43,6 +43,7 @@ const DetailFakturPembelian = () => {
     const [credit, setCredit] = useState([])
     const [getStatus, setGetStatus] = useState()
     const [mataUang, setMataUang] = useState('Rp ')
+    const [beCust, setBECust] = useState("");
 
 
     const convertToRupiahTabel = (angka) => {
@@ -79,9 +80,10 @@ const DetailFakturPembelian = () => {
 
                     setMataUang(getData.purchase_invoice_details[0].currency_name)
                 }
+                setBECust(getData.supplier.business_entity)
                 console.log(getData.purchase_invoice_details)
                 setLoading(false);
-                console.log(credit);
+                console.log(getData);
             })
             .catch((err) => {
                 // Jika Gagal
@@ -436,7 +438,12 @@ const DetailFakturPembelian = () => {
                                             <div className='col-6 col-md-4'>
                                                 <div className="d-flex flex-row">
                                                     <label className='col-6'>Supplier</label>
-                                                    <div className='col-6'> : {dataSupplier.business_entity} {dataSupplier.name} </div>
+                                                    {
+                                                        beCust == 'Lainnya' ? 
+                                                        <div className='col-6'> : {dataSupplier.name} </div> : 
+                                                        <div className='col-6'> : {beCust} {dataSupplier.name} </div>
+                                                    }
+                                                
                                                 </div>
                                                 <div className="d-flex flex-row">
                                                     <label className='col-6'>Tanggal Faktur</label>

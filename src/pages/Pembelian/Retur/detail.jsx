@@ -357,7 +357,12 @@ return (
                           </div>
                           <div className="d-flex flex-row">
                               <label className='col-6'>Kepada Yth.</label>
-                              <div className='col-8'> : {dataHeader.supplier.business_entity} {dataHeader.supplier.name}  </div>
+                              {
+                                dataHeader.supplier.business_entity == 'Lainnya' ? 
+                                <div className='col-8'> : {dataHeader.supplier.name}  </div> :
+                                <div className='col-8'> : {dataHeader.supplier.business_entity} {dataHeader.supplier.name}  </div>
+                              }
+                              
                           </div>
                       </div>
                       {/* <div className='col-6'>
