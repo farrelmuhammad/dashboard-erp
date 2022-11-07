@@ -504,7 +504,7 @@ const BuatPelanggan = () => {
           </label>
           <div className="col-sm-10">
             <input
-              type="Nama"
+              type="number"
               className="form-control"
               id="inputNama3"
               value={term}

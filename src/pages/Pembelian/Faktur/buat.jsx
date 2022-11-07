@@ -150,11 +150,12 @@ const BuatFakturPembelian = () => {
     const [uangMuka, setUangMuka] = useState(0);
     const [totalKeseluruhan, setTotalKeseluruhan] = useState(0);
     const [dataSupplier, setDataSupplier] = useState([]);
+    const [idSupplier, setIDSupplier] = useState("");
 
     useEffect(() => {
         getCodeFaktur()
         getAkun()
-        getCredit()
+        getCredit(idSupplier)
         getAlamat()
     }, [])
 
@@ -173,6 +174,9 @@ const BuatFakturPembelian = () => {
                         supplier.push({ value: item.id, label: item.name })
                     })
                     setDataSupplier(supplier);
+                    setIDSupplier(supplier[0].value)
+                    console.log(idSupplier)
+
                 })
         }
         else if(grup == 'Lokal') {
@@ -189,6 +193,7 @@ const BuatFakturPembelian = () => {
                         supplier.push({ value: item.id, label: item.name })
                     })
                     setDataSupplier(supplier);
+                    console.log(dataSupplier)
                 })
         }
 
@@ -1663,9 +1668,9 @@ const BuatFakturPembelian = () => {
             })
     }
 
-    function getCredit() {
+    function getCredit(idSupplier) {
         let tmp = [];
-        axios.get(`${Url}/credit_notes`, {
+        axios.get(`${Url}/credit_notes?id_pemasok=${idSupplier}`, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${auth.token}`
@@ -1683,6 +1688,8 @@ const BuatFakturPembelian = () => {
                 setOptionCredit(tmp);
             })
     }
+
+    
 
     function getAlamat() {
         let tmp = [];

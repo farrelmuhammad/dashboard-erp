@@ -22,6 +22,7 @@ export const DetailPesanan = () => {
     const [details, setDetails] = useState([]);
     const [taxInclude, setTaxInclude] = useState("");
     const [namaMataUang, setNamaMataUang] = useState();
+    const [BECust, setBECust] = useState("");
     const auth = useSelector(state => state.auth);
 
     const convertToRupiah = (angka) => {
@@ -153,6 +154,7 @@ export const DetailPesanan = () => {
                 setDetails(res.data.data[0].sales_order_details);
                 setCustomer(res.data.data[0].customer.name);
                 setTaxInclude(res.data.data[0].tax_included)
+                setBECust(res.data.data[0].customer.business_entity);
                 if (!getData[0].currency) {
                     setNamaMataUang("Rp")
                 }
@@ -284,7 +286,11 @@ export const DetailPesanan = () => {
                                                 </div>
                                                 <div className="d-flex flex-row">
                                                     <label className='col-6'>Kepada Yth.</label>
-                                                    <div className='col-6'> : {customer}</div>
+                                                    {
+                                                        BECust === 'Lainnya'? <div className='col-6'> : {customer}</div> : 
+                                                        <div className='col-6'> : {BECust} {customer} </div>
+                                                    }
+                                                    {/* <div className='col-6'> : {customer}</div> */}
                                                 </div>
                                             </div>
                                         </div>

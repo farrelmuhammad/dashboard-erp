@@ -30,6 +30,11 @@ export default function Login() {
     console.log("Failed:", errorInfo);
   };
 
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  let login_attempts = 3
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     var toastMixin = Swal.mixin({
@@ -69,9 +74,33 @@ export default function Login() {
             title: "Signed in Successfully",
           });
         }
+        else{
+     
+        }
       })
       .catch((err) => {
         console.log(err);
+        console.log(login_attempts)
+        if(login_attempts == 0){
+          // alert("No Login Attempts Available");
+          // console.log("habis")
+         }
+         else {
+          login_attempts = login_attempts - 1;
+         // console.log("sisa")
+           if(login_attempts == 0)
+           {
+            setIsDisabled(true)
+            setTimeout(window.location.reload.bind(window.location), 300000);
+            
+            // document.getElementById("name").disabled=true;
+            // document.getElementById("pass").disabled=true;
+            // document.getElementById("form1").disabled=true;
+           }
+
+
+         }
+
         toastMixin.fire({
           icon: "error",
           animation: true,
@@ -111,6 +140,8 @@ export default function Login() {
 
                         <div className="form-outline mb-2">
                           <Input
+                          disabled = {isDisabled}
+                            id="name"
                             size="large"
                             placeholder="input username"
                             onChange={(e) => setUserName(e.target.value)}
@@ -122,7 +153,9 @@ export default function Login() {
 
                         <div className="form-outline mb-2">
                           <Input.Password
+                          disabled={isDisabled}
                             placeholder="input password"
+                            id="pass"
                             size="large"
                             iconRender={(visible) =>
                               visible ? (
@@ -145,7 +178,7 @@ export default function Login() {
                         </div>
 
                         <div className="d-grid gap-2">
-                          <button className="btn btn-primary" type="submit">
+                          <button disabled={isDisabled} id="form1" className="btn btn-primary" type="submit">
                             Login
                           </button>
                         </div>

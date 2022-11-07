@@ -177,11 +177,9 @@ const EditGoodsTransfer = () => {
         // setGetPosition(res.data.data[0]);
         // console.log(res.data.data[0])
         const getData = res.data.data[0];
-        console.log(getData);
         setCode(getData.code);
         setType(getData.type_process);
         setReferenceNo(getData.reference_no);
-        setGoodsTransfer(getData.id);
         setDate(getData.date);
         setWarehouseSource(getData.whsource.id);
         setWarehouseSourceName(getData.whsource.name);
@@ -433,8 +431,55 @@ const EditGoodsTransfer = () => {
     const item = newData[index];
     newData.splice(index, 1, { ...item, ...row });
     setProduct(newData);
+    let check_checked = checked;
+    calculate(product, check_checked);
   };
+  const calculate = (product, check_checked) => {
+    let subTotal = 0;
+    let totalDiscount = 0;
+    let totalNominalDiscount = 0;
+    let grandTotalDiscount = 0;
+    let getPpnDiscount = 0;
+    let allTotalDiscount = 0;
+    let totalPpn = 0;
+    let grandTotal = 0;
+    let getPpn = 0;
+    let total = 0;
+    product.map((values) => {
+      if (check_checked) {
+        total = values.quantity * values.price - values.nominal_disc;
+        getPpnDiscount = (total * values.discount) / 100;
+        totalDiscount += (total * values.discount) / 100;
 
+        totalNominalDiscount += values.nominal_disc;
+        grandTotalDiscount = totalDiscount + totalNominalDiscount;
+        subTotal += ((total - getPpnDiscount) * 100) / (100 + values.ppn);
+        allTotalDiscount += total - getPpnDiscount;
+        totalPpn = allTotalDiscount - subTotal;
+        grandTotal = subTotal - grandTotalDiscount + totalPpn;
+        setSubTotal(subTotal);
+        setGrandTotalDiscount(grandTotalDiscount);
+        setTotalPpn(totalPpn);
+        setGrandTotal(grandTotal);
+      } else {
+        subTotal += values.quantity * values.price;
+        total = values.quantity * values.price - values.nominal_disc;
+        getPpnDiscount = (total * values.discount) / 100;
+        totalDiscount += (total * values.discount) / 100;
+
+        totalNominalDiscount += values.nominal_disc;
+        grandTotalDiscount = totalDiscount + totalNominalDiscount;
+        allTotalDiscount = total - getPpnDiscount;
+        getPpn = (allTotalDiscount * values.ppn) / 100;
+        totalPpn += getPpn;
+        grandTotal = subTotal - grandTotalDiscount + totalPpn;
+        setSubTotal(subTotal);
+        setGrandTotalDiscount(grandTotalDiscount);
+        setTotalPpn(totalPpn);
+        setGrandTotal(grandTotal);
+      }
+    });
+  };
   const components = {
     body: {
       row: EditableRow,

@@ -777,13 +777,13 @@ const BuatPesananPembelian = () => {
         //         text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
         //       });
         // }
-        else if(!totalPpn && grup=='Lokal'){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data PPN kosong, Silahkan Lengkapi datanya ",
-            });
-        }
+        // else if(!totalPpn && grup=='Lokal'){
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data PPN kosong, Silahkan Lengkapi datanya ",
+        //     });
+        // }
         else {
 
 
@@ -919,13 +919,13 @@ const BuatPesananPembelian = () => {
         //         text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
         //     });
         // }
-        else if (!totalPpn && grup == 'Lokal') {
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data PPN kosong, Silahkan Lengkapi datanya ",
-            });
-        }
+        // else if (totalPpn == '' && grup == 'Lokal') {
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data PPN kosong, Silahkan Lengkapi datanya ",
+        //     });
+        // }
         else {
             e.preventDefault();
             const OrderData = new FormData();

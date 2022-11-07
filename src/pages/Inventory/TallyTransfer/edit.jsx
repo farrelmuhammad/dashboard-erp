@@ -596,7 +596,7 @@ const EditTallyTransfer = () => {
     };
     // load options using API call
     const loadOptionsWarehouse = (inputValue) => {
-        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}&tipe=internal`, {
+        return fetch(`${Url}/goods_request_available_warehouses?limit=10&nama=${inputValue}&tipe=internal`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -662,7 +662,7 @@ const EditTallyTransfer = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/tally_sheet_tf_available_goods_request?kode=${query}`, {
+            const res = await axios.get(`${Url}/tally_sheet_tf_available_goods_request?kode=${query}&warehouse_id=${warehouse}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -1139,6 +1139,17 @@ const EditTallyTransfer = () => {
         }))
 
         ]
+        const checkWarehouse = () => {
+            if (warehouse == "") {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Pilih Gudang Terlebih Dahulu !",
+                });
+            } else {
+                setModalListLokal(true)
+            }
+        };
     const getNewCodeTally = async () => {
         await axios.get(`${Url}/get_new_tally_sheet_draft_code/purchase_orders?tanggal=${date}`, {
             headers: {
@@ -1388,9 +1399,7 @@ const EditTallyTransfer = () => {
                             <Button
                                 type="primary"
                                 icon={<PlusOutlined />}
-                                onClick={() => {
-                                    setModalListLokal(true)
-                                }}
+                                onClick={checkWarehouse}
                             />
                             <Modal
                                 title="Tambah Permintaan"

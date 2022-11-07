@@ -43,6 +43,7 @@ export const DetailTally = () => {
     const [selectedProduct, setSelectedProduct] = useState([]);
     const [modal2Visible2, setModal2Visible2] = useState(false);
     const [detailTallySheet, setDetailTallySheet] = useState([]);
+    const [beCust, setbeCust] = useState("");
 
     const valueRenderer = (cell) => cell.value;
     const onContextMenu = (e, cell, i, j) =>
@@ -62,9 +63,13 @@ export const DetailTally = () => {
                 setGetTallySheet(getData)
                 setDetailTallySheet(getData.tally_sheet_details);
 
+              
+                console.log(getData)
+
                 if (getData.customer_id) {
                     setSelectedCustomer(getData.customer_name)
                     setCustomer(getData.customer_id)
+                    setbeCust(getData.customer.business_entity)
                     setSumber('SO')
                 }
                 else {
@@ -422,11 +427,16 @@ export const DetailTally = () => {
                                                 <div className="d-flex flex-row">
                                                     <label className='col-6'>KEPADA</label>
                                                     {
-                                                        sumber == 'SO' ?
-                                                            <div className='col-6'> : {getTallySheet.customer.name}</div> :
-                                                            <div className='col-6'> : {getTallySheet.supplier_name}</div>
+                                                        sumber == 'SO' ? 
+                                                            beCust == 'Lainnya' ? 
+                                                            <div className='col-6'> :  {getTallySheet.customer.name}</div> : 
+                                                            <div className='col-6'> : {beCust} {getTallySheet.customer.name}</div>
+                                                        :
+                                                            beCust == 'Lainnya' ? 
+                                                            <div className='col-6'> : {getTallySheet.supplier_name}</div> : 
+                                                            <div className='col-6'> : {beCust} {getTallySheet.supplier_name}</div>
 
-
+                                                        
                                                     }
                                                 </div>
                                                 <div className="d-flex flex-row">
@@ -746,7 +756,7 @@ export const DetailTally = () => {
                                     </div>
                                 </div> :
                                 <div className="row mb-3">
-                                    <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Suipplier</label>
+                                    <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                                     <div className="col-sm-7">
                                         <input disabled="true" value={getTallySheet.supplier_name} id="startDate" className="form-control" type="text" />
 

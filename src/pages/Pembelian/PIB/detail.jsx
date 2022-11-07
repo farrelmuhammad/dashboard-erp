@@ -34,6 +34,7 @@ export const DetailPIB = () => {
     const [term, setTerm] = useState()
     const [dataPIB, setDataPIB] = useState([])
     const [totalP, setTotalP] = useState([])
+    const [beCust, setbeCust] = useState([])
 
     useEffect(() => {
         getDataPIB();
@@ -53,6 +54,9 @@ export const DetailPIB = () => {
                 setDataPIB(getData.goods_import_declaration_details)
                 setSelectedMataUang(getData.currency_name)
                 setLoading(false);
+
+                setbeCust(getData.supplier.business_entity)
+                console.log(getData)
             })
             .catch((err) => {
                 // Jika Gagal
@@ -256,7 +260,12 @@ export const DetailPIB = () => {
                       <div className='col-6'>
                         <div className="d-flex flex-row">
                                 <label className='col-6'>Kepada</label>
-                                <div className='col-6'> : {dataHeader.supplier.name}</div>
+                                {
+                                    beCust == 'Lainnya' ? 
+                                    <div className='col-6'> : {dataHeader.supplier.name}</div> : 
+                                    <div className='col-6'> : {beCust} {dataHeader.supplier.name}</div>
+                                }
+                               
                             </div>
                           <div className="d-flex flex-row">
                               <label className='col-6'>Tanggal</label>

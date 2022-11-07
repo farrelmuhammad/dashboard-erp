@@ -124,7 +124,7 @@ const BuatPesanan = () => {
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
     const [totalPpn, setTotalPpn] = useState("");
     const [grandTotal, setGrandTotal] = useState("");
-    const [checked, setChecked] = useState("");
+    const [checked, setChecked] = useState(false);
 
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
@@ -173,6 +173,7 @@ const BuatPesanan = () => {
             }
 
             // console.log(tmp.statusCek.sort())
+            console.log(getDataProduct)
             setGetDataProduct(tmp)
         };
 
@@ -430,6 +431,9 @@ const BuatPesanan = () => {
                 setJumlahDiskon(tmp);
             }
         }
+
+        calculate(product,checked)
+
     }
     const convertToRupiah = (angka, namaMataUang) => {
         // return <input
@@ -483,10 +487,10 @@ const BuatPesanan = () => {
                 totalPpn = (subTotal * Number(values.ppn)) / 100;
                 grandTotal = subTotal - hasilDiskon + Number(totalPpn);
 
-                setSubTotal(subTotal)
-                setGrandTotalDiscount(totalDiscount);
-                setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal);
+                // setSubTotal(subTotal)
+                 setGrandTotalDiscount(totalDiscount);
+                // setTotalPpn(totalPpn)
+                // setGrandTotal(grandTotal);
             } else {
                 total += (Number(values.quantity) * Number(values.price));
                 totalPerProduk = (Number(values.quantity) * Number(values.price));
@@ -506,10 +510,10 @@ const BuatPesanan = () => {
                 totalPpn += (subTotalDiscount * Number(values.ppn)) / 100;
                 grandTotal = total - totalDiscount + Number(totalPpn);
 
-                setSubTotal(total)
-                setGrandTotalDiscount(totalDiscount);
-                setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal);
+                // setSubTotal(total)
+                 setGrandTotalDiscount(totalDiscount);
+                // setTotalPpn(totalPpn)
+                // setGrandTotal(grandTotal);
             }
         })
     }, [jumlahDiskon]);
@@ -616,18 +620,18 @@ const BuatPesanan = () => {
         {
             title: 'Discount',
             dataIndex: 'discount',
-            width: '20%',
+            width: '15%',
             align: 'center',
             render: (text, record, index) => {
                 return <div className="input-group input-group-sm mb-3">
-                    <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} defaultValue={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
+                    <input style={{ width: "20px" }} type="text" className="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} defaultValue={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
                     <div className="input-group-prepend">
-                        <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px", height: "35px" }}>
+                        <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "70px", height: "35px" }}>
                             <select
                                 onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
                                 id="grupSelect"
                                 className="form-select select-diskon"
-                                style={{ width: "70px" }}
+                                style={{ width: "40px" }}
                             >
                                 <option value="percent">
                                     %
@@ -658,7 +662,7 @@ const BuatPesanan = () => {
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '14%',
+            width: '22%',
             align: 'center',
             render:
                 (text, record, index) => {
@@ -702,6 +706,7 @@ const BuatPesanan = () => {
         calculate(product, check_checked);
     };
     const handleSave = (row) => {
+       
         const newData = [...product];
         const index = newData.findIndex((item) => row.alias_name === item.alias_name);
         const item = newData[index];
@@ -712,6 +717,7 @@ const BuatPesanan = () => {
     };
 
     const calculate = (product, check_checked) => {
+        console.log("a")
         let totalPerProduk = 0;
         let grandTotal = 0;
         let total = 0;

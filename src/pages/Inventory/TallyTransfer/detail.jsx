@@ -596,7 +596,7 @@ const DetailTallyTransfer = () => {
     };
     // load options using API call
     const loadOptionsWarehouse = (inputValue) => {
-        return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}&tipe=internal`, {
+        return fetch(`${Url}/goods_request_available_warehouses?limit=10&nama=${inputValue}&tipe=internal`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,

@@ -35,11 +35,14 @@ export const DetailPenerimaanBarang = () => {
     const [brand, setBrand] = useState([]);
     const [noTrans, setNoTrans] = useState([])
     const [dataTS1, setDataTS1] = useState([]);
+    const[codePB, setCodePB] = useState("")
+    const [custName, setCustName] = useState("")
+    const [custAdd, setCustAdd] = useState("")
     useEffect(()=> {
         getDataPOById();
         //nomorTS();
 
-        console.log(nomorTS());
+        //console.log(nomorTS());
       //  console.log(brand);
     //   for(let i=0; i< dataTS.length; i++){
     //     console.log(dataTS[i].tally_sheet_code);
@@ -58,11 +61,25 @@ export const DetailPenerimaanBarang = () => {
                 setDataPenerimaan(getData);
                 setStatus(getData.status)
                 setDataTS(getData.goods_receipt_details);
-                setSupplierName(getData.supplier.name);
-                setAddress(getData.address.address);
-                setSupplierEntity(getData.supplier.business_entity);
+                setCodePB(getData.code)
+
+                if(getData.code.includes("TR")){
+                    setCustName(getData.customer_name)
+                    setCustAdd(getData.customer.business_entity)
+                    console.log(custName)
+                }
+                else{
+                   setSupplierName(getData.supplier.name);
+                    setSupplierEntity(getData.supplier.business_entity);
+                }
+
+              
+                //setAddress(getData.address.address);
+        
                 setLoading(false);
                 setBrand(nomorTS());
+
+                console.log(getData)
                 //setDataPBBarang(getData.goods_receipt_details);
                 //console.log(dataTS);
                 
@@ -290,7 +307,17 @@ export const DetailPenerimaanBarang = () => {
                           </div>
                           <div className="d-flex flex-row">
                               <label className='col-8'>Dari</label>
-                              <div className='col-6'> : {supplierEntity} {supplierName}  </div>
+                              {
+                                codePB.includes("TR") ? 
+                                custAdd == 'Lainnya' ? 
+                                <div className='col-6'> : {custName}  </div> : 
+                                <div className='col-12'> : {custAdd} {custName}  </div> :
+
+                                supplierEntity == 'Lainnya' ? 
+                                <div className='col-6'> : {supplierName}  </div> : 
+                                <div className='col-12'> : {supplierEntity} {supplierName}  </div>
+                              }
+                              
                           </div>
                       </div>
                   </div>
@@ -454,12 +481,23 @@ export const DetailPenerimaanBarang = () => {
                                 <input disabled="true" value={dataPenerimaan.code} type="Nama" className="form-control" id="inputNama3" />
                             </div>
                         </div>
-                        <div className="row mb-3">
+                        {
+                            codePB.includes("TR") ? 
+                            <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
+                            <div className="col-sm-7">
+                                <input disabled="true" value={custName} type="Nama" className="form-control" id="inputNama3" />
+                            </div>
+                        </div>
+                         :
+                            <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                             <div className="col-sm-7">
                                 <input disabled="true" value={supplierName} type="Nama" className="form-control" id="inputNama3" />
                             </div>
-                        </div>
+                            </div>
+                        }
+                     
                         {/* <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Alamat</label>
                             <div className="col-sm-7">
