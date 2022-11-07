@@ -464,7 +464,12 @@ export const DetailTallySheet = () => {
                       <div className='col-6'>
                           <div className="d-flex flex-row">
                               <label className='col-6'>DARI</label>
-                              <div className='col-6'> : {getTallySheet.supplier_name}</div>
+                              {
+                                sumber=='Retur' ? 
+                                <div className='col-6'> : {getTallySheet.customer_name}</div> : 
+                                <div className='col-6'> : {getTallySheet.supplier_name}</div>
+                              }
+                          
                           </div>
                           {/* <div className="d-flex flex-row">
                               <label className='col-6'>CATATAN </label>

@@ -1242,7 +1242,17 @@ const EditPesanan = () => {
 
                 <br />
                 <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
-                    <button
+                   {status === 'Submitted' ?  <button
+                        type="button"
+                        className="btn btn-primary rounded m-1"
+                        value="Submitted"
+                        onChange={(e) => setStatus(e.target.value)}
+                        onClick={handleSubmit}
+                    >
+                        Submit
+                    </button> : 
+                    <>
+                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
                         value="Draft"
@@ -1260,6 +1270,26 @@ const EditPesanan = () => {
                     >
                         Submit
                     </button>
+                    </>
+                    }
+                    {/* <button
+                        type="button"
+                        className="btn btn-success rounded m-1"
+                        value="Draft"
+                        onChange={(e) => setStatus(e.target.value)}
+                        onClick={handleDraft}
+                    >
+                        Simpan
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-primary rounded m-1"
+                        value="Submitted"
+                        onChange={(e) => setStatus(e.target.value)}
+                        onClick={handleSubmit}
+                    >
+                        Submit
+                    </button> */}
                     {/* <button
                         type="button"
                         className="btn btn-warning rounded m-1">
