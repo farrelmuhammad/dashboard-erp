@@ -569,7 +569,7 @@ const DetailFaktur = () => {
         {
             title: 'Nama Produk Alias',
             dataIndex: 'product_alias_name',
-            width: '15%',
+            width: '12%',
             render(text, record) {
                 return {
                     props: {
@@ -582,7 +582,7 @@ const DetailFaktur = () => {
         {
             title: 'Qty',
             dataIndex: 'quantity',
-            width: '9%',
+            width: '7%',
             align: 'center',
             render(text, record) {
                 return {
@@ -610,7 +610,7 @@ const DetailFaktur = () => {
         {
             title: 'Harga',
             dataIndex: 'price',
-            width: '16%',
+            width: '13%',
             align: 'center',
             render(text, record) {
                 return {
@@ -621,9 +621,23 @@ const DetailFaktur = () => {
                 };
             }
         },
+        // {
+        //     title: 'Discount (Rp)',
+        //     dataIndex: 'fixed_discount',
+        //     width: '10%',
+        //     align: 'center',
+        //     render(text, record) {
+        //         return {
+        //             props: {
+        //                 style: { background: "#f5f5f5" }
+        //             },
+        //             children: <div>{< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.', ',')} key="diskon" />}</div>
+        //         };
+        //     }
+        // },
         {
-            title: 'Discount (Rp)',
-            dataIndex: 'fixed_discount',
+            title: 'Discount',
+            dataIndex: 'discount_percentage',
             width: '10%',
             align: 'center',
             render(text, record) {
@@ -631,21 +645,14 @@ const DetailFaktur = () => {
                     props: {
                         style: { background: "#f5f5f5" }
                     },
-                    children: <div>{< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.', ',')} key="diskon" />}</div>
-                };
-            }
-        },
-        {
-            title: 'Discount (%)',
-            dataIndex: 'discount_percentage',
-            width: '5%',
-            align: 'center',
-            render(text, record) {
-                return {
-                    props: {
-                        style: { background: "#f5f5f5" }
-                    },
-                    children: <div>{text} %</div>
+                    children: (
+                        record.fixed_discount == 0 && record.discount_percentage == 0 ? <div>0</div> :
+                            record.discount_percentage != 0 ?
+                                <div>{text} %</div> :
+                                record.fixed_discount != 0 ?
+                                    <div>{< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.', ',')} key="diskon" />}</div>
+                                    : null
+                    )
                 };
             }
         },
@@ -696,7 +703,7 @@ const DetailFaktur = () => {
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '18%',
+            width: '13%',
             align: 'center',
             render(text, record) {
                 return {

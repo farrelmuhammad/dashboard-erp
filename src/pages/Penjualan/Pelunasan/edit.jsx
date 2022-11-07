@@ -109,6 +109,8 @@ const EditPelunasan = () => {
     const [referensi, setReferensi] = useState('');
     const [description, setDescription] = useState('');
     const [status, setStatus] = useState("");
+    const [selectedPembayaran, setSelectedPembayaran] = useState("");
+    const [COA, setCOA] = useState("");
     const [customer, setCustomer] = useState("");
     const [dataTampil, setDataTampil] = useState([]);
     const [customerName, setCustomerName] = useState("");
@@ -212,7 +214,9 @@ const EditPelunasan = () => {
                 setGetCode(getData.code)
                 setDate(getData.date)
                 setReferensi(getData.reference);
-                setSelectedPembayaran(getData.chart_of_account)
+                if (getData.chart_of_account) {
+                    setSelectedPembayaran(getData.chart_of_account)
+                }
                 // setSelectedCOA(getData.chart_of_account.name);
                 setCOA(getData.chart_of_account.id);
                 setStatus(getData.status)
@@ -225,6 +229,7 @@ const EditPelunasan = () => {
                         id: data[i].id,
                         bayar: Number(data[i].paid).toString().replace('.', ','),
                         sisa: Number(data[i].remains).toString().replace('.', ','),
+                        sisaNoEDit: Number(data[i].remains).toString().replace('.', ','),
                         code: data[i].sales_invoice_code,
                         sales_invoice_id: data[i].sales_invoice_id,
                         sales_invoice_payment_id: data[i].sales_invoice_payment_id,
@@ -283,13 +288,14 @@ const EditPelunasan = () => {
         console.log(hasilValue)
         let tmpData = [];
         for (let i = 0; i < dataTampil.length; i++) {
-            let sisaBaru = Number(dataTampil[i].total.toString().replace(',', '.')) - Number(hasilValue.toString().replace(',', '.'));
+            let sisaBaru =Number(dataTampil[i].sisaNoEDit.toString().replace(',', '.')) -  Number(hasilValue.toString().replace(',', '.'));
             console.log(sisaBaru)
             if (i == index) {
                 tmpData.push({
                     id: dataTampil[i].id,
                     bayar: hasilValue,
                     sisa: Number(sisaBaru).toFixed(2).toString().replace('.', ','),
+                    sisaNoEDit: dataTampil[i].sisaNoEDit,
                     code: dataTampil[i].code,
                     sales_invoice_id: dataTampil[i].sales_invoice_id,
                     sales_invoice_payment_id: dataTampil[i].sales_invoice_payment_id,

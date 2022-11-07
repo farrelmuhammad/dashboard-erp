@@ -737,7 +737,6 @@ const BuatPesanan = () => {
                 }
 
                 subTotalDiscount = totalPerProduk - rowDiscount;
-                // subTotal   += (subTotalDiscount * 100) / (100 + values.ppn);
                 subTotal += (totalPerProduk * 100) / (100 + values.ppn);
                 totalDiscount += ((rowDiscount * 100) / (100 + values.ppn));
                 totalPpn += ((((totalPerProduk * 100) / (100 + values.ppn)) - (rowDiscount * 100) / (100 + values.ppn)) * values.ppn) / (100);

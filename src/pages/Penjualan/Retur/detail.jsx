@@ -302,7 +302,7 @@ const DetailRetur = () => {
         {
             title: 'Qty',
             dataIndex: 'quantity',
-            width: '8%',
+            width: '12%',
             align: 'center',
             editable: true,
             render(text, record) {
@@ -337,18 +337,18 @@ const DetailRetur = () => {
             editable: true,
            
         },
-        {
-            title: 'Discount (Rp)',
-            dataIndex: 'nominal_disc',
-            width: '15%',
-            align: 'center',
-            editable: true,
+        // {
+        //     title: 'Discount (Rp)',
+        //     dataIndex: 'nominal_disc',
+        //     width: '15%',
+        //     align: 'center',
+        //     editable: true,
             
-        },
+        // },
         {
-            title: 'Discount (%)',
+            title: 'Discount',
             dataIndex: 'discount',
-            width: '5%',
+            width: '15%',
             align: 'center',
             editable: true,
           
@@ -356,7 +356,7 @@ const DetailRetur = () => {
         {
             title: 'PPN',
             dataIndex: 'ppn',
-            width: '12%',
+            width: '8%',
             align: 'center',
             editable: true,
         
@@ -365,7 +365,7 @@ const DetailRetur = () => {
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '14%',
+            width: '20%',
             align: 'center',
             render(text) {
                 return {
@@ -438,18 +438,22 @@ const DetailRetur = () => {
             price:  <div className='d-flex'>
              <CurrencyFormat disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} value={Number(item.price).toFixed(2).replace('.' , ',')} />
                     </div>,
-            nominal_disc :  <>
-            {
-                item.fixed_discount == 0 ? <div> 0 </div> : 
-                <div className='d-flex'>
-                <CurrencyFormat disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} value={Number(item.fixed_discount).toFixed(2).replace('.' , ',')} />
-                            </div>
-            }
-            </>, 
+            // nominal_disc :  <>
+            // {
+            //    == 0 ? <div> 0 </div> : 
+            //     <div className='d-flex'>
+            //     <CurrencyFormat disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} value={Number(item.fixed_discount).toFixed(2).replace('.' , ',')} />
+            //                 </div>
+            // }
+            // </>, 
             discount: <>
             {
-                item.discount_percentage == 0 ? <div> 0 </div> : 
-                <input disabled className=' text-center editable-input edit-disabled' value={item.discount_percentage.replace('.', ',') + '%'} key="diskon" />
+                item.discount_percentage &&  item.fixed_discount== 0 ? <div> 0 </div> : 
+                item.discount_percentage != 0 ?
+                <input disabled className=' text-center editable-input edit-disabled' value={item.discount_percentage.replace('.', ',') + '%'} key="diskon" /> :
+                item.fixed_discount != 0 ?
+                <CurrencyFormat disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} value={Number(item.fixed_discount).toFixed(2).replace('.' , ',')} /> : null
+
             }
             </>,    
             ppn : <>

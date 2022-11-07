@@ -118,8 +118,9 @@ const BuatRetur = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const [subTotal, setSubTotal] = useState("");
+    const [total1Produk, setTotal1Produk] = useState("");
     const [totalKeseluruhan, setTotalKeseluruhan] = useState("")
-    // const [updateProduk, setUpdateProduk] = useState([])
+    const [updateProduk, setUpdateProduk] = useState([])
     const [tampilTabel, setTampilTabel] = useState(true)
     const [tampilProduk, setTampilProduk] = useState([])
     const [jumlah, setJumlah] = useState([])
@@ -129,6 +130,7 @@ const BuatRetur = () => {
     const [totalPpn, setTotalPpn] = useState("");
     const [grandTotal, setGrandTotal] = useState("");
     const [checked, setChecked] = useState("");
+    const [tampilPPN, setTampilPPN] = useState(false);
 
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
@@ -206,23 +208,21 @@ const BuatRetur = () => {
 
     const handleChangeFaktur = (value) => {
 
-     
 
-            // console.log(value)
-            setSelectedFaktur(value);
-            setChecked(value.info.tax_included)
-            console.log(value)
-            setFakturId(value.value);
-            //console.log(value.info.id)
-            console.log(value.value)
-            setTampilPilihProduk(true)
-     
+        console.log(value.info.tax_included)
+
+        setChecked(value.info.tax_included)
+        setSelectedFaktur(value);
+        setFakturId(value.value);
+        setTampilPPN(true)
+        setTampilPilihProduk(true)
+
     };
 
     // produkFaktur 
     const [produkFaktur, setProdukFaktur] = useState([])
     const [mataUang, setMataUang] = useState("Rp ")
-    
+
     useEffect(() => {
         axios.get(`${Url}/sales_returns_available_products?id_faktur_penjualan=${fakturId}`, {
             headers: {
@@ -233,7 +233,7 @@ const BuatRetur = () => {
             let tmp = []
             let data = res.data
             setProdukFaktur(data)
-                console.log(produkFaktur)
+            console.log(produkFaktur)
         }
         );
     }, [fakturId])
@@ -280,16 +280,19 @@ const BuatRetur = () => {
                             let total = newData[i].remains.toString().replace(',', '.') * Number(newData[i].sales_invoice_price);
                             let getDiskon = (Number(total) * newData[i].sales_invoice_discount_percentage.toString().replace(',', '.')) / 100;
 
-                            let ppn = ((Number(total) - Number(getDiskon)) * newData[i].sales_invoice_ppn.toString().replace(',', '.')) / 100;
-
-                            grandTotal = Number(total) - Number(getDiskon) + Number(ppn);
+                            let setelahDiskon = (Number(total) - Number(getDiskon))
+                            let ppn = (setelahDiskon * newData[i].sales_invoice_ppn.toString().replace(',', '.')) / 100;
+                            grandTotal = total + Number(ppn);
                         }
-                        else if (newData[i].sales_invoice_fixed_discount != 0) {
+                        else if (newData[i].remaining_fixed_discount != 0) {
+                            console.log('nomnal')
                             let total = (Number(newData[i].remains.toString().replace(',', '.')) * Number(newData[i].sales_invoice_price))
-                            let getDiskon = newData[i].sales_invoice_fixed_discount;
-
-                            let ppn = ((Number(total) - Number(getDiskon)) * newData[i].sales_invoice_ppn.toString().replace(',', '.')) / 100;
-                            grandTotal = total - Number(getDiskon) + Number(ppn);
+                            let getDiskon = newData[i].remaining_fixed_discount;
+                            let setelahDiskon = (Number(total) - Number(getDiskon))
+                            let ppn = (setelahDiskon * newData[i].sales_invoice_ppn.toString().replace(',', '.')) / 100;
+                            // console.log(total)
+                            // console.log(ppn)
+                            grandTotal = total + Number(ppn);
                         }
                         else {
                             let total = (Number(newData[i].remains.toString().replace(',', '.')) * Number(newData[i].sales_invoice_price))
@@ -303,6 +306,7 @@ const BuatRetur = () => {
                 }
 
                 setJumlah(tmpJumlah)
+                console.log(newData)
                 setTampilProduk(newData);
                 calculate(newData, checked)
             }
@@ -350,7 +354,7 @@ const BuatRetur = () => {
         {
             title: 'Harga',
             dataIndex: 'prc',
-            width: '15%',
+            width: '18%',
             align: 'center',
             render(text) {
                 return {
@@ -364,7 +368,7 @@ const BuatRetur = () => {
         {
             title: 'Discount',
             dataIndex: 'dsc',
-            width: '20%',
+            width: '15%',
             align: 'center',
             render(text) {
                 return {
@@ -378,7 +382,7 @@ const BuatRetur = () => {
         {
             title: 'PPN',
             dataIndex: 'ppn',
-            width: '10%',
+            width: '8%',
             align: 'center',
             render(text) {
                 return {
@@ -392,7 +396,7 @@ const BuatRetur = () => {
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '14%',
+            width: '18%',
             align: 'center',
             render(text) {
                 return {
@@ -406,7 +410,7 @@ const BuatRetur = () => {
         {
             title: 'Action',
             dataIndex: 'act',
-            width: '14%',
+            width: '10%',
             align: 'center',
             render(text) {
                 return {
@@ -466,9 +470,9 @@ const BuatRetur = () => {
 
                     grandTotal = Number(total) - Number(getDiskon) + Number(ppn);
                 }
-                else if (tmpData[i].sales_invoice_fixed_discount != 0) {
+                else if (tmpData[i].remaining_fixed_discount != 0) {
                     let total = (Number(tmpData[i].remains.toString().replace(',', '.')) * Number(tmpData[i].sales_invoice_price))
-                    let getDiskon = tmpData[i].sales_invoice_fixed_discount;
+                    let getDiskon = tmpData[i].remaining_fixed_discount;
 
                     let ppn = ((Number(total) - Number(getDiskon)) * tmpData[i].sales_invoice_ppn.toString().replace(',', '.')) / 100;
                     grandTotal = total - Number(getDiskon) + Number(ppn);
@@ -496,12 +500,12 @@ const BuatRetur = () => {
             name_product: item.name,
             qty: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.remains} onChange={(e) => klikUbahData(i, e.target.value)} key="qty" />,
             stn: item.unit,
-            prc: <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} value={Number(item.sales_invoice_price).toString().replace('.', ',')} />,
+            prc: <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} value={Number(item.sales_invoice_price).toFixed(2).toString().replace('.', ',')} />,
             dsc:
                 <>
                     {
-                        item.sales_invoice_fixed_discount != '0' ?
-                            <CurrencyFormat disabled prefix={'Rp '} className='edit-disabled text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.sales_invoice_fixed_discount).toString().replace('.', ',')} key="diskon" />
+                        item.remaining_fixed_discount != '0' ?
+                            <CurrencyFormat disabled prefix={'Rp '} className='edit-disabled text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.remaining_fixed_discount).toString().replace('.', ',')} key="diskon" />
                             : item.sales_invoice_discount_percentage != '0' ?
                                 <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} suffix={'%'} value={Number(item.sales_invoice_discount_percentage).toString().replace('.', ',')} />
                                 : <>-</>
@@ -510,7 +514,11 @@ const BuatRetur = () => {
 
                 </>
             ,
-            total: < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp '} thousandSeparator={'.'} decimalSeparator={','} value={Number(jumlah[i]).toFixed(2).replace('.', ',')} key="diskon" />,
+            total:
+                checked === true ?
+                    <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} onKeyDown={(event) => klikEnter(event)} value={Number(total1Produk[i].detail).toFixed(2).replace('.', ',')} /> :
+                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp '} thousandSeparator={'.'} decimalSeparator={','} value={Number(jumlah[i]).toFixed(2).replace('.', ',')} key="diskon" />
+            ,
             ppn: <CurrencyFormat disabled className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} suffix={'%'} value={Number(item.sales_invoice_ppn)} />,
             act: <Space size="middle">
                 <Button
@@ -530,9 +538,14 @@ const BuatRetur = () => {
         calculate(tampilProduk, check_checked);
     };
 
+    useEffect(() => {
+        // console.log(subTotal)
+        // console.log(Number(subTotal) - Number(grandTotalDiscount) + Number(totalPpn) - Number(uangMuka))
+        setGrandTotal(Number(subTotal) - Number(grandTotalDiscount) + Number(totalPpn));
+    }, [tampilProduk]);
 
 
-    const calculate = (faktur, check_checked) => {
+    const calculate = (retur, check_checked) => {
         let totalPerProduk = 0;
         let grandTotal = 0;
         let total = 0;
@@ -542,32 +555,67 @@ const BuatRetur = () => {
         let rowDiscount = 0;
         let subTotalDiscount = 0;
         let totalDiscount = 0;
-        faktur.map((values, i) => {
+
+        let total1 = 0;
+        let diskon2 = 0;
+        let totalDiskon2 = 0;
+        let subTotDiskon2 = 0;
+        let subtotal2 = 0;
+        let databaru = [];
+
+
+        retur.map((values, i) => {
             // termasuk pajak 
             if (check_checked) {
                 total += (Number(values.remains.toString().replace(',', '.')) * Number(values.sales_invoice_price));
+                total1 = (Number(values.remains.toString().replace(',', '.')) * Number(values.sales_invoice_price));
+
                 totalPerProduk = (Number(values.remains.toString().replace(',', '.')) * Number(values.sales_invoice_price));
 
-                if (values.pilihanDiskon == 'persen') {
+                if (values.sales_invoice_discount_percentage != 0) {
                     hasilDiskon += (Number(totalPerProduk) * Number(values.sales_invoice_discount_percentage) / 100);
                     rowDiscount = (Number(totalPerProduk) * Number(values.sales_invoice_discount_percentage) / 100);
+                    diskon2 = (Number(total1) * Number(values.sales_invoice_discount_percentage) / 100);
+
                 }
-                else if (values.pilihanDiskon == 'nominal') {
-                    hasilDiskon += Number(values.sales_invoice_fixed_discount);
-                    rowDiscount = Number(values.sales_invoice_fixed_discount);
+                else if (values.remaining_fixed_discount != 0) {
+                    hasilDiskon += Number(values.remaining_fixed_discount);
+                    rowDiscount = Number(values.remaining_fixed_discount);
+
+                    diskon2 = (Number(values.remaining_fixed_discount));
+
                 }
                 totalDiscount += ((rowDiscount * 100) / (100 + Number(values.sales_invoice_ppn)));
                 subTotalDiscount = totalPerProduk - rowDiscount;
-                subTotal += (subTotalDiscount * 100) / (100 + Number(values.sales_invoice_ppn));
-                totalPpn = (subTotal * Number(values.sales_invoice_ppn)) / 100;
+                // subTotal += (totalPerProduk * 100) / (100 + Number(values.ppn.replace(',', '.')));
+
+                subTotal += (totalPerProduk * 100) / (100 + Number(values.sales_invoice_ppn));
+                totalPpn += ((((totalPerProduk * 100) / (100 + Number(values.sales_invoice_ppn))) - (rowDiscount * 100) / (100 + Number(values.sales_invoice_ppn))) * Number(values.sales_invoice_ppn)) / (100);
+
+                // totalPpn = (totalPerProduk * Number(values.sales_invoice_ppn)) / 100;
+
+                // console.log(subTot)
+                grandTotal = subTotal - hasilDiskon + Number(totalPpn) - 0;
+
+                // grandTotal = Number(subTotal) - Number(hasilDiskon) + Number(totalPpn);
 
 
-                grandTotal = subTotal - hasilDiskon + Number(totalPpn);
+                totalDiskon2 += ((diskon2 * 100) / (100 + Number(values.sales_invoice_ppn)));
+                subTotDiskon2 = total1 - diskon2;
+                subtotal2 = subTotDiskon2
+
+                databaru.push({
+                    detail: subtotal2
+                })
+
+                console.log(databaru)
+                setTotal1Produk(databaru);
 
                 setSubTotal(subTotal)
                 setGrandTotalDiscount(totalDiscount);
                 setTotalPpn(totalPpn)
                 setGrandTotal(grandTotal);
+                console.log(grandTotal)
             }
 
             // tidak termasuk pajak 
@@ -579,15 +627,17 @@ const BuatRetur = () => {
                     hasilDiskon += (Number(totalPerProduk) * Number(values.sales_invoice_discount_percentage) / 100);
                     rowDiscount = (Number(totalPerProduk) * Number(values.sales_invoice_discount_percentage) / 100);
                 }
-                else if (values.sales_invoice_fixed_discount != 0) {
+                else if (values.remaining_fixed_discount != 0) {
 
-                    hasilDiskon += Number(values.sales_invoice_fixed_discount);
-                    rowDiscount = Number(values.sales_invoice_fixed_discount);
+                    hasilDiskon += Number(values.remaining_fixed_discount);
+                    rowDiscount = Number(values.remaining_fixed_discount);
                 }
+                totalDiscount += Number(rowDiscount);
+
                 subTotal = total - (Number(totalPerProduk) * Number(rowDiscount) / 100);
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 totalPpn += (subTotalDiscount * values.sales_invoice_ppn) / 100;
-                grandTotal = total - hasilDiskon + Number(totalPpn);
+                grandTotal = total - totalDiscount + Number(totalPpn);
 
                 setSubTotal(total)
                 setGrandTotalDiscount(hasilDiskon);
@@ -646,11 +696,11 @@ const BuatRetur = () => {
                 userData.append("nama_alias_produk[]", p.alias_name);
                 userData.append("id_produk[]", p.id);
                 userData.append("produk[]", p.name);
-                userData.append("kuantitas[]", p.remains);
+                userData.append("kuantitas[]", p.remains.toString().replace(',', '.'));
                 userData.append("satuan[]", p.unit);
                 userData.append("harga[]", p.sales_invoice_price);
                 userData.append("persentase_diskon[]", p.sales_invoice_discount_percentage);
-                userData.append("diskon_tetap[]", p.sales_invoice_fixed_discount);
+                userData.append("diskon_tetap[]", p.remaining_fixed_discount);
                 userData.append("ppn[]", p.sales_invoice_ppn);
             });
             userData.append("termasuk_pajak", checked);
@@ -729,12 +779,12 @@ const BuatRetur = () => {
                 userData.append("nama_alias_produk[]", p.alias_name);
                 userData.append("id_produk[]", p.id);
                 userData.append("produk[]", p.name);
-                userData.append("kuantitas[]", p.remains);
+                userData.append("kuantitas[]", p.remains.toString().replace(',', '.'));
                 // userData.append("susut[]", p.remains);
                 userData.append("satuan[]", p.unit);
                 userData.append("harga[]", p.sales_invoice_price);
                 userData.append("persentase_diskon[]", p.sales_invoice_discount_percentage);
-                userData.append("diskon_tetap[]", p.sales_invoice_fixed_discount);
+                userData.append("diskon_tetap[]", p.remaining_fixed_discount);
                 userData.append("ppn[]", p.sales_invoice_ppn);
             });
             userData.append("termasuk_pajak", checked);
@@ -767,8 +817,8 @@ const BuatRetur = () => {
                         Swal.fire({
                             icon: "error",
                             title: "Oops...",
-                            text: "Data belum lengkap, silahkan lengkapi datanya dan coba kembali"
-                            // text: err.response.data.error.nama,
+                            // text: "Data belum lengkap, silahkan lengkapi datanya dan coba kembali"
+                            text: err.response.data.message,
                         });
                     } else if (err.request) {
                         console.log("err.request ", err.request);
@@ -966,8 +1016,16 @@ const BuatRetur = () => {
                 /> */}
                 <div className="row p-0 mt-3">
                     <div className="col ms-5">
-                        <div className="form-check">
-                            <input className="form-check-input" type="checkbox" id="flexCheckDefault" defaultChecked={checked} disabled onChange={handleChange} />
+                        <div className="form-check" style={{ display: checked ? 'flex' : 'none' }}>
+                            <input className="form-check-input" type="checkbox" id="flexCheckDefault" defaultChecked={true} disabled />
+                            <label className="form-check-label" for="flexCheckDefault">
+                                Harga Termasuk PPN
+                            </label>
+                        </div>
+                    </div>
+                    <div className="col ms-5">
+                        <div className="form-check" style={{ display: checked ? 'none' : 'flex' }}>
+                            <input className="form-check-input" type="checkbox" id="flexCheckDefault" defaultChecked={false} disabled />
                             <label className="form-check-label" for="flexCheckDefault">
                                 Harga Termasuk PPN
                             </label>
@@ -1002,8 +1060,6 @@ const BuatRetur = () => {
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Total</label>
                             <div className="col-sm-6">
                                 <CurrencyFormat prefix={'Rp '} disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(grandTotal).toFixed(2).replace('.', ',')} key="total" />
-
-                                {/* {convertToRupiah(grandTotal, "Rp")} */}
                             </div>
                         </div>
                     </div>

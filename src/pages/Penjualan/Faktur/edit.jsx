@@ -187,30 +187,13 @@ const EditFaktur = () => {
         }).then((res) => res.json());
     };
 
-    // const loadOptionsAddress = () => {
-    //         return axios.get(`${Url}/customer_addresses/${customer}`, {
-    //             headers: {
-    //                 Accept: "application/json",
-    //                 Authorization: `Bearer ${auth.token}`,
-    //             },
-    //         }).then((res) => res.data);
-
-    // };
-
-    // useEffect(()=>{
-    //     loadOptionsAddress()
-    // }, [customer])
-
     const handleChangeAddress = (value) => {
-        // console.log(value)
         setSelectedAddress(value);
         setAddressId(value.id);
     };
 
 
     useEffect(() => {
-        // getSalesOrderDetails()
-        // getCodeFaktur()
         getDataFaktur()
     }, [])
 
@@ -230,7 +213,7 @@ const EditFaktur = () => {
                 setDataHeader(getData);
                 setCode(getData.code)
                 setDate(getData.date)
-                setStatusDelivery(getData)
+                // setStatusDelivery(getData)
                 setSubTotal(getData.subtotal)
                 setGrandTotal(getData.total)
                 setUangMuka(getData.down_payment);
@@ -250,29 +233,28 @@ const EditFaktur = () => {
                 setChecked(getData.tax_included)
                 setTaxIncluded(getData.tax_included)
 
-                console.log(checked)
-
-                console.log(getData)
-                let dataSumber;
-                if (getData.delivery_notes && getData.delivery_notes.length < 0) {
+                let dataSumber = [];
+                if (getData.delivery_notes.length > 0) {
                     setSumber('Surat')
                     setDataBarang(getData.delivery_notes_details)
-                    dataSumber = getData.delivery_notes_details
+                    dataSumber = getData.delivery_notes
 
                 }
-                else if (getData.sales_orders) {
+                else if (getData.sales_orders.length > 0) {
                     setSumber('SO')
                     setDataBarang(getData.sales_invoice_details)
-                    dataSumber = getData.sales_invoice_details
+                    dataSumber = getData.sales_orders
+
                 }
                 let total = Number(getData.ppn) - Number(getData.down_payment) + Number(getData.subtotal) - Number(getData.discount)
                 setTotalKeseluruhan(total)
 
 
                 // setting data produk
-                let updatedList = getData.sales_invoice_details
                 let tmpData = []
                 let tmpTandaTerima = []
+                let updatedList = getData.sales_invoice_details
+
                 for (let i = 0; i < updatedList.length; i++) {
                     tmpData.push(
                         {
@@ -291,14 +273,13 @@ const EditFaktur = () => {
                 }
                 setData(tmpData);
                 setProduct(tmpData)
-                console.log(tmpData)
 
                 for (let i = 0; i < dataSumber.length; i++) {
                     tmpTandaTerima.push(dataSumber[i].id)
                 }
+                console.log(updatedList)
                 setIdTandaTerima(tmpTandaTerima)
-                console.log(tmpTandaTerima)
-
+                calculate(tmpData, getData.tax_included);
                 setLoading(false);
             })
             .catch((err) => {
@@ -306,25 +287,6 @@ const EditFaktur = () => {
                 console.log(err);
             });
     }
-
-
-
-    // const getCodeFaktur = async () => {
-    //     await axios.get(`${Url}/get_new_standard_sales_invoice_code?tanggal=${date}`, {
-    //         headers: {
-    //             Accept: "application/json",
-    //             Authorization: `Bearer ${auth.token}`,
-    //         },
-    //     })
-    //         .then((res) => {
-    //             setCode(res.data.data);
-    //         })
-    //         .catch((err) => {
-    //             // Jika Gagal
-    //             console.log(err);
-    //         });
-    // }
-
 
     useEffect(() => {
         const getProduct = async () => {
@@ -357,6 +319,7 @@ const EditFaktur = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
+
             let tmp = []
             for (let i = 0; i < res.data.data.length; i++) {
                 tmp.push({
@@ -416,12 +379,13 @@ const EditFaktur = () => {
         },
         {
             title: 'Nama Produk Alias',
+            width: '17%',
             dataIndex: 'product_alias_name',
         },
         {
             title: 'Qty',
             dataIndex: 'quantity',
-            width: '10%',
+            width: '12%',
             align: 'center',
             editable: true,
             // render(text, record) {
@@ -441,14 +405,14 @@ const EditFaktur = () => {
         {
             title: 'Harga',
             dataIndex: 'price',
-            width: '15%',
+            width: '10%',
             align: 'center',
             editable: true,
         },
         {
             title: 'Discount',
             dataIndex: 'discount',
-            width: '20%',
+            width: '18%',
             align: 'center',
 
         },
@@ -463,7 +427,7 @@ const EditFaktur = () => {
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '14%',
+            width: '16%',
             align: 'center',
 
         },
@@ -860,8 +824,11 @@ const EditFaktur = () => {
 
                 // total per produk 
                 totalDiskon2 += ((diskon1 * 100) / (100 + Number(product[i].ppn.replace(',', '.'))));
-                subTotDiskon2 = total1 - diskon1
-                subtotal2 = (subTotDiskon2 * 100) / (100 + Number(product[i].ppn.replace(',', '.')));
+                subTotDiskon2 = total1 - diskon1;
+                subtotal2 = subTotDiskon2;
+
+                // subTotDiskon2 = total1 - diskon1
+                // subtotal2 = (subTotDiskon2 * 100) / (100 + Number(product[i].ppn.replace(',', '.')));
 
                 databaru.push({
                     detail: subtotal2
@@ -873,8 +840,10 @@ const EditFaktur = () => {
 
                 totalDiscount += ((rowDiscount * 100) / (100 + Number(values.ppn.toString().replace(',', '.'))));
                 subTotalDiscount = totalPerProduk - rowDiscount;
-                subTotal += (subTotalDiscount * 100) / (100 + Number(values.ppn.toString().replace(',', '.')));
-                totalPpn = (subTotal * Number(values.ppn.toString().replace(',', '.'))) / 100;
+                subTotal += (totalPerProduk * 100) / (100 + Number(values.ppn.toString().replace(',', '.')));
+                // totalPpn = (subTotal * Number(values.ppn.toString().replace(',', '.'))) / 100;
+
+                totalPpn += ((((totalPerProduk * 100) / (100 +  Number(values.ppn.toString().replace(',', '.')))) - (rowDiscount * 100) / (100 +  Number(values.ppn.toString().replace(',', '.')))) *  Number(values.ppn.toString().replace(',', '.'))) / (100);
 
 
                 grandTotal = subTotal - hasilDiskon + Number(totalPpn);
@@ -901,13 +870,14 @@ const EditFaktur = () => {
                     rowDiscount = Number(values.fixed_discount.toString().replace(',', '.'));
                 }
 
+                totalDiscount += Number(rowDiscount);
                 subTotal = total - (Number(totalPerProduk) * Number(rowDiscount) / 100);
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 totalPpn += (subTotalDiscount * Number(values.ppn.toString().replace(',', '.'))) / 100;
-                grandTotal = total - hasilDiskon + Number(totalPpn);
+                grandTotal = total - totalDiscount + Number(totalPpn);
 
                 setSubTotal(total)
-                setGrandTotalDiscount(hasilDiskon);
+                setGrandTotalDiscount(totalDiscount);
                 setTotalPpn(totalPpn)
                 setGrandTotal(grandTotal);
             }
@@ -952,17 +922,12 @@ const EditFaktur = () => {
                         detail: getDataProduct[i].detail,
                         statusCek: !getDataProduct[i].statusCek
                     })
-                    // if (tmpDataBaru[i].statusCek) {
-                    //     idTerima = [...idTandaTerima, getDataProduct[i].detail.id]
-
-                    // }
                 }
                 else {
                     tmpDataBaru.push(getDataProduct[i])
                 }
             }
             setGetDataProduct(tmpDataBaru)
-            // setIdTandaTerima(idTerima);
 
         }
 
@@ -973,9 +938,6 @@ const EditFaktur = () => {
                         detail: getDataSurat[i].detail,
                         statusCek: !getDataSurat[i].statusCek
                     })
-                    // if (tmpDataBaru[i].statusCek) {
-                    //     idTerima = [...idTandaTerima, getDataProduct[i].detail.id]
-                    // }
                 }
                 else {
                     tmpDataBaru.push(getDataSurat[i])
@@ -1270,6 +1232,10 @@ const EditFaktur = () => {
 
                 userData.append("persentase_diskon[]", 0);
             }
+            else {
+                userData.append("diskon_tetap[]", 0)
+                userData.append("persentase_diskon[]", 0);
+            }
             userData.append("ppn[]", p.ppn.replace(',', '.'));
         });
 
@@ -1329,7 +1295,7 @@ const EditFaktur = () => {
         userData.append("penerima", customer);
         userData.append("catatan", description);
         userData.append("uang_muka", uangMuka);
-        userData.append("is_delivered", statusDelvery)
+        // userData.append("is_delivered", statusDelvery)
         if (checked) {
             userData.append("termasuk_pajak", 1);
 
@@ -1338,6 +1304,7 @@ const EditFaktur = () => {
             userData.append("termasuk_pajak", 0);
 
         }
+        console.log(idTandaTerima)
         idTandaTerima.map((item, i) => {
             if (sumber == 'SO') {
                 userData.append("id_pesanan_penjualan[]", item);
@@ -1349,6 +1316,7 @@ const EditFaktur = () => {
             }
         })
         userData.append("status", "Draft");
+        console.log(product)
         product.map((p, i) => {
             userData.append("nama_alias_produk[]", p.product_alias_name);
             userData.append("kuantitas[]", p.quantity.replace(',', '.'));
@@ -1364,6 +1332,10 @@ const EditFaktur = () => {
             else if (p.pilihanDiskon == 'nominal') {
                 userData.append("diskon_tetap[]", p.fixed_discount.replace(',', '.'));
 
+                userData.append("persentase_diskon[]", 0);
+            }
+            else {
+                userData.append("diskon_tetap[]", 0)
                 userData.append("persentase_diskon[]", 0);
             }
             userData.append("ppn[]", p.ppn.replace(',', '.'));

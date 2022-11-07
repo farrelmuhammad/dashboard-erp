@@ -1,7 +1,7 @@
 import './form.css'
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
@@ -12,6 +12,7 @@ import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
 import Search from 'antd/lib/transfer/search';
 import ReactSelect from 'react-select';
+import CurrencyFormat from 'react-currency-format';
 import { useSelector } from 'react-redux';
 
 const EditableContext = createContext(null);
@@ -96,32 +97,82 @@ const EditableCell = ({
 
 const BuatRetur = () => {
     // const auth.token = jsCookie.get("auth");
+
+    function klikEnter(event) {
+        if (event.code == "Enter") {
+            event.target.blur()
+        }
+    }
+
+
+    const { id } = useParams();
+
     const auth = useSelector(state => state.auth);
     const [date, setDate] = useState(null);
+    const [loading, setLoading] = useState(null);
+    const [code, setCode] = useState(null);
     const [referensi, setReferensi] = useState('');
     const [description, setDescription] = useState('');
+    const [getStatus, setGetStatus] = useState('');
     const [customer, setCustomer] = useState("");
     const [faktur, setFaktur] = useState([]);
     const [query, setQuery] = useState("");
     const [getCode, setGetCode] = useState('');
+    const [mataUang, setMataUang] = useState('Rp')
     const navigate = useNavigate();
 
     const [getDataFaktur, setGetDataFaktur] = useState();
     const [isLoading, setIsLoading] = useState(false);
 
     const [subTotal, setSubTotal] = useState("");
+    const [total1Produk, setTotal1Produk] = useState("");
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
     const [totalPpn, setTotalPpn] = useState("");
     const [grandTotal, setGrandTotal] = useState("");
-    const [checked, setChecked] = useState("");
+    const [checked, setChecked] = useState();
 
-    const [selectedValue, setSelectedCustomer] = useState(null);
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const [product, setProduct] = useState([]);
+    const [pilihanDiskon, setPilihanDiskon] = useState([]);
     const [modal2Visible, setModal2Visible] = useState(false);
 
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
         setCustomer(value.id);
     };
+
+    useEffect(() => {
+        getDataRetur()
+    }, [])
+
+    const getDataRetur = async () => {
+        await axios.get(`${Url}/sales_returns?id=${id}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        })
+            .then((res) => {
+                let getData = res.data.data[0]
+                console.log(getData)
+                setCode(getData.code)
+                setDate(getData.date)
+                setReferensi(getData.reference)
+                setDescription(getData.notes)
+                setSelectedCustomer(getData.customer)
+                setCustomer(getData.customer.id)
+                setProduct(getData.sales_return_details)
+                setChecked(getData.tax_included)
+                calculate(getData.sales_return_details, getData.tax_included)
+                setGetStatus(getData.status)
+                setLoading(false);
+            })
+            .catch((err) => {
+                // Jika Gagal
+                console.log(err);
+            });
+    }
+
     // load options using API call
     const loadOptionsCustomer = (inputValue) => {
         return fetch(`${Url}/select_customers?limit=10&nama=${inputValue}`, {
@@ -133,22 +184,18 @@ const BuatRetur = () => {
     };
 
     useEffect(() => {
-        getNewCodeSales()
-    })
-
-    useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_sales_invoices?nama_alias=${query}`, {
+            const res = await axios.get(`${Url}/sales_returns_available_sales_invoices?nama_alias=${query}&id_penerima=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataFaktur(res.data);
+            setGetDataFaktur(res.data.data);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
-    }, [query])
+    }, [query, customer])
 
     // Column for modal input product
     const columnsModal = [
@@ -183,183 +230,315 @@ const BuatRetur = () => {
         },
     ];
 
+    function klikUbahData(y, value) {
+        let tmpData = [...product];
+        // let tmpJumlah = [...jumlah]
+        let hasil = value.replaceAll('.', '');
+        console.log(hasil)
+        for (let i = 0; i < product.length; i++) {
+            if (i == y) {
+                tmpData[i].quantity = hasil;
+            }
+        }
+        // console.log(tmpData)
+
+        let grandTotal;
+        let arrTotal = [];
+        // console.log(tmpData)
+        for (let i = 0; i < tmpData.length; i++) {
+            if (i == y) {
+                if (tmpData[i].discount_percentage != 0) {
+                    let total = tmpData[i].quantity.toString().replace(',', '.') * Number(tmpData[i].price);
+                    let getDiskon = (Number(total) * tmpData[i].discount_percentage.toString().replace(',', '.')) / 100;
+
+                    let ppn = ((Number(total) - Number(getDiskon)) * tmpData[i].ppn.toString().replace(',', '.')) / 100;
+
+                    grandTotal = Number(total) - Number(getDiskon) + Number(ppn);
+                }
+                else if (tmpData[i].fixed_discount != 0) {
+                    let total = (Number(tmpData[i].quantity.toString().replace(',', '.')) * Number(tmpData[i].price))
+                    let getDiskon = tmpData[i].fixed_discount;
+
+                    let ppn = ((Number(total) - Number(getDiskon)) * tmpData[i].ppn.toString().replace(',', '.')) / 100;
+                    grandTotal = total - Number(getDiskon) + Number(ppn);
+                }
+                else {
+                    let total = (Number(tmpData[i].quantity.toString().replace(',', '.')) * Number(tmpData[i].price))
+                    let ppn = (Number(total) * tmpData[i].ppn.toString().replace(',', '.')) / 100;
+                    grandTotal = total + Number(ppn);
+                }
+
+                tmpData[i].subtotal = grandTotal
+            }
+
+        }
+
+        console.log(tmpData)
+        calculate(tmpData, checked);
+        // setUpdateProduk(arrTotal);
+        setProduct(tmpData)
+        // setJumlah(tmpJumlah)
+    }
+
     const defaultColumns = [
         {
-            title: 'No. Faktur',
-            dataIndex: 'code',
-            width: '15%',
+            title: 'No.',
+            dataIndex: '',
+            width: '5%',
             align: 'center',
-            // render: (text, record, index) => index + 1,
+            render(text, record, index) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: <div>{index + 1}</div>
+                };
+            }
         },
         {
             title: 'Nama Produk',
-            dataIndex: 'sales_invoice_details',
-            render: (faktur) => (
-                <>
-                    <ReactSelect
-                        className="basic-single"
-                        placeholder="Pilih Alamat..."
-                        classNamePrefix="select"
-                        isLoading={isLoading}
-                        isSearchable
-                        getOptionLabel={(e) => e.product_alias_name}
-                        getOptionValue={(e) => e.id}
-                        options={faktur}
-                        onChange={(e) => setFaktur(e.id)}
-                    />
-                </>
-            ),
+            dataIndex: 'product_alias_name',
+            render(text) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: text,
+                }
+            }
         },
         {
             title: 'Qty',
             dataIndex: 'quantity',
-            width: '8%',
-            align: 'center',
-            editable: true,
-            render: (text) => <a>{text}.00</a>,
+            width: '12%',
+            align: 'center'
         },
         {
             title: 'Stn',
-            dataIndex: 'sales_invoice_details',
+            dataIndex: 'unit',
             width: '5%',
             align: 'center',
-            render: (delivery_note_details) => delivery_note_details.map(service => service.unit),
+            render(text) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: text,
+                }
+            }
         },
         {
             title: 'Harga',
             dataIndex: 'price',
-            width: '10%',
+            width: '15%',
             align: 'center',
-            editable: true,
-            render: (text) => <a>Rp. {text}</a>,
+            render(text) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: text,
+                }
+            }
+
         },
         {
-            title: 'Discount (Rp)',
-            dataIndex: 'nominal_disc',
-            width: '10%',
-            align: 'center',
-            editable: true,
-            render: (text) => <a>Rp. {text}</a>,
-        },
-        {
-            title: 'Discount (%)',
+            title: 'Discount',
             dataIndex: 'discount',
-            width: '5%',
+            width: '15%',
             align: 'center',
-            editable: true,
-            render: (text) => <a>{text} %</a>,
+            render(text) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: text,
+                }
+            }
+
         },
         {
             title: 'PPN',
             dataIndex: 'ppn',
-            width: '10%',
+            width: '8%',
             align: 'center',
-            editable: true,
-            render: (text) => <a>{text} %</a>,
+            render(text) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: text,
+                }
+            }
+
+
         },
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '14%',
+            width: '20%',
             align: 'center',
-            render:
-                (text, record) => {
-                    let total = (record.quantity * record.price) - record.nominal_disc;
-                    let getPercent = (total * record.discount) / 100;
-                    let totalDiscount = total - getPercent;
-                    let getPpn = (totalDiscount * record.ppn) / 100;
-                    if (checked) {
-                        return totalDiscount;
-                    } else {
-                        return totalDiscount + getPpn;
-                    }
+            render(text) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: text,
                 }
+            }
         },
     ];
+
+    const TableData =
+        [
+            ...product.map((item, i) => ({
+                product_alias_name: item.product_alias_name,
+                // quantity: item.quantity,
+                quantity: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.quantity.replace('.', ',')} onChange={(e) => klikUbahData(i, e.target.value, "qty")} />,
+                unit: item.unit,
+                price:
+                    <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} onKeyDown={(event) => klikEnter(event)} value={item.price} onChange={(e) => klikUbahData(i, e.target.value, "price")} />,
+                discount:
+                    <>
+                        {
+                            item.fixed_discount != '0' ?
+                                <CurrencyFormat disabled prefix={'Rp '} className='edit-disabled text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.fixed_discount).toString().replace('.', ',')} key="diskon" />
+                                : item.discount_percentage != '0' ?
+                                    <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} suffix={'%'} value={Number(item.discount_percentage).toString().replace('.', ',')} />
+                                    : <>0 %</>
+                        }
+                    </>,
+                ppn: <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} suffix={' %'} onKeyDown={(event) => klikEnter(event)} value={item.ppn} onChange={(e) => klikUbahData(i, e.target.value, "ppn")} />,
+                total:
+                    checked === true ?
+                        <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} onKeyDown={(event) => klikEnter(event)} value={Number(total1Produk[i].detail).toFixed(2).replace('.', ',')} /> :
+                        <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} onKeyDown={(event) => klikEnter(event)} value={item.subtotal} />,
+
+            }))
+        ]
     const handleChange = () => {
         setChecked(!checked);
         let check_checked = !checked;
         calculate(faktur, check_checked);
     };
-    const handleSave = (row) => {
-        const newData = [...faktur];
-        const index = newData.findIndex((item) => row.id === item.id);
-        const item = newData[index];
-        newData.splice(index, 1, { ...item, ...row });
-        setFaktur(newData);
-        let check_checked = checked;
-        calculate(faktur, check_checked);
-    };
 
 
-    const calculate = (faktur, check_checked) => {
-        let subTotal = 0;
-        let totalDiscount = 0;
-        let totalNominalDiscount = 0;
-        let grandTotalDiscount = 0;
-        let getPpnDiscount = 0;
-        let allTotalDiscount = 0;
-        let totalPpn = 0;
+    const calculate = (retur, check_checked) => {
+        let totalPerProduk = 0;
         let grandTotal = 0;
-        let getPpn = 0;
         let total = 0;
-        faktur.map((values) => {
+        let hasilDiskon = 0;
+        let subTotal = 0;
+        let totalPpn = 0;
+        let rowDiscount = 0;
+        let subTotalDiscount = 0;
+        let totalDiscount = 0;
+        let total1 = 0;
+        let diskon2 = 0;
+        let totalDiskon2 = 0;
+        let subTotDiskon2 = 0;
+        let subtotal2 = 0;
+        let databaru = [];
+
+        retur.map((values, i) => {
+            // termasuk pajak 
             if (check_checked) {
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
+                total += (Number(values.quantity.toString().replace(',', '.')) * Number(values.price));
+                total1 = (Number(values.quantity.replace(',', '.')) * Number(values.price.replace(',', '.')));
+                totalPerProduk = (Number(values.quantity.toString().replace(',', '.')) * Number(values.price));
 
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                subTotal += ((total - getPpnDiscount) * 100) / (100 + values.ppn);
-                allTotalDiscount += total - getPpnDiscount;
-                totalPpn = allTotalDiscount - subTotal;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
-                setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
-                setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
-            } else {
-                subTotal += (values.quantity * values.price);
-                total = (values.quantity * values.price) - values.nominal_disc;
-                getPpnDiscount = (total * values.discount) / 100;
-                totalDiscount += (total * values.discount) / 100;
+                if (values.discount_percentage!=0) {
+                    hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                    diskon2 = (Number(total1) * Number(values.discount_percentage.replace(',', '.')) / 100);
+                    rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                }
+                else if (values.fixed_discount!=0) {
+                    console.log(values.fixed_discount)
+                    hasilDiskon += Number(values.fixed_discount);
+                    rowDiscount = Number(values.fixed_discount);
+                    diskon2 = (Number(values.fixed_discount.replace(',', '.')));
 
-                totalNominalDiscount += values.nominal_disc;
-                grandTotalDiscount = totalDiscount + totalNominalDiscount;
-                allTotalDiscount = total - getPpnDiscount;
-                getPpn = (allTotalDiscount * values.ppn) / 100;
-                totalPpn += getPpn;
-                grandTotal = subTotal - grandTotalDiscount + totalPpn;
+                }
+                totalDiscount += ((rowDiscount * 100) / (100 + Number(values.ppn)));
+                subTotalDiscount = totalPerProduk - rowDiscount;
+                subTotal += (totalPerProduk * 100) / (100 + Number(values.ppn));
+                totalPpn += ((((totalPerProduk * 100) / (100 +  Number(values.ppn))) - (rowDiscount * 100) / (100 +  Number(values.ppn))) *  Number(values.ppn)) / (100);
+
+
+                // totalPpn = (subTotal * Number(values.ppn)) / 100;
+
+
+                grandTotal = subTotal - hasilDiskon + Number(totalPpn);
+
+                totalDiskon2 += ((diskon2 * 100) / (100 + Number(values.ppn.replace(',', '.'))));
+                subTotDiskon2 = total1 - diskon2;
+                // subtotal2 = (subTotDiskon2 * 100) / (100 + Number(values.ppn.replace(',', '.')));
+                subtotal2 = subTotDiskon2;
+
+                databaru.push({
+                    detail: subtotal2
+                })
+
+                console.log(databaru)
+                setTotal1Produk(databaru);
+
+
                 setSubTotal(subTotal)
-                setGrandTotalDiscount(grandTotalDiscount)
+                setGrandTotalDiscount(totalDiscount);
                 setTotalPpn(totalPpn)
-                setGrandTotal(grandTotal)
+                setGrandTotal(grandTotal);
             }
+
+            // tidak termasuk pajak 
+            else {
+                total += (Number(values.quantity.toString().replace(',', '.')) * Number(values.price));
+                totalPerProduk = (Number(values.quantity.toString().replace(',', '.')) * Number(values.price));
+
+                if (values.discount_percentage != 0) {
+                    hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                    rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                }
+                else if (values.fixed_discount != 0) {
+
+                    hasilDiskon += Number(values.fixed_discount);
+                    rowDiscount = Number(values.fixed_discount);
+                }
+                subTotal = total - (Number(totalPerProduk) * Number(rowDiscount) / 100);
+                subTotalDiscount = totalPerProduk - rowDiscount;
+                totalPpn += (subTotalDiscount * values.ppn) / 100;
+                grandTotal = total - hasilDiskon + Number(totalPpn);
+
+                setSubTotal(total)
+                setGrandTotalDiscount(hasilDiskon);
+                setTotalPpn(totalPpn)
+                setGrandTotal(grandTotal);
+            }
+
         })
     }
+
     const components = {
         body: {
             row: EditableRow,
             cell: EditableCell,
         },
     };
-    const columns = defaultColumns.map((col) => {
-        if (!col.editable) {
-            return col;
-        }
+    // const columns = defaultColumns.map((col) => {
+    //     if (!col.editable) {
+    //         return col;
+    //     }
 
-        return {
-            ...col,
-            onCell: (record) => ({
-                record,
-                editable: col.editable,
-                dataIndex: col.dataIndex,
-                title: col.title,
-                handleSave,
-            }),
-        };
-    });
+    //     return {
+    //         ...col,
+    //         onCell: (record) => ({
+    //             record,
+    //             editable: col.editable,
+    //             dataIndex: col.dataIndex,
+    //             title: col.title,
+    //             handleSave,
+    //         }),
+    //     };
+    // });
 
     const handleCheck = (event) => {
         var updatedList = [...faktur];
@@ -370,23 +549,6 @@ const BuatRetur = () => {
         }
         setFaktur(updatedList);
     };
-
-
-    const getNewCodeSales = async () => {
-        await axios.get(`${Url}/get_new_sales_order_code?tanggal=${date}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then((res) => {
-                setGetCode(res.data.data);
-            })
-            .catch((err) => {
-                // Jika Gagal
-                console.log(err);
-            });
-    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -510,18 +672,33 @@ const BuatRetur = () => {
         //     });
     };
 
+
+    if (loading) {
+        return (
+            <>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+            </>
+        )
+    }
+
+
     return (
         <>
-      
+
             <form className="p-3 mb-3 bg-body rounded">
                 {/* <div className="text-title text-start mb-4">
                     <h3 className="title fw-bold">Edit Retur Penjualan</h3>
                 </div> */}
-                  <PageHeader
-                className="bg-body rounded mb-2"
-                onBack={() => window.history.back()}
-                title="Edit Retur Penjualan"
-            ></PageHeader>
+                <PageHeader
+                    className="bg-body rounded mb-2"
+                    onBack={() => window.history.back()}
+                    title="Edit Retur Penjualan"
+                ></PageHeader>
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -531,6 +708,7 @@ const BuatRetur = () => {
                                     id="startDate"
                                     className="form-control"
                                     type="date"
+                                    defaultValue={date}
                                     onChange={(e) => setDate(e.target.value)}
                                 />
                             </div>
@@ -539,7 +717,7 @@ const BuatRetur = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Pesanan</label>
                             <div className="col-sm-7">
                                 <input
-                                    value={getCode}
+                                    value={code}
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
@@ -554,7 +732,8 @@ const BuatRetur = () => {
                                     placeholder="Pilih Pelanggan..."
                                     cacheOptions
                                     defaultOptions
-                                    value={selectedValue}
+                                    defaultInputValue={selectedCustomer}
+                                    value={selectedCustomer}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsCustomer}
@@ -569,6 +748,7 @@ const BuatRetur = () => {
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
+                                    defaultValue={referensi}
                                     onChange={(e) => setReferensi(e.target.value)}
                                 />
                             </div>
@@ -582,11 +762,21 @@ const BuatRetur = () => {
                                     className="form-control"
                                     id="form4Example3"
                                     rows="4"
+                                    defaultValue={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                 />
                             </div>
                         </div>
+                        <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
+                            <div className="col-sm-4 p-1">
+                                <h5>
+                                    {getStatus === 'Submitted' ? <Tag color="blue">{getStatus}</Tag> : getStatus === 'Draft' ? <Tag color="orange">{getStatus}</Tag> : getStatus === 'Done' ? <Tag color="green">{getStatus}</Tag> : <Tag color="red">{getStatus}</Tag>}
+                                </h5>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </form>
             <form className="p-3 mb-5 bg-body rounded">
@@ -649,15 +839,15 @@ const BuatRetur = () => {
                         rowClassName={() => 'editable-row'}
                         bordered
                         pagination={false}
-                        dataSource={faktur}
-                        columns={columns}
+                        dataSource={TableData}
+                        columns={defaultColumns}
                         onChange={(e) => setFaktur(e.target.value)}
                     />
                 </div>
                 <div className="row p-0">
                     <div className="col ms-5">
                         <div className="form-check">
-                            <input className="form-check-input" type="checkbox" id="flexCheckDefault" onChange={handleChange} />
+                            <input className="form-check-input" type="checkbox" id="flexCheckDefault" defaultChecked={checked} disabled />
                             <label className="form-check-label" for="flexCheckDefault">
                                 Harga Termasuk Pajak
                             </label>
@@ -667,58 +857,38 @@ const BuatRetur = () => {
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>
                             <div className="col-sm-6">
-                                <input
-                                    defaultValue={subTotal}
-                                    readOnly="true"
-                                    type="number"
-                                    className="form-control form-control-sm"
-                                    id="colFormLabelSm"
-                                // placeholder='(Total Qty X harga) per item + ... '
-                                />
+                                <CurrencyFormat prefix={'Rp '} disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(subTotal).toFixed(2).replace('.', ',')} key="total" />
+
+                                {/* {convertToRupiah(subTotal, "Rp")} */}
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Diskon</label>
                             <div className="col-sm-6">
-                                <input
-                                    defaultValue={grandTotalDiscount}
-                                    readOnly="true"
-                                    type="number"
-                                    className="form-control form-control-sm"
-                                    id="colFormLabelSm"
-                                // placeholder='(total disc/item) ditotal semua'
-                                />
+                                <CurrencyFormat prefix={'Rp '} disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(grandTotalDiscount).toFixed(2).replace('.', ',')} key="total" />
+
+                                {/* {convertToRupiah(grandTotalDiscount, "Rp")} */}
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">PPN</label>
                             <div className="col-sm-6">
-                                <input
-                                    defaultValue={totalPpn}
-                                    readOnly="true"
-                                    type="number"
-                                    className="form-control form-control-sm"
-                                    id="colFormLabelSm"
-                                // placeholder='ppn per item di total semua row'
-                                />
+                                <CurrencyFormat prefix={'Rp '} disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toFixed(2).replace('.', ',')} key="total" />
+
+                                {/* {convertToRupiah(totalPpn, "Rp")} */}
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Total</label>
                             <div className="col-sm-6">
-                                <input
-                                    defaultValue={grandTotal}
-                                    readOnly="true"
-                                    type="number"
-                                    className="form-control form-control-sm"
-                                    id="colFormLabelSm"
-                                // placeholder='subtotal - diskon + ppn'
-                                />
+                                <CurrencyFormat prefix={'Rp '} disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(grandTotal).toFixed(2).replace('.', ',')} key="total" />
+
+                                {/* {convertToRupiah(grandTotal, "Rp")} */}
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example">
+                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: "right", position: "relative" }}>
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
