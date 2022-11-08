@@ -34,6 +34,19 @@ export const DetailSuratJalan = () => {
     const [delivered, setDelivered] = useState();
     const [loading, setLoading] = useState(true);
     const [beCust, setbeCust] = useState("");
+    const [beSup, setbeSup] = useState("")
+
+    const[kel1, setKel1] = useState('')
+    const [kec1, setKec1] = useState('')
+    const [kota1, setKota1] = useState('')
+    const [kodepos1, setKodePos1] = useState('')
+
+
+    const[kel2, setKel2] = useState('')
+    const [kec2, setKec2] = useState('')
+    const [kota2, setKota2] = useState('')
+    const [kodepos2, setKodePos2] = useState('')
+
     const componentRef = useRef();
     const columns = [
         {
@@ -102,12 +115,23 @@ export const DetailSuratJalan = () => {
                     setCustomer(getData.customer.name)
                     setAddress(getData.customer_address.address)
                     setbeCust(getData.customer.business_entity)
-                    console.log(beCust)
+                    setKel1(getData.customer_address.urban_village)
+                    setKec1(getData.customer_address.sub_district)
+                    setKota1(getData.customer_address.city)
+                    setKodePos1(getData.customer_address.postal_code)
+
+                    //console.log(beCust)
                     setSumber('SO')
                 }
                 else if (getData.supplier) {
                     setSupplier(getData.supplier.name)
                     setAddress(getData.supplier_address.address)
+                    setbeSup(getData.supplier.business_entity)
+                    setKel1(getData.supplier_address.urban_village)
+                    setKec1(getData.supplier_address.sub_district)
+                    setKota1(getData.supplier_address.city)
+                    setKodePos1(getData.supplier_address.postal_code)
+
                     setSumber('Retur')
                 }
                 
@@ -121,6 +145,13 @@ export const DetailSuratJalan = () => {
 
                 setRecipientID(getData.recipient_address.customer_id)
                 setRecipientAdd(getData.recipient_address.address)
+
+                setKel2(getData.recipient_address.urban_village)
+                setKec2(getData.recipient_address.sub_district)
+                setKota2(getData.recipient_address.city)
+                setKodePos2(getData.recipient_address.postal_code)
+
+console.log(kel2)
 
                 console.log(getData)
                 console.log(getData.delivery_note_details)
@@ -307,19 +338,19 @@ export const DetailSuratJalan = () => {
                                 </div>
 
                 <div className='mt-4 mb-1 col d-flex justify-content-center '  style={{ fontSize: "12px", width:"100%" }}>
-                      <div className='col-6'>
-                      <div className="d-flex flex-row">
-                                        <label className='col-8'>Tanggal</label>
-                                    <div className='col-6'> : {date}</div>
-                                    </div>
+                      <div className='col-5'>
+                            <div className="d-flex flex-row">
+                                    <label className='col-4'>Tanggal</label>
+                                    <div className='col-4'> : {date}</div>
+                            </div>
 
                                     {delivered === true ?
                                                     <>
                                                    <div className="d-flex flex-row">
-                                                        <label className='col-8'>Kepada Yth.</label>
-                                                                        <div className='col-6'>
-                                                                            : {recipient}
-                                                                        </div> 
+                                                        <label className='col-4'>Kepada Yth.</label>
+                                                            <div className='col-4'>
+                                                                 : {recipient}
+                                                            </div> 
                                                     </div>
                                                     {/* <div className="d-flex flex-row">
                                                         <label className='col-8'>Alamat</label>
@@ -330,21 +361,25 @@ export const DetailSuratJalan = () => {
                                                 : 
                                               <>
                                                     <div className="d-flex flex-row">
-                                                                <label className='col-8'>Kepada Yth.</label>
+                                                                <label className='col-4'>Kepada Yth.</label>
                                                                 {
                 
                                                                     sumber === 'SO' ?
                                                                         beCust == 'Lainnya' ? 
-                                                                        <div className='col-6'>
+                                                                        <div className='col-4'>
                                                                             : {customer}
                                                                         </div>  : 
-                                                                           <div className='col-12'>
+                                                                           <div className='col-6'>
                                                                            : {beCust} {customer}
                                                                        </div> 
                                                                         :
-                                                                        <div className='col-6'>
+                                                                        beSup == 'Lainnya' ? 
+                                                                        <div className='col-4'>
                                                                             :  {supplier}
-                                                                        </div>
+                                                                        </div> :
+                                                                          <div className='col-4'>
+                                                                          : {beSup} {supplier}
+                                                                      </div>
                                                                 }
 
                                                             </div>
@@ -362,23 +397,31 @@ export const DetailSuratJalan = () => {
                         {
                             delivered == true? 
                             <div className="d-flex flex-row">
-                            <label className='col-6'>Alamat</label>
+                            <label className='col-3'>Alamat</label>
                                     <div>:</div>
-                                    <div className='col-6' style={{overflowWrap:"break-word", maxWidth:"150px", marginLeft:"3px"}}> {recipientAdd}  </div>
-                        </div> :
+                                    <div className='col-9' style={{overflowWrap:"break-word", maxWidth:"275px", marginLeft:"3px"}}>
+                                         {recipientAdd}, Kel. {kel2}, Kec. {kec2}, Kota {kota2} {kodepos2}
+                                    </div>
+                        </div>
+                         :
                            <div className="d-flex flex-row">
-                           <label className='col-6'>Alamat</label>
+                           <label className='col-3'>Alamat</label>
                            <div>:</div>
-                           <div className='col-6' style={{overflowWrap:"break-word", maxWidth:"150px", marginLeft:"3px"}}> {address}  </div>
+                           <div className='col-9' style={{overflowWrap:"break-word", maxWidth:"275px", marginLeft:"3px"}}> 
+                           {address}, Kel. {kel1}, Kec. {kec1}, Kota {kota1} {kodepos1}
+                           </div>
                        </div>
                         }
                   
-                     
-
                             <div className="d-flex flex-row">
-                                                                <label className='col-6'>Kendaraan</label>
-                                                                <div className='col-6'> : {vehicle} </div>
-                                                            </div>
+                                <label className='col-3'>Kendaraan</label>
+                                {
+                                    vehicle === null ? 
+                                    <div className='col-9'> : - </div> :
+                                    <div className='col-9'> : {vehicle} </div>
+                                }
+                               
+                            </div>
                         
                           
                       </div>
@@ -395,9 +438,13 @@ export const DetailSuratJalan = () => {
                                 <td>
 
                                     <div className="page" style={{ lineHeight: "3" }}>
-
-                                        <div className='d-flex mt-1 ps-3 pe-3' >
-
+                                
+                                        <div className=' mt-2 ps-3 pe-3' >
+                                            {vehicle === null ? 
+                                            <div  className='align-items-start' style={{fontSize:"14px"}}>Dengan kendaraan - No:..................................................................... Kami kirim barang - barang tersebut di bawah ini: </div> :
+                                            <div  className='align-items-start' style={{fontSize:"14px"}}>Dengan kendaraan {vehicle} No:............................................................ Kami kirim barang - barang tersebut di bawah ini: </div>
+                                        }
+                                        
                                             {/* <Table style={{fontSize: "10px", width: "100%", pageBreakAfter:"auto", backgroundColor:"white"}}
                         bordered
                         pagination={false}
@@ -407,7 +454,7 @@ export const DetailSuratJalan = () => {
                         onChange={(e) => setProduct(e.target.value)}
 
                     /> */}
-
+                  
                                             <table style={{ fontSize: "10px", width: "100%" }}>
                                                 <tr className='text-center border' style={{ height: "50px" }}>
                                                     <th width="50px" className='border' >No</th>

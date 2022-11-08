@@ -139,7 +139,7 @@ const BuatPembayaranPembelian = () => {
 
     function klikUbahTotal(index, value) {
         let tmp = []
-        let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+        let hasil = value.toString().replace('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',', '.');
         // setting data baru 
         // let hasilSisa = Number(product[index].sisaNoEdit);
 
@@ -234,9 +234,9 @@ const BuatPembayaranPembelian = () => {
     const dataFaktur =
         [...product.map((item, i) => ({
             code: item.code,
-            total: <CurrencyFormat prefix={nmMataUang + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.total} key="total" />,
-            sisa: <CurrencyFormat prefix={nmMataUang + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.sisa} key="sisa" />,
-            pays: <CurrencyFormat prefix={nmMataUang + ' '} className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.bayar} onChange={(e) => klikUbahTotal(i, e.target.value)} key="pay" />,
+            total: <CurrencyFormat prefix={nmMataUang + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.',',')} key="total" />,
+            sisa: <CurrencyFormat prefix={nmMataUang + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.sisa).toFixed(2).replace('.',',')} key="sisa" />,
+            pays: <CurrencyFormat prefix={nmMataUang + ' '} className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.bayar.toString().replace('.',',')} onChange={(e) => klikUbahTotal(i, e.target.value)} key="pay" />,
 
         }))
 
@@ -365,7 +365,8 @@ const BuatPembayaranPembelian = () => {
         const dataKirim = new FormData();
         dataKirim.append("tanggal", date);
         dataKirim.append("referensi", referensi);
-        dataKirim.append("kurs", kurs.replace(',','.'));
+        //dataKirim.append("kurs", kurs.replace(',','.'));
+        dataKirim.append("kurs", kurs.toString().replace('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',', '.'))
         dataKirim.append("pemasok", supplierId);
         dataKirim.append("status", "Submitted");
         dataKirim.append("mata_uang", mataUangId);
@@ -460,7 +461,7 @@ const BuatPembayaranPembelian = () => {
         const dataKirim = new FormData();
         dataKirim.append("tanggal", date);
         dataKirim.append("referensi", referensi);
-        dataKirim.append("kurs", kurs.replace(',','.'));
+        dataKirim.append("kurs", kurs.toString().replace('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',', '.'));
         dataKirim.append("pemasok", supplierId);
         dataKirim.append("status", "Draft");
         dataKirim.append("mata_uang", mataUangId);
@@ -632,20 +633,9 @@ const BuatPembayaranPembelian = () => {
                                 /> */}
 
 
-                                            <div className="col-sm-7">
+                                <div className="col-sm-7">
 
-< CurrencyFormat  className=' text-start form-control  editable-input ' style={{ width: "100%", fontSize: "10px!important" }} prefix={nmMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(kurs).toFixed(2).replace('.',',')} key="diskon" 
-onChange={(e) => setKurs(parseFloat ((e.target.value).toString().replace('.',',')))}
-
-//onChange={(e) => setKurs(e.target.value)}
-// renderText={value => <input 
-// value={parseFloat(value.toString().replace('.', ','))}  id="colFormLabelSm"  className="form-control form-control-sm" onChange={(e) => 
-
-// console.log(e.target.value)}/>}  
-/>
-
-
-
+                                <CurrencyFormat className=' editable-input form-control' thousandSeparator={'.'} decimalSeparator={','} prefix={nmMataUang + ' '} onKeyDown={(event) => klikEnter(event)} value={kurs} onChange={(e) => setKurs(e.target.value)} key="pay" />
 
 {/* <CurrencyFormat prefix={nmMataUang} className='form-control' thousandSeparator={'.'} decimalSeparator={','} value={kurs} onKeyDown={(event) => klikEnter(event)} onChange={(e) => setUbahKurs(e.target.value)} key="total" /> */}
 
@@ -736,11 +726,51 @@ onChange={(e) => setKurs(parseFloat ((e.target.value).toString().replace('.',','
                             let totalAkhir = 0;
                             let sisaAkhir = 0;
                             pageData.forEach(({ sisa, pays }) => {
-                                totalAkhir += Number(pays.props.value);
-                                sisaAkhir += Number(sisa.props.value);
+                                //totalAkhir += Number(pays.props.value);
+                                //sisaAkhir += Number(sisa.props.value);
+                               // setTotalAkhir(totalAkhir)
+                               // setSisaAkhir(sisaAkhir)
+                               // console.log(totalAkhir)
+
+
+                                let pay =  pays.props.value
+                                let sisaa = sisa.props.value
+                                let pay2 = 0; 
+                                let sisa2 = 0;
+                               if( nmMataUang === 'IDR' ){
+                               
+                                let p1 = pay.replace(',','.')
+                                totalAkhir = Number(totalAkhir) + Number(p1)    
+
+                                let s1 = sisaa.replace(',','.')
+                                sisaAkhir = sisaAkhir + Number(s1)
+
+                               // console.log(pays.props.value)
+
+                               }
+                               else 
+                               {
+                                pay2 = Number(pay).toString().replace('.','')
+                                totalAkhir = totalAkhir + Number(pay2) ;
+                                sisa2 = Number(sisaa).toString().replace('.','')
+                                sisaAkhir = sisaAkhir + Number(sisa2)
+                               }
+
+                               // sisaAkhir += Number(sisa.props.value);
                                 setTotalAkhir(totalAkhir)
                                 setSisaAkhir(sisaAkhir)
-                                console.log(totalAkhir)
+                               
+                                 console.log(pay)
+                                 console.log(sisaa)
+                                  console.log(Number(totalAkhir))
+                                //  console.log(sisaAkhir)
+
+
+
+
+
+
+
                             });
                             return (
                                 <>

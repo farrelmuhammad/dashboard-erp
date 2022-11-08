@@ -269,7 +269,7 @@ const EditPesananPembelian = () => {
             return <>
             {
                 namaMataUang === 'Rp' ? 
-                < CurrencyFormat  className=' text-center ' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon" />
+                < CurrencyFormat  className=' text-center ' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={angka} key="diskon" />
                 :< CurrencyFormat  className=' text-center  ' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" />
                 
             }
@@ -507,10 +507,12 @@ const EditPesananPembelian = () => {
                                         </select>
                                     </span>
                                 </div>
-                            </> : getProduct[index].fixed_discount != 0 ?
+                            </> 
+                            
+                            : getProduct[index].fixed_discount != 0 ?
                                 <>
                                     <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" defaultValue={
-                                        convertToRupiahTabel1(getProduct[index].fixed_discount)} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" />
+                                        getProduct[index].fixed_discount} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" />
                                     <div className="input-group-prepend">
                                         <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
                                             <select

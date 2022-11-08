@@ -157,13 +157,13 @@ const BuatProduk = () => {
         text: "Data Grup kosong, Silahkan lengkapi datanya"
       })
     }
-    else if (!brands_id) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Merek kosong, Silahkan lengkapi datanya"
-      })
-    }
+    // else if (!brands_id) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Merek kosong, Silahkan lengkapi datanya"
+    //   })
+    // }
     else if (!category_id) {
       Swal.fire({
         icon: "error",
@@ -171,20 +171,20 @@ const BuatProduk = () => {
         text: "Data Kategori kosong, Silahkan lengkapi datanya"
       })
     }
-    else if (!grade_id) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Grade kosong, Silahkan lengkapi datanya"
-      })
-    }
-    else if (!type_id) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Tipe kosong, Silahkan lengkapi datanya"
-      })
-    }
+    // else if (!grade_id) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Grade kosong, Silahkan lengkapi datanya"
+    //   })
+    // }
+    // else if (!type_id) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Tipe kosong, Silahkan lengkapi datanya"
+    //   })
+    // }
     else if (!unit) {
       Swal.fire({
         icon: "error",
@@ -192,13 +192,13 @@ const BuatProduk = () => {
         text: "Data Satuan kosong, Silahkan lengkapi datanya"
       })
     }
-    else if (!packaging_id) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Tipe Packaging kosong, Silahkan lengkapi datanya"
-      })
-    }
+    // else if (!packaging_id) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Tipe Packaging kosong, Silahkan lengkapi datanya"
+    //   })
+    // }
     else if (!buy_price) {
       Swal.fire({
         icon: "error",
@@ -213,20 +213,20 @@ const BuatProduk = () => {
         text: "Data Harga Jual kosong, Silahkan lengkapi datanya"
       })
     }
-    else if (!discount) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Diskon kosong, Silahkan lengkapi datanya"
-      })
-    }
-    else if (!taxes_id) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Pajak kosong, Silahkan lengkapi datanya"
-      })
-    }
+    // else if (!discount) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Diskon kosong, Silahkan lengkapi datanya"
+    //   })
+    // }
+    // else if (!taxes_id) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Pajak kosong, Silahkan lengkapi datanya"
+    //   })
+    // }
     else {
 
 

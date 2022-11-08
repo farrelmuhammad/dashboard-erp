@@ -39,6 +39,7 @@ import { useSelector } from "react-redux";
 // import { TextField } from "@mui/material";
 // import CheckIcon from "@mui/icons-material/Check";
 import { PageHeader, Switch } from "antd";
+import ReactSelect from "react-select";
 
 const EditBiayaImport = () => {
   // const token = jsCookie.get("auth");
@@ -47,7 +48,7 @@ const EditBiayaImport = () => {
   const [name, setName] = useState('');
   const [kategori, setKategori] = useState(null);
   const [referensi, setReferensi] = useState('');
-  const [baganakun, setBaganAkun] = useState(null);
+  const [baganakun, setBaganAkun] = useState('');
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState();
   
@@ -63,6 +64,8 @@ const EditBiayaImport = () => {
   
   const [account_id, setAccount_id] = useState('');
   const [selectedAccount, setSelectedAccount] = useState(null);
+
+  const [dataAkun, setDataAkun] = useState()
 
   const onChange = () => {
     checked ? setChecked(false) : setChecked(true)
@@ -171,16 +174,50 @@ const EditBiayaImport = () => {
       setAccount_id(value.id);
     };
   
-    // load options using API call
-    const loadOptionsAccount = (inputValue) => {
-      return fetch(`${Url}/select_chart_of_accounts?limit=10&nama=${inputValue}`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      }).then((res) => res.json());
-    };
+    useEffect(() => {
+        
+      axios.get(`${Url}/select_chart_of_accounts?anak_terakhir=1&kode_kategori[]=511&kode_kategori[]=512&kode_kategori[]=611&kode_kategori[]=612&kode_kategori[]=811`, {
+          headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+          },
+      }).then((res) => {
+          let tmp = []
+          for (let i = 0; i < res.data.length; i++) {
+              tmp.push({
+                  label: res.data[i].name,
+                  value: res.data[i].id
+              })
+          }
+          //console.log(res)
+          setDataAkun(tmp)
+       // console.log(dataAkun)
+      }
 
+
+      );
+  }, [])
+
+
+    // load options using API call
+    // const loadOptionsAccount = () => {
+    //   return fetch(`${Url}select_chart_of_accounts?anak_terakhir=1&kode_kategori[]=511&kode_kategori[]=512&kode_kategori[]=611&kode_kategori[]=612&kode_kategori[]=811`, {
+    //     headers: {
+    //       Accept: "application/json",
+    //       Authorization: `Bearer ${auth.token}`,
+    //     },
+    //   }).then((res) => console.log(res)
+    //   );
+    // };
+
+    const loadOptionsAccount = (inputValue) => {
+      return fetch(`${Url}/select_chart_of_accounts?anak_terakhir=1&nama=${inputValue}`, {
+          headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+          },
+      }).then((res) => res.json());
+  };
 
 
   if(loading){
@@ -251,15 +288,15 @@ const EditBiayaImport = () => {
             Akun Jurnal
           </label>
           <div className="col-sm-10">
-            <AsyncSelect
+            <ReactSelect
               placeholder="Pilih Akun Jurnal..."
               cacheOptions
               defaultOptions
               defaultInputValue={baganakun}
               value={selectedAccount}
-              getOptionLabel={(e) => e.name}
-              getOptionValue={(e) => e.id}
-              loadOptions={loadOptionsAccount}
+              getOptionLabel={(e) => e.label}
+              getOptionValue={(e) => e.value}
+              options={dataAkun}
               onChange={handleChangeAccount}
             />
           </div>
