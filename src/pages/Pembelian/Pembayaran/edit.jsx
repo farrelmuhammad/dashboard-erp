@@ -234,6 +234,8 @@ const EditPembayaranPembelian = () => {
                 setBankId(getData.chart_of_account.id)
                 setTotalAkhir(getData.total)
                 setLoading(false);
+
+                setKurs(getData.exchange_rate.toString().replace('.',','))
             })
             .catch((err) => {
                 // Jika Gagal
@@ -427,12 +429,14 @@ const EditPembayaranPembelian = () => {
         const dataKirim = new URLSearchParams();
         dataKirim.append("tanggal", date);
         dataKirim.append("referensi", referensi);
-        dataKirim.append("kurs", kurs);
+        dataKirim.append("kurs", kurs.toString().replace('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',', '.'));
         dataKirim.append("pemasok", supplierId);
         dataKirim.append("status", "Submitted");
         dataKirim.append("mata_uang", mataUangId);
         dataKirim.append("bagan_akun", bankId);
         dataKirim.append("catatan", catatan)
+
+        console.log(kurs)
 
         dataDetail.map((p) => {
             dataKirim.append("id_faktur_pembelian[]", p.idFaktur);
@@ -480,7 +484,7 @@ const EditPembayaranPembelian = () => {
         const dataKirim = new URLSearchParams();
         dataKirim.append("tanggal", date);
         dataKirim.append("referensi", referensi);
-        dataKirim.append("kurs", kurs);
+        dataKirim.append("kurs", kurs.toString().replace('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',', '.'));
         dataKirim.append("pemasok", supplierId);
         dataKirim.append("status", "Submitted");
         dataKirim.append("mata_uang", mataUangId);
@@ -538,7 +542,9 @@ const EditPembayaranPembelian = () => {
 
     function klikUbahTotal(index, value) {
         let tmp = []
-        let hasil = value.replaceAll('.', '').replace( /^[-+]?[0-9]+\.[^0-9]+$/, '')
+        let hasil = value.toString().replace('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',', '.');
+        console.log(tmp)
+       // let hasil = value.replaceAll('.', '').replace( /^[-+]?[0-9]+\.[^0-9]+$/, '')
         //let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
         // setting data baru 
         for (let i = 0; i < dataDetail.length; i++) {
@@ -553,7 +559,7 @@ const EditPembayaranPembelian = () => {
 
             }
             else {
-                tmp.push(product[i])
+                tmp.push(dataDetail[i])
             }
         }
         setDataDetail(tmp)
@@ -575,13 +581,17 @@ const EditPembayaranPembelian = () => {
               <CurrencyFormat prefix={selectedMataUang} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.sisa).toFixed(2).replace('.',',')} key="sisa" /> :
             <CurrencyFormat prefix={selectedMataUang} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.sisa)} key="sisa" />,
             pays: 
+
             selectedMataUang === 'IDR ' || selectedMataUang === 'Rp ' ? 
             // <CurrencyFormat prefix={selectedMataUang} className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.bayar.toString().replace('.',',')} 
             // onChange={(e) => klikUbahTotal(i, e.target.value)} key="pay" /> 
-            < CurrencyFormat fixedDecimalScale decimalScale={2}  className=' text-start form-control  editable-input ' style={{ width: "100%", fontSize: "10px!important" }} prefix={selectedMataUang} thousandSeparator={'.'} decimalSeparator={','} value={item.bayar} 
 
-            renderText={value => <input 
-            value={Number(value)*100}  id="colFormLabelSm"  className="form-control form-control-sm editable-input" onChange={(e) =>klikUbahTotal(i, e.target.value)} key="pays" />}  />
+            <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={selectedMataUang} onKeyDown={(event) => klikEnter(event)} value={item.bayar.replace('.', ',')} onChange={(e) => klikUbahTotal(i, e.target.value)} key="pay" />
+
+            // < CurrencyFormat  className=' text-start  editable-input ' style={{ width: "100%", fontSize: "10px!important" }} prefix={selectedMataUang} thousandSeparator={'.'} decimalSeparator={','} value={item.bayar} 
+
+            // renderText={value => <input 
+            // value={Number(value)*100}  id="colFormLabelSm"  className="form-control form-control-sm editable-input" onChange={(e) =>klikUbahTotal(i, e.target.value)} key="pays" />}  />
 
             
             :
@@ -696,11 +706,15 @@ const EditPembayaranPembelian = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Rate Kurs</label>
                             <div className="col-sm-7">
-                                <input
+                                {/* <input
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
-                                />
+                                    value={dataHeader.exchange_rate}
+                                    onChange={(e) => setKurs(e.target.value)}
+                                /> */}
+
+                <CurrencyFormat className=' editable-input form-control' thousandSeparator={'.'} decimalSeparator={','} prefix={selectedMataUang } onKeyDown={(event) => klikEnter(event)} value={kurs} onChange={(e) => setKurs(e.target.value)} key="kurs" />
                             </div>
                         </div>
                         <div className="row mb-3">
@@ -731,13 +745,30 @@ const EditPembayaranPembelian = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Referensi</label>
                             <div className="col-sm-7">
+                                {
+                                    referensi === null ? 
+                                    <input
+                                    type="Nama"
+                                    className="form-control"
+                                    id="inputNama3"
+                                    defaultValue={"-"}
+                                    onChange={(e) => setReferensi(e.target.value)}
+                                /> : 
                                 <input
+                                type="Nama"
+                                className="form-control"
+                                id="inputNama3"
+                                defaultValue={referensi}
+                                onChange={(e) => setReferensi(e.target.value)}
+                            />
+                                }
+                                {/* <input
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
                                     defaultValue={referensi}
                                     onChange={(e) => setReferensi(e.target.value)}
-                                />
+                                /> */}
                             </div>
                         </div>
                         <div className="row mb-3">
@@ -813,13 +844,13 @@ const EditPembayaranPembelian = () => {
                                 let sisa2 = 0;
                                if( selectedMataUang === 'IDR ' ){
                                
-                                let p1 = pays.props.value.toString().replace(',','')
-                                totalAkhir = totalAkhir + Number(p1)
+                                let p1 = pay.replace(',','.')
+                                totalAkhir = totalAkhir + Number(p1)    
 
-                                let s1 = sisaa.split(',')
-                                sisaAkhir += Number(s1[0])
+                                let s1 = sisaa.replace(',','.')
+                                sisaAkhir = sisaAkhir + Number(s1)
 
-                                console.log(pays.props.value)
+                               // console.log(pays.props.value)
 
                                }
                                else 
@@ -834,9 +865,10 @@ const EditPembayaranPembelian = () => {
                                 setTotalAkhir(totalAkhir)
                                 setSisaAkhir(sisaAkhir)
                                
-                                // console.log(pay)
-                                 console.log(totalAkhir)
-                                // console.log(pay2)
+                                 console.log(pay)
+                                 console.log(sisaa)
+                                  console.log(totalAkhir)
+                                //  console.log(sisaAkhir)
                             });
                             return (
                                 <>

@@ -240,6 +240,7 @@ const EditPenerimaanBarang = () => {
                 }
                 setDataTS(tmp);
                 setLoading(false);
+                console.log(supplierId)
             })
             .catch((err) => {
                 // Jika Gagal

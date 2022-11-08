@@ -138,7 +138,7 @@ const BuatPesanan = () => {
     };
     // load options using API call
     const loadOptionsCustomer = (inputValue) => {
-        return fetch(`${Url}/select_customers?limit=10&nama=${inputValue}`, {
+        return fetch(`${Url}/customers?status=active&nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,

@@ -143,7 +143,7 @@ const BuatBiayaImport = () => {
 
     useEffect(() => {
         
-      axios.get(`${Url}/select_chart_of_accounts?anak_terakhir=1&kode_kategori[]=111`, {
+      axios.get(`${Url}/select_chart_of_accounts?anak_terakhir=1&kode_kategori[]=511&kode_kategori[]=512&kode_kategori[]=611&kode_kategori[]=612&kode_kategori[]=811`, {
           headers: {
               Accept: "application/json",
               Authorization: `Bearer ${auth.token}`,

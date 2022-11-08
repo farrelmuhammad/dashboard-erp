@@ -152,7 +152,7 @@ const DetailFakturPembelian = () => {
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '14%',
+            width: '20%',
             align: 'center',
             // render: (text) => {
             //     return Number(text).toFixed(2).replace('.', ',')

@@ -43,6 +43,7 @@ const EditReturPembelian = () => {
     const [subTotal, setSubTotal] = useState("");
     const [grandTotalDiscount, setGrandTotalDiscount] = useState("");
     const [totalPpn, setTotalPpn] = useState(0);
+    const [totalPpn2, setTotalPpn2] = useState(0);
     const [grandTotal, setGrandTotal] = useState("");
     const [checked, setChecked] = useState("");
     const [modal2Visible, setModal2Visible] = useState(false);
@@ -85,7 +86,7 @@ const EditReturPembelian = () => {
                 setGetStatus(getData.status)
                 setSubTotal(getData.subtotal);
                 setGrandTotalDiscount(getData.discount);
-                setTotalPpn(getData.ppn)
+                setTotalPpn(getData.ppn.toString().replace('.',','))
 
                 let total = Number(getData.subtotal) - Number(getData.discount) + Number(getData.ppn)
                 setTotalKeseluruhan(total)
@@ -108,6 +109,7 @@ const EditReturPembelian = () => {
                     })
                 }
 
+                console.log(getData)
                 console.log(tmp)
                 setTampilProduk(tmp)
                 setUpdateProduk(tmp)
@@ -162,10 +164,10 @@ const EditReturPembelian = () => {
                 setMataUang(data.purchase_invoice_details[0].currency_name)
             }
 
-            setTotalPpn(data.ppn);
+           // setTotalPpn(data.ppn.toString().replace('.',','));
             setProdukFaktur(tmp)
             setUpdateProduk(tmp)
-            console.log(tmp)
+            console.log(data)
         }
         );
     }, [fakturId])
@@ -227,6 +229,15 @@ const EditReturPembelian = () => {
 
     };
 
+    function klikTambahPpn(value){
+        let hasil = value.toString().replace('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',', '.');
+        setTotalPpn(hasil)
+        let totalAkhir = Number(subTotal) - (grandTotalDiscount) + Number(hasil)
+        //let totalS = Number(totalAkhir + Number(totalPpn))
+        console.log(totalAkhir)
+        setTotalKeseluruhan(totalAkhir)
+    }
+
     const columnProduk = [
         {
             title: 'Nama Produk',
@@ -278,7 +289,7 @@ const EditReturPembelian = () => {
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '14%',
+            width: '20%',
             align: 'center',
             render(text) {
                 return {
@@ -292,7 +303,7 @@ const EditReturPembelian = () => {
         {
             title: 'Action',
             dataIndex: 'act',
-            width: '14%',
+            width: '12%',
             align: 'center',
 
         },
@@ -996,8 +1007,9 @@ const EditReturPembelian = () => {
                             <div className="col-sm-6">
                                 {
                                     mataUang === 'Rp ' ?
-                                    < CurrencyFormat disabled className='form-control form-control-sm edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toFixed(2).replace('.',',')} key="diskon" /> :
-                                    < CurrencyFormat disabled className='form-control form-control-sm edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toLocaleString('id')} key="diskon" />
+                                    <CurrencyFormat className=' editable-input form-control' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang } onKeyDown={(event) => klikEnter(event)} value={totalPpn.toString().replace('.',',')} onChange={(e) => klikTambahPpn(e.target.value)} key="ppn" /> :
+                                  //  < CurrencyFormat disabled className='form-control form-control-sm edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toFixed(2).replace('.',',')} key="diskon" /> :
+                                    < CurrencyFormat className='form-control  editable-input' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toLocaleString('id')}  onChange={(e) => klikTambahPpn(e.target.value)} key="diskon" />
                                 }
                             </div>
                         </div>
