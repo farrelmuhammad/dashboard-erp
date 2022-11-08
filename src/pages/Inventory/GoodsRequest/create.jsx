@@ -131,6 +131,9 @@ const CreateGoodsRequest = () => {
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
 
+    const [jumlah, setJumlah] = useState([])
+    const [tmpCentang, setTmpCentang] = useState([]);
+
     const cardOutline = {
         borderTop: '3px solid #007bff',
     }
@@ -163,7 +166,24 @@ const CreateGoodsRequest = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
+            let tmp = []
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentang.indexOf(res.data[i].product_id) >= 0) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: true
+                    });
+                }
+                else {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: false
+                    });
+                }
+
+
+            }
+            setGetDataProduct(tmp);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -174,24 +194,33 @@ const CreateGoodsRequest = () => {
         {
             title: 'Nama Produk',
             dataIndex: 'product_name',
+            render: (_, record) => {
+                return <>{record.detail.product_name}</>
+            }
         },
         {
             title: 'Stok',
             dataIndex: 'qty',
             width: '15%',
-            align: 'center'
+            align: 'center',
+            render: (_,record) => {
+                return <>{record.detail.qty.toString().replace('.', ',')}</>
+
+            }
         },
         {
             title: 'actions',
             dataIndex: 'actions',
             width: '15%',
             align: 'center',
-            render: (_, record) => (
+            render: (_, record, index) => (
                 <>
                     <Checkbox
                         value={record}
                         // checked
-                        onChange={handleCheck}
+                        checked={record.statusCek}
+                        onChange={(e) => handleCheck(e, index)}
+                    // onChange={handleCheck}
                     />
                     {/* <CheckBox
           type="checkbox"
@@ -337,16 +366,75 @@ const CreateGoodsRequest = () => {
         };
     });
 
-    const handleCheck = (event) => {
-        var updatedList = [...product];
-        if (event.target.checked) {
-            updatedList = [...product, event.target.value];
-        } else {
-            updatedList.splice(product.indexOf(event.target.value), 1);
+    const handleCheck = (event, index) => {
+        let data = event.target.value
+
+        let tmpDataBaru = []
+        let tmpJumlah = [...jumlah]
+        let tmpDataCentang = [...tmpCentang]
+        for (let i = 0; i < getDataProduct.length; i++) {
+            if (i == index) {
+                tmpDataBaru.push({
+                    detail: getDataProduct[i].detail,
+                    statusCek: !getDataProduct[i].statusCek
+                })
+                // tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+
+            }
+            else {
+                tmpDataBaru.push(getDataProduct[i])
+            }
+
+
+            if (tmpDataBaru[i].statusCek == true) {
+                tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+            }
+            else {
+                let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.product_id);
+                if (index >= 0) {
+                    tmpDataCentang.splice(index, 1)
+                }
+                // tmpDataCentang.push('')
+            }
         }
-        console.log(product.indexOf(event.target.value))
+        let unikTmpCentang = [...new Set(tmpDataCentang)]
+        setTmpCentang(unikTmpCentang)
+        setGetDataProduct(tmpDataBaru)
+        var updatedList = [...product];
+        if (tmpDataBaru[index].statusCek) {
+            updatedList = [...product, data.detail];
+
+            for (let i = 0; i < updatedList.length; i++) {
+                if (i >= product.length) {
+                    tmpJumlah.push(0)
+                }
+
+            }
+            console.log(tmpJumlah)
+        } else {
+            for (let i = 0; i < updatedList.length; i++) {
+                if (updatedList[i].product_id == data.detail.product_id) {
+                    updatedList.splice(i, 1);
+                    tmpJumlah.splice(i, 1)
+                }
+            }
+        }
         setProduct(updatedList);
-    };
+        setJumlah(tmpJumlah)
+        console.log(tmpDataBaru, "Cekk", updatedList)
+    }
+
+    // const handleCheck = (event) => {
+    //     var updatedList = [...product];
+    //     if (event.target.checked) {
+    //         updatedList = [...product, event.target.value];
+    //     } else {
+    //         updatedList.splice(product.indexOf(event.target.value), 1);
+    //     }
+    //     console.log(product.indexOf(event.target.value))
+    //     console.log(updatedList);
+    //     setProduct(updatedList);
+    // };
 
     const handleSubmit = async (e) => {
         e.preventDefault();

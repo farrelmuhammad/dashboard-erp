@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import 'antd/dist/antd.css';
 import { CheckCircleOutlined, CloseOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, Input, Space, Table, Tag , Tooltip} from 'antd';
+import { Button, Input, Space, Table, Tag, Tooltip } from 'antd';
 import axios from 'axios';
 import Url from '../../../Config';
 import jsCookie from 'js-cookie'
@@ -42,100 +42,100 @@ const PesananTable = () => {
 
     const [tableParams, setTableParams] = useState({
         pagination: {
-          current: 1,
-          pageSize: 10,
+            current: 1,
+            pageSize: 10,
         },
-      });
-    
-      const getParams = (params) => ({
+    });
+
+    const getParams = (params) => ({
         results: params.pagination?.pageSize,
         page: params.pagination?.current,
         ...params,
-      });
-    
-      const fetchData = () => {
+    });
+
+    const fetchData = () => {
         setIsLoading(true);
         console.log(qs.stringify(getParams(tableParams)))
         fetch(`${Url}/sales_orders?${qs.stringify(getParams(tableParams))}`, {
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${auth.token}`,
-          },
-        }).then((res) => res.json()
-        )
-          .then(({ data }) => {
-             console.log(data)
-            // setGetDataTally(data);
-            // agar bisa di search 
-            let tmp = []
-            for (let i = 0; i < data.length; i++) {
-              tmp.push({
-                // id: data[i].id,
-                // can: data[i].can,
-                // code: data[i].code,
-                // customer_name: data[i].customer_name ? data[i].customer_name : '',
-                // supplier_name: data[i].supplier_name ? data[i].supplier_name : '',
-                // date: data[i].date,
-                // status: data[i].status,
-                // warehouse_name: data[i].warehouse.name
-
-
-                id: data[i].id,
-                can: data[i].can,
-                date:data[i].date,
-                code: data[i].code,
-                customer:data[i].customer.name,
-                status:data[i].status,
-                total: data[i].total,
-
-              })
-            }
-            setGetDataSO(tmp)
-            console.log(tmp)
-    
-            setIsLoading(false);
-            setTableParams({
-              ...tableParams,
-              pagination: {
-                ...tableParams.pagination,
-                total: 200,
-              },
-            });
-          });
-      };
-    
-    
-      useEffect(() => {
-        fetchData();
-      }, [JSON.stringify(tableParams)]);
-    
-    
-    const deleteSalesOrder = async (id, code) => {
-        Swal.fire({
-          title: 'Apakah Anda Yakin?',
-          text: "Data ini akan dihapus",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Ya'
-        }).then((result) => {
-          if (result.isConfirmed) {
-            axios.delete(`${Url}/sales_orders/${id}`, {
-              headers: {
+            headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
-              },
-            });
-            getSalesOrder()
-            Swal.fire("Berhasil Dihapus!", `Data ${code} Berhasil hapus`, "success");
-    
-          }
-        })
-    
-      };
+            },
+        }).then((res) => res.json()
+        )
+            .then(({ data }) => {
+                console.log(data)
+                // setGetDataTally(data);
+                // agar bisa di search 
+                let tmp = []
+                for (let i = 0; i < data.length; i++) {
+                    tmp.push({
+                        // id: data[i].id,
+                        // can: data[i].can,
+                        // code: data[i].code,
+                        // customer_name: data[i].customer_name ? data[i].customer_name : '',
+                        // supplier_name: data[i].supplier_name ? data[i].supplier_name : '',
+                        // date: data[i].date,
+                        // status: data[i].status,
+                        // warehouse_name: data[i].warehouse.name
 
-      const forceDoneSalesOrder = async (id, code) => {
+
+                        id: data[i].id,
+                        can: data[i].can,
+                        date: data[i].date,
+                        code: data[i].code,
+                        customer: data[i].customer.name,
+                        status: data[i].status,
+                        total: data[i].total,
+
+                    })
+                }
+                setGetDataSO(tmp)
+                console.log(tmp)
+
+                setIsLoading(false);
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams.pagination,
+                        total: 200,
+                    },
+                });
+            });
+    };
+
+
+    useEffect(() => {
+        fetchData();
+    }, [JSON.stringify(tableParams)]);
+
+
+    const deleteSalesOrder = async (id, code) => {
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Data ini akan dihapus",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios.delete(`${Url}/sales_orders/${id}`, {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${auth.token}`,
+                    },
+                });
+                getSalesOrder()
+                Swal.fire("Berhasil Dihapus!", `Data ${code} Berhasil hapus`, "success");
+
+            }
+        })
+
+    };
+
+    const forceDoneSalesOrder = async (id, code) => {
         Swal.fire({
             title: 'Apakah Anda Yakin?',
             text: "Status akan diubah menjadi done",
@@ -162,7 +162,7 @@ const PesananTable = () => {
         })
     }
 
-      const cancelSalesOrder = async (id, code) => {
+    const cancelSalesOrder = async (id, code) => {
         Swal.fire({
             title: 'Apakah Anda Yakin?',
             text: "Status data akan diubah",
@@ -367,45 +367,45 @@ const PesananTable = () => {
                 setStatus(getData.map(d => d.status))
 
 
-                
-            let tmp = []
-            for (let i = 0; i < getData.length; i++) {
-            tmp.push({
-                id: getData[i].id,
-                can: getData[i].can,
-                date:getData[i].date,
-                code: getData[i].code,
-                customer:getData[i].customer.name,
-                status:getData[i].status,
-                // name:getData[i].name,
-                total: 
-                //  < CurrencyFormat  className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].total).toFixed(2).replace('.' , ',')} key="diskon" />,
-                 getData[i].total,
-                // _group:getData[i]._group,
-                // category:getData[i].category.name,
-                // department : getData[i].department.name ,
-                // position: getData[i].position.name,
-                // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
-                // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
-                // date: getData[i].date,
-                // status: getData[i].status,
-                // warehouse: getData[i].warehouse.name
-            })
-            }
+
+                let tmp = []
+                for (let i = 0; i < getData.length; i++) {
+                    tmp.push({
+                        id: getData[i].id,
+                        can: getData[i].can,
+                        date: getData[i].date,
+                        code: getData[i].code,
+                        customer: getData[i].customer.name,
+                        status: getData[i].status,
+                        // name:getData[i].name,
+                        total:
+                            //  < CurrencyFormat  className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].total).toFixed(2).replace('.' , ',')} key="diskon" />,
+                            getData[i].total,
+                        // _group:getData[i]._group,
+                        // category:getData[i].category.name,
+                        // department : getData[i].department.name ,
+                        // position: getData[i].position.name,
+                        // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+                        // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+                        // date: getData[i].date,
+                        // status: getData[i].status,
+                        // warehouse: getData[i].warehouse.name
+                    })
+                }
                 setDataTampil(tmp)
                 setIsLoading(false);
                 //console.log(getData)
             })
     }
 
-    
-  const handleTableChange = (pagination, filters, sorter) => {
-    setTableParams({
-      pagination,
-      filters,
-      ...sorter,
-    });
-  };
+
+    const handleTableChange = (pagination, filters, sorter) => {
+        setTableParams({
+            pagination,
+            filters,
+            ...sorter,
+        });
+    };
 
     const columns = [
         {
@@ -424,8 +424,8 @@ const PesananTable = () => {
             width: '20%',
             ...getColumnSearchProps('code'),
             //sorter:( a,b ) => a.code.length - b.code.length,
-             sorter: true,
-             sortDirections: ['descend', 'ascend'],
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Customer',
@@ -442,12 +442,12 @@ const PesananTable = () => {
             dataIndex: 'total',
             key: 'total',
             width: '20%',
-            align:'center',
-            sorter:(a,b) => a.total - b.total,
-            sortDirections:['descend','ascend'],
+            align: 'center',
+            sorter: (a, b) => a.total - b.total,
+            sortDirections: ['descend', 'ascend'],
             ...getColumnSearchProps('total'),
-            render: (text) => 
-            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.' , ',')} key="diskon" />,
+            render: (text) =>
+                < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.', ',')} key="diskon" />,
         },
         {
             title: 'Status',
@@ -457,83 +457,83 @@ const PesananTable = () => {
             width: '12%',
             render: (_, { status }) => (
                 <>
-                   
-                     {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="volcano">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Processed' ? <Tag color="purple">{status}</Tag> : status == 'Cancelled' ? <Tag color="red">{status}</Tag> : null}
+
+                    {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="volcano">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Processed' ? <Tag color="purple">{status}</Tag> : status == 'Cancelled' ? <Tag color="red">{status}</Tag> : null}
                 </>
             ),
             ...getColumnSearchProps('status'),
-            sorter:(a,b) => a.status.length - b.status.length
+            sorter: (a, b) => a.status.length - b.status.length
         },
         {
             title: 'Actions',
             width: '20%',
             align: 'center',
-            dataIndex:'action',
+            dataIndex: 'action',
             render: (_, record) => (
                 <>
-             
-                <Space size="middle">
-                {record.can['read-sales_order'] ? (
-                    <Tooltip title="Detail" placement="bottom">
-                    <Link to={`/pesanan/detail/${record.id}`}>
-                        <Button
-                            size='small'
-                            type="primary"
-                            icon={<InfoCircleOutlined />}
-                        />
-                    </Link>
-                    </Tooltip>
-                ) : null}
 
-                { record.can['update-sales_order'] ? (
-                <Tooltip title="Edit" placement="bottom">
-                <Link to={`/pesanan/edit/${record.id}`}>
-                    <Button
-                        size='small'
-                        type="success"
-                        icon={<EditOutlined />}
-                    />
-                </Link>
-                </Tooltip>
-                ) : null}
+                    <Space size="middle">
+                        {record.can['read-sales_order'] ? (
+                            <Tooltip title="Detail" placement="bottom">
+                                <Link to={`/pesanan/detail/${record.id}`}>
+                                    <Button
+                                        size='small'
+                                        type="primary"
+                                        icon={<InfoCircleOutlined />}
+                                    />
+                                </Link>
+                            </Tooltip>
+                        ) : null}
 
-                { record.can['cancel-sales_order'] ? (
-                <Tooltip title="Cancel" placement="bottom">
-                <Button
-                    size='small'
-                    type="danger"
-                    icon={<CloseOutlined />}
-                    onClick={() => cancelSalesOrder(record.id, record.code)}
-                />
-                </Tooltip>
-                ) : null}
+                        {record.can['update-sales_order'] ? (
+                            <Tooltip title="Edit" placement="bottom">
+                                <Link to={`/pesanan/edit/${record.id}`}>
+                                    <Button
+                                        size='small'
+                                        type="success"
+                                        icon={<EditOutlined />}
+                                    />
+                                </Link>
+                            </Tooltip>
+                        ) : null}
 
-                { record.can['delete-sales_order'] ? (
-                      <Tooltip title="Delete" placement="bottom">
-                      <Button
-                          size='small'
-                          type="danger"
-                          icon={<DeleteOutlined />}
-                          onClick={() => deleteSalesOrder(record.id, record.code)}
-                      />
-                      </Tooltip>
-                ):null}
+                        {record.can['cancel-sales_order'] ? (
+                            <Tooltip title="Cancel" placement="bottom">
+                                <Button
+                                    size='small'
+                                    type="danger"
+                                    icon={<CloseOutlined />}
+                                    onClick={() => cancelSalesOrder(record.id, record.code)}
+                                />
+                            </Tooltip>
+                        ) : null}
 
-                {record.can['force_done-sales_order'] ? (
-                        <Tooltip title="Force Done" placement="bottom">
-                        <Button
-                            size='small'
-                            type="success"
-                            icon={<CheckCircleOutlined />}
-                            onClick={() => forceDoneSalesOrder(record.id, record.code)}
-                        />
-                        </Tooltip>
+                        {record.can['delete-sales_order'] ? (
+                            <Tooltip title="Delete" placement="bottom">
+                                <Button
+                                    size='small'
+                                    type="danger"
+                                    icon={<DeleteOutlined />}
+                                    onClick={() => deleteSalesOrder(record.id, record.code)}
+                                />
+                            </Tooltip>
+                        ) : null}
 
-                ) : null}
-                   
-                </Space>
-           
-                {/* <Space size="middle">
+                        {record.can['force_done-sales_order'] ? (
+                            <Tooltip title="Force Done" placement="bottom">
+                                <Button
+                                    size='small'
+                                    type="success"
+                                    icon={<CheckCircleOutlined />}
+                                    onClick={() => forceDoneSalesOrder(record.id, record.code)}
+                                />
+                            </Tooltip>
+
+                        ) : null}
+
+                    </Space>
+
+                    {/* <Space size="middle">
                     <Tooltip title="Detail" placement="bottom">
                     <Link to={`/pesanan/detail/${record.id}`}>
                         <Button
@@ -573,10 +573,10 @@ const PesananTable = () => {
                     </Link>
                     </Tooltip>
                 </Space> */}
-           
-                <>
-                </>
-          
+
+                    <>
+                    </>
+
                 </>
             ),
         },
@@ -585,75 +585,75 @@ const PesananTable = () => {
     const dataColumn = [
         ...getDataSO.map((item, i) => ({
             date: item.date,
-            code:item.code,
+            code: item.code,
             customer: item.customer.name,
-            total: 
-            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" />,
-            status:  <>
-            {item.status === 'Submitted' ? <Tag color="blue">{item.status}</Tag> : item.status === 'Draft' ? <Tag color="volcano">{item.status}</Tag> : item.status === 'Done' ? <Tag color="green">{item.status}</Tag> : item.status === 'Processed' ? <Tag color="orange">{item.status}</Tag> : <Tag color="red">{item.status}</Tag>}
-        </>,
-            action:       <>
-            {item.status === 'Submitted' ? (
-                <Space size="middle">
-                    <Button
-                        size='small'
-                        type="danger"
-                        icon={<CloseOutlined />}
-                        onClick={() => cancelSalesOrder(item.id,item.code)}
-                    />
-                    <Link to={`/pesanan/detail/${item.id}`}>
+            total:
+                < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.', ',')} key="diskon" />,
+            status: <>
+                {item.status === 'Submitted' ? <Tag color="blue">{item.status}</Tag> : item.status === 'Draft' ? <Tag color="volcano">{item.status}</Tag> : item.status === 'Done' ? <Tag color="green">{item.status}</Tag> : item.status === 'Processed' ? <Tag color="orange">{item.status}</Tag> : <Tag color="red">{item.status}</Tag>}
+            </>,
+            action: <>
+                {item.status === 'Submitted' ? (
+                    <Space size="middle">
                         <Button
                             size='small'
-                            type="primary"
-                            icon={<InfoCircleOutlined />}
+                            type="danger"
+                            icon={<CloseOutlined />}
+                            onClick={() => cancelSalesOrder(item.id, item.code)}
                         />
-                    </Link>
-                    <Link to={`/pesanan/edit/${item.id}`}>
+                        <Link to={`/pesanan/detail/${item.id}`}>
+                            <Button
+                                size='small'
+                                type="primary"
+                                icon={<InfoCircleOutlined />}
+                            />
+                        </Link>
+                        <Link to={`/pesanan/edit/${item.id}`}>
+                            <Button
+                                size='small'
+                                type="success"
+                                icon={<EditOutlined />}
+                            />
+                        </Link>
+                    </Space>
+                ) : item.status === 'Draft' ? (
+                    <Space size="middle">
+                        <Link to={`/pesanan/detail/${item.id}`}>
+                            <Button
+                                size='small'
+                                type="primary"
+                                icon={<InfoCircleOutlined />}
+                            />
+                        </Link>
+                        <Link to={`/pesanan/edit/${item.id}`}>
+                            <Button
+                                size='small'
+                                type="success"
+                                icon={<EditOutlined />}
+                            />
+                        </Link>
                         <Button
                             size='small'
-                            type="success"
-                            icon={<EditOutlined />}
+                            type="danger"
+                            icon={<DeleteOutlined />}
+                            onClick={() => deleteSalesOrder(item.id, item.code)}
                         />
-                    </Link>
-                </Space>
-            ) : item.status === 'Draft' ? (
-                <Space size="middle">
-                    <Link to={`/pesanan/detail/${item.id}`}>
-                        <Button
-                            size='small'
-                            type="primary"
-                            icon={<InfoCircleOutlined />}
-                        />
-                    </Link>
-                    <Link to={`/pesanan/edit/${item.id}`}>
-                        <Button
-                            size='small'
-                            type="success"
-                            icon={<EditOutlined />}
-                        />
-                    </Link>
-                    <Button
-                        size='small'
-                        type="danger"
-                        icon={<DeleteOutlined />}
-                        onClick={() => deleteSalesOrder(item.id, item.code)}
-                    />
-                </Space>
-            ) : item.status === 'Done' ? (
-                <Space size="middle">
-                    <Link to={`/pesanan/detail/${item.id}`}>
-                        <Button
-                            size='small'
-                            type="primary"
-                            icon={<InfoCircleOutlined />}
-                        />
-                    </Link>
-                </Space>
-            ) : (
-                <>
-                </>
-            )}
-        </>
+                    </Space>
+                ) : item.status === 'Done' ? (
+                    <Space size="middle">
+                        <Link to={`/pesanan/detail/${item.id}`}>
+                            <Button
+                                size='small'
+                                type="primary"
+                                icon={<InfoCircleOutlined />}
+                            />
+                        </Link>
+                    </Space>
+                ) : (
+                    <>
+                    </>
+                )}
+            </>
         }))
     ]
 
