@@ -506,8 +506,8 @@ const EditPesanan = () => {
         return <>
             {
                 namaMataUang === 'Rp' ?
-                    < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
-                    : < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                    < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                    : < CurrencyFormat disabled  className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
             }
         </>
     }
@@ -921,9 +921,10 @@ const EditPesanan = () => {
         userData.append("catatan", description);
         userData.append("pelanggan", customer);
         userData.append("status", "Submitted");
+        console.log(product)
         product.map((p, i) => {
             // console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
+            userData.append("nama_alias_produk[]", p.product_alias_name);
             userData.append("kuantitas[]", p.quantity);
             userData.append("satuan[]", p.unit);
             userData.append("harga[]", p.price);
@@ -990,7 +991,7 @@ const EditPesanan = () => {
         userData.append("status", "Draft");
         product.map((p, i) => {
             console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
+            userData.append("nama_alias_produk[]", p.product_alias_name);
             userData.append("kuantitas[]", p.quantity);
             userData.append("satuan[]", p.unit);
             userData.append("harga[]", p.price);

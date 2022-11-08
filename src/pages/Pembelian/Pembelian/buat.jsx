@@ -683,18 +683,19 @@ const BuatPesananPembelian = () => {
             let tmp = [];
             let tmpJumlah = [];
             for (let i = 0; i < updatedList.length; i++) {
-                if (updatedList[i].id == event.target.value.id) {
-                    tmp[i] = '%';
-                    tmpJumlah[i] = 0;
+                if (updatedList[i].id == data.detail.id) {
+                    tmp.push('%');
+                    tmpJumlah.push(0);
 
                 }
                 else {
-                    tmp[i] = pilihanDiskon[i];
-                    tmpJumlah[i] = jumlahDiskon[i]
-
+                    tmp.push(pilihanDiskon[i]);
+                    tmpJumlah.push(jumlahDiskon[i])
                 }
 
             }
+            console.log(tmp)
+            console.log(tmpJumlah)
             setPilihanDiskon(tmp);
             setJumlahDiskon(tmpJumlah)
         } else {

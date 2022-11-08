@@ -476,10 +476,12 @@ const PesananPembelianTable = () => {
         loading={isLoading}
         columns={columns}
         dataSource={dataTampil}
-        pagination=
-        {
-            pesananPembelian.length < 50 ? { pageSize: 5 } : null
-        }
+        pagination={{ pageSize: 10 }}
+
+        // pagination=
+        // {
+        //     pesananPembelian.length < 50 ? { pageSize: 5 } : null
+        // }
     />;
 };
 

@@ -88,11 +88,11 @@ const EditableCell = ({
                 ]}
             >
                 {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1} 
-                 decimalSeparator = {','}
-                 onChange={value => {
-                     value = parseFloat(value.toString().replace('.', ','))
-                   }}
+                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
+                    decimalSeparator={','}
+                    onChange={value => {
+                        value = parseFloat(value.toString().replace('.', ','))
+                    }}
                 />
                 {/* <Input type="text" ref={inputRef} onPressEnter={save} onBlur={save}/> */}
             </Form.Item>
@@ -152,9 +152,9 @@ const EditPesananPembelian = () => {
     //const [namaMataUang, setNamaMataUang] = useState();
     const [pilihanDiskon, setPilihanDiskon] = useState([]);
     const [jumlahDiskon, setJumlahDiskon] = useState([]);
-    const [namaPIC, setNamaPIC] = useState()
-    const [tanggalAwal, setTanggalAwal] = useState();
-    const [tanggalAkhir, setTanggalAkhir] = useState();
+    const [namaPIC, setNamaPIC] = useState('')
+    const [tanggalAwal, setTanggalAwal] = useState('');
+    const [tanggalAkhir, setTanggalAkhir] = useState('');
     const [namaPenerima, setNamaPenerima] = useState()
 
 
@@ -232,7 +232,7 @@ const EditPesananPembelian = () => {
 
     const [tampilPPN, setTampilPPN] = useState(true);
     const [tampilMataUang, setTampilMataUang] = useState(false);
- 
+
 
     // const convertToRupiah = (angka) => {
     //     return <input
@@ -245,39 +245,42 @@ const EditPesananPembelian = () => {
 
     const convertToRupiah = (angka) => {
         return <>
-        {
-            namaMataUang !== 'Rp ' ? 
-            < CurrencyFormat  className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true"  id="colFormLabelSm"  className="form-control form-control-sm"/>} />
-                :  < CurrencyFormat  className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm"  className="form-control form-control-sm"/>}  />
-                  
-        }
+            {
+                namaMataUang !== 'Rp ' ?
+                    < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                    : < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+
+            }
         </>
     }
 
     const convertToRupiahTabel = (angka) => {
         return <>
-        {
-            namaMataUang === 'Rp ' ? 
-            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon" />
-            :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" />
-            
-        }
-        </>
-        }
-
-        const convertToRupiahTabel1 = (angka) => {
-            return <>
             {
-                namaMataUang === 'Rp' ? 
-                < CurrencyFormat  className=' text-center ' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon" />
-                :< CurrencyFormat  className=' text-center  ' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" />
-                
+                namaMataUang === 'Rp ' ?
+                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" />
+                    : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" />
+
             }
-            </>
+        </>
+    }
+
+    const convertToRupiahTabel1 = (angka) => {
+        // console.log
+        return <>
+            {
+                namaMataUang === 'Rp' ?
+                    < CurrencyFormat className=' text-center ' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" />
+                    : < CurrencyFormat className=' text-center  ' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" />
+
             }
+        </>
+    }
 
 
-    function ubahJumlahDiskon(value, index) {
+    function ubahJumlahDiskon(diskon, index) {
+        let value = diskon.replace(',','.').replace(/[^0-9_,\.]+/g, "")
+        console.log(value)
         let totalPerProduk = 0;
         let grandTotal = 0;
         let total = 0;
@@ -316,6 +319,7 @@ const EditPesananPembelian = () => {
             }
         }
 
+        getProduct[index].fixed_discount = value
         grandTotal = Number(total) - Number(hasilDiskon) + Number(totalPpn);
         console.log(total)
         setSubTotal(Number(total));
@@ -425,6 +429,7 @@ const EditPesananPembelian = () => {
         {
             title: 'Nama Produk',
             dataIndex: 'product_name',
+            width: '12%',
             render: (text) => {
                 return {
                     props: {
@@ -444,7 +449,7 @@ const EditPesananPembelian = () => {
                 return {
                     props: {
                     },
-                    children: <div>{Number(text).toFixed(2).replace('.',',')}</div>
+                    children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
                 };
             }
         },
@@ -467,10 +472,10 @@ const EditPesananPembelian = () => {
             dataIndex: 'price',
             width: '18%',
             align: 'center',
-            //editable: true,
+            editable: true,
             render(text, record) {
                 return {
-                    children: convertToRupiahTabel(text)
+                    children: <div>{< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.', ',')} key="diskon" />}</div>
                 };
             }
         },
@@ -509,8 +514,15 @@ const EditPesananPembelian = () => {
                                 </div>
                             </> : getProduct[index].fixed_discount != 0 ?
                                 <>
-                                    <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" defaultValue={
-                                        convertToRupiahTabel1(getProduct[index].fixed_discount)} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" />
+                                    {
+                                        // namaMataUang === 'Rp' ?
+                                            < CurrencyFormat className=' text-center form-control' style={{ width: "30px", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={getProduct[index].fixed_discount.replace('.', ',')} key="diskon" onChange={(e) => ubahJumlahDiskon(e.target.value, index)}/>
+                                            // : < CurrencyFormat className=' text-center form-control ' style={{ width: "30px", fontSize: "10px!important" }}  thousandSeparator={'.'} decimalSeparator={','} value={Number(getProduct[index].fixed_discount).toLocaleString('id')} key="diskon"  onChange={(e) => ubahJumlahDiskon(e.target.value, index)}/>
+
+                                    }
+
+                                    {/* <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" defaultValue={
+                                        convertToRupiahTabel1(getProduct[index].fixed_discount)} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" /> */}
                                     <div className="input-group-prepend">
                                         <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
                                             <select
@@ -564,7 +576,7 @@ const EditPesananPembelian = () => {
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '15%',
+            width: '20%',
             align: 'center',
             render:
                 (text, record, index) => {
@@ -717,18 +729,29 @@ const EditPesananPembelian = () => {
                 setGrandTotal(getData.total);
                 setGetCode(getData.code);
                 setDate(getData.date);
-                setReferensi(getData.reference);
-                setDescription(getData.notes);
+                if (getData.reference) {
+                    setReferensi(getData.reference);
+                }
+                if (getData.notes) {
+                    setDescription(getData.notes);
+                }
                 setGetStatus(getData.status);
                 setSupplierId(getData.supplier_id);
                 setSelectedSupplier(getData.supplier.name);
                 setMataUangId(getData.currency_id);
-                if(getData.currency){
+                if (getData.currency) {
                     setNamaMataUang(getData.currency.name)
                 }
-                setNamaPIC(getData.according_to);
-                setTanggalAkhir(getData.shipment_period_end_date);
-                setTanggalAwal(getData.shipment_period_start_date);
+                if (getData.according_to) {
+                    setNamaPIC(getData.according_to);
+                }
+                if (getData.shipment_period_end_date) {
+                    setTanggalAkhir(getData.shipment_period_end_date);
+
+                }
+                if (getData.shipment_period_start_date) {
+                    setTanggalAwal(getData.shipment_period_start_date);
+                }
                 setNamaPenerima(getData.purchased_by)
                 setGrup(getData.supplier._group);
                 if (getData.currency == null) {
@@ -1058,7 +1081,7 @@ const EditPesananPembelian = () => {
 
                             </div>
                         </div>
-                        <div className="row mb-3" style={{display: grup=='Lokal' ? 'flex' : 'none'}}>
+                        <div className="row mb-3" style={{ display: grup == 'Lokal' ? 'flex' : 'none' }}>
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                             <div className="col-sm-7">
                                 <AsyncSelect
@@ -1075,7 +1098,7 @@ const EditPesananPembelian = () => {
 
                             </div>
                         </div>
-                        <div className="row mb-3" style={{display: grup=='Lokal' ? 'none' : 'flex'}}>
+                        <div className="row mb-3" style={{ display: grup == 'Lokal' ? 'none' : 'flex' }}>
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
                             <div className="col-sm-7">
                                 <AsyncSelect
@@ -1266,10 +1289,10 @@ const EditPesananPembelian = () => {
                                 {convertToRupiah(grandTotalDiscount)}
                             </div>
                         </div>
-                        <div className="row mb-3" id="ppn" style={{ display: tampilPPN ? "flex" : "none" }}>
+                        <div className="row mb-3" id="ppn" style={{ display: grup == 'Lokal' ? "flex" : "none" }}>
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">PPN</label>
                             <div className="col-sm-6">
-                                <CurrencyFormat prefix='Rp ' style={{width:"70%"}} className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toFixed(2).replace('.',',')} onKeyDown={(event) => klikEnter(event)} onChange={(e) => setTotalPpn(e.target.value.replace('.', '').replace(/[^0-9\.]+/g, ""))} key="total" />
+                                <CurrencyFormat prefix='Rp ' style={{ width: "70%" }} className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toFixed(2).replace('.', ',')} onKeyDown={(event) => klikEnter(event)} onChange={(e) => setTotalPpn(e.target.value.replace('.', '').replace(/[^0-9\.]+/g, ""))} key="total" />
 
 
                                 {/* <input

@@ -125,7 +125,7 @@ const EditFaktur = () => {
     const [idTandaTerima, setIdTandaTerima] = useState([]);
     const [loading, setLoading] = useState(true);
     const [data, setData] = useState("");
-    const [uangMuka, setUangMuka] = useState()
+    const [uangMuka, setUangMuka] = useState(0)
     const [statusDelvery, setStatusDelivery] = useState()
     const [taxIncluded, setTaxIncluded] = useState(null);
 
@@ -199,7 +199,8 @@ const EditFaktur = () => {
 
     useEffect(() => {
         setGrandTotal(Number(subTotal) - Number(grandTotalDiscount) + Number(totalPpn) - Number(uangMuka));
-    }, [totalPpn, uangMuka]);
+        console.log(Number(subTotal) - Number(grandTotalDiscount) + Number(totalPpn) - Number(uangMuka))
+    }, [totalPpn, uangMuka, product]);
 
     const getDataFaktur = async () => {
         await axios.get(`${Url}/select_sales_invoices?id=${id}`, {
@@ -321,9 +322,9 @@ const EditFaktur = () => {
             })
 
             let tmp = []
-            for (let i = 0; i < res.data.data.length; i++) {
+            for (let i = 0; i < res.data.length; i++) {
                 tmp.push({
-                    detail: res.data.data[i],
+                    detail: res.data[i],
                     statusCek: false
                 });
             }
@@ -846,7 +847,8 @@ const EditFaktur = () => {
                 totalPpn += ((((totalPerProduk * 100) / (100 +  Number(values.ppn.toString().replace(',', '.')))) - (rowDiscount * 100) / (100 +  Number(values.ppn.toString().replace(',', '.')))) *  Number(values.ppn.toString().replace(',', '.'))) / (100);
 
 
-                grandTotal = subTotal - hasilDiskon + Number(totalPpn);
+                grandTotal = subTotal - hasilDiskon + Number(totalPpn) - Number(uangMuka);
+                console.log(grandTotal)
 
                 setSubTotal(subTotal)
                 setGrandTotalDiscount(totalDiscount);
@@ -874,7 +876,7 @@ const EditFaktur = () => {
                 subTotal = total - (Number(totalPerProduk) * Number(rowDiscount) / 100);
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 totalPpn += (subTotalDiscount * Number(values.ppn.toString().replace(',', '.'))) / 100;
-                grandTotal = total - totalDiscount + Number(totalPpn);
+                grandTotal = total - totalDiscount + Number(totalPpn) - Number(uangMuka);
 
                 setSubTotal(total)
                 setGrandTotalDiscount(totalDiscount);

@@ -147,29 +147,30 @@ const BuatFaktur = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?kode=${query}&id_pelanggan=${customer}`, {
+            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?kode=${query}&id_penerima=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
             let tmp = []
-            for (let i = 0; i < res.data.data.length; i++) {
-                if (tmpCentang.indexOf(res.data.data[i].code) >= 0) {
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentang.indexOf(res.data[i].code) >= 0) {
                     tmp.push({
-                        detail: res.data.data[i],
+                        detail: res.data[i],
                         statusCek: true
                     });
                 }
             }
-            for (let i = 0; i < res.data.data.length; i++) {
-                if (tmpCentang.indexOf(res.data.data[i].code) < 0) {
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentang.indexOf(res.data[i].code) < 0) {
                     tmp.push({
-                        detail: res.data.data[i],
+                        detail: res.data[i],
                         statusCek: false
                     });
                 }
-            }
+            }   
+            console.log(tmp)
 
 
             setGetDataSurat(tmp);
@@ -231,6 +232,15 @@ const BuatFaktur = () => {
             align: 'center',
             render: (_, record) => {
                 return <>{record.detail.customer_name}</>
+            }
+        },
+        {
+            title: 'Penerima',
+            dataIndex: 'recipient_name',
+            width: '15%',
+            align: 'center',
+            render: (_, record) => {
+                return <>{record.detail.recipient_name}</>
             }
         },
         {
@@ -1364,6 +1374,7 @@ const BuatFaktur = () => {
         setSelectedCustomer(value);
         setCustomer(value.id);
         setAddress(value.customer_addresses)
+        setTmpCentang([])
         setProduct([])
     };
     // load options using API call

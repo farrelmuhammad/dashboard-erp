@@ -498,7 +498,7 @@ const BuatRetur = () => {
     const dataProduk =
         [...tampilProduk.map((item, i) => ({
             name_product: item.name,
-            qty: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.remains} onChange={(e) => klikUbahData(i, e.target.value)} key="qty" />,
+            qty: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={item.remains.toString().replace('.', ',')} onChange={(e) => klikUbahData(i, e.target.value)} key="qty" />,
             stn: item.unit,
             prc: <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang + ' '} value={Number(item.sales_invoice_price).toFixed(2).toString().replace('.', ',')} />,
             dsc:
