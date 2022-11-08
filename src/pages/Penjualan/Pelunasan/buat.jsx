@@ -317,10 +317,10 @@ const BuatPelunasan = () => {
         {
             title: 'Total',
             dataIndex: 'total',
-            width: '20%',
+            width: '25%',
             align: 'center',
             render: (_, record) => (
-                <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(record.detail.total).toString().replace('.', ',')} />
+                <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(record.detail.total).toFixed(2).toString().replace('.', ',')} />
             )
         },
         {

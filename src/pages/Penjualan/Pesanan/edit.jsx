@@ -149,14 +149,18 @@ const EditPesanan = () => {
                 const getData = res.data.data[0]
                 setGetCode(getData.code);
                 setDate(getData.date);
-                setReferensi(getData.reference);
-                setDescription(getData.notes);
+                if (getData.reference) {
+                    setReferensi(getData.reference);
+                }
+                if (getData.notes) {
+                    setDescription(getData.notes);
+                }
                 setStatus(getData.status);
                 setCustomer(getData.customer.id);
                 setCustomerName(getData.customer.name);
                 setChecked(getData.tax_included);
                 setProduct(getData.sales_order_details);
-                console.log(getData.sales_order_details)
+                console.log(getData.sales_order_details);
 
                 setSubTotal(getData.subtotal);
                 setGrandTotalDiscount(getData.discount);
@@ -193,6 +197,7 @@ const EditPesanan = () => {
                 }
                 setPilihanDiskon(tmpPilihanDiskon)
                 setJumlahDiskon(temp);
+                setLoading(false)
                 // console.log(getData)
             })
             .catch((err) => {
@@ -201,26 +206,26 @@ const EditPesanan = () => {
             });
     }
 
-    useEffect(() => {
-        getSalesOrderDetails()
-    }, [])
-    const getSalesOrderDetails = async () => {
-        await axios.get(`${Url}/sales_order_details/${id}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then((res) => {
-                const getData = res.data.data
-                setProduct(getData);
-                setLoading(false);
-            })
-            .catch((err) => {
-                // Jika Gagal
-                console.log(err);
-            });
-    }
+    // useEffect(() => {
+    //     getSalesOrderDetails()
+    // }, [])
+    // const getSalesOrderDetails = async () => {
+    //     await axios.get(`${Url}/sales_order_details/${id}`, {
+    //         headers: {
+    //             Accept: "application/json",
+    //             Authorization: `Bearer ${auth.token}`,
+    //         },
+    //     })
+    //         .then((res) => {
+    //             const getData = res.data.data
+    //             setProduct(getData);
+    //             setLoading(false);
+    //         })
+    //         .catch((err) => {
+    //             // Jika Gagal
+    //             console.log(err);
+    //         });
+    // }
 
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
@@ -535,7 +540,7 @@ const EditPesanan = () => {
         },
         {
             title: 'Nama Produk Alias',
-            dataIndex: 'alias_name',
+            dataIndex: 'product_alias_name',
             render(text, record) {
                 return {
                     props: {
@@ -741,7 +746,7 @@ const EditPesanan = () => {
                         } else {
                             grandTotalAmount = tableToRupiah(Number(total) + Number(getPpn), "Rp");
                         }
-                    } 
+                    }
                     else {
                         grandTotalAmount = tableToRupiah(Number(record.quantity) * Number(record.price), "Rp");
                     }
@@ -930,7 +935,7 @@ const EditPesanan = () => {
                 userData.append("persentase_diskon[]", 0);
                 userData.append("diskon_tetap[]", jumlahDiskon[i]);
             }
-            
+
             userData.append("ppn[]", p.ppn);
         });
         userData.append("termasuk_pajak", checked);
@@ -1242,7 +1247,7 @@ const EditPesanan = () => {
 
                 <br />
                 <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
-                   {status === 'Submitted' ?  <button
+                    {status === 'Submitted' ? <button
                         type="button"
                         className="btn btn-primary rounded m-1"
                         value="Submitted"
@@ -1250,27 +1255,27 @@ const EditPesanan = () => {
                         onClick={handleSubmit}
                     >
                         Submit
-                    </button> : 
-                    <>
-                     <button
-                        type="button"
-                        className="btn btn-success rounded m-1"
-                        value="Draft"
-                        onChange={(e) => setStatus(e.target.value)}
-                        onClick={handleDraft}
-                    >
-                        Simpan
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-primary rounded m-1"
-                        value="Submitted"
-                        onChange={(e) => setStatus(e.target.value)}
-                        onClick={handleSubmit}
-                    >
-                        Submit
-                    </button>
-                    </>
+                    </button> :
+                        <>
+                            <button
+                                type="button"
+                                className="btn btn-success rounded m-1"
+                                value="Draft"
+                                onChange={(e) => setStatus(e.target.value)}
+                                onClick={handleDraft}
+                            >
+                                Simpan
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-primary rounded m-1"
+                                value="Submitted"
+                                onChange={(e) => setStatus(e.target.value)}
+                                onClick={handleSubmit}
+                            >
+                                Submit
+                            </button>
+                        </>
                     }
                     {/* <button
                         type="button"
