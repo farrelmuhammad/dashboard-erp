@@ -158,8 +158,12 @@ const BuatRetur = () => {
                 console.log(getData)
                 setCode(getData.code)
                 setDate(getData.date)
-                setReferensi(getData.reference)
-                setDescription(getData.notes)
+                if(getData.reference){
+                    setReferensi(getData.reference)
+                }
+                if(getData.description){
+                    setDescription(getData.notes)
+                }
                 setSelectedCustomer(getData.customer)
                 setCustomer(getData.customer.id)
                 setProduct(getData.sales_return_details)
@@ -593,7 +597,7 @@ const BuatRetur = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/pesanan");
+                navigate("/retur");
             })
             .catch((err) => {
                 if (err.response) {
@@ -657,7 +661,7 @@ const BuatRetur = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/pesanan");
+                navigate("/retur");
             })
             .catch((err) => {
                 if (err.response) {
