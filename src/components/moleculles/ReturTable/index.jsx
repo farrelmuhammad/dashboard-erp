@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import 'antd/dist/antd.css';
-import { CheckOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { CheckOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined,CloseOutlined , SearchOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Input, Modal, Space, Table, Tag } from 'antd';
 import axios from 'axios';
 import Url from '../../../Config';
@@ -55,16 +55,62 @@ const ReturTable = () => {
     };
 
 
-    const deleteSalesReturn = async (id) => {
-        await axios.delete(`${Url}/sales_returns/${id}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        });
-        getSalesReturn()
-        Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+    const deleteSalesReturn = async (id, code) => {
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Data akan dihapus",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              axios.delete(`${Url}/sales_returns/${id}`, {
+                headers: {
+                  Accept: "application/json",
+                  Authorization: `Bearer ${auth.token}`,
+                },
+              });
+              fetchData()
+              Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+      
+            }
+          })
     };
+
+    const cancelSalesReturn = async (id, code) => {
+        Swal.fire({
+          title: 'Apakah Anda Yakin?',
+          text: "Status data akan diubah ",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Ya'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            try {
+              axios({
+                method: "patch",
+                url: `${Url}/sales_returns/cancel/${id}`,
+                headers: {
+                  Accept: "application/json",
+                  Authorization: `Bearer ${auth.token}`,
+                },
+              })
+    
+              fetchData();
+              Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
+            }
+            catch (err) {
+              console.log(err);
+            }
+          }
+        })
+    
+      };
+
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
@@ -187,19 +233,7 @@ const ReturTable = () => {
                     date:getData[i].date,
                     customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
                     total : getData[i].total,
-                    // type : getData[i].type,
                     status : getData[i].status
-                    
-                    // name:getData[i].name,
-                    // _group:getData[i]._group,
-                    // category:getData[i].category.name,
-                    // department : getData[i].department.name ,
-                    // position: getData[i].position.name,
-                    // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
-                    // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
-                    // date: getData[i].date,
-                    // status: getData[i].status,
-                    // warehouse: getData[i].warehouse.name
                   })
                 }
         
@@ -271,31 +305,83 @@ const ReturTable = () => {
             align: 'center',
             render: (_, record) => (
                 <>
-                    <Space size="middle">
-                       
-                        <Link to={`/retur/detail/${record.id}`}>
-                            <Button
-                                size='small'
-                                type="primary"
-                                icon={<InfoCircleOutlined />}
-                            />
-                        </Link>
-                        <Link to={`/retur/edit/${record.id}`}>
-                            <Button
-                                size='small'
-                                type="success"
-                                icon={<EditOutlined />}
-                            />
-                        </Link>
+                  <Space size="middle">
+                    {record.can['read-sales_return'] ? (
+                      <Link to={`/retur/detail/${record.id}`}>
                         <Button
+                          size='small'
+                          type="primary"
+                          icon={<InfoCircleOutlined />}
+                        />
+                      </Link>
+                    ) : null}
+                    {
+                      record.can['update-sales_return'] ? (
+                        <Link to={`/retur/edit/${record.id}`}>
+                          <Button
+                            size='small'
+                            type="success"
+                            icon={<EditOutlined />}
+                          />
+                        </Link>
+                      ) : null
+                    }
+                    {
+                      record.can['cancel-sales_return'] ? (
+        
+                        <Button
+                          size='small'
+                          type="danger"
+                          icon={<CloseOutlined />}
+                          onClick={() => cancelSalesReturn(record.id, record.code)}
+                        />
+        
+                      ) : null
+                    }
+                    {
+                      record.can['delete-sales_return'] ? (
+                        <Space size="middle">
+                          <Button
                             size='small'
                             type="danger"
                             icon={<DeleteOutlined />}
-                            onClick={() => deleteSalesReturn(record.id)}
-                        />
-                    </Space>
+                            onClick={() => deleteSalesReturn(record.id, record.code)}
+                          />
+                        </Space>
+                      ) : null
+                    }
+        
+                  </Space>
                 </>
-            ),
+              )
+
+            // render: (_, record) => (
+            //     <>
+            //         <Space size="middle">
+                       
+            //             <Link to={`/retur/detail/${record.id}`}>
+            //                 <Button
+            //                     size='small'
+            //                     type="primary"
+            //                     icon={<InfoCircleOutlined />}
+            //                 />
+            //             </Link>
+            //             <Link to={`/retur/edit/${record.id}`}>
+            //                 <Button
+            //                     size='small'
+            //                     type="success"
+            //                     icon={<EditOutlined />}
+            //                 />
+            //             </Link>
+            //             <Button
+            //                 size='small'
+            //                 type="danger"
+            //                 icon={<DeleteOutlined />}
+            //                 onClick={() => deleteSalesReturn(record.id)}
+            //             />
+            //         </Space>
+            //     </>
+            // ),
         },
     ];
     return <Table

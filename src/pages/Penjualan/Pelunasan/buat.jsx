@@ -509,7 +509,7 @@ const BuatPelunasan = () => {
                 let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.code);
                 if(index>=0){
                     tmpDataCentang.splice(index, 1)
-                }
+                } 
             }
         }
 

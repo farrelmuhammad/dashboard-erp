@@ -156,7 +156,7 @@ const BuatPesanan = () => {
             })
             let tmp = []
             for (let i = 0; i < res.data.length; i++) {
-                if (tmpCentang[i]) {
+                if (tmpCentang.indexOf(res.data[i].alias_name) >= 0) {
                     tmp.push({
                         detail: res.data[i],
                         statusCek: true
@@ -164,7 +164,7 @@ const BuatPesanan = () => {
                 }
             }
             for (let i = 0; i < res.data.length; i++) {
-                if (!tmpCentang[i]) {
+                if (tmpCentang.indexOf(res.data[i].alias_name) < 0) {
                     tmp.push({
                         detail: res.data[i],
                         statusCek: false
@@ -172,8 +172,6 @@ const BuatPesanan = () => {
                 }
             }
 
-            // console.log(tmp.statusCek.sort())
-            console.log(getDataProduct)
             setGetDataProduct(tmp)
         };
 
@@ -292,6 +290,7 @@ const BuatPesanan = () => {
                 setGrandTotalDiscount(totalDiscount);
                 setTotalPpn(totalPpn)
                 setGrandTotal(grandTotal);
+                
                 setPilihanDiskon(tmp);
             } else {
                 total += (Number(product[i].quantity) * Number(product[i].price));
@@ -328,6 +327,7 @@ const BuatPesanan = () => {
                 setGrandTotalDiscount(hasilDiskon);
                 setTotalPpn(totalPpn)
                 setGrandTotal(grandTotal);
+                
                 setPilihanDiskon(tmp);
             }
         }
@@ -385,11 +385,11 @@ const BuatPesanan = () => {
                 totalDiscount += ((rowDiscount * 100) / (100 + product[i].ppn));
                 totalPpn += ((((totalPerProduk * 100) / (100 + product[i].ppn)) - (rowDiscount * 100) / (100 + product[i].ppn)) * product[i].ppn) / (100);
                 grandTotal = subTotal - totalDiscount + Number(totalPpn);
-                console.log(rowDiscount, pilihanDiskon[i], "Cek")
                 setSubTotal(subTotal)
                 setGrandTotalDiscount(totalDiscount);
                 setTotalPpn(totalPpn)
                 setGrandTotal(grandTotal);
+                
                 setJumlahDiskon(tmp);
             } else {
                 total += (Number(product[i].quantity) * Number(product[i].price));
@@ -428,6 +428,7 @@ const BuatPesanan = () => {
                 setGrandTotalDiscount(totalDiscount);
                 setTotalPpn(totalPpn)
                 setGrandTotal(grandTotal);
+                
                 setJumlahDiskon(tmp);
             }
         }
@@ -668,7 +669,6 @@ const BuatPesanan = () => {
                 (text, record, index) => {
                     let grandTotalAmount = 0;
                     if (pilihanDiskon[index] == 'percent' || pilihanDiskon == 'percent') {
-                        // console.log("masuk percent")
                         let total = (record.quantity * record.price);
                         let getPercent = (total * jumlahDiskon[index]) / 100;
                         let totalDiscount = total - getPercent;
@@ -679,7 +679,6 @@ const BuatPesanan = () => {
                             grandTotalAmount = tableToRupiah(totalDiscount + getPpn, "Rp");
                         }
                     } else if (pilihanDiskon[index] == 'nominal') {
-                        // console.log("masuk nominal")
                         let total = (record.quantity * record.price) - jumlahDiskon[index];
                         let getPpn = (total * record.ppn) / 100;
                         if (checked) {
@@ -717,7 +716,6 @@ const BuatPesanan = () => {
     };
 
     const calculate = (product, check_checked) => {
-        console.log("a")
         let totalPerProduk = 0;
         let grandTotal = 0;
         let total = 0;
@@ -751,6 +749,7 @@ const BuatPesanan = () => {
                 setGrandTotalDiscount(totalDiscount);
                 setTotalPpn(totalPpn)
                 setGrandTotal(grandTotal);
+                
             } else {
                 total += (Number(values.quantity) * Number(values.price));
                 totalPerProduk = (Number(values.quantity) * Number(values.price));
@@ -764,16 +763,19 @@ const BuatPesanan = () => {
                     hasilDiskon += Number(jumlahDiskon[i]);
                     rowDiscount = Number(jumlahDiskon[i]);
                 }
-                totalDiscount += ((totalPerProduk * jumlahDiskon[i]) / 100);
+
+                totalDiscount += Number(rowDiscount);
+                // totalDiscount += ((totalPerProduk * jumlahDiskon[i]) / 100);
                 subTotal = total - (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 totalPpn += (subTotalDiscount * values.ppn) / 100;
-                grandTotal = total - totalDiscount + Number(totalPpn);
+                grandTotal = Number(total) - Number(totalDiscount) + Number(totalPpn);
 
                 setSubTotal(total)
                 setGrandTotalDiscount(totalDiscount);
                 setTotalPpn(totalPpn)
                 setGrandTotal(grandTotal);
+                
             }
         })
     }
@@ -805,13 +807,17 @@ const BuatPesanan = () => {
         let data = event.target.value;
         let tmpDataBaru = []
         // let tmpJumlah = [...jumlah]
-        let tmpDataCentang = []
+        let tmpDataCentang = [...tmpCentang]
         for (let i = 0; i < getDataProduct.length; i++) {
             if (i == index) {
                 tmpDataBaru.push({
                     detail: getDataProduct[i].detail,
                     statusCek: !getDataProduct[i].statusCek
                 })
+                if(!tmpDataBaru[i].statusCek){
+                    let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.alias_name);
+                    tmpDataCentang.splice(idxHapus, 1)
+                }
             }
             else {
                 tmpDataBaru.push(getDataProduct[i])
@@ -819,9 +825,6 @@ const BuatPesanan = () => {
 
             if (tmpDataBaru[i].statusCek == true) {
                 tmpDataCentang.push(tmpDataBaru[i].detail.alias_name)
-            }
-            else {
-                tmpDataCentang.push('')
             }
         }
         setTmpCentang(tmpDataCentang)
@@ -1007,7 +1010,6 @@ const BuatPesanan = () => {
             userData.append("termasuk_pajak", checked);
             userData.append("status", "Draft");
             product.map((p, i) => {
-                console.log(p);
                 userData.append("nama_alias_produk[]", p.alias_name);
                 userData.append("kuantitas[]", p.quantity);
                 userData.append("satuan[]", p.unit);
