@@ -8,6 +8,7 @@ import jsCookie from 'js-cookie'
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 import CurrencyFormat from 'react-currency-format';
 
 const FakturTable = () => {
@@ -20,6 +21,65 @@ const FakturTable = () => {
   // const token = jsCookie.get('auth')
   const auth = useSelector(state => state.auth);
   const [dataTampil, setDataTampil] = useState([]);
+
+   const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    fetch(`${Url}/sales_invoices?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+        const getData = data
+        setGetDataFaktur(getData)
+
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+            id: getData[i].id,
+            can: getData[i].can,
+            code: getData[i].code,
+            date: getData[i].date,
+            recipient: getData[i].recipient.name ? getData[i].recipient.name : <div className='text-center'>'-'</div>,
+            total: getData[i].total,
+            type: getData[i].type,
+            status: getData[i].status
+          })
+        }
+
+        setDataTampil(tmp)
+        setStatus(getData.map(d => d.status))
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+
+
 
   const deleteSalesFaktur = async (id, code) => {
     Swal.fire({
@@ -38,7 +98,7 @@ const FakturTable = () => {
             Authorization: `Bearer ${auth.token}`,
           },
         });
-        getFaktur()
+        fetchData()
         Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
 
       }
@@ -66,7 +126,7 @@ const FakturTable = () => {
             },
           })
 
-          getFaktur();
+          fetchData();
           Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
         }
         catch (err) {
@@ -98,7 +158,7 @@ const FakturTable = () => {
             },
           })
 
-          getFaktur();
+          fetchData();
           Swal.fire("Berhasil Diubah!", `${code} Menjadi Draft`, "success");
         }
         catch (err) {
@@ -205,42 +265,50 @@ const FakturTable = () => {
     //   ),
   });
 
-  useEffect(() => {
-    getFaktur()
-  }, [])
+  // useEffect(() => {
+  //   // getFaktur()
+  // }, [])
 
-  const getFaktur = async (params = {}) => {
-    setIsLoading(true);
-    await axios.get(`${Url}/sales_invoices`, {
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${auth.token}`
-      }
-    })
-      .then(res => {
-        const getData = res.data.data
-        setGetDataFaktur(getData)
+  // const getFaktur = async (params = {}) => {
+  //   setIsLoading(true);
+  //   await axios.get(`${Url}/sales_invoices`, {
+  //     headers: {
+  //       'Accept': 'application/json',
+  //       'Authorization': `Bearer ${auth.token}`
+  //     }
+  //   })
+  //     .then(res => {
+  //       const getData = res.data.data
+  //       setGetDataFaktur(getData)
 
-        let tmp = []
-        for (let i = 0; i < getData.length; i++) {
-          tmp.push({
-            id: getData[i].id,
-            can: getData[i].can,
-            code: getData[i].code,
-            date:getData[i].date,
-            recipient: getData[i].recipient.name ? getData[i].recipient.name : <div className='text-center'>'-'</div>,
-            total : getData[i].total,
-            type : getData[i].type,
-            status : getData[i].status
-          })
-        }
+  //       let tmp = []
+  //       for (let i = 0; i < getData.length; i++) {
+  //         tmp.push({
+  //           id: getData[i].id,
+  //           can: getData[i].can,
+  //           code: getData[i].code,
+  //           date: getData[i].date,
+  //           recipient: getData[i].recipient.name ? getData[i].recipient.name : <div className='text-center'>'-'</div>,
+  //           total: getData[i].total,
+  //           type: getData[i].type,
+  //           status: getData[i].status
+  //         })
+  //       }
 
-        setDataTampil(tmp)
-        setStatus(getData.map(d => d.status))
-        setIsLoading(false);
-        console.log(getData)
-      })
-  }
+  //       setDataTampil(tmp)
+  //       setStatus(getData.map(d => d.status))
+  //       setIsLoading(false);
+  //       console.log(getData)
+  //     })
+  // }
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
 
   const columns = [
     {
@@ -248,6 +316,9 @@ const FakturTable = () => {
       dataIndex: 'date',
       key: 'date',
       width: '10%',
+
+      sorter: (a, b) => a.date.length - b.date.length,
+      sortDirections: ['descend', 'ascend'],
       ...getColumnSearchProps('date'),
     },
     {
@@ -260,22 +331,23 @@ const FakturTable = () => {
       sortDirections: ['descend', 'ascend'],
     },
     {
-      title: 'Pelanggan',
+      title: 'Customer',
       dataIndex: 'recipient',
       width: '15%',
       key: 'recipient',
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
       ...getColumnSearchProps('recipient'),
-      //render: (recipient) => recipient.name,
-      // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
-      // sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Total',
       dataIndex: 'total',
       key: 'total',
       width: '15%',
+      sorter: (a, b) => a.total - b.total,
+      sortDirections: ['descend', 'ascend'],
       ...getColumnSearchProps('total'),
-      render(text, record) {
+      render(text) {
         return <div>{
           <CurrencyFormat className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp. '} value={Number(text).toFixed(2).replace('.', ',')} />
         }</div>
@@ -286,6 +358,8 @@ const FakturTable = () => {
       dataIndex: 'type',
       key: 'type',
       width: '10%',
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
       ...getColumnSearchProps('type'),
     },
     {
@@ -294,6 +368,8 @@ const FakturTable = () => {
       key: 'status',
       align: 'center',
       width: '10%',
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
       render: (_, { status }) => (
         <>
           {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
@@ -404,7 +480,8 @@ const FakturTable = () => {
         size="small"
         loading={isLoading}
         columns={columns}
-        pagination={{ pageSize: 10 }}
+        onChange={handleTableChange}
+        // pagination={{ pageSize: 10 }}
         dataSource={dataTampil}
         scroll={{
           y: 295,

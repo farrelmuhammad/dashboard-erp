@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Modal, PageHeader, Select, Space, Table, Tag } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { Button, Checkbox, Form, Input, InputNumber, Modal, PageHeader, Popconfirm, Select, Space, Table, Tag } from 'antd'
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
@@ -140,9 +140,12 @@ const CreateGoodsRequest = () => {
 
     const handleChangeTallySheet = (value) => {
         setSelectedTallySheet(value);
+        console.log(value);
         setReferenceNo(value.code);
         setWarehouseId(value.warehouse_id);
         setTallySheetId(value.id);
+        setWhSourceName(value.warehouse_source_name)
+        setWhDestinationName(value.warehouse_destination_name)
         var updatedList = [];
         setProduct(updatedList);
     };
@@ -182,7 +185,7 @@ const CreateGoodsRequest = () => {
 
     // load options tally sheet using API call
     const loadOptionsTallySheet = (inputValue) => {
-        return fetch(`${Url}/select_tally_sheet_tf?limit=10&kode=${inputValue}`, {
+        return fetch(`${Url}/select_tally_sheet_tf?limit=10&code=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -328,7 +331,27 @@ const CreateGoodsRequest = () => {
             width: '30%',
             align: 'center',
         },
+        // {
+        //     title: 'operation',
+        //     dataIndex: 'operation',
+        //     align: 'center',
+        //     width: '5%',
+        //     render: (_, record) =>
+        //         <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
+        //             <Button
+        //                 size='small'
+        //                 type="danger"
+        //                 icon={<DeleteOutlined />}
+        //             />
+        //         </Popconfirm>
+        // },
     ];
+
+    const handleDelete = (key) => {
+        const newData = product.filter((item) => item.key !== key);
+        setProduct(newData);
+    };
+
     const checkWarehouse = () => {
         // if (warehouse_source == "") {
         //     Swal.fire({
@@ -409,40 +432,40 @@ const CreateGoodsRequest = () => {
             console.log(pair[0] + ', ' + pair[1]);
         }
 
-        axios({
-            method: "post",
-            url: `${Url}/goodstransfers`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/goodstransfer");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
-            });
+        // axios({
+        //     method: "post",
+        //     url: `${Url}/goodstransfers`,
+        //     data: userData,
+        //     headers: {
+        //         Accept: "application/json",
+        //         Authorization: `Bearer ${auth.token}`,
+        //     },
+        // })
+        //     .then(function (response) {
+        //         //handle success
+        //         Swal.fire(
+        //             "Berhasil Ditambahkan",
+        //             ` Masuk dalam list`,
+        //             "success"
+        //         );
+        //         navigate("/goodstransfer");
+        //     })
+        //     .catch((err) => {
+        //         if (err.response) {
+        //             console.log("err.response ", err.response);
+        //             Swal.fire({
+        //                 icon: "error",
+        //                 title: "Oops...",
+        //                 text: err.response.data.error,
+        //             });
+        //         } else if (err.request) {
+        //             console.log("err.request ", err.request);
+        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+        //         } else if (err.message) {
+        //             // do something other than the other two
+        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+        //         }
+        //     });
     };
 
     const handleDraft = async (e) => {
@@ -463,44 +486,44 @@ const CreateGoodsRequest = () => {
             userData.append("transfer_qty[]", p.transfer_qty);
         });
 
-        // for (var pair of userData.entries()) {
-        //     console.log(pair[0] + ', ' + pair[1]);
-        // }
+        for (var pair of userData.entries()) {
+            console.log(pair[0] + ', ' + pair[1]);
+        }
 
-        axios({
-            method: "post",
-            url: `${Url}/goodstransfers`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/goodstransfer");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
-            });
+        // axios({
+        //     method: "post",
+        //     url: `${Url}/goodstransfers`,
+        //     data: userData,
+        //     headers: {
+        //         Accept: "application/json",
+        //         Authorization: `Bearer ${auth.token}`,
+        //     },
+        // })
+        //     .then(function (response) {
+        //         //handle success
+        //         Swal.fire(
+        //             "Berhasil Ditambahkan",
+        //             ` Masuk dalam list`,
+        //             "success"
+        //         );
+        //         navigate("/goodstransfer");
+        //     })
+        //     .catch((err) => {
+        //         if (err.response) {
+        //             console.log("err.response ", err.response);
+        //             Swal.fire({
+        //                 icon: "error",
+        //                 title: "Oops...",
+        //                 text: err.response.data.error,
+        //             });
+        //         } else if (err.request) {
+        //             console.log("err.request ", err.request);
+        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+        //         } else if (err.message) {
+        //             // do something other than the other two
+        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+        //         }
+        //     });
     };
 
     return (

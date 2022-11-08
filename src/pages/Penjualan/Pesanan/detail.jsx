@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { useParams , Link} from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import jsCookie from "js-cookie";
-import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
 import { BarsOutlined, DeleteOutlined, EditOutlined, LoadingOutlined, MinusOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons'
 import axios from 'axios';
 import Url from '../../../Config';
-import { Table, Tag, Tooltip, Button } from 'antd';
+import { Table, Tag, Tooltip, Button, Skeleton } from 'antd';
 import { useSelector } from 'react-redux';
 import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
@@ -20,6 +19,7 @@ export const DetailPesanan = () => {
     const [customer, setCustomer] = useState([]);
     const [status, setStatus] = useState([]);
     const [details, setDetails] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [taxInclude, setTaxInclude] = useState("");
     const [namaMataUang, setNamaMataUang] = useState();
     const [BECust, setBECust] = useState("");
@@ -64,7 +64,7 @@ export const DetailPesanan = () => {
             width: '8%',
             align: 'center',
             render(text, record) {
-                return <div>{Number(text).toFixed(2).replace('.',',')}</div>
+                return <div>{Number(text).toFixed(2).replace('.', ',')}</div>
             }
         },
         {
@@ -162,6 +162,7 @@ export const DetailPesanan = () => {
                     setNamaMataUang(getData[0].currency.name);
                 }
                 console.log(res.data.data[0])
+                setLoading(false)
                 // console.log(res.data.data.map(d => d.sales_order_details));
                 // console.log(getData.map(d => d.sales_order_details));
             })
@@ -242,7 +243,7 @@ export const DetailPesanan = () => {
     const cetakData =
         [...details.map((item, i) => ({
             name: item.product_alias_name,
-            quantity: Number(item.quantity).toFixed(2).replace('.',','),
+            quantity: Number(item.quantity).toFixed(2).replace('.', ','),
             discount: item.fixed_discount != 0 ? <>{'Rp ' + Number(Math.round(item.fixed_discount + 'e2') + 'e-2').toLocaleString('id')}</> : <>{item.discount_percentage + '%'}</>,
             ppn: item.ppn + '%',
             price: 'Rp ' + Number(Math.round(item.price + 'e2') + 'e-2').toLocaleString('id'),
@@ -250,6 +251,19 @@ export const DetailPesanan = () => {
         }))
 
         ]
+
+    if (loading) {
+        return (
+            <>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
+            </>
+        )
+    }
 
     return (
         <>
@@ -287,8 +301,8 @@ export const DetailPesanan = () => {
                                                 <div className="d-flex flex-row">
                                                     <label className='col-6'>Kepada Yth.</label>
                                                     {
-                                                        BECust === 'Lainnya'? <div className='col-6'> : {customer}</div> : 
-                                                        <div className='col-6'> : {BECust} {customer} </div>
+                                                        BECust === 'Lainnya' ? <div className='col-6'> : {customer}</div> :
+                                                            <div className='col-6'> : {BECust} {customer} </div>
                                                     }
                                                     {/* <div className='col-6'> : {customer}</div> */}
                                                 </div>
@@ -312,7 +326,7 @@ export const DetailPesanan = () => {
                                                     <th width="200px" className='border'>Harga</th>
                                                     <th width="180px" className='border'>Diskon</th>
                                                     <th width="130px" className='border'>PPN</th>
-                                                    
+
                                                     <th width="210px" className='border'>Total</th>
                                                 </tr>
                                                 <tbody className="border">
@@ -321,7 +335,7 @@ export const DetailPesanan = () => {
                                                             <tr >
 
                                                                 <td className='border-isi text-start'>{item.product_alias_name}</td>
-                                                                <td className='border-isi text-center'>{Number(item.quantity).toFixed(2).replace('.',',')}</td>
+                                                                <td className='border-isi text-center'>{Number(item.quantity).toFixed(2).replace('.', ',')}</td>
                                                                 <td className='border-isi text-center'>{item.unit}</td>
                                                                 <td className='border-isi text-center'>{
                                                                     namaMataUang === 'Rp' ?
@@ -339,7 +353,7 @@ export const DetailPesanan = () => {
 
                                                                 </td>
 
-                                                             
+
 
                                                                 <td className='border-isi text-center'>
                                                                     {
@@ -493,15 +507,15 @@ export const DetailPesanan = () => {
                                         </Link>
                                     </Tooltip>,
                                     <Tooltip title="Cetak" placement="bottom">
-                                    <Button
-                                        type="primary"
-                                        icon={<PrinterOutlined />}
-                                        style={{ background: "orange", borderColor: "orange" }}
-                                        onClick={handlePrint}
-                                    />
-                                </Tooltip>,
+                                        <Button
+                                            type="primary"
+                                            icon={<PrinterOutlined />}
+                                            style={{ background: "orange", borderColor: "orange" }}
+                                            onClick={handlePrint}
+                                        />
+                                    </Tooltip>,
                                 ]}
-                                >
+                            >
                             </PageHeader>
                             {/* <h3 className="title fw-bold">Detail Pesanan</h3> */}
                         </div>
@@ -604,7 +618,6 @@ export const DetailPesanan = () => {
                             </div>
                         </div> */}
                     </div>
-                    {/* <ProdukPesananTable /> */}
                     <Table
                         columns={columns}
                         dataSource={details}

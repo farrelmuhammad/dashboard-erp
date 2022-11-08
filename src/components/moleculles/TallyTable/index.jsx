@@ -47,9 +47,6 @@ const TallyTable = () => {
       },
     }).then((res) => res.json())
       .then(({ data }) => {
-        //console.log(data)
-        // setGetDataTally(data);
-        // agar bisa di search 
         let tmp = []
         for (let i = 0; i < data.length; i++) {
           tmp.push({
@@ -106,7 +103,7 @@ const TallyTable = () => {
     })
 
   };
-
+ 
   const cancelTallySheet = async (id, code) => {
     Swal.fire({
       title: 'Apakah Anda Yakin?',
@@ -220,13 +217,9 @@ const TallyTable = () => {
     },
   });
 
-  // useEffect(() => {
-  //   getTallySheet()
-  // }, [])
-
-  // function handleTableChange(dataIndex) {
-  //   console.log(dataIndex)
-  //   axios.get(`${Url}/tally_sheets?tipe=Sales`, {
+  // const getTallySheet = async (params = {}) => {
+  //   setIsLoading(true);
+  //   await axios.get(`${Url}/tally_sheets?tipe=Sales`, {
   //     headers: {
   //       'Accept': 'application/json',
   //       'Authorization': `Bearer ${auth.token}`
@@ -241,45 +234,9 @@ const TallyTable = () => {
   //       else {
   //         setSumber('SO')
   //       }
-
-  //       // agar bisa di search 
-  //       let tmp = []
-  //       for (let i = 0; i < getData.length; i++) {
-  //         tmp.push({
-  //           id: getData[i].id,
-  //           can: getData[i].can,
-  //           code: getData[i].code,
-  //           customer_name: getData[i].customer_name ? getData[i].customer_name : '',
-  //           supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
-  //           date: getData[i].date,
-  //           status: getData[i].status,
-  //           warehouse: getData[i].warehouse.name
-  //         })
-  //       }
-  //       setDataTampil(tmp)
+  //       setIsLoading(false);
   //     })
   // }
-
-  const getTallySheet = async (params = {}) => {
-    setIsLoading(true);
-    await axios.get(`${Url}/tally_sheets?tipe=Sales`, {
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${auth.token}`
-      }
-    })
-      .then(res => {
-        const getData = res.data.data
-        setGetDataTally(getData)
-        if (getData.supplier_id) {
-          setSumber('Retur')
-        }
-        else {
-          setSumber('SO')
-        }
-        setIsLoading(false);
-      })
-  }
 
 
   const handleTableChange = (pagination, filters, sorter) => {
@@ -296,10 +253,8 @@ const TallyTable = () => {
       dataIndex: 'date',
       key: 'date',
       width: '15%',
-      // sorter: true,
       sorter: (a, b) => a.date.length - b.date.length,
       sortDirections: ['descend', 'ascend'],
-      // sortDirections: ['descend', 'ascend'],
       ...getColumnSearchProps('date', 'Tanggal'),
     },
     {
@@ -309,10 +264,6 @@ const TallyTable = () => {
       width: '20%',
       sorter: (a, b) => a.code.length - b.code.length,
       ...getColumnSearchProps('code', 'No. Transaksi'),
-      // defaultSortOrder: 'descend',
-      // sorter: (a, b) => a.code - b.code,
-      // sorter: (a, b) => a.code.length - b.code.length,
-      // sortOrder: sortedInfo.columnKey === 'code' ? sortedInfo.order : null,
       sortDirections: ['descend', 'ascend'],
     },
     {
@@ -340,7 +291,6 @@ const TallyTable = () => {
       sorter: (a, b) => a.warehouse_name.length - b.warehouse_name.length,
       sortDirections: ['descend', 'ascend'],
       ...getColumnSearchProps('warehouse_name', 'Gudang'),
-      // render: (warehouse) => warehouse.name
     },
     {
       title: 'Status',

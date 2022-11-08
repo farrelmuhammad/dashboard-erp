@@ -44,7 +44,7 @@ const EditGudang = () => {
   };
   // load options using API call
   const loadOptionsChart = (inputValue) => {
-    return fetch(`${Url}/select_chart_of_accounts?limit=10&nama=${inputValue}&kode_kategori=114`, {
+    return fetch(`${Url}/select_chart_of_accounts?limit=10&anak_terakhir=1&kode_kategori[]=114&nama=${inputValue}`, {
       headers: {
         Accept: "application/json",
         Authorization: `Bearer ${auth.token}`,

@@ -20,7 +20,7 @@ const PesananTable = () => {
     const searchInput = useRef(null);
     const [getDataSO, setGetDataSO] = useState([]);
     const [status, setStatus] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     // const token = jsCookie.get('auth');
     const auth = useSelector(state => state.auth);
     const [dataTampil, setDataTampil] = useState([]);
@@ -54,7 +54,6 @@ const PesananTable = () => {
       });
     
       const fetchData = () => {
-        setIsLoading(true);
         console.log(qs.stringify(getParams(tableParams)))
         fetch(`${Url}/sales_orders?${qs.stringify(getParams(tableParams))}`, {
           headers: {
@@ -70,16 +69,6 @@ const PesananTable = () => {
             let tmp = []
             for (let i = 0; i < data.length; i++) {
               tmp.push({
-                // id: data[i].id,
-                // can: data[i].can,
-                // code: data[i].code,
-                // customer_name: data[i].customer_name ? data[i].customer_name : '',
-                // supplier_name: data[i].supplier_name ? data[i].supplier_name : '',
-                // date: data[i].date,
-                // status: data[i].status,
-                // warehouse_name: data[i].warehouse.name
-
-
                 id: data[i].id,
                 can: data[i].can,
                 date:data[i].date,
@@ -91,16 +80,16 @@ const PesananTable = () => {
               })
             }
             setGetDataSO(tmp)
-            console.log(tmp)
+            setTableParams({
+                ...tableParams,
+                pagination: {
+                  ...tableParams.pagination,
+                  total: 200,
+                },
+              });
     
             setIsLoading(false);
-            setTableParams({
-              ...tableParams,
-              pagination: {
-                ...tableParams.pagination,
-                total: 200,
-              },
-            });
+           
           });
       };
     
@@ -127,7 +116,7 @@ const PesananTable = () => {
                 Authorization: `Bearer ${auth.token}`,
               },
             });
-            getSalesOrder()
+            fetchData()
             Swal.fire("Berhasil Dihapus!", `Data ${code} Berhasil hapus`, "success");
     
           }
@@ -155,7 +144,7 @@ const PesananTable = () => {
                     },
                 })
 
-                getSalesOrder()
+                fetchData()
                 Swal.fire("Berhasil Diubah!", `${code} Done`, "success");
 
             }
@@ -187,7 +176,7 @@ const PesananTable = () => {
                         },
                     })
 
-                    getSalesOrder();
+                    fetchData();
                     Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
                 }
                 catch (err) {
@@ -228,7 +217,7 @@ const PesananTable = () => {
     //                     },
     //                 })
 
-    //                 getSalesOrder();
+    //                 fetchData();
     //                 Swal.fire("Berhasil Dihapus!", `Data ${code} Berhasil hapus`, "success");
     //             }
     //             catch (err) {
@@ -249,7 +238,7 @@ const PesananTable = () => {
     //             Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiODgxODg3MTgzNzk4NGI2YWIzMmVkNDljMGYyYWI5MDQzN2YxNTZkNDUwMmRmN2RhY2ZlMTNhODhlZmI0MGRiOGU1NzkzNDgxMWJkM2FhMDQiLCJpYXQiOjE2NjcyNzU4MDIuOTQ3NzM3LCJuYmYiOjE2NjcyNzU4MDIuOTQ3NzM5LCJleHAiOjE2OTg4MTE4MDIuODU3NjY3LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.bjbsnCMShERlIiw2GHtW9w2avdasIe_R7qbJkeJ62qmTrqbSF0sgHjOyrI_caShp7JBNIZ7XQX_4skoOn-rOb6YhGRG5P_8Mmtr8a5F3l3lkRbIArQq3Nbbj_tqDMmNfIFGDPBabm7V66g_dSQ8y2assPqk9eY2UYSmPfeuIVkriVddB-hCl35i1RJaSjGNQ7ebG-9Ys8GaCLot7RSj6aMpA4QOnZYraVcOdaC6BRzfkR5RO8lwG-5GfFbVfRrv1-cGZrk3Jk8m5vUTd7YTc6DQUXrsOStw20n0E9w9nZE71JOrmeZlW-QNZ3x2652kfRTnJ2PBAAPA2-6MFI6vOm64iasjzKQzhXlwGq_5N5ZriAbKqTPHzdHqz68HNtgXaoLb0FPzYjiSCadBWY90a6ri5rlca0SKC5prmcY62dKoboDroFI-L6nxmJZmm30fyQX28mpVHbQY2zzHaa4hKgaE50tuBNTVyDH4FK-nW-KthxuTxXjCHLO7wLYFMwaofrqXs-LIsOzNAfgxYehSeFnRkM6JNVvSPdurKrYdpaZXJbr_ygMT30GLvcY0qximnCtWwA1O1xhcjeGRZz0FxSSsMnGPnQjgBN83BkFL_kcA9wuBfSdiz3Bz3LK1NaCjj6OLDeI4lKNJZ-yT1WjB4iqKht3ahXOMtQw9GV2GbyKg`,
     //         },
     //     });
-    //     getSalesOrder()
+    //     fetchData()
     //     Swal.fire("Berhasil Dibatalkan!", `${id} Dibatalkan`, "success");
     // };
 
@@ -349,54 +338,54 @@ const PesananTable = () => {
         //   ),
     });
 
-    useEffect(() => {
-        getSalesOrder()
-    }, [])
+    // useEffect(() => {
+    //     getSalesOrder()
+    // }, [])
 
-    const getSalesOrder = async (params = {}) => {
-        setIsLoading(true);
-        await axios.get(`${Url}/sales_orders`, {
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${auth.token}`
-            }
-        })
-            .then(res => {
-                const getData = res.data.data
-                setGetDataSO(getData)
-                setStatus(getData.map(d => d.status))
+    // const getSalesOrder = async (params = {}) => {
+    //     setIsLoading(true);
+    //     await axios.get(`${Url}/sales_orders`, {
+    //         headers: {
+    //             'Accept': 'application/json',
+    //             'Authorization': `Bearer ${auth.token}`
+    //         }
+    //     })
+    //         .then(res => {
+    //             const getData = res.data.data
+    //             setGetDataSO(getData)
+    //             setStatus(getData.map(d => d.status))
 
 
                 
-            let tmp = []
-            for (let i = 0; i < getData.length; i++) {
-            tmp.push({
-                id: getData[i].id,
-                can: getData[i].can,
-                date:getData[i].date,
-                code: getData[i].code,
-                customer:getData[i].customer.name,
-                status:getData[i].status,
-                // name:getData[i].name,
-                total: 
-                //  < CurrencyFormat  className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].total).toFixed(2).replace('.' , ',')} key="diskon" />,
-                 getData[i].total,
-                // _group:getData[i]._group,
-                // category:getData[i].category.name,
-                // department : getData[i].department.name ,
-                // position: getData[i].position.name,
-                // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
-                // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
-                // date: getData[i].date,
-                // status: getData[i].status,
-                // warehouse: getData[i].warehouse.name
-            })
-            }
-                setDataTampil(tmp)
-                setIsLoading(false);
-                //console.log(getData)
-            })
-    }
+    //         let tmp = []
+    //         for (let i = 0; i < getData.length; i++) {
+    //         tmp.push({
+    //             id: getData[i].id,
+    //             can: getData[i].can,
+    //             date:getData[i].date,
+    //             code: getData[i].code,
+    //             customer:getData[i].customer.name,
+    //             status:getData[i].status,
+    //             // name:getData[i].name,
+    //             total: 
+    //             //  < CurrencyFormat  className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].total).toFixed(2).replace('.' , ',')} key="diskon" />,
+    //              getData[i].total,
+    //             // _group:getData[i]._group,
+    //             // category:getData[i].category.name,
+    //             // department : getData[i].department.name ,
+    //             // position: getData[i].position.name,
+    //             // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
+    //             // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+    //             // date: getData[i].date,
+    //             // status: getData[i].status,
+    //             // warehouse: getData[i].warehouse.name
+    //         })
+    //         }
+    //             setDataTampil(tmp)
+    //             setIsLoading(false);
+    //             //console.log(getData)
+    //         })
+    // }
 
     
   const handleTableChange = (pagination, filters, sorter) => {
