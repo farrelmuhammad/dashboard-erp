@@ -22,6 +22,11 @@
 #components-form-demo-normal-login .login-form-button {
   width: 100%;
 }
+/* 
+.spin-loading {
+  filter: blur(8px);
+  -webkit-filter: blur(8px);
+} */
 
 .trigger {
   /* margin: 1rem; */

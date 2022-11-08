@@ -203,6 +203,8 @@ import BuatPIB from './pages/Pembelian/PIB/buat'
 import EditPIB from './pages/Pembelian/PIB/edit'
 import DetailPIB from './pages/Pembelian/PIB/detail'
 import UserSetting from './pages/UserSetting';
+import { LoadingOutlined } from '@ant-design/icons';
+import { Spin } from 'antd';
 
 // modules pelanggan datamaster 
 
@@ -623,10 +625,19 @@ const RouteApp = () => {
         <Route path="/pembayaranpembelian/detail/:id" exact element={<DetailPembayaranPembelian />} />
     </>
 
+    const antIcon = (
+        <LoadingOutlined
+            style={{
+                fontSize: 24,
+            }}
+            spin
+        />
+    );
+
 
     return (
         <>
-            <Suspense fallback={<div>Loading Component</div>}>
+            {/* <Suspense fallback={<Spin className='spin-loading' indicator={antIcon} />}> */}
                 <Routes>
                     <Route path="/login" exact element={<Login />} />
 
@@ -640,7 +651,7 @@ const RouteApp = () => {
                     {/* PageNotFound */}
                     <Route path="*" element={<NotFound />} />
                 </Routes>
-            </Suspense>
+            {/* </Suspense> */}
         </>
     )
 }
