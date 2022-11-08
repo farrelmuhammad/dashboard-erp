@@ -1,8 +1,6 @@
-
 import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Skeleton, Space, Table, Tag, Tooltip } from 'antd'
 import { BarsOutlined, DeleteOutlined, EditOutlined, LoadingOutlined, MinusOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons'
 import React, { useEffect, useState } from 'react'
-import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
 import Search from 'antd/lib/transfer/search'
 import axios from 'axios'
 import Url from '../../../Config';

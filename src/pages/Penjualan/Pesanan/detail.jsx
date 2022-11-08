@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom';
 import jsCookie from "js-cookie";
-import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
 import { BarsOutlined, DeleteOutlined, EditOutlined, LoadingOutlined, MinusOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons'
 import axios from 'axios';
 import Url from '../../../Config';
@@ -619,7 +618,6 @@ export const DetailPesanan = () => {
                             </div>
                         </div> */}
                     </div>
-                    {/* <ProdukPesananTable /> */}
                     <Table
                         columns={columns}
                         dataSource={details}

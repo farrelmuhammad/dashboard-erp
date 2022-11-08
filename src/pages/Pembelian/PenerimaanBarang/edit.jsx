@@ -1,5 +1,4 @@
 import './form.css'
-import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -67,7 +66,6 @@ const EditPenerimaanBarang = () => {
                         });
                     }
                 }
-
             }
 
             setGetDataProduct(tmp);
