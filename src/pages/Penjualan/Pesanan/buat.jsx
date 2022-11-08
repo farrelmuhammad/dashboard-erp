@@ -806,7 +806,6 @@ const BuatPesanan = () => {
     const handleCheck = (event, index) => {
         let data = event.target.value;
         let tmpDataBaru = []
-        // let tmpJumlah = [...jumlah]
         let tmpDataCentang = [...tmpCentang]
         for (let i = 0; i < getDataProduct.length; i++) {
             if (i == index) {

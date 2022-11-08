@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
 import AsyncSelect from "react-select/async";
 import ReactSelect from 'react-select';
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 import { useSelector } from 'react-redux';
 
 const SuratJalanTable = () => {
@@ -39,6 +40,93 @@ const SuratJalanTable = () => {
     const [selectedAddress, setSelectedAddress] = useState(null);
 
     const [dataTampil, setDataTampil] = useState([]);
+
+    const [tableParams, setTableParams] = useState({
+        pagination: {
+          current: 1,
+          pageSize: 10,
+        },
+      });
+    
+      const getParams = (params) => ({
+        results: params.pagination?.pageSize,
+        page: params.pagination?.current,
+        ...params,
+      });
+    
+      const fetchData = () => {
+        setIsLoading(true);
+        console.log(qs.stringify(getParams(tableParams)))
+        fetch(`${Url}/delivery_notes?${qs.stringify(getParams(tableParams))}`, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }).then((res) => res.json())
+          .then(({ data }) => {
+
+            const getData = data
+            setGetDataSO(getData)
+
+            let tmp = []
+            for (let i = 0; i < getData.length; i++) {
+                tmp.push({
+                    id: getData[i].id,
+                    can: getData[i].can,
+                    date: getData[i].date,
+                    code: getData[i].code,
+                    customer_name: getData[i].customer_name ? getData[i].customer_name : <div className='text-center'>-</div>,
+                    supplier_name: getData[i].supplier_name ? getData[i].supplier_name : <div className='text-center'>-</div>,
+                    vehicle: getData[i].vehicle,
+                    status: getData[i].status,
+                })
+            }
+
+            setDataTampil(tmp)
+            setStatus(getData.map(d => d.status))
+            setIsLoading(false);
+            setTableParams({
+                ...tableParams,
+                pagination: {
+                  ...tableParams.pagination,
+                  total: 200,
+                },
+              });
+
+            // console.log(getData)
+
+
+            // // let tmp = []
+            // for (let i = 0; i < data.length; i++) {
+            //   tmp.push({
+            //     id: data[i].id,
+            //     can: data[i].can,
+            //     code: data[i].code,
+            //     customer_name: data[i].customer_name ? data[i].customer_name : '',
+            //     supplier_name: data[i].supplier_name ? data[i].supplier_name : '',
+            //     date: data[i].date,
+            //     status: data[i].status,
+            //     warehouse_name: data[i].warehouse.name
+            //   })
+            // }
+            // setGetDataTally(tmp)
+    
+            // setIsLoading(false);
+            // setTableParams({
+            //   ...tableParams,
+            //   pagination: {
+            //     ...tableParams.pagination,
+            //     total: 200,
+            //   },
+            // });
+          });
+      };
+    
+    
+      useEffect(() => {
+        fetchData();
+      }, [JSON.stringify(tableParams)]);
+
 
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
@@ -108,13 +196,13 @@ const SuratJalanTable = () => {
                     Authorization: `Bearer ${auth.token}`,
                 },
             }).then(function (response) {
-                //handle success
+                //handle success 
                 Swal.fire(
                     "Berhasil DiSubmit!",
                     `${code} Disubmit`,
                     "success"
                 );
-                getDeliveryNotes()
+                fetchData()
                 // navigate("/suratjalan");
             })
                 .catch((err) => {
@@ -154,17 +242,6 @@ const SuratJalanTable = () => {
 
     };
 
-    // const deleteDeliveryNotes = async (id) => {
-    //     await axios.delete(`${Url}/delivery_notes/${id}`, {
-    //         headers: {
-    //             Accept: "application/json",
-    //             Authorization: `Bearer ${auth.token}`,
-    //         },
-    //     });
-    //     getDeliveryNotes()
-    //     Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
-    // };
-
     const deleteDeliveryNotes = async (id, code) => {
         Swal.fire({
             title: 'Apakah Anda Yakin?',
@@ -182,7 +259,7 @@ const SuratJalanTable = () => {
                         Authorization: `Bearer ${auth.token}`,
                     },
                 });
-                getDeliveryNotes()
+                fetchData()
                 Swal.fire("Berhasil Dihapus!", `Data dengan Code ${code} Berhasil hapus`, "success");
 
             }
@@ -211,7 +288,7 @@ const SuratJalanTable = () => {
                         },
                     })
 
-                    getDeliveryNotes();
+                    fetchData();
                     Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
                 }
                 catch (err) {
@@ -307,54 +384,51 @@ const SuratJalanTable = () => {
         },
     });
 
-    useEffect(() => {
-        getDeliveryNotes()
-        // getDeliveryNotesById()
-    }, [])
+    // useEffect(() => {
+    //     // getDeliveryNotes()
+    //     // getDeliveryNotesById()
+    // }, [])
 
-    const getDeliveryNotes = async (params = {}) => {
-        setIsLoading(true);
-        await axios.get(`${Url}/delivery_notes`, {
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${auth.token}`
-            }
-        })
-            .then(res => {
-                const getData = res.data.data
-                setGetDataSO(getData)
+    // const getDeliveryNotes = async (params = {}) => {
+    //     setIsLoading(true);
+    //     await axios.get(`${Url}/delivery_notes`, {
+    //         headers: {
+    //             'Accept': 'application/json',
+    //             'Authorization': `Bearer ${auth.token}`
+    //         }
+    //     })
+    //         .then(res => {
+    //             const getData = res.data.data
+    //             setGetDataSO(getData)
 
-                let tmp = []
-                for (let i = 0; i < getData.length; i++) {
-                    tmp.push({
-                        id: getData[i].id,
-                        can: getData[i].can,
-                        date: getData[i].date,
-                        code: getData[i].code,
-                        customer_name: getData[i].customer_name ? getData[i].customer_name : <div className='text-center'>-</div>,
-                        supplier_name: getData[i].supplier_name ? getData[i].supplier_name : <div className='text-center'>-</div>,
-                        vehicle: getData[i].vehicle,
-                        //name:getData[i].name,
-                        // _group:getData[i]._group,
-                        // category:getData[i].category.name,
-                        // department : getData[i].department.name ,
-                        // position: getData[i].position.name,
-                        // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
-                        // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
-                        // date: getData[i].date,
-                        status: getData[i].status,
-                        // warehouse: getData[i].warehouse.name
-                    })
-                }
+    //             let tmp = []
+    //             for (let i = 0; i < getData.length; i++) {
+    //                 tmp.push({
+    //                     id: getData[i].id,
+    //                     can: getData[i].can,
+    //                     date: getData[i].date,
+    //                     code: getData[i].code,
+    //                     customer_name: getData[i].customer_name ? getData[i].customer_name : <div className='text-center'>-</div>,
+    //                     supplier_name: getData[i].supplier_name ? getData[i].supplier_name : <div className='text-center'>-</div>,
+    //                     vehicle: getData[i].vehicle,
+    //                     status: getData[i].status,
+    //                 })
+    //             }
 
-                setDataTampil(tmp)
-                setStatus(getData.map(d => d.status))
-                // setGetCustomer(getData.map(d => d.customer_id))
-                // setGetAddress(getData.map(d => d.customer_address_id))
-                setIsLoading(false);
-                console.log(getData)
-            })
-    }
+    //             setDataTampil(tmp)
+    //             setStatus(getData.map(d => d.status))
+    //             setIsLoading(false);
+    //             console.log(getData)
+    //         })
+    // }
+
+    const handleTableChange = (pagination, filters, sorter) => {
+        setTableParams({
+            pagination,
+            filters,
+            ...sorter,
+        });
+    };
 
     const columns = [
         {
@@ -363,6 +437,8 @@ const SuratJalanTable = () => {
             key: 'date',
             width: '15%',
             ...getColumnSearchProps('date'),
+            sorter: (a, b) => a.date.length - b.date.length,
+            sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'No. Transaksi',
@@ -376,44 +452,28 @@ const SuratJalanTable = () => {
         {
             title: 'Customer',
             dataIndex: 'customer_name',
-            key: 'customer',
+            key: 'customer_name',
             width: '15%',
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
             ...getColumnSearchProps('customer_name'),
-            // render: (_, record) => {
-            //     if (record.customer_name) {
-            //         return <>{record.customer_name}</>
-            //     }
-            //     else {
-            //         return <div className='text-center'>-</div>
-            //     }
-            // },
-            // render: (customer) => customer.name
-            // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
-            // sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Supplier',
             dataIndex: 'supplier_name',
             width: '15%',
-            key: 'supplier',
-            // render: (_, record) => {
-            //     if (record.supplier_name) {
-            //         return <>{record.supplier_name}</>
-            //     }
-            //     else {
-            //         return <div className='text-center'>-</div>
-            //     }
-            // },
+            key: 'supplier_name',
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
             ...getColumnSearchProps('supplier_name'),
-            // render: (customer) => customer.name
-            // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
-            // sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Kendaraan',
             dataIndex: 'vehicle',
             key: 'vehicle',
             width: '15%',
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
             ...getColumnSearchProps('vehicle'),
         },
         {
@@ -427,6 +487,8 @@ const SuratJalanTable = () => {
                     {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="volcano">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Processed' ? <Tag color="orange">{status}</Tag> : <Tag color="red">{status}</Tag>}
                 </>
             ),
+            sorter: (a, b) => a.status.length - b.status.length,
+            sortDirections: ['descend', 'ascend'],
             ...getColumnSearchProps('status'),
         },
         {
@@ -935,8 +997,9 @@ const SuratJalanTable = () => {
         size="small"
         loading={isLoading}
         columns={columns}
-        pagination={{ pageSize: 10 }}
+        // pagination={{ pageSize: 10 }}
         dataSource={dataTampil}
+        onChange={handleTableChange}
         scroll={{
             y: 240,
         }}
