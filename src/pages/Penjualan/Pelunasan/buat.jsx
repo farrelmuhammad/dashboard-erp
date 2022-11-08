@@ -280,7 +280,9 @@ const BuatPelunasan = () => {
                         statusCek: true
                     });
                 }
-                else {
+            }
+            for (let i = 0; i < res.data.data.length; i++) {
+                if (tmpCentang.indexOf(res.data.data[i].code)  < 0) {
                     tmp.push({
                         detail: res.data.data[i],
                         statusCek: false
@@ -495,8 +497,12 @@ const BuatPelunasan = () => {
                     detail: getDataProduct[i].detail,
                     statusCek: !getDataProduct[i].statusCek
                 })
-
+                if(!tmpDataBaru[i].statusCek){
+                    let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
+                    tmpDataCentang.splice(idxHapus, 1)
+                }
             }
+
             else {
                 tmpDataBaru.push(getDataProduct[i])
             }
