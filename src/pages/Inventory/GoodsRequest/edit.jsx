@@ -237,8 +237,6 @@ const EditGoodsRequest = () => {
                         statusCek: false
                     });
                 }
-
-
             }
             setGetDataProduct(tmp);
         };
