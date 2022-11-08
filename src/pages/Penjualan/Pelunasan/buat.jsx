@@ -280,7 +280,9 @@ const BuatPelunasan = () => {
                         statusCek: true
                     });
                 }
-                else {
+            }
+            for (let i = 0; i < res.data.data.length; i++) {
+                if (tmpCentang.indexOf(res.data.data[i].code)  < 0) {
                     tmp.push({
                         detail: res.data.data[i],
                         statusCek: false
@@ -315,10 +317,10 @@ const BuatPelunasan = () => {
         {
             title: 'Total',
             dataIndex: 'total',
-            width: '20%',
+            width: '25%',
             align: 'center',
             render: (_, record) => (
-                <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(record.detail.total).toString().replace('.', ',')} />
+                <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(record.detail.total).toFixed(2).toString().replace('.', ',')} />
             )
         },
         {
@@ -495,8 +497,12 @@ const BuatPelunasan = () => {
                     detail: getDataProduct[i].detail,
                     statusCek: !getDataProduct[i].statusCek
                 })
-
+                if(!tmpDataBaru[i].statusCek){
+                    let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
+                    tmpDataCentang.splice(idxHapus, 1)
+                }
             }
+
             else {
                 tmpDataBaru.push(getDataProduct[i])
             }
@@ -509,7 +515,7 @@ const BuatPelunasan = () => {
                 let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.code);
                 if(index>=0){
                     tmpDataCentang.splice(index, 1)
-                }
+                } 
             }
         }
 

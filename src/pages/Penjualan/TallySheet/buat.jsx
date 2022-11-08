@@ -31,6 +31,7 @@ const BuatTally = () => {
 
     const [getDataProduct, setGetDataProduct] = useState('');
     const [getDataRetur, setGetDataRetur] = useState('');
+    const [tmpCentang, setTmpCentang] = useState([]);
     const [getDataDetailSO, setGetDataDetailSO] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -1243,10 +1244,20 @@ const BuatTally = () => {
             })
             let tmp = []
             for (let i = 0; i < res.data.length; i++) {
-                tmp.push({
-                    detail: res.data[i],
-                    statusCek: false
-                });
+                if (tmpCentang.indexOf(res.data[i].code) >= 0) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: true
+                    });
+                }
+            }
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentang.indexOf(res.data[i].code) < 0) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: false
+                    });
+                }
             }
             setGetDataRetur(tmp);
 
@@ -1263,12 +1274,23 @@ const BuatTally = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
+
             let tmp = []
             for (let i = 0; i < res.data.length; i++) {
-                tmp.push({
-                    detail: res.data[i],
-                    statusCek: false
-                });
+                if (tmpCentang.indexOf(res.data[i].code) >= 0) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: true
+                    });
+                }
+            }
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentang.indexOf(res.data[i].code) < 0) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: false
+                    });
+                }
             }
 
             setGetDataProduct(tmp);
@@ -1338,6 +1360,8 @@ const BuatTally = () => {
         let arrStatus = [];
         let arrQtyPesanan = [];
         let tmpDataBaru = [];
+        let tmpDataCentang = [...tmpCentang]
+
 
         // perubahan data dan status ceked 
         if (sumber == 'Retur') {
@@ -1347,10 +1371,19 @@ const BuatTally = () => {
                         detail: getDataRetur[i].detail,
                         statusCek: !getDataRetur[i].statusCek
                     })
+                    if (!tmpDataBaru[i].statusCek) {
+                        let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
+                        tmpDataCentang.splice(idxHapus, 1)
+                    }
                 }
                 else {
                     tmpDataBaru.push(getDataRetur[i])
                 }
+
+                if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.code)
+                }
+
             }
             setGetDataRetur(tmpDataBaru)
         }
@@ -1361,13 +1394,22 @@ const BuatTally = () => {
                         detail: getDataProduct[i].detail,
                         statusCek: !getDataProduct[i].statusCek
                     })
+                    if (!tmpDataBaru[i].statusCek) {
+                        let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
+                        tmpDataCentang.splice(idxHapus, 1)
+                    }
                 }
                 else {
                     tmpDataBaru.push(getDataProduct[i])
                 }
+
+                if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.code)
+                }
             }
             setGetDataProduct(tmpDataBaru)
         }
+        setTmpCentang(tmpDataCentang)
 
 
         if (tmpDataBaru[index].statusCek) {
@@ -1980,7 +2022,7 @@ const BuatTally = () => {
 
             });
 
-         
+
             let key = 0;
             for (let idx = 0; idx < kuantitasBox.length; idx++) {
                 for (let x = 0; x < kuantitasBox[idx].length; x++) {

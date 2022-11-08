@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import 'antd/dist/antd.css';
-import { CheckOutlined, DeleteOutlined, CloseOutlined , EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { CheckOutlined, DeleteOutlined, CloseOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Input, Modal, Space, Table, Tag } from 'antd';
 import axios from 'axios';
 import Url from '../../../Config';
@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import AsyncSelect from "react-select/async";
 import ReactSelect from 'react-select';
 import { useSelector } from 'react-redux';
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 import CurrencyFormat from 'react-currency-format';
 
 const PelunasanTable = () => {
@@ -32,7 +33,67 @@ const PelunasanTable = () => {
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [selectedValue2, setSelectedAddress] = useState(null);
 
+    const [tableParams, setTableParams] = useState({
+        pagination: {
+            current: 1,
+            pageSize: 10,
+        },
+    });
 
+    const getParams = (params) => ({
+        results: params.pagination?.pageSize,
+        page: params.pagination?.current,
+        ...params,
+    });
+
+    const fetchData = () => {
+        setIsLoading(true);
+        console.log(qs.stringify(getParams(tableParams)))
+        fetch(`${Url}/sales_invoice_payments?${qs.stringify(getParams(tableParams))}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.json())
+            .then(({ data }) => {
+
+                const getData = data
+                setGetDataSO(getData)
+
+                let tmp = []
+                for (let i = 0; i < getData.length; i++) {
+                    tmp.push({
+                        id: getData[i].id,
+                        can: getData[i].can,
+                        code: getData[i].code,
+                        date: getData[i].date,
+                        customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
+                        total: getData[i].total,
+                        status: getData[i].status
+                    })
+                }
+
+                setDataTampil(tmp)
+
+
+                setStatus(getData.map(d => d.status))
+                setIsLoading(false);
+
+
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams.pagination,
+                        total: 200,
+                    },
+                });
+            });
+    };
+
+
+    useEffect(() => {
+        fetchData();
+    }, [JSON.stringify(tableParams)]);
 
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
@@ -115,60 +176,60 @@ const PelunasanTable = () => {
 
     const deletePelunasan = async (id, code) => {
         Swal.fire({
-          title: 'Apakah Anda Yakin?',
-          text: "Data akan dihapus",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Ya'
+            title: 'Apakah Anda Yakin?',
+            text: "Data akan dihapus",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya'
         }).then((result) => {
-          if (result.isConfirmed) {
-            axios.delete(`${Url}/sales_invoice_payments/${id}`, {
-              headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-              },
-            });
-            getDataPelunasan()
-            Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
-    
-          }
+            if (result.isConfirmed) {
+                axios.delete(`${Url}/sales_invoice_payments/${id}`, {
+                    headers: {
+                        Accept: "application/json",
+                        Authorization: `Bearer ${auth.token}`,
+                    },
+                });
+                fetchData()
+                Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+
+            }
         })
-    
-      };
-    
-      const cancelPelunasan = async (id, code) => {
+
+    };
+
+    const cancelPelunasan = async (id, code) => {
         Swal.fire({
-          title: 'Apakah Anda Yakin?',
-          text: "Status data akan diubah ",
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Ya'
+            title: 'Apakah Anda Yakin?',
+            text: "Status data akan diubah ",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya'
         }).then((result) => {
-          if (result.isConfirmed) {
-            try {
-              axios({
-                method: "patch",
-                url: `${Url}/sales_invoice_payments/cancel/${id}`,
-                headers: {
-                  Accept: "application/json",
-                  Authorization: `Bearer ${auth.token}`,
-                },
-              })
-    
-              getDataPelunasan();
-              Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
+            if (result.isConfirmed) {
+                try {
+                    axios({
+                        method: "patch",
+                        url: `${Url}/sales_invoice_payments/cancel/${id}`,
+                        headers: {
+                            Accept: "application/json",
+                            Authorization: `Bearer ${auth.token}`,
+                        },
+                    })
+
+                    fetchData();
+                    Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
+                }
+                catch (err) {
+                    console.log(err);
+                }
             }
-            catch (err) {
-              console.log(err);
-            }
-          }
         })
-    
-      };
+
+    };
 
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -267,43 +328,52 @@ const PelunasanTable = () => {
         //   ),
     });
 
-    useEffect(() => {
-        getDataPelunasan()
-    }, [])
+    // useEffect(() => {
+    //     // getDataPelunasan()
+    // }, [])
 
-    const getDataPelunasan = async (params = {}) => {
-        setIsLoading(true);
-        await axios.get(`${Url}/sales_invoice_payments`, {
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${auth.token}`
-            }
-        })
-            .then(res => {
-                const getData = res.data.data
-                setGetDataSO(getData)
+    // const getDataPelunasan = async (params = {}) => {
+    //     setIsLoading(true);
+    //     await axios.get(`${Url}/sales_invoice_payments`, {
+    //         headers: {
+    //             'Accept': 'application/json',
+    //             'Authorization': `Bearer ${auth.token}`
+    //         }
+    //     })
+    //         .then(res => {
+    //             const getData = res.data.data
+    //             setGetDataSO(getData)
 
-                let tmp = []
-                for (let i = 0; i < getData.length; i++) {
-                    tmp.push({
-                        id: getData[i].id,
-                        can: getData[i].can,
-                        code: getData[i].code,
-                        date: getData[i].date,
-                        customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
-                        total: getData[i].total,
-                        status: getData[i].status
-                    })
-                }
+    //             let tmp = []
+    //             for (let i = 0; i < getData.length; i++) {
+    //                 tmp.push({
+    //                     id: getData[i].id,
+    //                     can: getData[i].can,
+    //                     code: getData[i].code,
+    //                     date: getData[i].date,
+    //                     customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
+    //                     total: getData[i].total,
+    //                     status: getData[i].status
+    //                 })
+    //             }
 
-                setDataTampil(tmp)
+    //             setDataTampil(tmp)
 
 
-                setStatus(getData.map(d => d.status))
-                setIsLoading(false);
-                console.log(getData)
-            })
-    }
+    //             setStatus(getData.map(d => d.status))
+    //             setIsLoading(false);
+    //             console.log(getData)
+    //         })
+    // }
+
+    const handleTableChange = (pagination, filters, sorter) => {
+        setTableParams({
+            pagination,
+            filters,
+            ...sorter,
+        });
+    };
+
 
     const columns = [
         {
@@ -311,6 +381,8 @@ const PelunasanTable = () => {
             dataIndex: 'date',
             key: 'date',
             width: '15%',
+            sorter: (a, b) => a.date.length - b.date.length,
+            sortDirections: ['descend', 'ascend'],
             ...getColumnSearchProps('date'),
         },
         {
@@ -327,6 +399,8 @@ const PelunasanTable = () => {
             dataIndex: 'customer',
             width: '15%',
             key: 'customer',
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
             ...getColumnSearchProps('customer'),
             //render: (customer) => customer.name
             // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
@@ -337,6 +411,8 @@ const PelunasanTable = () => {
             dataIndex: 'total',
             key: 'total',
             width: '15%',
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
             ...getColumnSearchProps('total'),
             render: (text) => {
                 return < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.', ',')} key="diskon" />
@@ -348,6 +424,8 @@ const PelunasanTable = () => {
             key: 'status',
             align: 'center',
             width: '15%',
+            sorter: (a, b) => a.status.length - b.status.length,
+            sortDirections: ['descend', 'ascend'],
             render: (_, { status }) => (
                 <>
                     {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="volcano">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Processed' ? <Tag color="orange">{status}</Tag> : <Tag color="red">{status}</Tag>}
@@ -361,54 +439,54 @@ const PelunasanTable = () => {
             align: 'center',
             render: (_, record) => (
                 <>
-                <Space size="middle">
-                  {record.can['read-sales_invoice_payment'] ? (
-                    <Link to={`/pelunasan/detail/${record.id}`}>
-                      <Button
-                        size='small'
-                        type="primary"
-                        icon={<InfoCircleOutlined />}
-                      />
-                    </Link>
-                  ) : null}
-                  {
-                    record.can['update-sales_invoice_payment'] ? (
-                      <Link to={`/pelunasan/edit/${record.id}`}>
-                        <Button
-                          size='small'
-                          type="success"
-                          icon={<EditOutlined />}
-                        />
-                      </Link>
-                    ) : null
-                  }
-                  {
-                    record.can['cancel-sales_invoice_payment'] ? (
-      
-                      <Button
-                        size='small'
-                        type="danger"
-                        icon={<CloseOutlined />}
-                        onClick={() => cancelPelunasan(record.id, record.code)}
-                      />
-      
-                    ) : null
-                  }
-                  {
-                    record.can['delete-sales_invoice_payment'] ? (
-                      <Space size="middle">
-                        <Button
-                          size='small'
-                          type="danger"
-                          icon={<DeleteOutlined />}
-                          onClick={() => deletePelunasan(record.id, record.code)}
-                        />
-                      </Space>
-                    ) : null
-                  }
-      
-                </Space>
-              </>
+                    <Space size="middle">
+                        {record.can['read-sales_invoice_payment'] ? (
+                            <Link to={`/pelunasan/detail/${record.id}`}>
+                                <Button
+                                    size='small'
+                                    type="primary"
+                                    icon={<InfoCircleOutlined />}
+                                />
+                            </Link>
+                        ) : null}
+                        {
+                            record.can['update-sales_invoice_payment'] ? (
+                                <Link to={`/pelunasan/edit/${record.id}`}>
+                                    <Button
+                                        size='small'
+                                        type="success"
+                                        icon={<EditOutlined />}
+                                    />
+                                </Link>
+                            ) : null
+                        }
+                        {
+                            record.can['cancel-sales_invoice_payment'] ? (
+
+                                <Button
+                                    size='small'
+                                    type="danger"
+                                    icon={<CloseOutlined />}
+                                    onClick={() => cancelPelunasan(record.id, record.code)}
+                                />
+
+                            ) : null
+                        }
+                        {
+                            record.can['delete-sales_invoice_payment'] ? (
+                                <Space size="middle">
+                                    <Button
+                                        size='small'
+                                        type="danger"
+                                        icon={<DeleteOutlined />}
+                                        onClick={() => deletePelunasan(record.id, record.code)}
+                                    />
+                                </Space>
+                            ) : null
+                        }
+
+                    </Space>
+                </>
 
                 // <>
                 //     <Space size="middle">
@@ -442,7 +520,8 @@ const PelunasanTable = () => {
         size="small"
         loading={isLoading}
         columns={columns}
-        pagination={{ pageSize: 10 }}
+        // pagination={{ pageSize: 10 }}
+        onChange={handleTableChange}
         dataSource={dataTampil}
         scroll={{
             y: 240,

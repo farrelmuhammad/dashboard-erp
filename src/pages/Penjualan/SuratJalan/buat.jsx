@@ -113,6 +113,7 @@ const BuatSuratJalan = () => {
     const navigate = useNavigate();
 
     const [getDataProduct, setGetDataProduct] = useState([]);
+    const [tmpCentang, setTmpCentang] = useState([]);
     const [getDataRetur, setGetDataRetur] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -166,10 +167,10 @@ const BuatSuratJalan = () => {
         ];
         console.log(record)
 
-        const dataTampil = [...product[record.key].tally_sheet_details.map((item , i) => ({
+        const dataTampil = [...product[record.key].tally_sheet_details.map((item, i) => ({
             product_alias_name: item.product_alias_name,
             product_name: item.product_name,
-            boxes_quantity: Number(item.boxes_quantity).toFixed(2).replace('.',','),
+            boxes_quantity: Number(item.boxes_quantity).toFixed(2).replace('.', ','),
             boxes_unit: item.boxes_unit
         }))]
         return <Table columns={columns} dataSource={dataTampil} pagination={false} />;
@@ -177,7 +178,7 @@ const BuatSuratJalan = () => {
 
     const handleChangeSupplier = (value) => {
         setSupplier(value.id);
-        setProduct([])  
+        setProduct([])
         setCustomer('')
         setSelectedSupplier(value);
         console.log(value)
@@ -220,20 +221,32 @@ const BuatSuratJalan = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/delivery_notes_available_tally_sheets?nama_alias=${query}&id_pelanggan=${customer}`, {
+            const res = await axios.get(`${Url}/delivery_notes_available_tally_sheets?kode=${query}&id_pelanggan=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            // let tmp = []
-            // for (let i = 0; i < res.data.length; i++) {
-            //     tmp.push({
-            //         detail: res.data[i],
-            //         statusCek: false
-            //     });
-            // }
-            setGetDataProduct(res.data.data)
+            let tmp = []
+            for (let i = 0; i < res.data.data.length; i++) {
+                if (tmpCentang.indexOf(res.data.data[i].code) >= 0) {
+                    tmp.push({
+                        detail: res.data.data[i],
+                        statusCek: true
+                    });
+                }
+            }
+            for (let i = 0; i < res.data.data.length; i++) {
+                if (tmpCentang.indexOf(res.data.data[i].code) < 0) {
+                    tmp.push({
+                        detail: res.data.data[i],
+                        statusCek: false
+                    });
+                }
+            }
+
+
+            setGetDataProduct(tmp)
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -241,20 +254,32 @@ const BuatSuratJalan = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/delivery_notes_available_tally_sheets?nama_alias=${query}&id_pemasok=${supplier}`, {
+            const res = await axios.get(`${Url}/delivery_notes_available_tally_sheets?kode=${query}&id_pemasok=${supplier}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            // let tmp = []
-            // for (let i = 0; i < res.data.data.length; i++) {
-            //     tmp.push({
-            //         detail: res.data.data[i],
-            //         statusCek: false
-            //     });
-            // }
-            setGetDataRetur(res.data.data)
+            let tmp = []
+            for (let i = 0; i < res.data.data.length; i++) {
+                if (tmpCentang.indexOf(res.data.data[i].code) >= 0) {
+                    tmp.push({
+                        detail: res.data.data[i],
+                        statusCek: true
+                    });
+                }
+            }
+            for (let i = 0; i < res.data.data.length; i++) {
+                if (tmpCentang.indexOf(res.data.data[i].code) < 0) {
+                    tmp.push({
+                        detail: res.data.data[i],
+                        statusCek: false
+                    });
+                }
+            }
+
+
+            setGetDataRetur(tmp)
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -266,6 +291,9 @@ const BuatSuratJalan = () => {
             title: 'No. Transaksi',
             width: '20%',
             dataIndex: 'code',
+            render: (_, record) => {
+                return <>{record.detail.code}</>
+            }
         },
         {
             title: sumber == 'SO' ? 'Pelanggan' : 'Supplier',
@@ -273,32 +301,38 @@ const BuatSuratJalan = () => {
             width: '20%',
             align: 'center',
             render: (_, record) => {
-                if (sumber == 'SO' && record.customer) {
-                    return record.customer.name
+                if (sumber == 'SO' && record.detail.customer) {
+                    return record.detail.customer.name
 
                 }
-                else if(sumber == 'Retur' && record.supplier){
-                    return record.supplier.name
+                else if (sumber == 'Retur' && record.detail.supplier) {
+                    return record.detail.supplier.name
 
                 }
-        }},
+            }
+        },
         {
             title: 'Gudang',
             dataIndex: 'warehouse',
             width: '20%',
             align: 'center',
-            render: (warehouse) => warehouse.name
+            render: (_, record) => {
+                return <>{record.detail.warehouse.name}</>
+            }
+
+            // render: (warehouse) => warehouse.name
         },
         {
             title: 'actions',
             dataIndex: 'address',
             width: '10%',
             align: 'center',
-            render: (_, record) => (
+            render: (_, record, index) => (
                 <>
-                    <Checkbox
+                     <Checkbox
                         value={record}
-                        onChange={handleCheck}
+                        checked={record.statusCek}
+                        onChange={(e) => handleCheck(e, index)}
                     />
                 </>
             )
@@ -391,183 +425,230 @@ const BuatSuratJalan = () => {
             cell: EditableCell,
         },
     };
-  
+
     const mainDataSource =
-    [...product.map((item, i) => ({
-        key: i,
-        code: item.code,
-        status: item.status,
-    }))
+        [...product.map((item, i) => ({
+            key: i,
+            code: item.code,
+            status: item.status,
+        }))
 
-    ]
+        ]
 
-    const handleCheck = (event) => {
+    const handleCheck = (event, index) => {
+        let data = event.target.value;
+        let tmpDataBaru = []
+        let tmpDataCentang = [...tmpCentang]
+        if (sumber == 'SO') {
+            for (let i = 0; i < getDataProduct.length; i++) {
+                if (i == index) {
+                    tmpDataBaru.push({
+                        detail: getDataProduct[i].detail,
+                        statusCek: !getDataProduct[i].statusCek
+                    })
+                    if (!tmpDataBaru[i].statusCek) {
+                        let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
+                        tmpDataCentang.splice(idxHapus, 1)
+                    }
+                }
+                else {
+                    tmpDataBaru.push(getDataProduct[i])
+                }
+
+                if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.code)
+                }
+            }
+            setGetDataProduct(tmpDataBaru)
+
+        }
+        else if (sumber == 'Retur') {
+            for (let i = 0; i < getDataRetur.length; i++) {
+                if (i == index) {
+                    tmpDataBaru.push({
+                        detail: getDataRetur[i].detail,
+                        statusCek: !getDataRetur[i].statusCek
+                    })
+                    if (!tmpDataBaru[i].statusCek) {
+                        let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
+                        tmpDataCentang.splice(idxHapus, 1)
+                    }
+                }
+                else {
+                    tmpDataBaru.push(getDataRetur[i])
+                }
+
+                if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.code)
+                }
+            }
+            setGetDataRetur(tmpDataBaru)
+
+        }
+
+        setTmpCentang(tmpDataCentang)
+
         var updatedList = [...product];
-        if (event.target.checked) {
-            updatedList = [...product, event.target.value];
+        if (tmpDataBaru[index].statusCek) {
+            updatedList = [...product, data.detail];
         } else {
-            updatedList.splice(product.indexOf(event.target.value), 1);
+            for (let i = 0; i < updatedList.length; i++) {
+                if (updatedList[i].code == data.detail.code) {
+                    updatedList.splice(i, 1);
+                    // tmpJumlahDiskon.splice(i, 1)
+                    // tmpPilihanDiskon.splice(i, 1)
+                }
+            }
+
+            // updatedList.splice(product.indexOf(event.target.value), 1);
         }
         setProduct(updatedList);
-        console.log(updatedList);
+        // console.log(updatedList);
         setTally(updatedList.map(d => d.id));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if(!date){
+        if (!date) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        // else if(!vehicle){
-        //     Swal.fire({
-        //         icon: "error",
-        //         title: "Oops...",
-        //         text: "Data Kendaraan kosong, Silahkan Lengkapi datanya ",
-        //       });
-        // }
-        // else if(!sender){
-        //     Swal.fire({
-        //         icon: "error",
-        //         title: "Oops...",
-        //         text: "Data Pengirim kosong, Silahkan Lengkapi datanya ",
-        //       });
-        // }
-        else if(sumber == 'SO' && !customer){
-          
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Data Customer kosong, Silahkan Lengkapi datanya ",
-                  });
-                }
-        else if(sumber == 'SO' && !addressId){
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Data Alamat Customer kosong, Silahkan Lengkapi datanya ",
-                  });
-            }
-        else if (sumber == 'Retur' && !supplier){
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
-                  });
-        }
-         
-        else if(sumber=='Retur' && !addressId){
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Data Alamat Supplier kosong, Silahkan Lengkapi datanya ",
-                  });
-            }
-        
-        else{
-
-        const userData = new FormData();
-        userData.append("tanggal", date);
-        userData.append("kendaraan", vehicle);
-        userData.append("pengirim", sender);
-        userData.append("catatan", description);
-        userData.append("pelanggan", customer);
-        userData.append("alamat_pelanggan", addressId);
-        tally.map((t) => userData.append("id_tally_sheet[]", t));
-        userData.append("status", "Submitted");
-
-        for (var pair of userData.entries()) {
-            console.log(pair[0] + ', ' + pair[1]);
-        }
-
-        axios({
-            method: "post",
-            url: `${Url}/delivery_notes`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/suratjalan");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    // Swal.fire({
-                    //     icon: "error",
-                    //     title: "Oops...",
-                    //     text: err.response.data.message,
-                    // });
-                    if (err.response.data.error.pelanggan) {
-                        notification['error']({
-                            message: 'Silahkan Cek Input Anda!',
-                            description:
-                                err.response.data.error.pelanggan,
-                        });
-                    } else if (err.response.data.error.alamat_pelanggan) {
-                        notification['error']({
-                            message: 'Silahkan Cek Input Anda!',
-                            description:
-                                err.response.data.error.alamat_pelanggan,
-                        });
-                    } else if (err.response.data.error.id_tally_sheet) {
-                        notification['error']({
-                            message: 'Silahkan Cek Input Anda!',
-                            description:
-                                err.response.data.error.id_tally_sheet,
-                        });
-                    }
-                    // notification['error']({
-                    //     message: 'Silahkan Cek Input Anda!',
-                    //     description:
-                    //         err.response.data.error.pelanggan,
-                    // });
-                    // notification['error']({
-                    //     message: 'Silahkan Cek Input Anda!',
-                    //     description:
-                    //         err.response.data.error.alamat_pelanggan,
-                    // });
-                    // notification['error']({
-                    //     message: 'Silahkan Cek Input Anda!',
-                    //     description:
-                    //         err.response.data.error.id_tally_sheet,
-                    // });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    notification['error']({
-                        message: 'Gagal Ditambahkan',
-                        description:
-                            "Mohon Cek Dahulu..",
-                    });
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
             });
-      }  };
+        }
+        else if (sumber == 'SO' && !customer) {
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Customer kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+        else if (sumber == 'SO' && !addressId) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Alamat Customer kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+        else if (sumber == 'Retur' && !supplier) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+
+        else if (sumber == 'Retur' && !addressId) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Alamat Supplier kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+
+        else {
+
+            const userData = new FormData();
+            userData.append("tanggal", date);
+            userData.append("kendaraan", vehicle);
+            userData.append("pengirim", sender);
+            userData.append("catatan", description);
+            userData.append("pelanggan", customer);
+            userData.append("alamat_pelanggan", addressId);
+            tally.map((t) => userData.append("id_tally_sheet[]", t));
+            userData.append("status", "Submitted");
+
+            for (var pair of userData.entries()) {
+                console.log(pair[0] + ', ' + pair[1]);
+            }
+
+            axios({
+                method: "post",
+                url: `${Url}/delivery_notes`,
+                data: userData,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            })
+                .then(function (response) {
+                    //handle success
+                    Swal.fire(
+                        "Berhasil Ditambahkan",
+                        ` Masuk dalam list`,
+                        "success"
+                    );
+                    navigate("/suratjalan");
+                })
+                .catch((err) => {
+                    if (err.response) {
+                        console.log("err.response ", err.response);
+                        // Swal.fire({
+                        //     icon: "error",
+                        //     title: "Oops...",
+                        //     text: err.response.data.message,
+                        // });
+                        if (err.response.data.error.pelanggan) {
+                            notification['error']({
+                                message: 'Silahkan Cek Input Anda!',
+                                description:
+                                    err.response.data.error.pelanggan,
+                            });
+                        } else if (err.response.data.error.alamat_pelanggan) {
+                            notification['error']({
+                                message: 'Silahkan Cek Input Anda!',
+                                description:
+                                    err.response.data.error.alamat_pelanggan,
+                            });
+                        } else if (err.response.data.error.id_tally_sheet) {
+                            notification['error']({
+                                message: 'Silahkan Cek Input Anda!',
+                                description:
+                                    err.response.data.error.id_tally_sheet,
+                            });
+                        }
+                        // notification['error']({
+                        //     message: 'Silahkan Cek Input Anda!',
+                        //     description:
+                        //         err.response.data.error.pelanggan,
+                        // });
+                        // notification['error']({
+                        //     message: 'Silahkan Cek Input Anda!',
+                        //     description:
+                        //         err.response.data.error.alamat_pelanggan,
+                        // });
+                        // notification['error']({
+                        //     message: 'Silahkan Cek Input Anda!',
+                        //     description:
+                        //         err.response.data.error.id_tally_sheet,
+                        // });
+                    } else if (err.request) {
+                        console.log("err.request ", err.request);
+                        notification['error']({
+                            message: 'Gagal Ditambahkan',
+                            description:
+                                "Mohon Cek Dahulu..",
+                        });
+                    } else if (err.message) {
+                        // do something other than the other two
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    }
+                });
+        }
+    };
 
     const handleDraft = async (e) => {
         e.preventDefault();
 
-        
-        if(!date){
+
+        if (!date) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
         // else if(!vehicle){
         //     Swal.fire({
@@ -583,109 +664,110 @@ const BuatSuratJalan = () => {
         //         text: "Data Pengirim kosong, Silahkan Lengkapi datanya ",
         //       });
         // }
-        else if(sumber == 'SO' && !customer){
-           
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Data Customer kosong, Silahkan Lengkapi datanya ",
-                  });
-            
-        }
-        else if(sumber == 'SO' && !addressId){
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Data Alamat Customer kosong, Silahkan Lengkapi datanya ",
-                  });
-        }
-        
-        else if (sumber == 'Retur' && !supplier){
-            
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
-                  });
-        }
-            else if( sumber == 'retur' && !addressId){
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Data Alamat Supplier kosong, Silahkan Lengkapi datanya ",
-                  });
-        }
-        else{
+        else if (sumber == 'SO' && !customer) {
 
-
-        const userData = new FormData();
-        userData.append("tanggal", date);
-        userData.append("kendaraan", vehicle);
-        userData.append("pengirim", sender);
-        userData.append("catatan", description);
-        if (sumber == 'SO') {
-            userData.append("pelanggan", customer);
-            userData.append("alamat_pelanggan", addressId);
-        }
-        else if (sumber == 'Retur') {
-            userData.append("alamat_pemasok", addressId);
-            userData.append("pemasok", supplier);
-        }
-        tally.map((t) => userData.append("id_tally_sheet[]", t));
-        userData.append("status", "Draft");
-
-        axios({
-            method: "post",
-            url: `${Url}/delivery_notes`,
-            data: userData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/suratjalan");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Customer kosong, Silahkan Lengkapi datanya ",
             });
-     } };
+
+        }
+        else if (sumber == 'SO' && !addressId) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Alamat Customer kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+
+        else if (sumber == 'Retur' && !supplier) {
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+        else if (sumber == 'retur' && !addressId) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Alamat Supplier kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+        else {
+
+
+            const userData = new FormData();
+            userData.append("tanggal", date);
+            userData.append("kendaraan", vehicle);
+            userData.append("pengirim", sender);
+            userData.append("catatan", description);
+            if (sumber == 'SO') {
+                userData.append("pelanggan", customer);
+                userData.append("alamat_pelanggan", addressId);
+            }
+            else if (sumber == 'Retur') {
+                userData.append("alamat_pemasok", addressId);
+                userData.append("pemasok", supplier);
+            }
+            tally.map((t) => userData.append("id_tally_sheet[]", t));
+            userData.append("status", "Draft");
+
+            axios({
+                method: "post",
+                url: `${Url}/delivery_notes`,
+                data: userData,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            })
+                .then(function (response) {
+                    //handle success
+                    Swal.fire(
+                        "Berhasil Ditambahkan",
+                        ` Masuk dalam list`,
+                        "success"
+                    );
+                    navigate("/suratjalan");
+                })
+                .catch((err) => {
+                    if (err.response) {
+                        console.log("err.response ", err.response);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: err.response.data.error.nama,
+                        });
+                    } else if (err.request) {
+                        console.log("err.request ", err.request);
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    } else if (err.message) {
+                        // do something other than the other two
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    }
+                });
+        }
+    };
 
     function klikUbahSumber(value) {
-        if(!value){
+        if (!value) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Jenis Transaksi kosong, Silahkan Lengkapi datanya ",
-              });
-        }else{
-        setSumber(value);
-        setProduct([])
-        setCustomer('')
-        setSupplier('')
-        setSelectedAddress('')
-        setSelectedSupplier('');
-        setSelectedCustomer('')
-    }
+            });
+        } else {
+            setSumber(value);
+            setProduct([])
+            setCustomer('')
+            setSupplier('')
+            setSelectedAddress('')
+            setSelectedSupplier('');
+            setSelectedCustomer('')
+        }
     }
 
 
@@ -834,14 +916,14 @@ const BuatSuratJalan = () => {
                         type="primary"
                         icon={<PlusOutlined />}
                         onClick={() => {
-                            if(sumber == ''){
+                            if (sumber == '') {
                                 Swal.fire("Gagal", "Mohon Pilih Transaksi Dahulu..", "error")
                             }
-                            else if(customer == '' && supplier == ''){
+                            else if (customer == '' && supplier == '') {
                                 Swal.fire("Gagal", "Mohon Pilih Customer/Supplier Dahulu..", "error")
 
                             }
-                            else{
+                            else {
                                 setModal2Visible(true)
                             }
                         }}
@@ -906,7 +988,7 @@ const BuatSuratJalan = () => {
                     expandable={{ expandedRowRender }}
                 // onChange={(e) => setProduct(e.id)}
                 />
-            <br/>
+                <br />
                 <div className="btn-group mt-2" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"

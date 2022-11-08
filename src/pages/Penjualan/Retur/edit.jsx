@@ -116,6 +116,7 @@ const BuatRetur = () => {
     const [getStatus, setGetStatus] = useState('');
     const [customer, setCustomer] = useState("");
     const [faktur, setFaktur] = useState([]);
+    const [fakturId, setFakturId] = useState([]);
     const [query, setQuery] = useState("");
     const [getCode, setGetCode] = useState('');
     const [mataUang, setMataUang] = useState('Rp')
@@ -157,12 +158,17 @@ const BuatRetur = () => {
                 console.log(getData)
                 setCode(getData.code)
                 setDate(getData.date)
-                setReferensi(getData.reference)
-                setDescription(getData.notes)
+                if(getData.reference){
+                    setReferensi(getData.reference)
+                }
+                if(getData.description){
+                    setDescription(getData.notes)
+                }
                 setSelectedCustomer(getData.customer)
                 setCustomer(getData.customer.id)
                 setProduct(getData.sales_return_details)
                 setChecked(getData.tax_included)
+                setFakturId(getData.sales_invoice_id)
                 calculate(getData.sales_return_details, getData.tax_included)
                 setGetStatus(getData.status)
                 setLoading(false);
@@ -447,12 +453,12 @@ const BuatRetur = () => {
                 total1 = (Number(values.quantity.replace(',', '.')) * Number(values.price.replace(',', '.')));
                 totalPerProduk = (Number(values.quantity.toString().replace(',', '.')) * Number(values.price));
 
-                if (values.discount_percentage!=0) {
+                if (values.discount_percentage != 0) {
                     hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
                     diskon2 = (Number(total1) * Number(values.discount_percentage.replace(',', '.')) / 100);
                     rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
                 }
-                else if (values.fixed_discount!=0) {
+                else if (values.fixed_discount != 0) {
                     console.log(values.fixed_discount)
                     hasilDiskon += Number(values.fixed_discount);
                     rowDiscount = Number(values.fixed_discount);
@@ -462,7 +468,7 @@ const BuatRetur = () => {
                 totalDiscount += ((rowDiscount * 100) / (100 + Number(values.ppn)));
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 subTotal += (totalPerProduk * 100) / (100 + Number(values.ppn));
-                totalPpn += ((((totalPerProduk * 100) / (100 +  Number(values.ppn))) - (rowDiscount * 100) / (100 +  Number(values.ppn))) *  Number(values.ppn)) / (100);
+                totalPpn += ((((totalPerProduk * 100) / (100 + Number(values.ppn))) - (rowDiscount * 100) / (100 + Number(values.ppn))) * Number(values.ppn)) / (100);
 
 
                 // totalPpn = (subTotal * Number(values.ppn)) / 100;
@@ -552,124 +558,127 @@ const BuatRetur = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const userData = new FormData();
+        console.log(product)
+        const userData = new URLSearchParams();
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
         userData.append("catatan", description);
+        userData.append("id_faktur_penjualan", fakturId);
         userData.append("pelanggan", customer);
         userData.append("status", "Submitted");
-        faktur.map((p) => {
+        product.map((p) => {
             console.log(p);
-            userData.append("id_faktur_penjualan", p.id);
-            userData.append("id_produk[]", p.alias_name);
-            userData.append("kuantitas[]", p.quantity);
+            userData.append("nama_alias_produk[]", p.product_alias_name);
+            userData.append("id_produk[]", p.product_id);
+            userData.append("produk[]", p.product_name);
+            userData.append("kuantitas[]", p.quantity.toString().replace(',', '.'));
             userData.append("satuan[]", p.unit);
             userData.append("harga[]", p.price);
-            userData.append("persentase_diskon[]", p.discount);
-            userData.append("diskon_tetap[]", p.nominal_disc);
+            userData.append("persentase_diskon[]", p.discount_percentage);
+            userData.append("diskon_tetap[]", p.fixed_discount);
             userData.append("ppn[]", p.ppn);
         });
         userData.append("termasuk_pajak", checked);
 
-        for (var pair of userData.entries()) {
-            console.log(pair[0] + ', ' + pair[1]);
-        }
 
-        // axios({
-        //     method: "post",
-        //     url: `${Url}/sales_returns`,
-        //     data: userData,
-        //     headers: {
-        //         Accept: "application/json",
-        //         Authorization: `Bearer ${auth.token}`,
-        //     },
-        // })
-        //     .then(function (response) {
-        //         //handle success
-        //         Swal.fire(
-        //             "Berhasil Ditambahkan",
-        //             ` Masuk dalam list`,
-        //             "success"
-        //         );
-        //         navigate("/pesanan");
-        //     })
-        //     .catch((err) => {
-        //         if (err.response) {
-        //             console.log("err.response ", err.response);
-        //             Swal.fire({
-        //                 icon: "error",
-        //                 title: "Oops...",
-        //                 text: err.response.data.error.nama,
-        //             });
-        //         } else if (err.request) {
-        //             console.log("err.request ", err.request);
-        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        //         } else if (err.message) {
-        //             // do something other than the other two
-        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        //         }
-        //     });
+        axios({
+            method: "put",
+            url: `${Url}/sales_returns/${id}`,
+            data: userData,
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        })
+            .then(function (response) {
+                //handle success
+                Swal.fire(
+                    "Berhasil Ditambahkan",
+                    ` Masuk dalam list`,
+                    "success"
+                );
+                navigate("/retur");
+            })
+            .catch((err) => {
+                if (err.response) {
+                    console.log("err.response ", err.response);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: err.response.data.error.nama,
+                    });
+                } else if (err.request) {
+                    console.log("err.request ", err.request);
+                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                } else if (err.message) {
+                    // do something other than the other two
+                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                }
+            });
+
     };
 
     const handleDraft = async (e) => {
         e.preventDefault();
-        const userData = new FormData();
+        const userData = new URLSearchParams();
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
         userData.append("catatan", description);
+        userData.append("id_faktur_penjualan", fakturId);
         userData.append("pelanggan", customer);
         userData.append("status", "Draft");
-        faktur.map((p) => {
+        product.map((p) => {
             console.log(p);
-            userData.append("nama_alias_produk[]", p.alias_name);
-            userData.append("id_product[]", p.product_id);
-            userData.append("kuantitas[]", p.quantity);
-            userData.append("satuan[]", p.delivery_note_details.unit);
+            userData.append("nama_alias_produk[]", p.product_alias_name);
+            userData.append("id_produk[]", p.product_id);
+            userData.append("produk[]", p.product_name);
+            userData.append("kuantitas[]", p.quantity.toString().replace(',', '.'));
+            userData.append("satuan[]", p.unit);
             userData.append("harga[]", p.price);
-            userData.append("persentase_diskon[]", p.discount);
-            userData.append("diskon_tetap[]", p.nominal_disc);
+            userData.append("persentase_diskon[]", p.discount_percentage);
+            userData.append("diskon_tetap[]", p.fixed_discount);
             userData.append("ppn[]", p.ppn);
         });
         userData.append("termasuk_pajak", checked);
 
-        for (var pair of userData.entries()) {
-            console.log(pair[0] + ', ' + pair[1]);
-        }
+        // for (var pair of userData.entries()) {
+        //     console.log(pair[0] + ', ' + pair[1]);
+        // }
 
-        // axios({
-        //     method: "post",
-        //     url: `${Url}/sales_returns`,
-        //     data: userData,
-        //     headers: {
-        //         Accept: "application/json",
-        //         Authorization: `Bearer ${auth.token}`,
-        //     },
-        // })
-        //     .then(function (response) {
-        //         //handle success
-        //         Swal.fire(
-        //             "Berhasil Ditambahkan",
-        //             ` Masuk dalam list`,
-        //             "success"
-        //         );
-        //         navigate("/pesanan");
-        //     })
-        //     .catch((err) => {
-        //         if (err.response) {
-        //             console.log("err.response ", err.response);
-        //             Swal.fire({
-        //                 icon: "error",
-        //                 title: "Oops...",
-        //                 text: err.response.data.error.nama,
-        //             });
-        //         } else if (err.request) {
-        //             console.log("err.request ", err.request);
-        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        //         } else if (err.message) {
-        //             // do something other than the other two
-        //             Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-        //         }
-        //     });
+        axios({
+            method: "put",
+            url: `${Url}/sales_returns/${id}`,
+            data: userData,
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        })
+            .then(function (response) {
+                //handle success
+                Swal.fire(
+                    "Berhasil Ditambahkan",
+                    ` Masuk dalam list`,
+                    "success"
+                );
+                navigate("/retur");
+            })
+            .catch((err) => {
+                if (err.response) {
+                    console.log("err.response ", err.response);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: err.response.data.error.nama,
+                    });
+                } else if (err.request) {
+                    console.log("err.request ", err.request);
+                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                } else if (err.message) {
+                    // do something other than the other two
+                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                }
+            });
     };
 
 
@@ -889,28 +898,39 @@ const BuatRetur = () => {
                     </div>
                 </div>
                 <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: "right", position: "relative" }}>
-                    <button
-                        type="button"
-                        className="btn btn-success rounded m-1"
-                        value="Draft"
-                        onClick={handleDraft}
-                    >
-                        Simpan
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-primary rounded m-1"
-                        value="Submitted"
-                        onClick={handleSubmit}
-                    >
-                        Submit
-                    </button>
-                    {/* <button
-                        type="button"
-                        className="btn btn-warning rounded m-1">
-                        Cetak
-                    </button> */}
+                    {
+                        getStatus == 'Submitted' ?
+                            <button
+                                type="button"
+                                className="btn btn-success rounded m-1"
+                                value="Draft"
+                                onClick={handleSubmit}
+                            >
+                                Simpan
+                            </button>
+                            :
+                            <>
+                                <button
+                                    type="button"
+                                    className="btn btn-success rounded m-1"
+                                    value="Draft"
+                                    onClick={handleDraft}
+                                >
+                                    Simpan
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary rounded m-1"
+                                    value="Submitted"
+                                    onClick={handleSubmit}
+                                >
+                                    Submit
+                                </button></>
+                    }
+
                 </div>
+                <div style={{ clear: "both" }}></div>
+
             </form>
         </>
     )

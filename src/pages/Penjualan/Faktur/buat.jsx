@@ -121,6 +121,7 @@ const BuatFaktur = () => {
     const auth = useSelector(state => state.auth);
     const [loadingTable, setLoadingTable] = useState(false)
     const [getDataProduct, setGetDataProduct] = useState();
+    const [tmpCentang, setTmpCentang] = useState([]);
     const [getDataSurat, setGetDataSurat] = useState();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -146,7 +147,7 @@ const BuatFaktur = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?nama_alias=${query}&id_pelanggan=${customer}`, {
+            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?kode=${query}&id_pelanggan=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -154,11 +155,22 @@ const BuatFaktur = () => {
             })
             let tmp = []
             for (let i = 0; i < res.data.data.length; i++) {
-                tmp.push({
-                    detail: res.data.data[i],
-                    statusCek: false
-                });
+                if (tmpCentang.indexOf(res.data.data[i].code) >= 0) {
+                    tmp.push({
+                        detail: res.data.data[i],
+                        statusCek: true
+                    });
+                }
             }
+            for (let i = 0; i < res.data.data.length; i++) {
+                if (tmpCentang.indexOf(res.data.data[i].code) < 0) {
+                    tmp.push({
+                        detail: res.data.data[i],
+                        statusCek: false
+                    });
+                }
+            }
+
 
             setGetDataSurat(tmp);
         };
@@ -168,7 +180,7 @@ const BuatFaktur = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/sales_invoices_available_sales_orders?nama_alias=${query}&id_penerima=${customer}`, {
+            const res = await axios.get(`${Url}/sales_invoices_available_sales_orders?kode=${query}&id_penerima=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -176,12 +188,21 @@ const BuatFaktur = () => {
             })
             let tmp = []
             for (let i = 0; i < res.data.data.length; i++) {
-                tmp.push({
-                    detail: res.data.data[i],
-                    statusCek: false
-                });
+                if (tmpCentang.indexOf(res.data.data[i].code) >= 0) {
+                    tmp.push({
+                        detail: res.data.data[i],
+                        statusCek: true
+                    });
+                }
             }
-
+            for (let i = 0; i < res.data.data.length; i++) {
+                if (tmpCentang.indexOf(res.data.data[i].code) < 0) {
+                    tmp.push({
+                        detail: res.data.data[i],
+                        statusCek: false
+                    });
+                }
+            }
             setGetDataProduct(tmp);
         };
 
@@ -669,7 +690,7 @@ const BuatFaktur = () => {
                 totalDiscount += ((rowDiscount * 100) / (100 + Number(values.ppn.replace(',', '.'))));
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 subTotal += (totalPerProduk * 100) / (100 + Number(values.ppn.replace(',', '.')));
-                totalPpn += ((((totalPerProduk * 100) / (100 +  Number(values.ppn.replace(',', '.')))) - (rowDiscount * 100) / (100 +  Number(values.ppn.replace(',', '.')))) *  Number(values.ppn.replace(',', '.'))) / (100);
+                totalPpn += ((((totalPerProduk * 100) / (100 + Number(values.ppn.replace(',', '.')))) - (rowDiscount * 100) / (100 + Number(values.ppn.replace(',', '.')))) * Number(values.ppn.replace(',', '.'))) / (100);
                 grandTotal = subTotal - hasilDiskon + Number(totalPpn);
                 subTotDiskon2 = total1 - diskon2;
                 subtotal2 = subTotDiskon2;
@@ -733,22 +754,28 @@ const BuatFaktur = () => {
         let tmpData = [];
         let tmpDataBaru = [];
         let idTerima = [];
+        let tmpDataCentang = [...tmpCentang]
 
         // pengecekan centang
         if (sumber == 'SO') {
             for (let i = 0; i < getDataProduct.length; i++) {
+
                 if (i == index) {
                     tmpDataBaru.push({
                         detail: getDataProduct[i].detail,
                         statusCek: !getDataProduct[i].statusCek
                     })
-                    // if (tmpDataBaru[i].statusCek) {
-                    //     idTerima = [...idTandaTerima, getDataProduct[i].detail.id]
-
-                    // }
+                    if (!tmpDataBaru[i].statusCek) {
+                        let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
+                        tmpDataCentang.splice(idxHapus, 1)
+                    }
                 }
                 else {
                     tmpDataBaru.push(getDataProduct[i])
+                }
+
+                if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.code)
                 }
             }
             setGetDataProduct(tmpDataBaru)
@@ -763,17 +790,24 @@ const BuatFaktur = () => {
                         detail: getDataSurat[i].detail,
                         statusCek: !getDataSurat[i].statusCek
                     })
-                    // if (tmpDataBaru[i].statusCek) {
-                    //     idTerima = [...idTandaTerima, getDataProduct[i].detail.id]
-                    // }
+                    if (!tmpDataBaru[i].statusCek) {
+                        let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
+                        tmpDataCentang.splice(idxHapus, 1)
+                    }
                 }
                 else {
                     tmpDataBaru.push(getDataSurat[i])
                 }
+
+                if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.code)
+                }
             }
             setGetDataSurat(tmpDataBaru)
-            // setIdTandaTerima(idTerima);
         }
+
+        setTmpCentang(tmpDataCentang)
+
 
         if (tmpDataBaru[index].statusCek) {
             // mencari id 
@@ -1330,6 +1364,7 @@ const BuatFaktur = () => {
         setSelectedCustomer(value);
         setCustomer(value.id);
         setAddress(value.customer_addresses)
+        setProduct([])
     };
     // load options using API call
     const loadOptionsCustomer = (inputValue) => {
