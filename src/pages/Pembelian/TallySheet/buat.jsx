@@ -1312,6 +1312,7 @@ const BuatTallySheet = () => {
         setProduct([])
         setSelectedSupplier(value);
         setSupplier(value.id);
+        console.log(supplier)
     };
     // load options using API call
     const loadOptionsSupplier = (inputValue) => {
@@ -2291,8 +2292,8 @@ const BuatTallySheet = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text:"Data Kuantiti Produk belum Diisi, silahkan lengkapi datanya dan coba kembali",
-                        //text: err.response.data.error.nama,
+                        //text:"Data Kuantiti Produk belum Diisi, silahkan lengkapi datanya dan coba kembali",
+                        text: err.response.data.message,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -2447,8 +2448,8 @@ const BuatTallySheet = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text:"Data Kuantiti Produk belum Diisi, silahkan lengkapi datanya dan coba kembali",
-                        // text: err.response.data.error.nama,
+                       // text:"Data Kuantiti Produk belum Diisi, silahkan lengkapi datanya dan coba kembali",
+                         text: err.response.data.message,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);

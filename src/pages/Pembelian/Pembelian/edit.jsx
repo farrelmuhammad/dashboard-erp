@@ -512,7 +512,9 @@ const EditPesananPembelian = () => {
                                         </select>
                                     </span>
                                 </div>
-                            </> : getProduct[index].fixed_discount != 0 ?
+                            </> 
+                            
+                            : getProduct[index].fixed_discount != 0 ?
                                 <>
                                     {
                                         // namaMataUang === 'Rp' ?

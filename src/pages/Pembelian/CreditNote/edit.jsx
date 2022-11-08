@@ -84,7 +84,7 @@ const EditCreditNote = () => {
         setSelectedCOA(value);
     };
     const loadOptionscoa = (inputValue) => {
-        return fetch(`${Url}/select_chart_of_accounts?nama=${inputValue}`, {
+        return fetch(`${Url}/select_chart_of_accounts?anak_terakhir=1&nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -122,27 +122,45 @@ const EditCreditNote = () => {
             .then((res) => {
                 const getData = res.data.data[0];
                 console.log(getData)
-                setDate(getData.date);
-                setSelectedSupplier(getData.supplier.name);
-                setSupplierId(getData.supplier.id)
-                if (getData.purchase_invoice) {
+                //console.log(id)
 
-                    setSelectedFaktur(getData.purchase_invoice.name)
+                setDate(res.data.data[0].date);
+                setSelectedSupplier(res.data.data[0].supplier.name);
+                setSupplierId(res.data.data[0].supplier.id)
+
+                if (res.data.data[0].purchase_invoice) {
+
+                    setSelectedFaktur(res.data.data[0].purchase_invoice.name)
                 } else {
 
                     setSelectedFaktur('-')
                 }
-                setCOAId(getData.chart_of_account.id);
-                setMataUangId(getData.currency.id);
-                setBiayaId(getData.cost.id);
 
+                if(res.data.data[0].chart_of_account){
+                    setCOAId(res.data.data[0].chart_of_account.id);
+                    setSelectedCOA(res.data.data[0].chart_of_account.name)
+                }
+                else {
+                    setCOAId('');
+                    setSelectedCOA('')
+                }
 
-                setSelectedCOA(getData.chart_of_account.name)
-                setSelectedMataUang(getData.currency)
-                setMataUang(getData.currency.name)
+                if(res.data.data[0].cost){
+                    setBiayaId(res.data.data[0].cost.id);
+                    setSelectedBiaya(res.data.data[0].cost.name)
+                }
+                else{
+                    setBiayaId('');
+                    setSelectedBiaya('');
+                }
+
+               
+                setMataUangId(res.data.data[0].currency.id);
+                setSelectedMataUang(res.data.data[0].currency)
+                setMataUang(res.data.data[0].currency.name)
                 setNominal(getData.nominal);
-                setSelectedBiaya(getData.cost.name)
-                setDeskripsi(getData.description)
+              
+                setDeskripsi(res.data.data[0].description)
                 setLoading(false);
             })
             .catch((err) => {
@@ -415,12 +433,12 @@ const EditCreditNote = () => {
                     >
                         Submit
                     </button>
-                    <button
+                    {/* <button
                         type="button"
                         width="100px"
                         className="btn btn-warning rounded m-1">
                         Cetak
-                    </button>
+                    </button> */}
                 </div>
                 <div style={{clear:'both'}}></div>
             </form>

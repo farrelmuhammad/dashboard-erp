@@ -157,7 +157,7 @@ const BuatCreditNote = () => {
         setSelectedCOA(value);
     };
     const loadOptionscoa = (inputValue) => {
-        return fetch(`${Url}/select_chart_of_accounts?nama=${inputValue}`, {
+        return fetch(`${Url}/select_chart_of_accounts?anak_terakhir=1&nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,

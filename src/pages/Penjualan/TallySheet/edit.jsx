@@ -2,7 +2,6 @@ import './form.css'
 import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Skeleton, Space, Table, Tag } from 'antd'
 import { DeleteOutlined, LoadingOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons'
 import React, { useEffect, useState } from 'react'
-import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
 import Search from 'antd/lib/transfer/search'
 import axios from 'axios'
 import Url from '../../../Config';

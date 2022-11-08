@@ -435,26 +435,8 @@ const DetailPembayaranPembelian = () => {
 
 
             <div className="row" style={{ marginLeft:'5px', height:"80px", alignItems:"start", fontSize:'12px'}}> 
-            Terbilang: {Terbilang(dataHeader.paid)} { dataHeader.currency_name}
-              {/* <div className="col-2" style={{alignItems:"start", fontSize:"12px"}}>
-              <b> Terbilang : {Terbilang(totalP) +  mataUang} </b>
-                </div> */}
-               {/* <div className="col-10">
-                {
-                    
-                } */}
-               {/* <textarea
-                                className="form-control"
-                                id="form4Example3"
-                                rows="2"
-                                value={Terbilang(totalP) +  mataUang}
-                                width={"100%"}
-                                height={"20px"}
-                                fontSize={"10px"}
-                                disabled
-                            /> */}
-              
-            {/* </div> */}
+            Terbilang: {Terbilang(   < CurrencyFormat style={{fontWeight:'bold' ,width: "70%", fontSize: "10px!important" }} prefix={'Rp '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.paid).toFixed(2).replace('.' , ',')} key="diskon" />)} { dataHeader.currency_name}
+         
             </div>
        
 

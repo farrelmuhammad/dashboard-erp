@@ -150,6 +150,13 @@ const DetailFaktur = () => {
     const [term, setTerm] = useState([])
     const [selectedSupplier, setSelectedSupplier] = useState()
     const [beCust, setbeCust] = useState("")
+
+    const[kel1, setKel1] = useState('')
+    const [kec1, setKec1] = useState('')
+    const [kota1, setKota1] = useState('')
+    const [kodepos1, setKodePos1] = useState('')
+
+
     // const [sumber, setSumber] = useState('')
 
     useEffect(() => {
@@ -179,12 +186,20 @@ const DetailFaktur = () => {
                 setGrandTotalDiscount(getData.discount);
                 setTerm(getData.term);
                 setChecked(getData.tax_included)
-                console.log(getData.tax_included)
+                console.log(getData)
                 setSelectedAddress(getData.recipient_address)
                 setSelectedPenerima(getData.recipient)
                 setCustomer(getData.recipient.id)
                 setbeCust(getData.recipient.business_entity)
                 setCatatan(getData.notes)
+
+                setKel1(getData.recipient_address.urban_village)
+                setKec1(getData.recipient_address.sub_district)
+                setKota1(getData.recipient_address.city)
+                setKodePos1(getData.recipient_address.postal_code)
+
+
+
 
                 let dataSumber;
                 if (getData.sales_invoice_details) {
@@ -893,73 +908,29 @@ const DetailFaktur = () => {
 
                                         <div className='mt-3 mb-2 col d-flex justify-content-start ps-4 pe-4' style={{ fontSize: "12px" }}>
 
-                                            <div className='col-6'>
+                                            <div className='col-10'>
                                                 <div className="d-flex flex-row">
-                                                    <label className='col-6'>Tanggal</label>
-                                                    <div className='col-6'> : {date} </div>
+                                                    <label className='col-4'>Tanggal</label>
+                                                    <div className='col-4'> : {date} </div>
                                                 </div>
                                                 <div className="d-flex flex-row">
-                                                    <label className='col-6'>Kepada Yth.</label>
+                                                    <label className='col-4'>Kepada Yth.</label>
                                                     {
                                                         beCust == 'Lainnya' ? 
-                                                        <div className='col-6'> : {selectedPenerima.name} </div> : 
-                                                        <div className='col-6'> : {beCust} {selectedPenerima.name} </div>
+                                                        <div className='col-4'> : {selectedPenerima.name} </div> : 
+                                                        <div className='col-4'> : {beCust} {selectedPenerima.name} </div>
                                                     }
-                                                    
                                                 </div>
+                                                    <div className="d-flex flex-row">
+                                                    <label className='col-4'>Alamat</label>
+                                                        <div>:</div>
+                                                    <div className='col-10' style={{overflowWrap:"break-word", maxWidth:"550px", marginLeft:"3px"}}> 
+                                                    {selectedAddress.address}, Kel. {kel1}, Kec. {kec1}, Kota {kota1} {kodepos1}
+                                                    
+                                                     </div>
+                                                    </div>
                                             </div>
 
-                                            {/* <div className='col-6 col-md-4'>
-                            <div className="d-flex flex-row">
-                                {
-                                    grup === 'Impor'?
-                                    <div className='col-6'> No Kontainer </div> :
-                                    <div></div>
-                                }
-                                {
-                                    grup === 'Impor' ? 
-                                    <div className='col-6'> : {dataHeader.container_number} </div>:
-                                    <div></div>
-                                }
-                            </div>
-                            <div className="d-flex flex-row">
-                                {
-                                    grup === 'Impor'?
-                                    <label className='col-6'>Muatan</label> :
-                                    <div></div>
-                                }
-                                {
-                                    grup === 'Impor'?
-                                    <div className='col-6'> : {dataHeader.payload} </div> :
-                                    <div></div>
-                                }
-                            </div>
-                            <div className="d-flex flex-row">
-                                {
-                                    grup === 'Impor'?
-                                    <label className='col-6'>Term</label> :
-                                    <div></div>
-                                }
-                                {
-                                    grup === 'Impor'?
-                                    <div className='col-6'> : {dataHeader.term} </div> : 
-                                    <div></div>
-                                }
-                            </div>
-                            <div className="d-flex flex-row">
-                                {
-                                    grup === 'Impor'?
-                                    <label className='col-6'>Ctn</label> :
-                                    <div></div>
-                                }
-                                {
-                                    grup === 'Impor'?
-                                    <div className='col-6'> : {dataHeader.carton} </div> : 
-                                    <div></div>
-                                }
-                            </div>
-
-                      </div> */}
                                         </div>
 
                                         <br />
@@ -1093,7 +1064,7 @@ const DetailFaktur = () => {
                     </Tooltip>,
                 ]}
             >
-                <div className="row">
+                <div className="row" >
                     <div className="col">
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
@@ -1198,6 +1169,7 @@ const DetailFaktur = () => {
             </PageHeader>
 
             <PageHeader
+             
                 ghost={false}
                 title={sumber == 'SO' ? "Daftar Pesanan" : "Daftar Surat Jalan"}
                 className="bg-body rounded mb-2"

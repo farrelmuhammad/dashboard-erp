@@ -1,7 +1,6 @@
 import React, { useEffect, useState, Component } from 'react'
 import { useParams } from 'react-router-dom';
 import jsCookie from "js-cookie";
-import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
 import axios from 'axios';
 import Url from '../../../Config';
 import { Table, Tag, Tooltip, Button } from 'antd';
@@ -811,7 +810,6 @@ export const DetailPesananPembelian = () => {
                             <h4 className="title fw-normal">Daftar Produk</h4>
                         </div>
                     </div>
-                    {/* <ProdukPesananTable /> */}
                     <Table
                         columns={columns}
                         dataSource={details}
