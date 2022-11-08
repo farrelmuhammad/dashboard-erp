@@ -814,14 +814,14 @@ const EditFakturPembelian = () => {
         {
             title: 'Discount',
             dataIndex: 'disc',
-            width: '20%',
+            width: '16%',
             align: 'center',
             editable: true,
         },
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '14%',
+            width: '20%',
             align: 'center',
             render(text) {
                 return {

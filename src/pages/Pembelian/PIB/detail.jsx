@@ -1,7 +1,6 @@
-import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tag, Tooltip} from 'antd'
-import { DeleteOutlined, LoadingOutlined, MinusOutlined, PlusOutlined , PrinterOutlined} from '@ant-design/icons'
-import React, { useEffect, useState , useRef} from 'react'
-import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
+import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tag, Tooltip } from 'antd'
+import { DeleteOutlined, LoadingOutlined, MinusOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons'
+import React, { useEffect, useState, useRef } from 'react'
 import Search from 'antd/lib/transfer/search'
 import axios from 'axios'
 import Url from '../../../Config';
@@ -66,9 +65,9 @@ export const DetailPIB = () => {
     const componentRef = useRef();
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
-         copyStyles: true,
-       //pageStyle: pageStyle
-        
+        copyStyles: true,
+        //pageStyle: pageStyle
+
     })
     const columnProduk = [
         {
@@ -81,7 +80,7 @@ export const DetailPIB = () => {
             dataIndex: 'qty',
             width: '10%',
             align: 'center',
-                 render(text, record) {
+            render(text, record) {
                 return {
                     props: {
                     },
@@ -131,31 +130,31 @@ export const DetailPIB = () => {
 
     ];
 
-//     let totalpajak = 0;
-//   function hitungTotalP()
-//   {
-//     totalpajak = dataHeader.pph + dataHeader.ppn +dataHeader.import_duty
-//     setTotalP(totalpajak);
-//   }
+    //     let totalpajak = 0;
+    //   function hitungTotalP()
+    //   {
+    //     totalpajak = dataHeader.pph + dataHeader.ppn +dataHeader.import_duty
+    //     setTotalP(totalpajak);
+    //   }
 
-//   useEffect(() => {
-//     hitungTotalP()
-// }, [])
+    //   useEffect(() => {
+    //     hitungTotalP()
+    // }, [])
 
 
     const dataProduk =
-    
-    [...dataPIB.map((item, i) => ({
-        nama: item.product_name,
-        qty: item.quantity,
-        // hrg: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toFixed(2).replace('.', ',')} key="total" />,
-        uangasing: <CurrencyFormat prefix={selectedMataUang} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.subtotal).toFixed(2).replace('.', ',')} key="total" />,
-        rupiah: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.converted_subtotal).toFixed(2).replace('.' , ',')} key="total" />,
-        bea: <CurrencyFormat prefix='Rp ' disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.import_duty).toFixed(2).replace('.' , ',')} key="pay" />,
-        total: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="total" />,
-    }))
 
-    ]
+        [...dataPIB.map((item, i) => ({
+            nama: item.product_name,
+            qty: item.quantity,
+            // hrg: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toFixed(2).replace('.', ',')} key="total" />,
+            uangasing: <CurrencyFormat prefix={selectedMataUang} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.subtotal).toFixed(2).replace('.', ',')} key="total" />,
+            rupiah: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.converted_subtotal).toFixed(2).replace('.', ',')} key="total" />,
+            bea: <CurrencyFormat prefix='Rp ' disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.import_duty).toFixed(2).replace('.', ',')} key="pay" />,
+            total: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.', ',')} key="total" />,
+        }))
+
+        ]
 
 
 
@@ -169,39 +168,39 @@ export const DetailPIB = () => {
     return (
         <>
 
-<div style={{ display: "none"}} >
-                <div ref={componentRef} className="p-4" style={{width:"100%"}} >
+            <div style={{ display: "none" }} >
+                <div ref={componentRef} className="p-4" style={{ width: "100%" }} >
 
-  <table style={{width:"100%"}}>
-    <thead>
-      <tr>
-        <td>
-         
-          <div className="page-header-space"></div>
-          <div className="page-header">
-                 <div className='row'>
-          <div className='d-flex mb-3 float-container' style={{position:"fixed", height:"100px", top:"0"}}>
-                
-                
-               
-                      <div className='col-1' style={{marginTop:"10px"}}><img src={logo} width="60px"></img></div>
-                      <div className='col-4' style={{marginTop:"10px", marginRight:"100px"}}>
-                      <div className='ms-2' >
-                          <div className='header-cetak'><b>PT. BUMI MAESTROAYU</b></div>
-                          <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
-                          <div className='header-cetak'>JAKARTA SELATAN 12760</div>
-                          <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
-                      </div>
-                      </div>
-                     
-                
-               
-                <div className='col'>
-                <div className='col float-child'>
-                    <div className='col' width="100px"></div>
+                    <table style={{ width: "100%" }}>
+                        <thead>
+                            <tr>
+                                <td>
 
-                {/* <div className=' mt-3 mb-4 col d-flex justify-content-right ps-4 pe-4' height="100px" style={{ fontSize: "12px", fontStyle:"bold"}}> */}
-                    {/* <div className='col-6'>
+                                    <div className="page-header-space"></div>
+                                    <div className="page-header">
+                                        <div className='row'>
+                                            <div className='d-flex mb-3 float-container' style={{ position: "fixed", height: "100px", top: "0" }}>
+
+
+
+                                                <div className='col-1' style={{ marginTop: "10px" }}><img src={logo} width="60px"></img></div>
+                                                <div className='col-4' style={{ marginTop: "10px", marginRight: "100px" }}>
+                                                    <div className='ms-2' >
+                                                        <div className='header-cetak'><b>PT. BUMI MAESTROAYU</b></div>
+                                                        <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
+                                                        <div className='header-cetak'>JAKARTA SELATAN 12760</div>
+                                                        <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
+                                                    </div>
+                                                </div>
+
+
+
+                                                <div className='col'>
+                                                    <div className='col float-child'>
+                                                        <div className='col' width="100px"></div>
+
+                                                        {/* <div className=' mt-3 mb-4 col d-flex justify-content-right ps-4 pe-4' height="100px" style={{ fontSize: "12px", fontStyle:"bold"}}> */}
+                                                        {/* <div className='col-6'>
                           <div className="d-flex flex-row">
                           <label className='col-8'>No. Pembayaran</label>
                               <div className='col-12'> : {dataHeader.code}</div>
@@ -213,7 +212,7 @@ export const DetailPIB = () => {
                           </div>
                         
                       </div> */}
-                      {/* <div className='col-6'>
+                                                        {/* <div className='col-6'>
                         <div className="d-flex flex-row">
                               <label className='col-8'>No. Faktur</label>
                               <div className='col-8'> : {dataHeader.purchase_invoice.code}</div>
@@ -228,58 +227,58 @@ export const DetailPIB = () => {
                               <div className='col-6'> : {dataHeader.supplier.business_entity} {dataHeader.supplier.name}  </div>
                           </div>
                       </div> */}
-                  {/* </div> */}
-                </div>
-                </div>
+                                                        {/* </div> */}
+                                                    </div>
+                                                </div>
 
-            </div>
-            </div>
-        
-        <br/>
-      
-   
-        <div className='mt-5 mb-2 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold", textAlign:"center"}}>
-                      <div className='align-items-center' style={{ fontSize: "14px", textDecoration: "underline", textAlign:"center"}}>VOUCHER KAS KELUAR</div>
-                      <div style={{ fontSize: "10px", marginTop: "-5px" }}>NO. {dataHeader.code}</div>
-        </div>
-        <br/>
+                                            </div>
+                                        </div>
 
-        
-        <div className='mt-2 mb-1 col d-flex justify-content-center ps-4 pe-4 '  style={{ fontSize: "12px", width:"100%" }}>
-                      <div className='col-6'>
-                          <div className="d-flex flex-row">
-                              <label className='col-6'>Divisi</label>
-                              <div className='col-6'> : Purchasing</div>
-                          </div>
-                          <div className="d-flex flex-row">
-                              <label className='col-6'>Rekening </label>
-                              <div className='col-6'> : {dataHeader.chart_of_account_name} </div>
-                          </div>
-                          
-                      </div>
-                      <div className='col-6'>
-                        <div className="d-flex flex-row">
-                                <label className='col-6'>Kepada</label>
-                                {
-                                    beCust == 'Lainnya' ? 
-                                    <div className='col-6'> : {dataHeader.supplier.name}</div> : 
-                                    <div className='col-6'> : {beCust} {dataHeader.supplier.name}</div>
-                                }
-                               
-                            </div>
-                          <div className="d-flex flex-row">
-                              <label className='col-6'>Tanggal</label>
-                              <div className='col-6'> : {dataHeader.date} </div>
-                          </div>
-                        
-                          
-                      </div>
-                      <div>
-                        
-                      </div>
-                  </div>
+                                        <br />
 
-        {/* <div className='mt-2 mb-4 col d-flex justify-content-left ps-4 pe-4'  style={{ fontSize: "12px", fontWeight:"bold" }}>
+
+                                        <div className='mt-5 mb-2 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold", textAlign: "center" }}>
+                                            <div className='align-items-center' style={{ fontSize: "14px", textDecoration: "underline", textAlign: "center" }}>VOUCHER KAS KELUAR</div>
+                                            <div style={{ fontSize: "10px", marginTop: "-5px" }}>NO. {dataHeader.code}</div>
+                                        </div>
+                                        <br />
+
+
+                                        <div className='mt-2 mb-1 col d-flex justify-content-center ps-4 pe-4 ' style={{ fontSize: "12px", width: "100%" }}>
+                                            <div className='col-6'>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>Divisi</label>
+                                                    <div className='col-6'> : Purchasing</div>
+                                                </div>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>Rekening </label>
+                                                    <div className='col-6'> : {dataHeader.chart_of_account_name} </div>
+                                                </div>
+
+                                            </div>
+                                            <div className='col-6'>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>Kepada</label>
+                                                    {
+                                                        beCust == 'Lainnya' ?
+                                                            <div className='col-6'> : {dataHeader.supplier.name}</div> :
+                                                            <div className='col-6'> : {beCust} {dataHeader.supplier.name}</div>
+                                                    }
+
+                                                </div>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>Tanggal</label>
+                                                    <div className='col-6'> : {dataHeader.date} </div>
+                                                </div>
+
+
+                                            </div>
+                                            <div>
+
+                                            </div>
+                                        </div>
+
+                                        {/* <div className='mt-2 mb-4 col d-flex justify-content-left ps-4 pe-4'  style={{ fontSize: "12px", fontWeight:"bold" }}>
                       <div className='col-6 col-md-4'>
                           <div className="d-flex flex-row">
                               <label className='col-6'>Divisi</label>
@@ -295,100 +294,100 @@ export const DetailPIB = () => {
                           </div>
                       </div>
                   </div> */}
-                </div>
-        </td>
-      </tr>
-    </thead>
+                                    </div>
+                                </td>
+                            </tr>
+                        </thead>
 
-    <tbody>
-      <tr>
-        <td>
-          <div className="page" style={{lineHeight:"2", margin:"0"}}>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div className="page" style={{ lineHeight: "2", margin: "0" }}>
 
-          <div className='mt-3 ps-2 pe-2' >
+                                        <div className='mt-3 ps-2 pe-2' >
 
-                <table style={{ fontSize: "10px", width: "100%", pageBreakAfter:"auto"}}>
-                    <tr className='border' style={{ height: "40px", pageBreakInside:"avoid", pageBreakAfter:"auto" }}>  
-                        {/* <th width="50px" className='text-center border'>No</th> */}
-                        <th width="300px" className='text-center border'>Deskripsi</th>
-                        <th width="80px" className='text-center border'>Jumlah</th>
-                     
-                    
-                    </tr>
-                    <tbody className="border">
-                        {
-                            dataHeader.import_duty ==0 && dataHeader.pph == 0 && dataHeader.ppn == 0 ? 
-                            <tr style={{  height:"50px"}} >
-                            <td  className='border-isi text-center'></td>
-                            <td  className='border-isi text-center'></td>
-                            </tr> : null
-                        }
-                                {dataHeader.import_duty != 0 ?
-                                    <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
-                                    {/* <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {i + 1} </td> */}
-                                    <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> Bea Masuk </td>
-                                    <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {
-                                    < CurrencyFormat type='danger' disabled className=' text-center editable-input edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.import_duty).toFixed(2).replace('.' , ',')} key="diskon" />
-                                    } </td>
-                                </tr> :
-                                     null
-                                }
-                            
-                                {
-                                dataHeader.pph != 0 ?
-                                <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
-                                                            
-                                    <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> Pph 22 </td>
-                                    <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {
-                                   < CurrencyFormat type='danger' disabled className=' text-center editable-input edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.pph).toFixed(2).replace('.' , ',')} key="diskon" />
-                                    } </td>
-                                </tr> : 
-                                null
-                                }
-
-                            {
-                                dataHeader.ppn != 0 ?
-                                <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
-                                  
-                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> PPN </td>
-                                <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {
-                               < CurrencyFormat type='danger' disabled className=' text-center editable-input edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.ppn).toFixed(2).replace('.' , ',')} key="diskon" />
-                                } </td>
-                            </tr> : 
-                            null
-                            }
-                    </tbody>
-                </table>
-
-            <div className='d-flex mt-1 ps-1 pe-1' style={{marginBottom:'2px', height:'65%'}}>
-                    
-             
-             <div style={{width:'40%', alignItems:'end', marginLeft:'450px'}}>
-
-             <div className='d-flex' style={{fontSize:"10px"}}>
-                                <label className='col-6'><b> Total :</b></label>
-                               
-                                <div width="100%">{
-                                  < CurrencyFormat type='danger' disabled className=' text-center editable-input edit-disabled' style={{fontWeight:"bold", width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(Number(dataHeader.ppn) + Number(dataHeader.pph) + Number(dataHeader.import_duty)).toFixed(2).replace('.' , ',')} key="diskon" />
-                               }  </div>
-                                <div>
-                                </div>
-                            </div>
-                      
-             </div>
-                    </div>
+                                            <table style={{ fontSize: "10px", width: "100%", pageBreakAfter: "auto" }}>
+                                                <tr className='border' style={{ height: "40px", pageBreakInside: "avoid", pageBreakAfter: "auto" }}>
+                                                    {/* <th width="50px" className='text-center border'>No</th> */}
+                                                    <th width="300px" className='text-center border'>Deskripsi</th>
+                                                    <th width="80px" className='text-center border'>Jumlah</th>
 
 
-            {/* <div className="row" style={{ marginLeft:'5px', height:"80px", alignItems:"start", fontSize:'12px'}}> 
+                                                </tr>
+                                                <tbody className="border">
+                                                    {
+                                                        dataHeader.import_duty == 0 && dataHeader.pph == 0 && dataHeader.ppn == 0 ?
+                                                            <tr style={{ height: "50px" }} >
+                                                                <td className='border-isi text-center'></td>
+                                                                <td className='border-isi text-center'></td>
+                                                            </tr> : null
+                                                    }
+                                                    {dataHeader.import_duty != 0 ?
+                                                        <tr style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} >
+                                                            {/* <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {i + 1} </td> */}
+                                                            <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'> Bea Masuk </td>
+                                                            <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'> {
+                                                                < CurrencyFormat type='danger' disabled className=' text-center editable-input edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.import_duty).toFixed(2).replace('.', ',')} key="diskon" />
+                                                            } </td>
+                                                        </tr> :
+                                                        null
+                                                    }
+
+                                                    {
+                                                        dataHeader.pph != 0 ?
+                                                            <tr style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} >
+
+                                                                <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'> Pph 22 </td>
+                                                                <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'> {
+                                                                    < CurrencyFormat type='danger' disabled className=' text-center editable-input edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.pph).toFixed(2).replace('.', ',')} key="diskon" />
+                                                                } </td>
+                                                            </tr> :
+                                                            null
+                                                    }
+
+                                                    {
+                                                        dataHeader.ppn != 0 ?
+                                                            <tr style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} >
+
+                                                                <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'> PPN </td>
+                                                                <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'> {
+                                                                    < CurrencyFormat type='danger' disabled className=' text-center editable-input edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.ppn).toFixed(2).replace('.', ',')} key="diskon" />
+                                                                } </td>
+                                                            </tr> :
+                                                            null
+                                                    }
+                                                </tbody>
+                                            </table>
+
+                                            <div className='d-flex mt-1 ps-1 pe-1' style={{ marginBottom: '2px', height: '65%' }}>
+
+
+                                                <div style={{ width: '40%', alignItems: 'end', marginLeft: '450px' }}>
+
+                                                    <div className='d-flex' style={{ fontSize: "10px" }}>
+                                                        <label className='col-6'><b> Total :</b></label>
+
+                                                        <div width="100%">{
+                                                            < CurrencyFormat type='danger' disabled className=' text-center editable-input edit-disabled' style={{ fontWeight: "bold", width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(Number(dataHeader.ppn) + Number(dataHeader.pph) + Number(dataHeader.import_duty)).toFixed(2).replace('.', ',')} key="diskon" />
+                                                        }  </div>
+                                                        <div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+
+                                            {/* <div className="row" style={{ marginLeft:'5px', height:"80px", alignItems:"start", fontSize:'12px'}}> 
             Terbilang: {Terbilang(dataHeader.paid)} { dataHeader.currency_name} */}
-              {/* <div className="col-2" style={{alignItems:"start", fontSize:"12px"}}>
+                                            {/* <div className="col-2" style={{alignItems:"start", fontSize:"12px"}}>
               <b> Terbilang : {Terbilang(totalP) +  mataUang} </b>
                 </div> */}
-               {/* <div className="col-10">
+                                            {/* <div className="col-10">
                 {
                     
                 } */}
-               {/* <textarea
+                                            {/* <textarea
                                 className="form-control"
                                 id="form4Example3"
                                 rows="2"
@@ -398,16 +397,16 @@ export const DetailPIB = () => {
                                 fontSize={"10px"}
                                 disabled
                             /> */}
-              
-            {/* </div> */}
-            {/* </div> */}
-       
 
-            </div>
+                                            {/* </div> */}
+                                            {/* </div> */}
 
 
+                                        </div>
 
-        {/* <div className='mt-4 ps-4 pe-4' style={{fontSize:"13px"}}>
+
+
+                                        {/* <div className='mt-4 ps-4 pe-4' style={{fontSize:"13px"}}>
 
 
 
@@ -488,42 +487,42 @@ export const DetailPIB = () => {
             </div>
 
         </div> */}
-                    </div>
-                    </td>
-                </tr>
-                </tbody>
-                <tfoot style={{position:"fixed", marginTop:"400px"}}>
-                        <tr>
-                            <td>
-                            
-                            <div className="page-footer-space"></div>
-                            <div className="page-footer" style={{position:"fixed", Bottom:"0px", width:"92%", marginRight:"5px", marginLeft:"5px"}} >
-                            <div className='d-flex' style={{width:"100%", bottom:"0"}}>
-                            <table style={{ fontSize: "10px", width: "100%", height:"100%", marginRight:"5px", marginLeft:"5px"}} >
-                                <tr className='text-center border' style={{ height: "50px", width:"70%" }}>
-                                    <th width="35px" className='border'>Dibuat</th>
-                                    <th width="35px" className='border'>Mengetahui</th>
-                                    <th width="35px" className='border'>Disetujui</th>
-                                    <th width="35px" className='border'>Diterima</th>
-                                </tr>
-                            
-                                        <tr className='text-center border ' style={{ height: "80px" ,width:"70%"}}>
-                                        
-                                        <td width="35px" className='border'><b>_________________</b></td>
-                                        <td width="35px"className='border'><b>_________________</b></td>
-                                        <td width="35px"className='border'><b>_________________</b></td>
-                                        <td width="35px"className='border'><b>_________________</b></td>
-                                        </tr>
-                            </table>
-                            </div>
-                            </div>
-                            </td>
-                        </tr>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot style={{ position: "fixed", marginTop: "400px" }}>
+                            <tr>
+                                <td>
+
+                                    <div className="page-footer-space"></div>
+                                    <div className="page-footer" style={{ position: "fixed", Bottom: "0px", width: "92%", marginRight: "5px", marginLeft: "5px" }} >
+                                        <div className='d-flex' style={{ width: "100%", bottom: "0" }}>
+                                            <table style={{ fontSize: "10px", width: "100%", height: "100%", marginRight: "5px", marginLeft: "5px" }} >
+                                                <tr className='text-center border' style={{ height: "50px", width: "70%" }}>
+                                                    <th width="35px" className='border'>Dibuat</th>
+                                                    <th width="35px" className='border'>Mengetahui</th>
+                                                    <th width="35px" className='border'>Disetujui</th>
+                                                    <th width="35px" className='border'>Diterima</th>
+                                                </tr>
+
+                                                <tr className='text-center border ' style={{ height: "80px", width: "70%" }}>
+
+                                                    <td width="35px" className='border'><b>_________________</b></td>
+                                                    <td width="35px" className='border'><b>_________________</b></td>
+                                                    <td width="35px" className='border'><b>_________________</b></td>
+                                                    <td width="35px" className='border'><b>_________________</b></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
                         </tfoot>
                     </table>
 
-                    </div>
-                    </div>
+                </div>
+            </div>
 
 
 
@@ -533,16 +532,16 @@ export const DetailPIB = () => {
                 title="Detail PIB"
                 extra={[
                     <Tooltip title="Cetak" placement="bottom">
-                    <Button
-                        type="primary"
-                        icon={<PrinterOutlined />}
-                        style={{ background: "orange", borderColor: "orange" }}
-                        onClick={handlePrint}
-                    />
-                </Tooltip>,
+                        <Button
+                            type="primary"
+                            icon={<PrinterOutlined />}
+                            style={{ background: "orange", borderColor: "orange" }}
+                            onClick={handlePrint}
+                        />
+                    </Tooltip>,
                 ]}
-                >
-                
+            >
+
             </PageHeader>
             <form className="p-3 mb-3 bg-body rounded">
                 {/* <div className="text-title text-start mb-4">
@@ -628,7 +627,7 @@ export const DetailPIB = () => {
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Rate Kurs</label>
                             <div className="col-sm-7">
 
-                                <CurrencyFormat prefix='Rp ' disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.exchange_rate).toFixed(2).replace('.',',')} key="total" />
+                                <CurrencyFormat prefix='Rp ' disabled className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.exchange_rate).toFixed(2).replace('.', ',')} key="total" />
 
 
                             </div>
@@ -788,7 +787,7 @@ export const DetailPIB = () => {
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={5} className="text-end">Bea Masuk</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp ' disabled className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.import_duty).toFixed(2).replace('.',',')} key="pay"/>
+                                            <CurrencyFormat prefix='Rp ' disabled className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.import_duty).toFixed(2).replace('.', ',')} key="pay" />
 
 
                                         </Table.Summary.Cell>
@@ -796,14 +795,14 @@ export const DetailPIB = () => {
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={5} className="text-end">PPh 22</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp ' disabled className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.pph).toFixed(2).replace('.',',')} key="pay" />
+                                            <CurrencyFormat prefix='Rp ' disabled className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.pph).toFixed(2).replace('.', ',')} key="pay" />
 
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={5} className="text-end">PPN</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp '  disabled className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.ppn).toFixed(2).replace('.',',')}  key="pay" />
+                                            <CurrencyFormat prefix='Rp ' disabled className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(dataHeader.ppn).toFixed(2).replace('.', ',')} key="pay" />
 
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>

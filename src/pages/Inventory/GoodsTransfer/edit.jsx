@@ -117,7 +117,7 @@ const EditGoodsTransfer = () => {
   const [product, setProduct] = useState([]);
   const [query, setQuery] = useState("");
   const [code, setCode] = useState("");
-
+  const [status, setStatus] = useState("");
   const [notes, setNotes] = useState("");
   const [date, setDate] = useState(null);
   const [type, setType] = useState("");
@@ -178,6 +178,7 @@ const EditGoodsTransfer = () => {
         // console.log(res.data.data[0])
         const getData = res.data.data[0];
         console.log(getData);
+        setStatus(getData.status)
         setCode(getData.code);
         setType(getData.type_process);
         setReferenceNo(getData.reference_no);
@@ -211,6 +212,7 @@ const EditGoodsTransfer = () => {
       })
       .then((res) => {
         const getData = res.data.data;
+        console.log(getData);
         setProduct(getData);
         setIsLoading(false);
       });
@@ -769,8 +771,8 @@ const EditGoodsTransfer = () => {
               >
                 Status
               </label>
-              <div className="col-sm-8">
-                <h3 className="badge bg-danger text-center m-1">Draft</h3>
+              <div className="col-sm-8 mt-2">
+                {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="volcano">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="purple">{status}</Tag>}
               </div>
             </div>
           </div>

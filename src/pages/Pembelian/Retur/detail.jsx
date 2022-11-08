@@ -165,7 +165,7 @@ const DetailReturPembelian = () => {
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '18%',
+            width: '20%',
             align: 'center',
             render(text) {
                 return {

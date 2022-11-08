@@ -37,6 +37,7 @@ export const DetailCreditNote = () => {
             .then((res) => {
                 const getData = res.data.data[0];
                 console.log(getData)
+
                 setDate(getData.date);
                 setSelectedSupplier(getData.supplier_name);
                 if (getData.purchase_invoice) {
@@ -46,10 +47,25 @@ export const DetailCreditNote = () => {
 
                     setSelectedFaktur('-')
                 }
-                setSelectedCOA(getData.chart_of_account.name)
-                setSelectedMataUang(getData.currency.code)
+
+                if(res.data.data[0].chart_of_account){
+                    setSelectedCOA(getData.chart_of_account.name)
+                }
+                else{
+                    setSelectedCOA('-')
+                }
+
+                if(res.data.data[0].cost){
+                    setSelectedBiaya(getData.cost.name)
+                }
+                else{
+                    setSelectedBiaya('-')
+                }
+
+             
+                setSelectedMataUang(getData.currency.name)
                 setNominal(getData.nominal);
-                setSelectedBiaya(getData.cost.name)
+               
                 setDeskripsi(getData.description)
                 setLoading(false);
             })

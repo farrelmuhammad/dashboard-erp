@@ -2,7 +2,6 @@
 import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tag } from 'antd'
 import { BarsOutlined, DeleteOutlined, LoadingOutlined, MinusOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons'
 import React, { useEffect, useState } from 'react'
-import ProdukPesananTable from '../../../components/moleculles/PesananTable/ProdukPesananTable'
 import Search from 'antd/lib/transfer/search'
 import axios from 'axios'
 import Url from '../../../Config';
@@ -46,6 +45,9 @@ export const DetailTallySheet = () => {
     const [detailTallySheet, setDetailTallySheet] = useState([]);
     const [beCust, setBECust] = useState("")
 
+
+
+
     const valueRenderer = (cell) => cell.value;
     const onContextMenu = (e, cell, i, j) =>
         cell.readOnly ? e.preventDefault() : null;
@@ -63,6 +65,13 @@ export const DetailTallySheet = () => {
                 const tallySheetDetail = getData.tally_sheet_details;
                 setGetTallySheet(getData)
                 setDetailTallySheet(getData.tally_sheet_details); 
+
+
+                // setCode(res.data.data[0].code);
+
+                // if(res.data.data[0].code.includes("IR")){
+
+                // }
 
                 console.log(getData)
 
@@ -93,6 +102,7 @@ export const DetailTallySheet = () => {
                             setSumber('Retur')
                             setSelectedCustomer(getData.customer_name);
                             setCustomer(getData.customer_id)
+
                         }
 
 
@@ -658,7 +668,7 @@ export const DetailTallySheet = () => {
                         <PageHeader
                             ghost={false}
                             onBack={() => window.history.back()}
-                            title="Detail Pesanan"
+                            title="Detail Tally Sheet In"
                             extra={[
                                 <Tooltip title="Cetak" placement="bottom">
                                 <Button
@@ -677,11 +687,6 @@ export const DetailTallySheet = () => {
                     </div>
                     {/* <div className="col button-add text-end me-3">
                         <button type="button" onClick={handlePrint} class="btn btn-warning rounded m-1">
-<<<<<<< HEAD
-                    <div className="col button-add text-end me-3">
-                        <button type="button" onClick={handlePrint} className="btn btn-warning rounded m-1">
-=======
->>>>>>> e96dfe8974c6f78ed50b9d708e37c6177b1dbf2e
                             Cetak
                         </button>
                     </div> */}

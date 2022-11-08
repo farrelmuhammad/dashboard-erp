@@ -565,14 +565,14 @@ const BuatFakturPembelian = () => {
         {
             title: 'Discount',
             dataIndex: 'disc',
-            width: '20%',
+            width: '16%',
             align: 'center',
             editable: true,
         },
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '14%',
+            width: '20%',
             align: 'center',
             render(text) {
                 return {
@@ -1670,7 +1670,7 @@ const BuatFakturPembelian = () => {
 
     function getCredit(idSupplier) {
         let tmp = [];
-        axios.get(`${Url}/credit_notes?id_pemasok=${idSupplier}`, {
+        axios.get(`${Url}/credit_notes?status=Submitted&id_pemasok=${idSupplier}`, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${auth.token}`
@@ -2083,7 +2083,7 @@ const BuatFakturPembelian = () => {
                             <div className="col-sm-6">
 
                             <CurrencyFormat
-                            disabled
+                            
                                     className='form-control form-control-sm'
                                     style={{width:"70%"}}
                                     thousandSeparator={'.'}

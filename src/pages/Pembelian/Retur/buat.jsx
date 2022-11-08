@@ -330,7 +330,7 @@ const BuatReturPembelian = () => {
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '17%',
+            width: '20%',
             align: 'center',
             render(text) {
                 return {
@@ -344,7 +344,7 @@ const BuatReturPembelian = () => {
         {
             title: 'Action',
             dataIndex: 'act',
-            width: '14%',
+            width: '12%',
             align: 'center',
 
         },
@@ -552,9 +552,6 @@ const BuatReturPembelian = () => {
 {
    <CurrencyFormat className=' text-center editable-input'  thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={updateProduk[i].quantity.replace('.', ',')} 
    
-  
-   
-  
    onChange={e => {
       // value = parseFloat(value.toString().replace('.', ',')
         klikUbahData(i, e.target.value, "qty")
@@ -644,7 +641,7 @@ const BuatReturPembelian = () => {
 
             total: 
             mataUang === 'Rp ' ?
-            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang} thousandSeparator={'.'} decimalSeparator={','} value={Number(updateProduk[i].total).toFixed(2).replace('.',',')} key="diskon" />:
+            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang} thousandSeparator={'.'} decimalSeparator={','} value={Number(updateProduk[i].total).toFixed(2).toString().replace('.',',')} key="diskon" />:
             < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang} thousandSeparator={'.'} decimalSeparator={','} value={Number(updateProduk[i].total).toLocaleString('id')} key="diskon" />,
 
            act: <Space size="middle">
@@ -858,9 +855,10 @@ const BuatReturPembelian = () => {
         }    };
 
     function klikTambahPpn(value){
-        let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+        let hasil = value.toString().replace('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',', '.');
         setTotalPpn(hasil)
         let totalAkhir = Number(subTotal) - Number(grandTotalDiscount) + Number(hasil)
+        //let totalS = Number(totalAkhir + Number(totalPpn))
         setTotalKeseluruhan(totalAkhir)
     }
 
@@ -1064,8 +1062,11 @@ const BuatReturPembelian = () => {
                             <div className="col-sm-6">
                             {
                                 mataUang === 'Rp ' ?
-                                < CurrencyFormat disabled className='form-control form-control-sm  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toFixed(2).replace('.',',')} key="diskon" /> :
-                                < CurrencyFormat disabled className='form-control form-control-sm  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toLocaleString('id')} key="diskon" />
+                                
+                                <CurrencyFormat className=' editable-input form-control' style={{ width: "70%", fontSize: "10px!important" }}  thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang} onKeyDown={(event) => klikEnter(event)} value={totalPpn.toString().replace('.',',')} onChange={(e) => klikTambahPpn(e.target.value)} key="pay" />
+ :
+ <CurrencyFormat className=' editable-input form-control' style={{ width: "70%", fontSize: "10px!important" }}  thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang} onKeyDown={(event) => klikEnter(event)} value={Number(totalPpn).toLocaleString('id')} onChange={(e) => klikTambahPpn(e.target.value)} key="pay" />
+ //< CurrencyFormat disabled className='form-control form-control-sm  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toLocaleString('id')} key="diskon" />
                             }
                             </div>
                         </div>

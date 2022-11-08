@@ -244,8 +244,7 @@ const GoodsTransferTable = () => {
             width: '23%',
             render: (_, { status }) => (
                 <>
-                    {status === 'publish' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
-
+                    {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="volcano">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="purple">{status}</Tag>}
                 </>
             ),
             ...getColumnSearchProps('status'),
@@ -258,17 +257,7 @@ const GoodsTransferTable = () => {
             align: 'center',
             render: (_, record) => (
                 <>
-                    {record.status === 'publish' ? (
-                        <Space size="middle">
-                            <Link to={`/goodstransfer/detail/${record.id}`}>
-                                <Button
-                                    size='small'
-                                    type="primary"
-                                    icon={<InfoCircleOutlined />}
-                                />
-                            </Link>
-                        </Space>
-                    ) : (
+                    {record.status === 'Draft' ? (
                         <Space size="middle">
                             <Link to={`/goodstransfer/detail/${record.id}`}>
                                 <Button
@@ -290,6 +279,16 @@ const GoodsTransferTable = () => {
                                 icon={<DeleteOutlined />}
                                 onClick={() => deleteGoodsTransfer(record.id)}
                             />
+                        </Space>
+                    ) : (
+                        <Space size="middle">
+                            <Link to={`/goodstransfer/detail/${record.id}`}>
+                                <Button
+                                    size='small'
+                                    type="primary"
+                                    icon={<InfoCircleOutlined />}
+                                />
+                            </Link>
                         </Space>
                     )}
                 </>
