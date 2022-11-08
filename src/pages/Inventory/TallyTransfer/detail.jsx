@@ -969,6 +969,7 @@ const DetailTallyTransfer = () => {
                         centered
                         visible={modal2Visible2}
                         onCancel={() => setModal2Visible2(false)}
+                        onOk={() => setModal2Visible2(false)}
                         width={1000}
                     >
                         <div className="text-title text-start">
