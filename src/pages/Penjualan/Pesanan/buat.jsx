@@ -15,6 +15,7 @@ import Search from 'antd/lib/transfer/search';
 import { useSelector } from 'react-redux';
 import { formatQuantity, formatRupiah } from '../../../utils/helper';
 import CurrencyFormat from 'react-currency-format';
+import ReactSelect from 'react-select';
 
 const EditableContext = createContext(null);
 
@@ -132,18 +133,36 @@ const BuatPesanan = () => {
     const [pilihanDiskon, setPilihanDiskon] = useState([]);
     const [jumlahDiskon, setJumlahDiskon] = useState([]);
 
+    const [dataCustomer, setDataCustomer] = useState([])
+
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
         setCustomer(value.id);
     };
-    // load options using API call
-    const loadOptionsCustomer = (inputValue) => {
-        return fetch(`${Url}/customers?status=active&nama=${inputValue}`, {
+
+    useEffect(() => {
+        axios.get(`${Url}/customers?status=active`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        })
+            .then((res) => {
+                let customer = [];
+                res.data.data.map((item) => {
+                    customer.push({ value: item.id, label: item.name })
+                })
+                setDataCustomer(customer);
+            })
+    })
+    // load options using API call
+    const loadOptionsCustomer = (inputValue) => {
+        return axios.get(`${Url}/customers?status=active`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => console.log(res));
     };
 
     useEffect(() => {
@@ -173,6 +192,7 @@ const BuatPesanan = () => {
             }
 
             setGetDataProduct(tmp)
+            console.log(selectedValue)
         };
 
         if (query.length >= 0) getProduct();
@@ -1105,14 +1125,14 @@ const BuatPesanan = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
                             <div className="col-sm-7">
-                                <AsyncSelect
+                                <ReactSelect
                                     placeholder="Pilih Customer..."
                                     cacheOptions
                                     defaultOptions
                                     value={selectedValue}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsCustomer}
+                                    getOptionLabel={(e) => e.label}
+                                    getOptionValue={(e) => e.value}
+                                    options={dataCustomer}
                                     onChange={handleChangeCustomer}
                                 />
                             </div>

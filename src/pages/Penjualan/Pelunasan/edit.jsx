@@ -626,6 +626,7 @@ const EditPelunasan = () => {
                                     placeholder="Pilih Pembayaran"
                                     cacheOptions
                                     defaultOptions
+                                    defaultInputValue={selectedPembayaran.name}
                                     value={selectedValue2}
                                     getOptionLabel={(e) => e.name}
                                     getOptionValue={(e) => e.id}

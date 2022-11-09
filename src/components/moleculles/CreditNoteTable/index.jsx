@@ -61,7 +61,15 @@ const CreditNoteTable = () => {
             date: getData[i].date,
             nominal:
               getData[i].currency.name == 'Rp' || getData[i].currency.name == 'IDR' ?
-                < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={getData[i].currency.name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].nominal).toFixed(2).replace('.', ',')} key="diskon" />
+                < CurrencyFormat disabled 
+                className=' text-center editable-input  edit-disabled' 
+                style={{ width: "70%", fontSize: "10px!important" }}
+                 prefix={getData[i].currency.name + ' '} 
+                 thousandSeparator={'.'} decimalSeparator={','} 
+                 value={getData[i].nominal.replace('.', ',')}
+                 //value={getData[i].nominal.substring(0, getData[i].nominal.length - 2) + ',' + getData[i].nominal.slice(-2)}
+                 //value={Number(getData[i].nominal)} 
+                 key="diskon" />
                 : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={getData[i].currency.name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].nominal).toLocaleString('id')} key="diskon" />,
 
             status: getData[i].status,

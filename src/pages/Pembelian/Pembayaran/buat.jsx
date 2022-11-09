@@ -59,6 +59,7 @@ const BuatPembayaranPembelian = () => {
     const [totalAkhir, setTotalAkhir] = useState('-');
     const [sisaAkhir, setSisaAkhir] = useState('-')
 
+    const [tmpCentang, setTmpCentang] = useState([])
 
 
     function klikEnter(event) {
@@ -130,8 +131,27 @@ const BuatPembayaranPembelian = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
+
+            let tmp = []
+            for(let i=0; i<res.data.data.length; i++){
+                if(tmpCentang.indexOf(res.data.data[i].code) >= 0 ){
+                    tmp.push({
+                        detail:res.data.data[i],
+                        statusCek: true
+                    });
+                }
+            }
+            for(let i=0; i<res.data.data.length; i++){
+                if(tmpCentang.indexOf(res.data.data[i].code) < 0 ){
+                    tmp.push({
+                        detail:res.data.data[i],
+                        statusCek: false
+                    });
+                }
+            }
+
             // console.log(res.data)
-            setGetDataFaktur(res.data.data);
+            setGetDataFaktur(tmp);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -171,31 +191,41 @@ const BuatPembayaranPembelian = () => {
             title: 'No. Faktur',
             align: 'center',
             dataIndex: 'code',
+            render: (_, record) => {
+                return <>{record.detail.code}</>
+            }
         },
         {
             title: 'Supplier',
             // dataIndex: 'customer_id',
             align: 'center',
-            render: (text, record, index) => (
-                <>{getDataFaktur[index].supplier.name}</>
-            )
+            // render: (text, record, index) => (
+            //     <>{getDataFaktur[index].supplier.name}</>
+            // )
+            render: (_, record) => {
+                return <>{record.detail.supplier.name}</>
+            }
         },
         {
             title: 'Total',
             dataIndex: 'total',
             width: '20%',
             align: 'center',
+            render: (_, record) => {
+                return <>{record.detail.total}</>
+            }
         },
         {
             title: 'Actions',
             dataIndex: 'address',
             width: '15%',
             align: 'center',
-            render: (_, record) => (
+            render: (_, record, index) => (
                 <>
                     <Checkbox
                         value={record}
-                        onChange={handleCheck}
+                        checked={record.statusCek}
+                        onChange={(e) => handleCheck(e,index)}
                     />
                 </>
             )
@@ -243,41 +273,77 @@ const BuatPembayaranPembelian = () => {
         ]
 
 
-    const handleCheck = (event) => {
-        var updatedList = [...product];
+    const handleCheck = (event, index) => {
+        
+       // var updatedList = [...product];
         let data = event.target.value
-        let mataUang = data.purchase_invoice_details[0].currency_name
-        if(mataUang){
-            setSelectedMataUang(mataUang)
-        }
-        else{
-            setSelectedMataUang('Rp ')
-        }
+        let tmpDataBaru=[]
+        let tmpDataCentang = [...tmpCentang]
+        // let mataUang = data.purchase_invoice_details[0].currency_name
+        // if(mataUang){
+        //     setSelectedMataUang(mataUang)
+        // }
+        // else{
+        //     setSelectedMataUang('Rp ')
+        // }
         // console.log(data)
 
-        if (event.target.checked) {
+
+        for(let i=0;i<getDataFaktur.length; i++){
+            if(i == index){
+                tmpDataBaru.push({
+                    detail:getDataFaktur[i].detail,
+                    statusCek: !getDataFaktur[i].statusCek
+                })
+            }
+            else{
+                tmpDataBaru.push(getDataFaktur[i])
+            }
+
+            if (tmpDataBaru[i].statusCek == true) {
+                tmpDataCentang.push(tmpDataBaru[i].detail.code)
+            }
+            else {
+                let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.code);
+                if (index >= 0) {
+                    tmpDataCentang.splice(index, 1)
+                }
+            }
+        }
+
+        let unikTmpCentang = [...new Set(tmpDataCentang)]
+        setTmpCentang(unikTmpCentang)
+        setGetDataFaktur(tmpDataBaru)
+        var updatedList = [...product];
+
+
+        //681
+        if (tmpDataBaru[index].statusCek) {
+            console.log(data.detail)
             // updatedList = [...product, event.target.value];
+            updatedList = [...product, data.detail];
+            console.log(updatedList)
             let tmp = []
             if (updatedList.length == 0) {
                 tmp.push({
-                    code: data.code,
-                    total: data.total_payment,
-                    sisa: data.remains,
-                    sisaNoEdit: data.remains,
+                    code: data.detail.code,
+                    total: data.detail.total_payment,
+                    sisa: data.detail.remains,
+                    sisaNoEdit: data.detail.remains,
                     bayar: 0,
-                    idFaktur: data.id
+                    idFaktur: data.detail.id
                 })
             }
             else {
-                for (let i = 0; i <= updatedList.length; i++) {
-                    if (updatedList.length == i) {
+                for (let i = 0; i < updatedList.length; i++) {
+                    if (updatedList.length -1 == i) {
                         tmp.push({
-                            code: data.code,
-                            total: data.total_payment,
-                            sisa: data.remains,
-                            sisaNoEdit: data.remains,
+                            code: data.detail.code,
+                            total: data.detail.total_payment,
+                            sisa: data.detail.remains,
+                            sisaNoEdit: data.detail.remains,
                             bayar: 0,
-                            idFaktur: data.id
+                            idFaktur: data.detail.id
                         })
                     }
                     else {
@@ -288,11 +354,12 @@ const BuatPembayaranPembelian = () => {
                 }
             }
             setProduct(tmp)
+            console.log(tmp)
         }
         else {
             for (let i = 0; i < updatedList.length; i++) {
                 // console.log(product[i].idFaktur);
-                if (updatedList[i].idFaktur == data.id) {
+                if (updatedList[i].idFaktur == data.detail.id) {
                     updatedList.splice(i, 1);
 
                 }
@@ -300,6 +367,7 @@ const BuatPembayaranPembelian = () => {
             setProduct(updatedList)
 
         }
+      
     };
 
 

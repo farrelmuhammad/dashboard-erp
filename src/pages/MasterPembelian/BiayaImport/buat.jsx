@@ -50,13 +50,13 @@ const BuatBiayaImport = () => {
         text: "Data Akun Jurnal kosong, Silahkan Lengkapi datanya ",
       });
     }
-    else if(!category_id){
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Kategori kosong, Silahkan Lengkapi datanya ",
-      });
-    }
+    // else if(!category_id){
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Kategori kosong, Silahkan Lengkapi datanya ",
+    //   });
+    // }
     else{
 
     
@@ -97,7 +97,7 @@ const BuatBiayaImport = () => {
           Swal.fire({
             icon: "error",
             title: "Oops...",
-            text: err.response.data.error.nama,
+            text: err.response.data.message,
           });
         } else if (err.request) {
           console.log("err.request ", err.request);
@@ -167,7 +167,7 @@ const BuatBiayaImport = () => {
 
     const onChange = () => {
       setChecked(!checked)
-      checked ? setStatus('Active') : setStatus ('NonActive')
+      checked ? setStatus('Active') : setStatus ('Inactive')
       // checked ? setChecked(false) : setChecked(true)
   
       // if (checked === false) {
