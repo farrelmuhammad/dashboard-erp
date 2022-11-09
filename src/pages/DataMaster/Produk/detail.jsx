@@ -42,28 +42,32 @@ export const DetailProduk = () => {
         })
             .then((res) => {
                 const getData = res.data.data[0]
+                console.log(getData);
                 setCode(getData.code)
-                setName(getData.name)
-                setAlias(getData.alias_name)
-                setGroup(getData._group)
-                setPieces(getData.piece.name)
-                setCategory(getData.category.name)
-                setGrade(getData.grade.name)
-                setType(getData.type.name)
-                setBrands(getData.brand.name)
+                setName(getData.name || "")
+                setAlias(getData.alias_name || "")
+                setGroup(getData._group || "")
+                setPieces(getData.piece.name || "")
+                setCategory(getData.category.name || "")
+                setGrade(getData.grade.name || "")
+                setType(getData.type.name || "")
+                setBrands(getData.brand.name || "")
                 setUnit(getData.unit)
-                setPackaging(getData.packaging_type)
-                setBuy_price(getData.purchase_price)
-                setSell_price(getData.selling_price)
-                setDiscount(getData.discount)
-                setTaxes(getData.tax.type)
-                setStatus(getData.status)
-                setLoading(false)
+                setPackaging(getData.packaging_type || "")
+                setBuy_price(getData.purchase_price || "")
+                setSell_price(getData.selling_price || "")
+                setDiscount(getData.discount || "")
+                setTaxes(getData.tax.type) || ""
+                setStatus(getData.status || "")
+                // setLoading(false)
             })
             .catch((err) => {
                 // Jika Gagal
-                console.log(err)
-            });
+                // console.log(err)
+            })
+            .finally((res) => {
+                setLoading(false)
+            })
     }
 
     if (loading) {

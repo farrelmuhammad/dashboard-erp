@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import Url from '../../../Config';
 import './form.css'
 import { useSelector } from 'react-redux';
-import { Button, PageHeader, Skeleton, Switch } from 'antd';
+import { Button, PageHeader, Radio, Skeleton, Switch } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
 import AsyncSelect from "react-select/async";
 
@@ -28,9 +28,9 @@ const EditProduk = () => {
     const [brands_name, setBrands_name] = useState('');
     const [packaging_id, setPackaging_id] = useState('');
     const [unit, setUnit] = useState('');
-    const [buy_price, setBuy_price] = useState('');
-    const [sell_price, setSell_price] = useState('');
-    const [discount, setDiscount] = useState('');
+    const [buy_price, setBuy_price] = useState(0);
+    const [sell_price, setSell_price] = useState(0);
+    const [discount, setDiscount] = useState(0);
     const [taxes_id, setTaxes_id] = useState('');
     const [taxes_name, setTaxes_name] = useState('');
     const [checked, setChecked] = useState(true);
@@ -227,46 +227,52 @@ const EditProduk = () => {
             .then(function (response) {
                 const getData = response.data.data[0]
                 setCode(getData.code)
-                setName(getData.name)
-                setAlias(getData.alias_name)
-                setPieces_id(getData.piece.id)
-                setPieces_name(getData.piece.name)
-                setCategory_id(getData.category.id)
-                setCategory_name(getData.category.name)
-                setGrade_id(getData.grade.id)
-                setGrade_name(getData.grade.name)
-                setType_id(getData.type.id)
-                setType_name(getData.type.name)
-                setBrands_id(getData.brand.id)
-                setBrands_name(getData.brand.name)
-                setPackaging_id(getData.packaging_type)
-                setTaxes_id(getData.tax.id)
-                setTaxes_name(getData.tax.type)
-                setUnit(getData.unit)
-                setBuy_price(getData.purchase_price)
-                setSell_price(getData.selling_price)
-                setDiscount(getData.discount)
+                setName(getData.name || "")
+                setAlias(getData.alias_name || "")
+                setPieces_id(getData.piece.id || "")
+                setPieces_name(getData.piece.name || "")
+                setCategory_id(getData.category.id || "")
+                setCategory_name(getData.category.name || "")
+                setGrade_id(getData.grade.id || "")
+                setGrade_name(getData.grade.name || "")
+                setType_id(getData.type.id || "")
+                setType_name(getData.type.name || "")
+                setBrands_id(getData.brand.id || "")
+                setBrands_name(getData.brand.name || "")
+                setPackaging_id(getData.packaging_type || "")
+                setTaxes_id(getData.tax.id || "")
+                setTaxes_name(getData.tax.type || "")
+                setUnit(getData.unit || "")
+                setBuy_price(getData.purchase_price || "0")
+                setSell_price(getData.selling_price || "0")
+                setDiscount(getData.discount || "0")
                 setStatus(getData.status)
-                setGroup(getData._group)
-                setIsLoading(false)
+                setGroup(getData._group || "")
                 console.log(getData);
             })
             .catch((err) => {
                 // Jika Gagal
-                console.log(err)
-            });
+                // console.log(err)
+            })
+            .finally((res) => {
+                setIsLoading(false)
+            })
     }
 
-    const onChange = () => {
-        checked ? setChecked(false) : setChecked(true)
+    const optionsStatus = [
+        {
+            label: 'Aktif',
+            value: 'Active',
+        },
+        {
+            label: 'Nonaktif',
+            value: 'Inactive',
+        },
+    ];
 
-        if (checked === false) {
-            setStatus("Active");
-            // console.log('Active');
-        } else {
-            setStatus("Inactive");
-            // console.log('Inactive');
-        }
+    const onChange4 = ({ target: { value } }) => {
+        console.log('radio4 checked', value);
+        setStatus(value);
     };
 
     if (isLoading) {
@@ -379,7 +385,6 @@ const EditProduk = () => {
                     <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Grup</label>
                     <div className="col-sm-10">
                         <select onChange={e => setGroup(e.target.value)} id="Typeselect" className="form-select">
-                            <option>Pilih Grup</option>
                             <option value="Lokal" selected={group === "Lokal"}>Lokal</option>
                             <option value="Impor" selected={group === "Impor"}>Impor</option>
                             <option value="Meatshop" selected={group === "Meatshop"}>Meatshop</option>
@@ -424,7 +429,6 @@ const EditProduk = () => {
                     <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Satuan</label>
                     <div className="col-sm-10">
                         <select onChange={e => setUnit(e.target.value)} id="Typeselect" className="form-select">
-                            <option>Pilih Satuan</option>
                             <option value="kg" selected={unit === "kg"}>Kg</option>
                             <option value="pack" selected={unit === "pack"}>Pack</option>
                             <option value="ekor" selected={unit === "ekor"}>Ekor</option>
@@ -516,13 +520,13 @@ const EditProduk = () => {
                 <div className="row mb-3">
                     <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
                     <div className="col-sm-7">
-                        <Switch defaultChecked={status} onChange={onChange} />
-                        <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
-                            {
-                                checked ? "Aktif"
-                                    : "Nonaktif"
-                            }
-                        </label>
+                        <Radio.Group
+                            options={optionsStatus}
+                            onChange={onChange4}
+                            value={status}
+                            optionType="button"
+                            buttonStyle="solid"
+                        />
                     </div>
                 </div>
                 <div className="d-grid gap-2 d-md-flex justify-content-md-end">

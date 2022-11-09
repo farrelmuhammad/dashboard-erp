@@ -7,7 +7,7 @@ import Url from "../../../Config";
 import "./form.css";
 import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
-import { Button, PageHeader, Switch } from "antd";
+import { Button, PageHeader, Radio, Switch } from "antd";
 import { SendOutlined } from "@ant-design/icons";
 
 const BuatProduk = () => {
@@ -199,20 +199,20 @@ const BuatProduk = () => {
     //     text: "Data Tipe Packaging kosong, Silahkan lengkapi datanya"
     //   })
     // }
-    else if (!buy_price) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Harga Beli kosong, Silahkan lengkapi datanya"
-      })
-    }
-    else if (!sell_price) {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Data Harga Jual kosong, Silahkan lengkapi datanya"
-      })
-    }
+    // else if (!buy_price) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Harga Beli kosong, Silahkan lengkapi datanya"
+    //   })
+    // }
+    // else if (!sell_price) {
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Data Harga Jual kosong, Silahkan lengkapi datanya"
+    //   })
+    // }
     // else if (!discount) {
     //   Swal.fire({
     //     icon: "error",
@@ -320,6 +320,22 @@ const BuatProduk = () => {
   useEffect(() => {
     getCodeById()
   }, []);
+
+  const optionsStatus = [
+    {
+      label: 'Aktif',
+      value: 'Active',
+    },
+    {
+      label: 'Nonaktif',
+      value: 'Inactive',
+    },
+  ];
+
+  const onChange4 = ({ target: { value } }) => {
+    // console.log('radio4 checked', value);
+    setStatus(value);
+  };
 
   return (
     <>
@@ -578,13 +594,13 @@ const BuatProduk = () => {
         <div className="row mb-3">
           <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
           <div className="col-sm-7">
-            <Switch defaultChecked={status} onChange={onChange} />
-            <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
-              {
-                checked ? "Aktif"
-                  : "Nonaktif"
-              }
-            </label>
+            <Radio.Group
+              options={optionsStatus}
+              onChange={onChange4}
+              value={status}
+              optionType="button"
+              buttonStyle="solid"
+            />
           </div>
         </div>
 
