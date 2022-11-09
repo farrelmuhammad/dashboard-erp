@@ -79,10 +79,10 @@ const EditableCell = ({
             >
                 {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
                 <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
-                   decimalSeparator={','}
-                   onChange={value => {
-                       value = parseFloat(value.toString().replace('.', ','))
-                   }}
+                    decimalSeparator={','}
+                    onChange={value => {
+                        value = parseFloat(value.toString().replace('.', ','))
+                    }}
 
                 />
             </Form.Item>
@@ -179,7 +179,7 @@ const BuatFakturPembelian = () => {
 
                 })
         }
-        else if(grup == 'Lokal') {
+        else if (grup == 'Lokal') {
             setImpor(false);
             axios.get(`${Url}/purchase_invoices_available_suppliers/Local`, {
                 headers: {
@@ -197,7 +197,7 @@ const BuatFakturPembelian = () => {
                 })
         }
 
-      
+
 
     }, [grup])
 
@@ -295,7 +295,7 @@ const BuatFakturPembelian = () => {
             setData(tmpData);
         }
         else if (key == 'price') {
-            let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+            let hasil = value.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',','.');
 
             for (let i = 0; i < data.length; i++) {
                 if (i == y) {
@@ -329,7 +329,9 @@ const BuatFakturPembelian = () => {
         }
         else if (key == 'diskonValue') {
             if (data[y].pilihanDiskon == 'nominal') {
-                let hasil = value.replaceAll('.', '');
+                // let hasil = value.replaceAll('.', '');
+                let hasil = value.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "");
+
 
                 for (let i = 0; i < data.length; i++) {
                     if (i == y) {
@@ -426,16 +428,16 @@ const BuatFakturPembelian = () => {
         for (let i = 0; i < tmpData.length; i++) {
             if (i == y) {
                 if (tmpData[i].pilihanDiskon == 'persen') {
-                    let total = tmpData[i].quantity.replace(',', '.') * Number(tmpData[i].price);
+                    let total = tmpData[i].quantity.toString().replace(',', '.') * Number(tmpData[i].price.replace(',', '.'));
 
-                    let getPercent = (Number(total) * tmpData[i].discount_percentage.replace(',', '.')) / 100;
+                    let getPercent = (Number(total) * Number(tmpData[i].discount_percentage.toString().replace(',', '.'))) / 100;
                     grandTotal = total - Number(getPercent);
                 }
                 else if (tmpData[i].pilihanDiskon == 'nominal') {
-                    grandTotal = (Number(tmpData[i].quantity.replace(',', '.')) * Number(tmpData[i].price)) - tmpData[i].fixed_discount.replace(',', '.');
+                    grandTotal = (Number(tmpData[i].quantity.toString().replace(',', '.')) * Number(tmpData[i].price.toString().replace(',', '.'))) - Number(tmpData[i].fixed_discount.toString().replace(',', '.'));
                 }
                 else {
-                    grandTotal = tmpData[i].quantity.replace(',', '.') * Number(tmpData[i].price);
+                    grandTotal = tmpData[i].quantity.toString().replace(',', '.') * Number(tmpData[i].price.toString().replace(',', '.'));
                 }
                 arrTotal.push(
                     {
@@ -474,10 +476,9 @@ const BuatFakturPembelian = () => {
         let hasilDiskon = 0;
         for (let x = 0; x < data.length; x++) {
             // for (let y = 0; y < data[x].length; y++) {
-            total += (Number(data[x].quantity.replace(',', '.')) * Number(data[x].price));
-            totalPerProduk = (Number(data[x].quantity.replace(',', '.')) * Number(data[x].price));
+            total += (Number(data[x].quantity.replace(',', '.')) * Number(data[x].price.replace(',', '.')));
+            totalPerProduk = (Number(data[x].quantity.replace(',', '.')) * Number(data[x].price.replace(',', '.')));
 
-            console.log(total)
             if (data[x].pilihanDiskon == 'persen') {
                 hasilDiskon += (Number(totalPerProduk) * Number(data[x].discount_percentage.replace(',', '.')) / 100);
             }
@@ -589,33 +590,33 @@ const BuatFakturPembelian = () => {
     const TableData =
         [...product.map((item, i) => ({
             namaProduk: item.product_name,
-            qty: 
-<div className='d-flex'>
-{
-   <CurrencyFormat className=' text-center editable-input'  thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={data[i].quantity.replace('.', ',')} 
-   
-  
-   
-  
-   onChange={e => {
-      // value = parseFloat(value.toString().replace('.', ',')
-        klikUbahData(i, e.target.value, "qty")
-       
-   }}
-   key="qty" />
-}
-</div>,
-
-
-
-         
+            qty:
+                <div className='d-flex'>
+                    {
+                        <CurrencyFormat
+                            className=' text-center editable-input'
+                            thousandSeparator={'.'}
+                            decimalSeparator={','}
+                            onKeyDown={(event) => klikEnter(event)}
+                            value={data[i].quantity.replace('.', ',')}
+                            onChange={e => {
+                                klikUbahData(i, e.target.value, "qty")
+                            }}
+                            key="qty" />
+                    }
+                </div>,
             stn: item.unit,
             price:
                 <div className='d-flex'>
                     {
-                        // mataUang === 'Rp' || mataUang ===  'IDR' ? 
-                        // <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={data[i].currency_name + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].price).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "price")} /> :
-                        <CurrencyFormat disabled className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={data[i].currency_name + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].price).toLocaleString('id')} onChange={(e) => klikUbahData(i, e.target.value, "price")} />
+                        <CurrencyFormat
+                            className=' text-center editable-input'
+                            thousandSeparator={'.'}
+                            decimalSeparator={','}
+                            prefix={data[i].currency_name + ' '}
+                            onKeyDown={(event) => klikEnter(event)}
+                            value={data[i].price.replace('.',',')}
+                            onChange={(e) => klikUbahData(i, e.target.value, "price")} />
                     }
                 </div>,
             disc:
@@ -640,9 +641,10 @@ const BuatFakturPembelian = () => {
                     </div> :
                     data[i].pilihanDiskon == 'persen' ?
                         <div className='d-flex p-1' style={{ height: "100%" }} >
-                            <CurrencyFormat disabled className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={
-                                data[i].discount_percentage != null ? 
-                                data[i].discount_percentage : 0} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
+                            <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)}
+                                value={
+                                    data[i].discount_percentage != null ?
+                                        data[i].discount_percentage : 0} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
                             <div className="input-group-prepend" >
                                 <select
                                     onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
@@ -655,7 +657,7 @@ const BuatFakturPembelian = () => {
                                     <option value="nominal">
                                         {data[i].currency_name}
                                     </option>
-                                    
+
                                 </select>
                             </div>
                         </div>
@@ -663,15 +665,12 @@ const BuatFakturPembelian = () => {
                         data[i].pilihanDiskon == 'nominal' ?
                             <div className='d-flex p-1' style={{ height: "100%" }}>
                                 {
-                                    // mataUang === 'Rp' || mataUang ===  'IDR' ? 
-                                    // <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={
-                                    //     data[i].fixed_discount == null ? 0 :
-                                    //     Number(data[i].fixed_discount).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" /> : 
-                                    <CurrencyFormat disabled className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={
-                                        data[i].fixed_discount == null ? 0 :
-                                        Number(data[i].fixed_discount).toLocaleString('id')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
+                                    <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)}
+                                        value={
+                                            data[i].fixed_discount == null ? 0 :
+                                                data[i].fixed_discount} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
                                 }
-                              
+
 
                                 <div className="input-group-prepend" >
                                     <select
@@ -685,19 +684,19 @@ const BuatFakturPembelian = () => {
                                         <option selected value="nominal">
                                             {data[i].currency_name}
                                         </option>
-                                      
+
                                     </select>
                                 </div>
                             </div> : null,
 
             total:
-            
-                mataUang === 'Rp' || mataUang ===  'IDR' ? 
-<CurrencyFormat disabled className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={data[i].currency_name + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].total).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "price")} /> :
-<CurrencyFormat disabled className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={data[i].currency_name + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].total).toLocaleString('id')} onChange={(e) => klikUbahData(i, e.target.value, "price")} />
-                // data[i].currency_name + ' ' + Number(data[i].total).toFixed(2).replace('.',',') : 
-                // data[i].currency_name + ' ' + Number(data[i].total).toLocaleString('id')
-   
+
+                mataUang === 'Rp' || mataUang === 'IDR' ?
+                    <CurrencyFormat disabled className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={data[i].currency_name + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].total).toFixed(2).replace('.', ',')} onChange={(e) => klikUbahData(i, e.target.value, "price")} /> :
+                    <CurrencyFormat disabled className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={data[i].currency_name + ' '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].total).toLocaleString('id')} onChange={(e) => klikUbahData(i, e.target.value, "price")} />
+            // data[i].currency_name + ' ' + Number(data[i].total).toFixed(2).replace('.',',') : 
+            // data[i].currency_name + ' ' + Number(data[i].total).toLocaleString('id')
+
         }))
         ]
 
@@ -883,7 +882,8 @@ const BuatFakturPembelian = () => {
     }
     function ubahCOA(value, id) {
         // console.log(tampilCOA)
-        let hasil = value.replace('.', '').replace(/[^0-9\.]+/g, "");
+        let hasil = value.replace('.', '').replace(/[^0-9_,\.]+/g, "");
+        let hasilHitung = hasil.replace(',', '.')
 
         let tmp = []
         let totalAkhir = 0;
@@ -894,9 +894,9 @@ const BuatFakturPembelian = () => {
                     id: tampilCOA[i].id,
                     code: tampilCOA[i].code,
                     name: tampilCOA[i].name,
-                    jumlah: hasil,
+                    jumlah: hasilHitung,
                 })
-                totalCOA = totalCOA + Number(hasil);
+                totalCOA = totalCOA + Number(hasilHitung);
             }
             else {
                 tmp.push(tampilCOA[i])
@@ -912,7 +912,9 @@ const BuatFakturPembelian = () => {
     }
 
     function ubahCredit(value, id) {
-        let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+        let hasil = value.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "");
+        let hasilHitung = hasil.replace(',', '.')
+
 
         let tmp = []
         let totalAkhir = 0;
@@ -923,9 +925,9 @@ const BuatFakturPembelian = () => {
                     id: tampilCredit[i].id,
                     code: tampilCredit[i].code,
                     deskripsi: tampilCredit[i].deskripsi,
-                    jumlah: hasil,
+                    jumlah: hasilHitung,
                 })
-                totalCredit = totalCredit + Number(hasil);
+                totalCredit = totalCredit + Number(hasilHitung);
             }
             else {
                 tmp.push(tampilCredit[i])
@@ -941,15 +943,19 @@ const BuatFakturPembelian = () => {
     }
 
     function tambahUangMuka(value) {
-        let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
-        setUangMuka(hasil);
-        let totalAkhir = grandTotal - Number(hasil) + Number(totalCOA) + Number(totalPpn) - Number(totalCredit)
+        let hasil = value.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "");
+        let hasilHitung = hasil.replace(',', '.')
+        
+        setUangMuka(hasilHitung);
+        let totalAkhir = grandTotal - Number(hasilHitung) + Number(totalCOA) + Number(totalPpn) - Number(totalCredit)
         setTotalKeseluruhan(totalAkhir)
     }
     function tambahPPN(value) {
-        let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
-        setTotalPpn(hasil)
-        let totalAkhir = grandTotal - Number(uangMuka) + Number(totalCOA) + Number(hasil) - Number(totalCredit)
+        let hasil = value.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "");
+        let hasilHitung = hasil.replace(',', '.')
+
+        setTotalPpn(hasilHitung)
+        let totalAkhir = grandTotal - Number(uangMuka) + Number(totalCOA) + Number(hasilHitung) - Number(totalCredit)
         setTotalKeseluruhan(totalAkhir)
     }
 
@@ -1038,11 +1044,11 @@ const BuatFakturPembelian = () => {
         // />
 
         return <>
-        {
-          mataUang === 'Rp' || mataUang === 'IDR' ? 
-                  < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm"  className="form-control form-control-sm"/>}  />
-                  :< CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true"  id="colFormLabelSm"  className="form-control form-control-sm"/>} />
-        }
+            {
+                mataUang === 'Rp' || mataUang === 'IDR' ?
+                    < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                    : < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+            }
         </>
     }
 
@@ -1060,7 +1066,7 @@ const BuatFakturPembelian = () => {
                         decimalSeparator={','}
                         prefix={mataUang + ' '}
                         onKeyDown={(event) => klikEnter(event)}
-                        value={item.jumlah}
+                        value={item.jumlah.toString().replace('.', ',')}
                         onChange={(e) => ubahCOA(e.target.value, i)} />
                 </div>,
             action: <Space size="middle">
@@ -1087,7 +1093,7 @@ const BuatFakturPembelian = () => {
                         decimalSeparator={','}
                         prefix={mataUang + ' '}
                         onKeyDown={(event) => klikEnter(event)}
-                        value={item.jumlah}
+                        value={item.jumlah.replace('.', ',')}
                         onChange={(e) => ubahCredit(e.target.value, i)} />
                 </div>,
 
@@ -1346,162 +1352,12 @@ const BuatFakturPembelian = () => {
 
     const handleSubmit = async (e) => {
 
-        if(!date){
+        if (!date) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        // else if (grup != ""){
-        //     Swal.fire({
-        //         icon: "error",
-        //         title: "Oops...",
-        //         text: "Data Grup kosong, Silahkan Lengkapi datanya ",
-        //       });
-        // }
-        else if (!supplier){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        else if(grup == 'Impor' && !kontainer){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Kontainer kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        else if(grup == 'Impor' && !ctn){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Karton kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        else if (grup == 'Impor' && term == ''){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Term kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        else if (grup == 'Impor' && !muatan){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Muatan kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        else if (!jatuhTempo){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Tanggal Jatuh Tempo kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        else{
-
-
-        e.preventDefault();
-        const formData = new URLSearchParams();
-        formData.append("tanggal", date);
-        if (muatan) {
-            formData.append("muatan", muatan.replace(/[^0-9\.]+/g, ""))
-        }
-
-        if(code){getCodeFaktur}
-        formData.append("kode", code);
-        formData.append("karton", ctn);
-        formData.append("pemasok", supplier);
-        formData.append("catatan", description);
-        formData.append("ppn", totalPpn);
-        formData.append("uang_muka", uangMuka);
-        formData.append("tanggal_jatuh_tempo", jatuhTempo);
-        formData.append("nomor_kontainer", kontainer);
-        formData.append("term", term);
-
-
-        for (let y = 0; y < idTandaTerima.length; y++) {
-
-            if (grup == "Lokal") {
-                formData.append("id_tanda_terima_barang[]", idTandaTerima[y]);
-
-            }
-            else if (grup == "Impor") {
-
-                formData.append("id_pesanan_pembelian[]", idTandaTerima[y]);
-            } 
-        }
-        for (let x = 0; x < data.length; x++) {
-            formData.append("kuantitas[]", data[x].quantity.replace(',', '.'));
-            formData.append("satuan[]", data[x].unit);
-            formData.append("id_produk[]", data[x].id);
-            formData.append("harga[]", data[x].price);
-            formData.append("persentase_diskon[]", data[x].discount_percentage.replace(',', '.'));
-            formData.append("diskon_tetap[]", data[x].fixed_discount);
-        }
-
-        for (let i = 0; i < tampilCOA.length; i++) {
-            formData.append("biaya[]", tampilCOA[i].id);
-            formData.append("total_biaya[]", tampilCOA[i].jumlah);
-            formData.append("deskripsi_biaya[]", tampilCOA[i].name);
-        }
-
-
-        for (let i = 0; i < tampilCredit.length; i++) {
-            formData.append("nota_kredit[]", tampilCredit[i].id);
-            formData.append("total_nota_kredit[]", tampilCredit[i].jumlah);
-            formData.append("deskripsi_nota_kredit[]", tampilCredit[i].name);
-        }
-
-        formData.append("status", "Submitted");
-        axios({
-            method: "post",
-            url: `${Url}/purchase_invoices`,
-            data: formData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/fakturpembelian");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text:"Data Produk belum Diisi, silahkan lengkapi datanya dan coba kembali",
-                        // text: err.response.data.message,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
             });
-     } };
-
-    const handleDraft = async (e) => {
-        if(!date){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
-              });
         }
         // else if (grup != ""){
         //     Swal.fire({
@@ -1510,141 +1366,293 @@ const BuatFakturPembelian = () => {
         //         text: "Data Grup kosong, Silahkan Lengkapi datanya ",
         //       });
         // }
-        else if (!supplier){
+        else if (!supplier) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(grup == 'Impor' && !kontainer){
+        else if (grup == 'Impor' && !kontainer) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Kontainer kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(grup == 'Impor' && !ctn){
+        else if (grup == 'Impor' && !ctn) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Karton kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if (grup == 'Impor' && term == ''){
+        else if (grup == 'Impor' && term == '') {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Term kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if (grup == 'Impor' && !muatan){
+        else if (grup == 'Impor' && !muatan) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Muatan kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if (!jatuhTempo){
+        else if (!jatuhTempo) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal Jatuh Tempo kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
         else {
-        e.preventDefault();
-        const formData = new URLSearchParams();
-        formData.append("tanggal", date);
-        if (muatan) {
-            formData.append("muatan", muatan.replace(/[^0-9\.]+/g, ""))
-        }
 
 
-        if(code){getCodeFaktur}
-        formData.append("karton", ctn);
-        formData.append("pemasok", supplier);
-        formData.append("catatan", description);
-        formData.append("ppn", totalPpn);
-        formData.append("uang_muka", uangMuka);
-        formData.append("tanggal_jatuh_tempo", jatuhTempo);
-        formData.append("nomor_kontainer", kontainer);
-        formData.append("term", term);
-
-
-
-        for (let y = 0; y < idTandaTerima.length; y++) {
-
-            if (grup == "Lokal") {
-                formData.append("id_tanda_terima_barang[]", idTandaTerima[y]);
-
+            e.preventDefault();
+            const formData = new URLSearchParams();
+            formData.append("tanggal", date);
+            if (muatan) {
+                formData.append("muatan", muatan.replace(/[^0-9\.]+/g, ""))
             }
-            else if (grup == "Impor") {
 
-                formData.append("id_pesanan_pembelian[]", idTandaTerima[y]);
-            }
-        }
-        for (let x = 0; x < data.length; x++) {
-
-            formData.append("kuantitas[]", data[x].quantity.replace(',', '.'));
-            formData.append("satuan[]", data[x].unit);
-            formData.append("id_produk[]", data[x].id);
-            formData.append("harga[]", data[x].price);
-            formData.append("persentase_diskon[]", data[x].discount_percentage.replace(',', '.'));
-            formData.append("diskon_tetap[]", data[x].fixed_discount);
-        }
-
-        for (let i = 0; i < tampilCOA.length; i++) {
-            formData.append("biaya[]", tampilCOA[i].id);
-            formData.append("total_biaya[]", tampilCOA[i].jumlah);
-            formData.append("deskripsi_biaya[]", tampilCOA[i].name);
-        }
-
-        for (let i = 0; i < tampilCredit.length; i++) {
-            formData.append("nota_kredit[]", tampilCredit[i].id);
-            formData.append("total_nota_kredit[]", tampilCredit[i].jumlah);
-            formData.append("deskripsi_nota_kredit[]", tampilCredit[i].deskripsi);
-        }
+            if (code) { getCodeFaktur }
+            formData.append("kode", code);
+            formData.append("karton", ctn);
+            formData.append("pemasok", supplier);
+            formData.append("catatan", description);
+            formData.append("ppn", totalPpn);
+            formData.append("uang_muka", uangMuka);
+            formData.append("tanggal_jatuh_tempo", jatuhTempo);
+            formData.append("nomor_kontainer", kontainer);
+            formData.append("term", term);
 
 
-        formData.append("status", "Draft");
+            for (let y = 0; y < idTandaTerima.length; y++) {
 
-        axios({
-            method: "post",
-            url: `${Url}/purchase_invoices`,
-            data: formData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/fakturpembelian");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text:"Data Produk belum Diisi, silahkan lengkapi datanya dan coba kembali",
-                        // text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                if (grup == "Lokal") {
+                    formData.append("id_tanda_terima_barang[]", idTandaTerima[y]);
+
                 }
+                else if (grup == "Impor") {
+
+                    formData.append("id_pesanan_pembelian[]", idTandaTerima[y]);
+                }
+            }
+            for (let x = 0; x < data.length; x++) {
+                formData.append("kuantitas[]", data[x].quantity.replace(',', '.'));
+                formData.append("satuan[]", data[x].unit);
+                formData.append("id_produk[]", data[x].id);
+                formData.append("harga[]", data[x].price);
+                formData.append("persentase_diskon[]", data[x].discount_percentage.replace(',', '.'));
+                formData.append("diskon_tetap[]", data[x].fixed_discount);
+            }
+
+            for (let i = 0; i < tampilCOA.length; i++) {
+                formData.append("biaya[]", tampilCOA[i].id);
+                formData.append("total_biaya[]", tampilCOA[i].jumlah);
+                formData.append("deskripsi_biaya[]", tampilCOA[i].name);
+            }
+
+
+            for (let i = 0; i < tampilCredit.length; i++) {
+                formData.append("nota_kredit[]", tampilCredit[i].id);
+                formData.append("total_nota_kredit[]", tampilCredit[i].jumlah);
+                formData.append("deskripsi_nota_kredit[]", tampilCredit[i].name);
+            }
+
+            formData.append("status", "Submitted");
+            axios({
+                method: "post",
+                url: `${Url}/purchase_invoices`,
+                data: formData,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            })
+                .then(function (response) {
+                    //handle success
+                    Swal.fire(
+                        "Berhasil Ditambahkan",
+                        ` Masuk dalam list`,
+                        "success"
+                    );
+                    navigate("/fakturpembelian");
+                })
+                .catch((err) => {
+                    if (err.response) {
+                        console.log("err.response ", err.response);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Data Produk belum Diisi, silahkan lengkapi datanya dan coba kembali",
+                            // text: err.response.data.message,
+                        });
+                    } else if (err.request) {
+                        console.log("err.request ", err.request);
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    } else if (err.message) {
+                        // do something other than the other two
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    }
+                });
+        }
+    };
+
+    const handleDraft = async (e) => {
+        if (!date) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
             });
-       }   };
+        }
+        // else if (grup != ""){
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data Grup kosong, Silahkan Lengkapi datanya ",
+        //       });
+        // }
+        else if (!supplier) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+        else if (grup == 'Impor' && !kontainer) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Kontainer kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+        else if (grup == 'Impor' && !ctn) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Karton kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+        else if (grup == 'Impor' && term == '') {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Term kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+        else if (grup == 'Impor' && !muatan) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Muatan kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+        else if (!jatuhTempo) {
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Tanggal Jatuh Tempo kosong, Silahkan Lengkapi datanya ",
+            });
+        }
+        else {
+            e.preventDefault();
+            const formData = new URLSearchParams();
+            formData.append("tanggal", date);
+            if (muatan) {
+                formData.append("muatan", muatan.replace(/[^0-9\.]+/g, ""))
+            }
+
+
+            if (code) { getCodeFaktur }
+            formData.append("karton", ctn);
+            formData.append("pemasok", supplier);
+            formData.append("catatan", description);
+            formData.append("ppn", totalPpn);
+            formData.append("uang_muka", uangMuka);
+            formData.append("tanggal_jatuh_tempo", jatuhTempo);
+            formData.append("nomor_kontainer", kontainer);
+            formData.append("term", term);
+
+
+
+            for (let y = 0; y < idTandaTerima.length; y++) {
+
+                if (grup == "Lokal") {
+                    formData.append("id_tanda_terima_barang[]", idTandaTerima[y]);
+
+                }
+                else if (grup == "Impor") {
+
+                    formData.append("id_pesanan_pembelian[]", idTandaTerima[y]);
+                }
+            }
+            for (let x = 0; x < data.length; x++) {
+
+                formData.append("kuantitas[]", data[x].quantity.replace(',', '.'));
+                formData.append("satuan[]", data[x].unit);
+                formData.append("id_produk[]", data[x].id);
+                formData.append("harga[]", data[x].price);
+                formData.append("persentase_diskon[]", data[x].discount_percentage.replace(',', '.'));
+                formData.append("diskon_tetap[]", data[x].fixed_discount);
+            }
+
+            for (let i = 0; i < tampilCOA.length; i++) {
+                formData.append("biaya[]", tampilCOA[i].id);
+                formData.append("total_biaya[]", tampilCOA[i].jumlah);
+                formData.append("deskripsi_biaya[]", tampilCOA[i].name);
+            }
+
+            for (let i = 0; i < tampilCredit.length; i++) {
+                formData.append("nota_kredit[]", tampilCredit[i].id);
+                formData.append("total_nota_kredit[]", tampilCredit[i].jumlah);
+                formData.append("deskripsi_nota_kredit[]", tampilCredit[i].deskripsi);
+            }
+
+
+            formData.append("status", "Draft");
+
+            axios({
+                method: "post",
+                url: `${Url}/purchase_invoices`,
+                data: formData,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            })
+                .then(function (response) {
+                    //handle success
+                    Swal.fire(
+                        "Berhasil Ditambahkan",
+                        ` Masuk dalam list`,
+                        "success"
+                    );
+                    navigate("/fakturpembelian");
+                })
+                .catch((err) => {
+                    if (err.response) {
+                        console.log("err.response ", err.response);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Data Produk belum Diisi, silahkan lengkapi datanya dan coba kembali",
+                            // text: err.response.data.error.nama,
+                        });
+                    } else if (err.request) {
+                        console.log("err.request ", err.request);
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    } else if (err.message) {
+                        // do something other than the other two
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    }
+                });
+        }
+    };
 
     const [optionsType, setOptionsType] = useState([]);
     const [optionsAlamat, setOptionsAlamat] = useState([])
@@ -1692,7 +1700,7 @@ const BuatFakturPembelian = () => {
             })
     }
 
-    
+
 
     function getAlamat() {
         let tmp = [];
@@ -1765,7 +1773,7 @@ const BuatFakturPembelian = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Faktur</label>
                             <div className="col-sm-7">
                                 <input
-                                
+
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
@@ -1786,7 +1794,7 @@ const BuatFakturPembelian = () => {
                                     // isClearable={true}
                                     isSearchable={true}
                                     options={dataSupplier}
-                                    onChange={(e) => {setSupplier(e.value), setProduct([])}}
+                                    onChange={(e) => { setSupplier(e.value), setProduct([]) }}
                                 />
 
                             </div>
@@ -2046,39 +2054,16 @@ const BuatFakturPembelian = () => {
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">PPN</label>
                             <div className="col-sm-6">
 
-                            <CurrencyFormat
+                                <CurrencyFormat
                                     className='form-control form-control-sm'
-                                    style={{width:"70%"}}
+                                    style={{ width: "70%" }}
                                     thousandSeparator={'.'}
                                     decimalSeparator={','}
                                     prefix={mataUang + ' '}
                                     onKeyDown={(event) => klikEnter(event)}
-                                    value={totalPpn}
+                                    value={totalPpn.replace('.', ',')}
                                     onChange={(e) => tambahPPN(e.target.value)} />
 
-
-
-                                {/* {
-                                    grup === 'Lokal' ?
-                                    <CurrencyFormat
-                                    className=' form-control-sm'
-                                    thousandSeparator={'.'}
-                                    decimalSeparator={','}
-                                    prefix={mataUang + ' '}
-                                    onKeyDown={(event) => klikEnter(event)}
-                                    value={Number(totalPpn).toFixed(2).replace('.',',')}
-                                    onChange={(e) => tambahPPN(e.target.value)} /> : 
-
-                                    <CurrencyFormat
-                                    className=' form-control-sm'
-                                    thousandSeparator={'.'}
-                                    decimalSeparator={','}
-                                    prefix={mataUang + ' '}
-                                    onKeyDown={(event) => klikEnter(event)}
-                                    value={Number(totalPpn).toLocaleString('id')}
-                                    onChange={(e) => tambahPPN(e.target.value)} />
-                                } */}
-                               
                             </div>
                         </div>
                         <div className="d-flex justify-content-end mb-3">
@@ -2086,40 +2071,16 @@ const BuatFakturPembelian = () => {
 
                             <div className="col-sm-6">
 
-                            <CurrencyFormat
-                            
+                                <CurrencyFormat
+
                                     className='form-control form-control-sm'
-                                    style={{width:"70%"}}
+                                    style={{ width: "70%" }}
                                     thousandSeparator={'.'}
                                     decimalSeparator={','}
                                     prefix={mataUang + ' '}
                                     onKeyDown={(event) => klikEnter(event)}
-                                    value={uangMuka}
+                                    value={uangMuka.replace('.', ',')}
                                     onChange={(e) => tambahUangMuka(e.target.value)} />
-
-                                {/* {
-                                    grup === 'Lokal' ?
-
-                                    <CurrencyFormat
-                                    className=' class-form-uang text-start form-control form-control-sm editable-input  edit-disabled'
-                                    thousandSeparator={'.'}
-                                    decimalSeparator={','}
-                                    prefix={mataUang + ' '}
-                                    onKeyDown={(event) => klikEnter(event)}
-                                    value={Number(uangMuka).toFixed(2).replace('.',',')}
-                                    onChange={(e) => tambahUangMuka(e.target.value)}
-                                    renderText={value => <input value={value} width="50%" readOnly="true" id="colFormLabelSm"  className="class-form-uang form-control form-control-sm"/>}
-                                    /> :
-
-                                    <CurrencyFormat
-                                    className=' text-start form-control form-control-sm editable-input  edit-disabled'
-                                    thousandSeparator={'.'}
-                                    decimalSeparator={','}
-                                    prefix={mataUang + ' '}
-                                    onKeyDown={(event) => klikEnter(event)}
-                                    value={Number(uangMuka).toLocaleString('id')}
-                                    onChange={(e) => tambahUangMuka(e.target.value)} />
-                                }  */}
 
                             </div>
                         </div>
@@ -2133,7 +2094,7 @@ const BuatFakturPembelian = () => {
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">Credit Note</label>
                             <div className="col-sm-6">{convertToRupiah(totalCredit)} </div>
                         </div>
-              
+
                         <div className="d-flex justify-content-end mb-3">
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">Total</label>
                             <div className="col-sm-6">{convertToRupiah(totalKeseluruhan)} </div>

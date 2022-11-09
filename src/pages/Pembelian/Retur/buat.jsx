@@ -318,14 +318,28 @@ const BuatReturPembelian = () => {
             dataIndex: 'prc',
             width: '15%',
             align: 'center',
-            editable: true,
+            render(text) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: text,
+                }
+            }
         },
         {
             title: 'Discount',
             dataIndex: 'dsc',
             width: '20%',
             align: 'center',
-            editable: true,
+            render(text) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: text,
+                }
+            }
         },
         {
             title: 'Jumlah',
@@ -580,8 +594,8 @@ const BuatReturPembelian = () => {
                     {
                         item.pilihanDiskon == 'noDisc' ?
                             <div className='d-flex p-1' style={{ height: "100%" }}>
-                                <input onKeyDown={(event) => klikEnter(event)} style={{ width: "70%", fontSize: "10px!important" }} type="text" className="text-center editable-input" value={updateProduk[i].discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} />
-                                <div className="input-group-prepend"  >
+                                <input onKeyDown={(event) => klikEnter(event)} style={{ width: "70%", fontSize: "10px!important" }} type="text" className="text-center editable-input" value={updateProduk[i].discount_percentage + '%'} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} />
+                                {/* <div className="input-group-prepend"  >
                                     <select
                                         onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
                                         id="grupSelect"
@@ -594,12 +608,13 @@ const BuatReturPembelian = () => {
                                             {mataUang}
                                         </option>
                                     </select>
-                                </div>
+                                </div> */}
                             </div> :
                             item.pilihanDiskon == 'persen' ?
                                 <div className='d-flex p-1' style={{ height: "100%" }} >
-                                    <CurrencyFormat disabled className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={updateProduk[i].discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
-                                    <div className="input-group-prepend" >
+                                    <CurrencyFormat disabled  suffix={'%'}  className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={updateProduk[i].discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
+                                    
+                                    {/* <div className="input-group-prepend" >
                                         <select
                                             onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
                                             id="grupSelect"
@@ -612,17 +627,17 @@ const BuatReturPembelian = () => {
                                                 {mataUang}
                                             </option>
                                         </select>
-                                    </div>
+                                    </div> */}
                                 </div>
                                 :
                                 item.pilihanDiskon == 'nominal' ?
                                     <div className='d-flex p-1' style={{ height: "100%" }}>
                                        {
                                         mataUang === 'Rp '?
-                                        <CurrencyFormat disabled className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(updateProduk[i].fixed_discount).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" /> :
-                                        <CurrencyFormat disabled className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(updateProduk[i].fixed_discount).toLocaleString('id')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
+                                        <CurrencyFormat disabled prefix='Rp ' className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(updateProduk[i].fixed_discount).toFixed(2).replace('.',',')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" /> :
+                                        <CurrencyFormat disabled prefix={mataUang} className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={Number(updateProduk[i].fixed_discount).toLocaleString('id')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
                                        }
-                                        <div className="input-group-prepend" >
+                                        {/* <div className="input-group-prepend" >
                                             <select
                                                 onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
                                                 id="grupSelect"
@@ -635,7 +650,7 @@ const BuatReturPembelian = () => {
                                                     {mataUang}
                                                 </option>
                                             </select>
-                                        </div>
+                                        </div> */}
                                     </div> : null
                     }</>,
 
