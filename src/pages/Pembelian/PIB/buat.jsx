@@ -21,6 +21,7 @@ import { PageHeader } from 'antd';
 const BuatPIB = () => {
     const auth = useSelector(state => state.auth);
     const [date, setDate] = useState(null);
+    const [code, setCode] = useState('');
     const navigate = useNavigate();
     const [loadingTable, setLoadingTable] = useState(false);
 
@@ -148,7 +149,7 @@ const BuatPIB = () => {
         console.log(value)
         setTerm(value.term)
 
-        
+
 
 
 
@@ -247,8 +248,9 @@ const BuatPIB = () => {
 
     // select bank/kas 
     const handleChangeBank = (value) => {
+        console.log(value)
         setSelectedBank(value);
-        setBankId(value.id);
+        setBankId(value.value);
     };
 
     const loadOptionsBank = () => {
@@ -288,7 +290,7 @@ const BuatPIB = () => {
             setDataBank(tmp)
             console.log(tmp)
             console.log(res)
-           // setLabelCode(tmp)
+            // setLabelCode(tmp)
 
         }
         );
@@ -296,13 +298,13 @@ const BuatPIB = () => {
 
     const columnProduk = [
         {
-            title:"Nomor Faktur",
-            width:"15%",
-            dataIndex:'code',
+            title: "Nomor Faktur",
+            width: "10%",
+            dataIndex: 'code',
         },
         {
             title: 'Nama Produk',
-            width: '20%',
+            width: '10%',
             dataIndex: 'nama',
         },
         {
@@ -320,26 +322,26 @@ const BuatPIB = () => {
         {
             title: term,
             dataIndex: 'uangasing',
-            width: '15%',
+            width: '12%',
             align: 'center',
 
         },
         {
             title: 'Jumlah (Rp)',
             dataIndex: 'rupiah',
-            width: '15%',
+            width: '18%',
             align: 'center',
         },
         {
             title: 'Bea Masuk',
             dataIndex: 'bea',
-            width: '15%',
+            width: '18%',
             align: 'center',
         },
         {
             title: 'Total',
             dataIndex: 'total',
-            width: '15%',
+            width: '20%',
             align: 'center',
 
         },
@@ -464,14 +466,14 @@ const BuatPIB = () => {
     }
 
 
-    function ambilCode(id){
-        for(let i=0; i<optionsFaktur.length; i++){
-            if(optionsFaktur[i].value === id){
-                return(optionsFaktur[i].label)
+    function ambilCode(id) {
+        for (let i = 0; i < optionsFaktur.length; i++) {
+            if (optionsFaktur[i].value === id) {
+                return (optionsFaktur[i].label)
             }
-            else{
+            else {
                 null
-            }      
+            }
         }
 
     }
@@ -479,9 +481,9 @@ const BuatPIB = () => {
 
     const dataProduk =
         [...tampilProduk.map((item, i) => ({
-            
-            
-            code : ambilCode(item.purchase_invoice_id),
+
+
+            code: ambilCode(item.purchase_invoice_id),
             nama: item.product_name,
             qty: Number(item.quantity).toFixed(2).replace('.', ','),
             // hrg: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.price} key="total" />,
@@ -508,279 +510,291 @@ const BuatPIB = () => {
 
     const handleSubmit = async (e) => {
 
-        console.log(selectedMataUang)
 
-        if(!date){
+        if (!date) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!supplierId){
+        else if (!supplierId) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!noBL){
+        else if (!noBL) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data No Bill of Lading kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!kurs){
+        else if (!kurs) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Kurs kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!namaKapal){
+        else if (!namaKapal) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Nama Kapal kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if (!tanggalTiba){
+        else if (!tanggalTiba) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal Tiba kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!estimasiAwal){
+        else if (!estimasiAwal) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!estimasiAkhir){
+        else if (!estimasiAkhir) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!bankId){
+        else if (!bankId) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Kas/Bank kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!mataUangId){
+        else if (!mataUangId) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Mata Uang kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        else{
-
-      
-
-        e.preventDefault();
-        console.log(bankId)
-        const formData = new FormData();
-        formData.append("tanggal", date);
-        formData.append("nomor_pib", getCode);
-        formData.append("bagan_akun", bankId);
-        formData.append("nomor_bl", noBL);
-        formData.append("mata_uang", mataUangId);
-        formData.append("pemasok", supplierId);
-        formData.append("kurs", kurs);
-        formData.append("tanggal_tiba", tanggalTiba);
-        formData.append("tanggal_awal_periode_pengiriman", estimasiAwal);
-        formData.append("tanggal_akhir_periode_pengiriman", estimasiAkhir);
-        formData.append("nama_kapal", namaKapal);
-        formData.append("bea_masuk", totalBea);
-        formData.append("pph", totalPph);
-        formData.append("ppn", totalPpn);
-        formData.append("referensi", referensi);
-        formData.append("status", 'Submitted');
-        console.log(dataFaktur)
-        for (let i = 0; i < dataFaktur.length; i++) {
-            formData.append("id_faktur_pembelian[]", dataFaktur[i])
-        }
-
-        axios({
-            method: "post",
-            url: `${Url}/goods_import_declarations`,
-            data: formData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/pib");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text:"Data Faktur belum dipilih, silahkan lengkapi datanya dan coba kembali",
-                       // text: err.response.data.error,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
             });
-     } };
+        }
+        else {
+
+
+
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append("tanggal", date);
+            if (code) {
+                formData.append("code", code);
+
+            }
+            formData.append("nomor_pib", getCode);
+            formData.append("bagan_akun", bankId);
+            formData.append("nomor_bl", noBL);
+            formData.append("mata_uang", mataUangId);
+            formData.append("pemasok", supplierId);
+            formData.append("kurs", kurs);
+            formData.append("tanggal_tiba", tanggalTiba);
+            formData.append("tanggal_awal_periode_pengiriman", estimasiAwal);
+            formData.append("tanggal_akhir_periode_pengiriman", estimasiAkhir);
+            formData.append("nama_kapal", namaKapal);
+            formData.append("bea_masuk", totalBea);
+            formData.append("pph", totalPph);
+            formData.append("ppn", totalPpn);
+            formData.append("referensi", referensi);
+            formData.append("status", 'Submitted');
+            console.log(dataFaktur)
+            for (let i = 0; i < dataFaktur.length; i++) {
+                formData.append("id_faktur_pembelian[]", dataFaktur[i])
+            }
+
+            axios({
+                method: "post",
+                url: `${Url}/goods_import_declarations`,
+                data: formData,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            })
+                .then(function (response) {
+                    //handle success
+                    Swal.fire(
+                        "Berhasil Ditambahkan",
+                        ` Masuk dalam list`,
+                        "success"
+                    );
+                    navigate("/pib");
+                })
+                .catch((err) => {
+                    if (err.response) {
+                        console.log("err.response ", err.response);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Data Faktur belum dipilih, silahkan lengkapi datanya dan coba kembali",
+                            // text: err.response.data.error,
+                        });
+                    } else if (err.request) {
+                        console.log("err.request ", err.request);
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    } else if (err.message) {
+                        // do something other than the other two
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    }
+                });
+        }
+    };
 
     const handleDraft = async (e) => {
 
-        if(!date){
+        
+        console.log(selectedMataUang)
+        console.log(bankId)
+
+        if (!date) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!supplierId){
+        else if (!supplierId) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!noBL){
+        else if (!noBL) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data No Bill of Lading kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!kurs){
+        else if (!kurs) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Kurs kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!namaKapal){
+        else if (!namaKapal) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Nama Kapal kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if (!tanggalTiba){
+        else if (!tanggalTiba) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal Tiba kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!estimasiAwal){
+        else if (!estimasiAwal) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!estimasiAkhir){
+        else if (!estimasiAkhir) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal Estimasi kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!bankId){
+        else if (!bankId) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Kas/Bank kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(!mataUangId){
+        else if (!mataUangId) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Mata Uang kosong, Silahkan Lengkapi datanya ",
-              });
-        }
-        else{
-
-        
-
-        e.preventDefault();
-        console.log(bankId)
-        const formData = new FormData();
-        formData.append("tanggal", date);
-        formData.append("nomor_pib", getCode);
-        formData.append("bagan_akun", bankId);
-        formData.append("nomor_bl", noBL);
-        formData.append("mata_uang", mataUangId);
-        formData.append("pemasok", supplierId);
-        formData.append("kurs", kurs);
-        formData.append("tanggal_tiba", tanggalTiba);
-        formData.append("tanggal_awal_periode_pengiriman", estimasiAwal);
-        formData.append("tanggal_akhir_periode_pengiriman", estimasiAkhir);
-        formData.append("nama_kapal", namaKapal);
-        formData.append("bea_masuk", totalBea);
-        formData.append("pph", totalPph);
-        formData.append("ppn", totalPpn);
-        formData.append("referensi", referensi);
-        formData.append("status", 'Draft');
-        console.log(dataFaktur)
-        for (let i = 0; i < dataFaktur.length; i++) {
-            formData.append("id_faktur_pembelian[]", dataFaktur[i])
-        }
-
-        axios({
-            method: "post",
-            url: `${Url}/goods_import_declarations`,
-            data: formData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/pib");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text:"Data Faktur belum dipilih, silahkan lengkapi datanya dan coba kembali",
-                        // text: err.response.data.error.nama,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                }
             });
-     } };
+        }
+        else {
+
+
+
+            e.preventDefault();
+            console.log(bankId)
+            const formData = new FormData();
+            if (code) {
+                formData.append("code", code);
+
+            }
+            formData.append("tanggal", date);
+            formData.append("nomor_pib", getCode);
+            formData.append("bagan_akun", bankId);
+            formData.append("nomor_bl", noBL);
+            formData.append("mata_uang", mataUangId);
+            formData.append("pemasok", supplierId);
+            formData.append("kurs", kurs);
+            formData.append("tanggal_tiba", tanggalTiba);
+            formData.append("tanggal_awal_periode_pengiriman", estimasiAwal);
+            formData.append("tanggal_akhir_periode_pengiriman", estimasiAkhir);
+            formData.append("nama_kapal", namaKapal);
+            formData.append("bea_masuk", totalBea);
+            formData.append("pph", totalPph);
+            formData.append("ppn", totalPpn);
+            formData.append("referensi", referensi);
+            formData.append("status", 'Draft');
+            console.log(dataFaktur)
+            for (let i = 0; i < dataFaktur.length; i++) {
+                formData.append("id_faktur_pembelian[]", dataFaktur[i])
+            }
+
+            axios({
+                method: "post",
+                url: `${Url}/goods_import_declarations`,
+                data: formData,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            })
+                .then(function (response) {
+                    //handle success
+                    Swal.fire(
+                        "Berhasil Ditambahkan",
+                        ` Masuk dalam list`,
+                        "success"
+                    );
+                    navigate("/pib");
+                })
+                .catch((err) => {
+                    if (err.response) {
+                        console.log("err.response ", err.response);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Data Faktur belum dipilih, silahkan lengkapi datanya dan coba kembali",
+                            // text: err.response.data.error.nama,
+                        });
+                    } else if (err.request) {
+                        console.log("err.request ", err.request);
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    } else if (err.message) {
+                        // do something other than the other two
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    }
+                });
+        }
+    };
 
     return (
         <>
@@ -812,11 +826,11 @@ const BuatPIB = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. PIB</label>
                             <div className="col-sm-7">
                                 <input
-                                    value="Otomatis"
+                                    // value="Otomatis"
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
-                                    disabled
+                                    onChange={(e) => setCode(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -849,7 +863,7 @@ const BuatPIB = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
                             <div className="col-sm-7">
-{/* 
+                                {/* 
                             <AsyncSelect
 
                                     cacheOptions
@@ -1032,14 +1046,14 @@ const BuatPIB = () => {
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={6} className="text-end">Sub Total</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp ' disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(subTotal).toFixed(2).replace('.',',')} key="pay" />
+                                            <CurrencyFormat prefix='Rp ' disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(subTotal).toFixed(2).replace('.', ',')} key="pay" />
 
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={6} className="text-end">Bea Masuk</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp ' className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalBea)} key="pay" onKeyDown={(event) => klikEnter(event)} onChange={(e) => klikTambahBea(e.target.value, totalRupiah)} />
+                                            <CurrencyFormat prefix='Rp ' className='text-center editable-input pib-currencyinput' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalBea)} key="pay" onKeyDown={(event) => klikEnter(event)} onChange={(e) => klikTambahBea(e.target.value, totalRupiah)} />
 
 
                                         </Table.Summary.Cell>
@@ -1047,14 +1061,14 @@ const BuatPIB = () => {
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={6} className="text-end">PPh 22</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp ' className='text-center editable-input' onKeyDown={(event) => klikEnter(event)} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn)} onChange={(e) => klikUbahPPn(e.target.value)} key="pay" />
+                                            <CurrencyFormat prefix='Rp ' className='text-center editable-input pib-currencyinput' onKeyDown={(event) => klikEnter(event)} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn)} onChange={(e) => klikUbahPPn(e.target.value)} key="pay" />
 
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={6} className="text-end">PPN</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp ' className='text-center editable-input' onKeyDown={(event) => klikEnter(event)} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPph)} onChange={(e) => klikUbahPPh(e.target.value)} key="pay" 
+                                            <CurrencyFormat prefix='Rp ' className='text-center editable-input pib-currencyinput' onKeyDown={(event) => klikEnter(event)} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPph)} onChange={(e) => klikUbahPPh(e.target.value)} key="pay"
                                             />
 
                                         </Table.Summary.Cell>
@@ -1062,7 +1076,7 @@ const BuatPIB = () => {
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={6} className="text-end">Total (Rp)</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp ' disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toFixed(2).replace('.',',')} key="pay" />
+                                            <CurrencyFormat prefix='Rp ' disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toFixed(2).replace('.', ',')} key="pay" />
 
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>

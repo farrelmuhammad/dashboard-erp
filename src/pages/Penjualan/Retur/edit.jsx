@@ -621,6 +621,7 @@ const BuatRetur = () => {
     const handleDraft = async (e) => {
         e.preventDefault();
         const userData = new URLSearchParams();
+        console.log(referensi)
         userData.append("tanggal", date);
         userData.append("referensi", referensi);
         userData.append("catatan", description);
@@ -669,7 +670,7 @@ const BuatRetur = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text: err.response.data.message,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);

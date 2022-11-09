@@ -180,7 +180,7 @@ const EditCreditNote = () => {
         formData.append("biaya", biayaId);
         formData.append("nominal", nominal);
         formData.append("deskripsi", deskripsi);
-        formData.append("status", 'Draft');
+        formData.append("status", 'Submitted');
         axios({
             method: "put",
             url: `${Url}/credit_notes/${id}`,
@@ -197,7 +197,7 @@ const EditCreditNote = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/penerimaanbarang");
+                navigate("/creditnote");
             })
             .catch((err) => {
                 if (err.response) {

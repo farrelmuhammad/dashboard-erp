@@ -138,12 +138,12 @@ const BuatPesanan = () => {
     };
     // load options using API call
     const loadOptionsCustomer = (inputValue) => {
-        return fetch(`${Url}/customers?status=active&nama=${inputValue}`, {
+        return axios.get(`${Url}/customers?status=active&nama=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => res.data.data);
     };
 
     useEffect(() => {

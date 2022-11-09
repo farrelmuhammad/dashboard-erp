@@ -556,7 +556,14 @@ const BuatSuratJalan = () => {
             userData.append("pengirim", sender);
             userData.append("catatan", description);
             userData.append("pelanggan", customer);
-            userData.append("alamat_pelanggan", addressId);
+            if (sumber == 'SO') {
+                userData.append("pelanggan", customer);
+                userData.append("alamat_pelanggan", addressId);
+            }
+            else if (sumber == 'Retur') {
+                userData.append("alamat_pemasok", addressId);
+                userData.append("pemasok", supplier);
+            }
             tally.map((t) => userData.append("id_tally_sheet[]", t));
             userData.append("status", "Submitted");
 

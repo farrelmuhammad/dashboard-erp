@@ -314,12 +314,13 @@ const EditFaktur = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?nama_alias=${query}&id_pelanggan=${customer}`, {
+            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?nama_alias=${query}&id_penerima=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
+
 
             let tmp = []
             for (let i = 0; i < res.data.length; i++) {
@@ -350,7 +351,16 @@ const EditFaktur = () => {
             width: '15%',
             align: 'center',
             render: (_, record) => {
-                return <>{record.detail.customer.name}</>
+                return <>{record.detail.customer_name}</>
+            }
+        },
+        {
+            title: 'Penerima',
+            dataIndex: 'recipient_name',
+            width: '15%',
+            align: 'center',
+            render: (_, record) => {
+                return <>{record.detail.recipient_name}</>
             }
         },
         {
@@ -844,7 +854,7 @@ const EditFaktur = () => {
                 subTotal += (totalPerProduk * 100) / (100 + Number(values.ppn.toString().replace(',', '.')));
                 // totalPpn = (subTotal * Number(values.ppn.toString().replace(',', '.'))) / 100;
 
-                totalPpn += ((((totalPerProduk * 100) / (100 +  Number(values.ppn.toString().replace(',', '.')))) - (rowDiscount * 100) / (100 +  Number(values.ppn.toString().replace(',', '.')))) *  Number(values.ppn.toString().replace(',', '.'))) / (100);
+                totalPpn += ((((totalPerProduk * 100) / (100 + Number(values.ppn.toString().replace(',', '.')))) - (rowDiscount * 100) / (100 + Number(values.ppn.toString().replace(',', '.')))) * Number(values.ppn.toString().replace(',', '.'))) / (100);
 
 
                 grandTotal = subTotal - hasilDiskon + Number(totalPpn) - Number(uangMuka);

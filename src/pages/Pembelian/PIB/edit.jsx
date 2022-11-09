@@ -111,9 +111,12 @@ const EditPIB = () => {
             .then((res) => {
                 const getData = res.data.data[0];
                 setDataHeader(getData);
+                console.log(getData)
                 let tmpDataPIB = [];
                 let tmpIDFaktur = [];
+                let tmp = []
                 let dataProduk = getData.goods_import_declaration_details;
+                console.log(dataProduk)
                 for (let x = 0; x < dataProduk.length; x++) {
                     tmpDataPIB.push({
                         id_pib: dataProduk[x].goods_import_declaration_id,
@@ -129,12 +132,20 @@ const EditPIB = () => {
                         total: dataProduk[x].total,
                         currency_name: getData.currency_name
                     })
+
+                    // console.log(dataProduk[x].purchase_invoice)
+                    // tmp.push({
+                    //     value: dataProduk[x].purchase_invoice.id,
+                    //     label: dataProduk[x].purchase_invoice.code,
+                    //     info: dataProduk[x].purchase_invoice
+                    // })
                     tmpIDFaktur.push(dataProduk[x].purchase_invoice_id)
 
                 }
                 var unique = [...new Set(tmpIDFaktur)]
                 setDataFaktur(unique)
                 setDataPIB(tmpDataPIB)
+                setOptionsFaktur(tmp)
                 setTerm(getData.term)
 
                 // data header 
@@ -318,6 +329,11 @@ const EditPIB = () => {
     };
 
     const columnProduk = [
+        // {
+        //     title: "Nomor Faktur",
+        //     width: "10%",
+        //     dataIndex: 'code',
+        // },
         {
             title: 'Nama Produk',
             width: '20%',
@@ -332,7 +348,7 @@ const EditPIB = () => {
                 return {
                     props: {
                     },
-                    children: <div>{Number(text).toFixed(2).replace('.',',')}</div>
+                    children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
                 };
             }
         },
@@ -511,13 +527,27 @@ const EditPIB = () => {
         );
     }
 
+    function ambilCode(id) {
+        for (let i = 0; i < optionsFaktur.length; i++) {
+            if (optionsFaktur[i].value === id) {
+                return (optionsFaktur[i].label)
+            }
+            else {
+                null
+            }
+        }
+
+    }
+
+
     const dataProduk =
         [...dataPIB.map((item, i) => ({
+            // code: ambilCode(item.purchase_invoice_i),
             nama: item.product_name,
             qty: item.quantity.replace('.', ','),
             // hrg: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.price} key="total" />,
             uangasing: <CurrencyFormat prefix={selectedMataUang + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.totalAsing.replace('.', ',')} key="total" />,
-            rupiah: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.totalRupiah).toFixed(2).replace('.',',')} key="total" />,
+            rupiah: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.totalRupiah).toFixed(2).replace('.', ',')} key="total" />,
             bea: <CurrencyFormat prefix='Rp ' disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.bea).toFixed(2).replace('.', ',')} key="pay" />,
             total: <CurrencyFormat prefix="Rp " disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.', ',')} key="total" />,
             actn: <Space size="middle">
@@ -749,7 +779,7 @@ const EditPIB = () => {
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Rate Kurs</label>
                             <div className="col-sm-7">
 
-                                <CurrencyFormat prefix='Rp ' className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={Number(kurs).toFixed(2).replace('.',',')} onKeyDown={(event) => klikEnter(event)} onChange={(e) => setUbahKurs(e.target.value)} key="total" />
+                                <CurrencyFormat prefix='Rp ' className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={kurs.replace('.', ',')} onKeyDown={(event) => klikEnter(event)} onChange={(e) => setUbahKurs(e.target.value)} key="total" />
 
 
                             </div>
@@ -898,7 +928,7 @@ const EditPIB = () => {
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={6} className="text-end">Sub Total</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp ' disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(subTotal).toFixed(2).replace('.',',')} key="pay" />
+                                            <CurrencyFormat prefix='Rp ' disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(subTotal).toFixed(2).replace('.', ',')} key="pay" />
 
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>

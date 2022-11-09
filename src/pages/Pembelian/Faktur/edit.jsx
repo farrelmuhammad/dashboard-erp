@@ -84,6 +84,10 @@ const EditFakturPembelian = () => {
         getAkun()
         getCredit()
     }, [])
+    useEffect(()=> {
+        getCredit()
+
+    }, [supplierId])
     const getDataFaktur = async () => {
         await axios.get(`${Url}/select_purchase_invoices/dua?id=${id}`, {
             headers: {
@@ -96,6 +100,7 @@ const EditFakturPembelian = () => {
                 setDataHeader(getData);
                 setSubTotal(getData.subtotal)
                 setGrandTotal(getData.total)
+                setCode(getData.code)
                 setUangMuka(getData.down_payment);
                 setTotalPpn(getData.ppn);
                 setGetStatus(getData.status)
@@ -103,7 +108,7 @@ const EditFakturPembelian = () => {
                 setTotalKeseluruhan(total)
                 setGrandTotalDiscount(getData.discount)
                 setGrup(getData.supplier._group)
-                if(getData.notes){
+                if (getData.notes) {
                     setDescription(getData.notes)
                 }
                 setDataSupplier(getData.supplier)
@@ -142,13 +147,14 @@ const EditFakturPembelian = () => {
                     tmpCredit.push({
                         id: listCredit[i].credit_note_id,
                         code: listCredit[i].credit_note_code,
-                        deskripsi: listCredit[i].description,
-                        jumlah: listCredit[i].total,
+                        deskripsi: listCredit[i].credit_note.description,
+                        jumlah: listCredit[i].credit_note.nominal,
                     })
                     totalCredit = totalCredit + Number(listCredit[i].total);
 
                 }
                 setTotalCredit(totalCredit)
+                console.log(tmpCredit)
                 setTampilCredit(tmpCredit)
 
 
@@ -289,9 +295,10 @@ const EditFakturPembelian = () => {
             })
     }
 
+
     function getCredit() {
         let tmp = [];
-        axios.get(`${Url}/credit_notes`, {
+        axios.get(`${Url}/purchase_invoices_available_credit_notes?id_pemasok=${supplierId}`, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${auth.token}`
@@ -377,7 +384,7 @@ const EditFakturPembelian = () => {
                 id: value.info.id,
                 code: value.info.code,
                 deskripsi: value.info.description,
-                jumlah: 0,
+                jumlah: value.info.nominal,
             })
             setIdCredit(value.value);
             setTampilCredit(newData);
@@ -1152,7 +1159,7 @@ const EditFakturPembelian = () => {
                                 prefix={mataUang + ' '}
                                 onKeyDown={(event) => klikEnter(event)}
                                 value={Number(item.jumlah).toFixed(2).replace('.', ',')}
-                                onChange={(e) => ubahCredit(e.target.value, i)} key="credit" /> :
+                                onChange={(e) => ubahCredit(e.target.value, i)} key="credit" disabled /> :
 
                             <CurrencyFormat
                                 className=' text-center editable-input'
@@ -1162,7 +1169,7 @@ const EditFakturPembelian = () => {
                                 prefix={mataUang + ' '}
                                 onKeyDown={(event) => klikEnter(event)}
                                 value={Number(item.jumlah).toLocaleString('id')}
-                                onChange={(e) => ubahCredit(e.target.value, i)} key="credit" />
+                                onChange={(e) => ubahCredit(e.target.value, i)} key="credit" disabled />
                     }
 
                 </div>,
@@ -1548,6 +1555,7 @@ const EditFakturPembelian = () => {
         e.preventDefault();
         const formData = new URLSearchParams();
         formData.append("tanggal", dataHeader.date);
+        formData.append("kode", code);
         formData.append("pemasok", dataHeader.supplier_id);
         formData.append("catatan", description);
         formData.append("ppn", totalPpn);
@@ -1590,6 +1598,11 @@ const EditFakturPembelian = () => {
             formData.append("deskripsi_biaya[]", tampilCOA[i].name);
         }
 
+        for (let i = 0; i < tampilCredit.length; i++) {
+            formData.append("nota_kredit[]", tampilCredit[i].id);
+            formData.append("total_nota_kredit[]", tampilCredit[i].jumlah);
+            formData.append("deskripsi_nota_kredit[]", tampilCredit[i].deskripsi);
+        }
 
         formData.append("status", "Submitted");
         axios({
@@ -1633,6 +1646,7 @@ const EditFakturPembelian = () => {
         const formData = new URLSearchParams();
         formData.append("tanggal", dataHeader.date);
         formData.append("pemasok", dataHeader.supplier_id);
+        formData.append("kode", code);
         formData.append("catatan", description);
         formData.append("muatan", dataHeader.payload);
         formData.append("karton", dataHeader.carton);
@@ -1663,6 +1677,12 @@ const EditFakturPembelian = () => {
 
                 formData.append("id_pesanan_pembelian[]", idTandaTerima[y]);
             }
+        }
+
+        for (let i = 0; i < tampilCredit.length; i++) {
+            formData.append("nota_kredit[]", tampilCredit[i].id);
+            formData.append("total_nota_kredit[]", tampilCredit[i].jumlah);
+            formData.append("deskripsi_nota_kredit[]", tampilCredit[i].deskripsi);
         }
 
 
@@ -1775,8 +1795,8 @@ const EditFakturPembelian = () => {
                                     id="startDate"
                                     className="form-control"
                                     type="text"
-                                    value={dataHeader.code}
-                                    disabled
+                                    defaultValue={code}
+                                    onChange={(e) => setCode(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -1863,7 +1883,7 @@ const EditFakturPembelian = () => {
                                     id="form4Example3"
                                     rows="4"
                                     defaultValue={description}
-                                    onChange={(e)=> setDescription(e.target.value)}
+                                    onChange={(e) => setDescription(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -2062,7 +2082,7 @@ const EditFakturPembelian = () => {
                                             decimalSeparator={','}
                                             prefix={mataUang + ' '}
                                             onKeyDown={(event) => klikEnter(event)}
-                                            value={uangMuka.toLocaleString('id')}
+                                            value={uangMuka.replace('.', ',')}
                                             onChange={(e) => tambahUangMuka(e.target.value)}
 
                                             style={{ width: "70%", fontSize: "10px!important" }} />
@@ -2093,7 +2113,7 @@ const EditFakturPembelian = () => {
                                             decimalSeparator={','}
                                             prefix={mataUang + ' '}
                                             onKeyDown={(event) => klikEnter(event)}
-                                            value={totalPpn.toLocaleString('id')}
+                                            value={totalPpn.replace('.', ',')}
                                             onChange={(e) => tambahPPN(e.target.value)}
 
                                             style={{ width: "70%", fontSize: "10px!important" }} />

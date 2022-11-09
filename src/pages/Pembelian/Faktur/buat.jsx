@@ -155,9 +155,12 @@ const BuatFakturPembelian = () => {
     useEffect(() => {
         // getCodeFaktur()
         getAkun()
-        getCredit(idSupplier)
         getAlamat()
     }, [])
+
+    useEffect(() => {
+        getCredit()
+    }, [supplier])
 
     useEffect(() => {
         if (grup == "Impor") {
@@ -295,7 +298,7 @@ const BuatFakturPembelian = () => {
             setData(tmpData);
         }
         else if (key == 'price') {
-            let hasil = value.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',','.');
+            let hasil = value.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.');
 
             for (let i = 0; i < data.length; i++) {
                 if (i == y) {
@@ -615,7 +618,7 @@ const BuatFakturPembelian = () => {
                             decimalSeparator={','}
                             prefix={data[i].currency_name + ' '}
                             onKeyDown={(event) => klikEnter(event)}
-                            value={data[i].price.replace('.',',')}
+                            value={data[i].price.replace('.', ',')}
                             onChange={(e) => klikUbahData(i, e.target.value, "price")} />
                     }
                 </div>,
@@ -945,7 +948,7 @@ const BuatFakturPembelian = () => {
     function tambahUangMuka(value) {
         let hasil = value.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "");
         let hasilHitung = hasil.replace(',', '.')
-        
+
         setUangMuka(hasilHitung);
         let totalAkhir = grandTotal - Number(hasilHitung) + Number(totalCOA) + Number(totalPpn) - Number(totalCredit)
         setTotalKeseluruhan(totalAkhir)
@@ -1022,7 +1025,7 @@ const BuatFakturPembelian = () => {
                 id: value.info.id,
                 code: value.info.code,
                 deskripsi: value.info.description,
-                jumlah: 0,
+                jumlah: value.info.nominal,
             })
             setIdCredit(value.value);
             setTampilCredit(newData);
@@ -1093,8 +1096,9 @@ const BuatFakturPembelian = () => {
                         decimalSeparator={','}
                         prefix={mataUang + ' '}
                         onKeyDown={(event) => klikEnter(event)}
-                        value={item.jumlah.replace('.', ',')}
-                        onChange={(e) => ubahCredit(e.target.value, i)} />
+                        value={item.jumlah.toString().replace('.', ',')}
+                        onChange={(e) => ubahCredit(e.target.value, i)} 
+                        disabled/>
                 </div>,
 
             action: <Space size="middle">
@@ -1460,7 +1464,7 @@ const BuatFakturPembelian = () => {
             for (let i = 0; i < tampilCredit.length; i++) {
                 formData.append("nota_kredit[]", tampilCredit[i].id);
                 formData.append("total_nota_kredit[]", tampilCredit[i].jumlah);
-                formData.append("deskripsi_nota_kredit[]", tampilCredit[i].name);
+                formData.append("deskripsi_nota_kredit[]", tampilCredit[i].deskripsi);
             }
 
             formData.append("status", "Submitted");
@@ -1679,9 +1683,9 @@ const BuatFakturPembelian = () => {
             })
     }
 
-    function getCredit(idSupplier) {
+    function getCredit() {
         let tmp = [];
-        axios.get(`${Url}/credit_notes?status=Submitted&id_pemasok=${idSupplier}`, {
+        axios.get(`${Url}/purchase_invoices_available_credit_notes?id_pemasok=${supplier}`, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${auth.token}`
@@ -2061,7 +2065,7 @@ const BuatFakturPembelian = () => {
                                     decimalSeparator={','}
                                     prefix={mataUang + ' '}
                                     onKeyDown={(event) => klikEnter(event)}
-                                    value={totalPpn.replace('.', ',')}
+                                    value={totalPpn.toString().replace('.', ',')}
                                     onChange={(e) => tambahPPN(e.target.value)} />
 
                             </div>
@@ -2079,7 +2083,7 @@ const BuatFakturPembelian = () => {
                                     decimalSeparator={','}
                                     prefix={mataUang + ' '}
                                     onKeyDown={(event) => klikEnter(event)}
-                                    value={uangMuka.replace('.', ',')}
+                                    value={uangMuka.toString().replace('.', ',')}
                                     onChange={(e) => tambahUangMuka(e.target.value)} />
 
                             </div>
