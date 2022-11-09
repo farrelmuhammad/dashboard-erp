@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { Button, PageHeader, Radio, Skeleton, Switch } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
 import AsyncSelect from "react-select/async";
+import ReactSelect from 'react-select';
 
 
 const EditProduk = () => {
@@ -33,14 +34,14 @@ const EditProduk = () => {
     const [discount, setDiscount] = useState(0);
     const [taxes_id, setTaxes_id] = useState('');
     const [taxes_name, setTaxes_name] = useState('');
-    const [checked, setChecked] = useState(true);
-    const [status, setStatus] = useState('');
+    const [status, setStatus] = useState("");
     const navigate = useNavigate();
 
     const { id } = useParams();
 
     const [data, setData] = useState();
-    const [isLoading, setIsLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
+    const [checked, setChecked] = useState(false);
 
     const [selectedValue, setSelectedPieces] = useState(null);
     const [selectedValue2, setSelectedCategory] = useState(null);
@@ -49,6 +50,18 @@ const EditProduk = () => {
     const [selectedValue5, setSelectedBrands] = useState(null);
     const [selectedValue6, setSelectedTaxes] = useState(null);
     const [selectedValue7, setSelectedPackaging] = useState(null);
+
+    const onChange = () => {
+        checked ? setChecked(false) : setChecked(true)
+
+        if (checked === false) {
+            setStatus("Inactive");
+            // console.log('Active');
+        } else {
+            setStatus("Active");
+            // console.log('Inactive');
+        }
+    };
 
     const handleChangePieces = (value) => {
         setSelectedPieces(value);
@@ -193,7 +206,7 @@ const EditProduk = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text: err.response.data.error,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -224,11 +237,12 @@ const EditProduk = () => {
                 'Authorization': `Bearer ${auth.token}`
             }
         })
-            .then(function (response) {
+            .then((response) => {
                 const getData = response.data.data[0]
                 setCode(getData.code)
-                setName(getData.name || "")
-                setAlias(getData.alias_name || "")
+                setLoading(false)
+                setName(getData.name)
+                setAlias(getData.alias_name)
                 setPieces_id(getData.piece.id || "")
                 setPieces_name(getData.piece.name || "")
                 setCategory_id(getData.category.id || "")
@@ -239,23 +253,22 @@ const EditProduk = () => {
                 setType_name(getData.type.name || "")
                 setBrands_id(getData.brand.id || "")
                 setBrands_name(getData.brand.name || "")
-                setPackaging_id(getData.packaging_type || "")
+                setPackaging_id(getData.packaging_type)
                 setTaxes_id(getData.tax.id || "")
                 setTaxes_name(getData.tax.type || "")
-                setUnit(getData.unit || "")
+                setUnit(getData.unit)
                 setBuy_price(getData.purchase_price || "0")
                 setSell_price(getData.selling_price || "0")
                 setDiscount(getData.discount || "0")
                 setStatus(getData.status)
-                setGroup(getData._group || "")
-                console.log(getData);
+                setGroup(getData._group)
             })
             .catch((err) => {
                 // Jika Gagal
                 // console.log(err)
             })
             .finally((res) => {
-                setIsLoading(false)
+                setLoading(false)
             })
     }
 
@@ -275,9 +288,50 @@ const EditProduk = () => {
         setStatus(value);
     };
 
-    if (isLoading) {
+    const optionsGroup = [
+        {
+            label: "Lokal",
+            value: "Lokal"
+        },
+        {
+            label: "Impor",
+            value: "Impor"
+        },
+        {
+            label: "Meat Shop",
+            value: "Meat Shop"
+        }
+    ];
+
+    const optionsUnit = [
+        {
+            label: "Kg",
+            value: "kg"
+        },
+        {
+            label: "Ekor",
+            value: "ekor"
+        },
+        {
+            label: "Pack",
+            value: "pack"
+        }
+    ];
+
+    const handleSingleChange = (value) => {
+        setGroup(value.value);
+    };
+
+    const handleSingleChange1 = (value) => {
+        setUnit(value.value)
+    };
+
+    if (loading) {
         return (
             <>
+                <form className="p-3 mb-3 bg-body rounded">
+                    <Skeleton active />
+                </form>
                 <form className="p-3 mb-3 bg-body rounded">
                     <Skeleton active />
                 </form>
@@ -384,11 +438,17 @@ const EditProduk = () => {
                 <div className="row mb-3">
                     <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Grup</label>
                     <div className="col-sm-10">
-                        <select onChange={e => setGroup(e.target.value)} id="Typeselect" className="form-select">
-                            <option value="Lokal" selected={group === "Lokal"}>Lokal</option>
-                            <option value="Impor" selected={group === "Impor"}>Impor</option>
-                            <option value="Meatshop" selected={group === "Meatshop"}>Meatshop</option>
-                        </select>
+                        <ReactSelect
+                            className="basic-single"
+                            placeholder="Pilih Grup..."
+                            classNamePrefix="select"
+                            isSearchable
+                            getOptionLabel={(value) => value.label}
+                            getOptionValue={(value) => value.value}
+                            defaultInputValue={group}
+                            onChange={handleSingleChange}
+                            options={optionsGroup}
+                        />
                     </div>
                 </div>
                 <div className="row mb-3">
@@ -428,11 +488,17 @@ const EditProduk = () => {
                 <div className="row mb-3">
                     <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Satuan</label>
                     <div className="col-sm-10">
-                        <select onChange={e => setUnit(e.target.value)} id="Typeselect" className="form-select">
-                            <option value="kg" selected={unit === "kg"}>Kg</option>
-                            <option value="pack" selected={unit === "pack"}>Pack</option>
-                            <option value="ekor" selected={unit === "ekor"}>Ekor</option>
-                        </select>
+                        <ReactSelect
+                            className="basic-single"
+                            placeholder="Pilih Satuan..."
+                            classNamePrefix="select"
+                            isSearchable
+                            // getOptionLabel={(value) => value.label}
+                            // getOptionValue={(value) => value.value}
+                            defaultValue={{ label: unit, value: unit }}
+                            onChange={handleSingleChange1}
+                            options={optionsUnit}
+                        />
                     </div>
                 </div>
                 <div className="row mb-3">
