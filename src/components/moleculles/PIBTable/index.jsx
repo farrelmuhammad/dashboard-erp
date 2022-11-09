@@ -9,6 +9,7 @@ import { Button, Input, Space, Table, Tag } from "antd";
 import { CloseOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 import CurrencyFormat from 'react-currency-format';
 
 const PIBTable = () => {
@@ -23,6 +24,65 @@ const PIBTable = () => {
   const [pib, setPIB] = useState([])
   const auth = useSelector(state => state.auth);
   const [dataTampil, setDataTampil] = useState([]);
+
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    fetch(`${Url}/goods_import_declarations?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+
+        const getData = data;
+        setPIB(getData)
+
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+            id: getData[i].id,
+            can: getData[i].can,
+            code: getData[i].code,
+            date: getData[i].date,
+            status: getData[i].status,
+            supplier_name: getData[i].supplier.name ? getData[i].supplier.name : <div className="text-center">-</div>,
+            ship_name: getData[i].ship_name ? getData[i].ship_name : <div className="text-center">-</div>,
+          })
+        }
+
+        setDataTampil(tmp)
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+
+
+
 
 
   const deletePIB = async (id, code) => {
@@ -42,7 +102,7 @@ const PIBTable = () => {
             Authorization: `Bearer ${auth.token}`,
           },
         });
-        getPIB()
+        fetchData()
         Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
 
       }
@@ -71,7 +131,7 @@ const PIBTable = () => {
             },
           })
 
-          getPIB();
+          fetchData();
           Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
         }
         catch (err) {
@@ -179,60 +239,51 @@ const PIBTable = () => {
     //   ),
   });
 
-  useEffect(() => {
-    getPIB()
-  }, [])
+  // useEffect(() => {
+  //   getPIB()
+  // }, [])
 
-  const getPIB = async (params = {}) => {
-    setIsLoading(true);
-    await axios.get(`${Url}/goods_import_declarations`, {
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${auth.token}`
-      }
-    })
-      .then(res => {
-        const getData = res.data.data;
-        setPIB(getData)
+  // const getPIB = async (params = {}) => {
+  //   setIsLoading(true);
+  //   await axios.get(`${Url}/goods_import_declarations`, {
+  //     headers: {
+  //       'Accept': 'application/json',
+  //       'Authorization': `Bearer ${auth.token}`
+  //     }
+  //   })
+  //     .then(res => {
+  //       const getData = res.data.data;
+  //       setPIB(getData)
 
-        let tmp = []
-        for (let i = 0; i < getData.length; i++) {
-          tmp.push({
-            id: getData[i].id,
-            can: getData[i].can,
-            code: getData[i].code,
-            date:getData[i].date,
-           // phone_number: getData[i].phone_number ? getData[i].phone_number : <div>-</div>,
-            // customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
-            //  total : 
-            //  getData[i].currency_name == null ? 
-            //  < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].paid).toFixed(2).replace('.' , ',')} key="diskon" />
-            //   :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={getData[i].currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].paid).toLocaleString('id')} key="diskon" />,
+  //       let tmp = []
+  //       for (let i = 0; i < getData.length; i++) {
+  //         tmp.push({
+  //           id: getData[i].id,
+  //           can: getData[i].can,
+  //           code: getData[i].code,
+  //           date: getData[i].date,
+  //           status: getData[i].status,
+  //           supplier_name: getData[i].supplier.name ? getData[i].supplier.name : <div className="text-center">-</div>,
+  //           ship_name: getData[i].ship_name ? getData[i].ship_name : <div className="text-center">-</div>,
+  //         })
+  //       }
 
-            //type : getData[i].supplier._group,
-            status : getData[i].status,
-            
-            // name:getData[i].name,
-            // _group:getData[i]._group,
-            // category:getData[i].category.name,
-            // department : getData[i].department.name ,
-            // position: getData[i].position.name,
-             //customer_id: getData[i].supplier.name ? getData[i].supplier.name : <div className='text-center'>-</div>,
-             supplier_name: getData[i].supplier.name ? getData[i].supplier.name : <div className="text-center">-</div>,
-            ship_name : getData[i].ship_name ? getData[i].ship_name : <div className="text-center">-</div>,
-             // date: getData[i].date,
-            // status: getData[i].status,
-            // warehouse_name: getData[i].warehouse_name ? getData[i].warehouse_name : <div className="text-center">-</div>,
-          })
-        }
-
-        setDataTampil(tmp)
+  //       setDataTampil(tmp)
 
 
-        console.log(getData)
-        setIsLoading(false);
-      })
-  }
+  //       console.log(getData)
+  //       setIsLoading(false);
+  //     })
+  // }
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
 
   const columns = [
     {
@@ -240,7 +291,10 @@ const PIBTable = () => {
       dataIndex: 'date',
       key: 'date',
       width: '15%',
+      sorter: (a, b) => a.date.length - b.date.length,
+      sortDirections: ['descend', 'ascend'],
       ...getColumnSearchProps('date'),
+
     },
     {
       title: 'No. PIB',
@@ -257,8 +311,8 @@ const PIBTable = () => {
       key: 'supplier_name',
       width: '20%',
       ...getColumnSearchProps('supplier_name'),
-      // render: (_, record) => (
-      //   <>{record.supplier.name}</>
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
       // )
     },
     {
@@ -267,6 +321,8 @@ const PIBTable = () => {
       key: 'ship_name',
       width: '20%',
       ...getColumnSearchProps('ship_name'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Status',
@@ -281,6 +337,8 @@ const PIBTable = () => {
         </>
       ),
       ...getColumnSearchProps('status'),
+      sorter: (a, b) => a.status.length - b.status.length
+
     },
     {
       title: 'Actions',
@@ -338,11 +396,12 @@ const PIBTable = () => {
       )
     },
   ];
-   return <Table
+  return <Table
     size="small"
     loading={isLoading}
     columns={columns}
     pagination={{ pageSize: 10 }}
+    onChange={handleTableChange}
     dataSource={dataTampil}
   />;
 };

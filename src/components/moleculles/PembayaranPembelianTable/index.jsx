@@ -11,6 +11,7 @@ import AsyncSelect from "react-select/async";
 import ReactSelect from 'react-select';
 import { useSelector } from 'react-redux';
 import Item from 'antd/lib/list/Item';
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 import CurrencyFormat from 'react-currency-format';
 
 const PembayaranPembelianTable = () => {
@@ -32,6 +33,67 @@ const PembayaranPembelianTable = () => {
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [selectedValue2, setSelectedAddress] = useState(null);
     const [dataTampil, setDataTampil] = useState([])
+
+    const [tableParams, setTableParams] = useState({
+        pagination: {
+            current: 1,
+            pageSize: 10,
+        },
+    });
+
+    const getParams = (params) => ({
+        results: params.pagination?.pageSize,
+        page: params.pagination?.current,
+        ...params,
+    });
+
+    const fetchData = () => {
+        setIsLoading(true);
+        fetch(`${Url}/purchase_invoice_payments?${qs.stringify(getParams(tableParams))}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.json())
+            .then(({ data }) => {
+                const getData = data
+                setDataPembayaran(getData)
+
+                let tmp = []
+                for (let i = 0; i < getData.length; i++) {
+                    tmp.push({
+                        id: getData[i].id,
+                        can: getData[i].can,
+                        code: getData[i].code,
+                        date: getData[i].date,
+                        total:
+                            getData[i].currency_name == null || getData[i].currency_name == 'IDR' ?
+                                < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={'IDR' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].paid).toFixed(2).replace('.', ',')} key="diskon" />
+                                : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={getData[i].currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].paid).toLocaleString('id')} key="diskon" />,
+
+                        status: getData[i].status,
+                        supplier: getData[i].supplier.name ? getData[i].supplier.name : <div className='text-start'>-</div>,
+                    })
+                }
+
+                setDataTampil(tmp)
+
+                setStatus(getData.map(d => d.status))
+                setIsLoading(false);
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams.pagination,
+                        total: 200,
+                    },
+                });
+            });
+    };
+
+
+    useEffect(() => {
+        fetchData();
+    }, [JSON.stringify(tableParams)]);
 
 
 
@@ -144,7 +206,7 @@ const PembayaranPembelianTable = () => {
                         Authorization: `Bearer ${auth.token}`,
                     },
                 });
-                getDataPembayaran()
+                fetchData()
                 Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
 
             }
@@ -249,61 +311,56 @@ const PembayaranPembelianTable = () => {
         //   ),
     });
 
-    useEffect(() => {
-        getDataPembayaran()
-    }, [])
+    // useEffect(() => {
+    //     getDataPembayaran()
+    // }, [])
 
-    const getDataPembayaran = async (params = {}) => {
-        setIsLoading(true);
-        await axios.get(`${Url}/purchase_invoice_payments`, {
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${auth.token}`
-            }
-        })
-            .then(res => {
-                const getData = res.data.data
-                setDataPembayaran(getData)
+    // const getDataPembayaran = async (params = {}) => {
+    //     setIsLoading(true);
+    //     await axios.get(`${Url}/purchase_invoice_payments`, {
+    //         headers: {
+    //             'Accept': 'application/json',
+    //             'Authorization': `Bearer ${auth.token}`
+    //         }
+    //     })
+    //         .then(res => {
+    //             const getData = res.data.data
+    //             setDataPembayaran(getData)
 
 
-                  
-        let tmp = []
-        for (let i = 0; i < getData.length; i++) {
-          tmp.push({
-            id: getData[i].id,
-            can: getData[i].can,
-            code: getData[i].code,
-            date:getData[i].date,
-           // phone_number: getData[i].phone_number ? getData[i].phone_number : <div>-</div>,
-            // customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
-             total : 
-             getData[i].currency_name == null  || getData[i].currency_name == 'IDR' ?
-             < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={'IDR' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].paid).toFixed(2).replace('.' , ',')} key="diskon" />
-              :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={getData[i].currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].paid).toLocaleString('id')} key="diskon" />,
 
-            //type : getData[i].supplier._group,
-            status : getData[i].status,
-            
-            // name:getData[i].name,
-            // _group:getData[i]._group,
-            // category:getData[i].category.name,
-            // department : getData[i].department.name ,
-            // position: getData[i].position.name,
-             customer_id: getData[i].supplier.name ? getData[i].supplier.name : <div className='text-center'>-</div>,
-             //supplier: getData[i].supplier.name ? getData[i].supplier.name : <div className="text-center">-</div>,
-            // date: getData[i].date,
-            // status: getData[i].status,
-            // warehouse_name: getData[i].warehouse_name ? getData[i].warehouse_name : <div className="text-center">-</div>,
-          })
-        }
+    //             let tmp = []
+    //             for (let i = 0; i < getData.length; i++) {
+    //                 tmp.push({
+    //                     id: getData[i].id,
+    //                     can: getData[i].can,
+    //                     code: getData[i].code,
+    //                     date: getData[i].date,
+    //                     total:
+    //                         getData[i].currency_name == null || getData[i].currency_name == 'IDR' ?
+    //                             < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={'IDR' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].paid).toFixed(2).replace('.', ',')} key="diskon" />
+    //                             : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={getData[i].currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].paid).toLocaleString('id')} key="diskon" />,
 
-        setDataTampil(tmp)
+    //                     status: getData[i].status,
+    //                     customer_id: getData[i].supplier.name ? getData[i].supplier.name : <div className='text-center'>-</div>,
+    //                 })
+    //             }
 
-                setStatus(getData.map(d => d.status))
-                setIsLoading(false);
-                console.log(getData)
-            })
-    }
+    //             setDataTampil(tmp)
+
+    //             setStatus(getData.map(d => d.status))
+    //             setIsLoading(false);
+    //             console.log(getData)
+    //         })
+    // }
+
+    const handleTableChange = (pagination, filters, sorter) => {
+        setTableParams({
+            pagination,
+            filters,
+            ...sorter,
+        });
+    };
 
     const columns = [
         {
@@ -311,6 +368,8 @@ const PembayaranPembelianTable = () => {
             dataIndex: 'date',
             key: 'date',
             width: '13%',
+            sorter: (a, b) => a.date.length - b.date.length,
+            sortDirections: ['descend', 'ascend'],
             ...getColumnSearchProps('date'),
         },
         {
@@ -324,10 +383,12 @@ const PembayaranPembelianTable = () => {
         },
         {
             title: 'Supplier',
-            dataIndex: 'customer_id',
-            key: 'customer_id',
+            dataIndex: 'supplier',
+            key: 'supplier',
             width: '20%',
-            ...getColumnSearchProps('customer_id'),
+            ...getColumnSearchProps('supplier'),
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
             // render: (text, record, index) => (
             //     <>{dataPembayaran[index].supplier.name}</>
             // )
@@ -338,6 +399,9 @@ const PembayaranPembelianTable = () => {
             dataIndex: 'total',
             key: 'total',
             width: '20%',
+            sorter: (a, b) => a.total - b.total,
+            ...getColumnSearchProps('total'),
+            sortDirections: ['descend', 'ascend'],
             //...getColumnSearchProps('total'),
             // render: (text) => {
             //     return Number(text).toFixed(2).replace('.', ',')
@@ -355,12 +419,13 @@ const PembayaranPembelianTable = () => {
 
                 </>
             ),
+            sorter: (a, b) => a.status.length - b.status.length,
             ...getColumnSearchProps('status'),
         },
         {
             title: 'Actions',
             width: '20%',
-            dataIndex:'action',
+            dataIndex: 'action',
             align: 'center',
             render: (_, record) => (
                 <>
@@ -391,50 +456,51 @@ const PembayaranPembelianTable = () => {
         },
     ];
 
-const dataColumn = [
-    ...dataPembayaran.map((item, i) => ({
-        date: item.date,
-        code: item.code, 
-        customer_id: item.supplier.name,
-        total: item.currency_name == null ? 
-        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.paid).toFixed(2).replace('.' , ',')} key="diskon" />
-         :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={item.currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.paid).toLocaleString('id')} key="diskon" />,
-        status:  <>
-        {item.status === 'Submitted' ? <Tag color="blue">{item.status}</Tag> : item.status === 'Draft' ? <Tag color="orange">{item.status}</Tag> : item.status === 'Done' ? <Tag color="green">{item.status}</Tag> : <Tag color="red">{item.status}</Tag>}
-    </>, 
-    action:   <>
-    <Space size="middle">
-        <Link to={`/pembayaranpembelian/detail/${item.id}`}>
-            <Button
-                size='small'
-                type="primary"
-                icon={<InfoCircleOutlined />}
-            />
-        </Link>
-        <Link to={`/pembayaranpembelian/edit/${item.id}`}>
-            <Button
-                size='small'
-                type="success"
-                icon={<EditOutlined />}
-            />
-        </Link>
-        <Button
-            size='small'
-            type="danger"
-            icon={<DeleteOutlined />}
-            onClick={() => deletePembayaran(item.id, item.code)}
-        />
-    </Space>
-</>,
-    })
-    )
-]
+    // const dataColumn = [
+    //     ...dataPembayaran.map((item, i) => ({
+    //         date: item.date,
+    //         code: item.code,
+    //         customer_id: item.supplier.name,
+    //         total: item.currency_name == null ?
+    //             < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.paid).toFixed(2).replace('.', ',')} key="diskon" />
+    //             : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={item.currency_name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.paid).toLocaleString('id')} key="diskon" />,
+    //         status: <>
+    //             {item.status === 'Submitted' ? <Tag color="blue">{item.status}</Tag> : item.status === 'Draft' ? <Tag color="orange">{item.status}</Tag> : item.status === 'Done' ? <Tag color="green">{item.status}</Tag> : <Tag color="red">{item.status}</Tag>}
+    //         </>,
+    //         action: <>
+    //             <Space size="middle">
+    //                 <Link to={`/pembayaranpembelian/detail/${item.id}`}>
+    //                     <Button
+    //                         size='small'
+    //                         type="primary"
+    //                         icon={<InfoCircleOutlined />}
+    //                     />
+    //                 </Link>
+    //                 <Link to={`/pembayaranpembelian/edit/${item.id}`}>
+    //                     <Button
+    //                         size='small'
+    //                         type="success"
+    //                         icon={<EditOutlined />}
+    //                     />
+    //                 </Link>
+    //                 <Button
+    //                     size='small'
+    //                     type="danger"
+    //                     icon={<DeleteOutlined />}
+    //                     onClick={() => deletePembayaran(item.id, item.code)}
+    //                 />
+    //             </Space>
+    //         </>,
+    //     })
+    //     )
+    // ]
 
     return <Table
         size="small"
         loading={isLoading}
         columns={columns}
         pagination={{ pageSize: 10 }}
+        onChange={handleTableChange}
         dataSource={dataTampil}
         scroll={{
             y: 240,

@@ -77,7 +77,7 @@ const TallyTable = () => {
   useEffect(() => {
     fetchData();
   }, [JSON.stringify(tableParams)]);
-
+ 
 
   const deleteTallySheet = async (id, code) => {
     Swal.fire({
@@ -270,6 +270,7 @@ const TallyTable = () => {
       title: 'Customer',
       dataIndex: 'customer_name',
       width: '15%',
+      sorter: true,
       key: 'customer_name',
       sortDirections: ['descend', 'ascend'],
       ...getColumnSearchProps('customer_name', 'Customer'),

@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Button, Input, Space, Table, Tag } from "antd";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 import { useRef } from "react";
 import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
 
@@ -20,6 +21,48 @@ const BiayaImportTable = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { id } = useParams();
+
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    fetch(`${Url}/costs?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+        const getData = data
+        setBiayaImport(getData)
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+
+
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -104,6 +147,14 @@ const BiayaImportTable = () => {
 
   });
 
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
   const columns = [
     {
       title: 'Kode.',
@@ -113,7 +164,7 @@ const BiayaImportTable = () => {
       ...getColumnSearchProps('code'),
       sorter: true,
       sortDirections: ['descend', 'ascend'],
-      
+
     },
     {
       title: 'Nama Biaya',
@@ -139,66 +190,94 @@ const BiayaImportTable = () => {
       align: 'center',
       render: (_, record) => (
         <>
-          <Space size="middle">
-            <Link to={`/biayaimport/detail/${record.id}`}>
-              <Button
-                size='small'
-                type="primary"
-                icon={<InfoCircleOutlined />}
-              />
-            </Link>
-            <Link to={`/biayaimport/edit/${record.id}`}>
-              <Button
-                size='small'
-                type="success"
-                icon={<EditOutlined />}
-              />
-            </Link>
-            <Button
-              size='small'
-              type="danger"
-              icon={<DeleteOutlined />}
-              onClick={() => deleteBiayaImport(record.id, record.code)}
-            />
-          </Space>
-        </>
+        <Space size="middle">
+            {record.can['read-cost'] ? (
+                <Link to={`/biayaimport/detail/${record.id}`}>
+                    <Button
+                        size='small'
+                        type="primary"
+                        icon={<InfoCircleOutlined />}
+                    />
+                </Link>
+            ) : null}
+          
+            {
+                record.can['delete-cost'] ? (
+                    <Button
+                        size='small'
+                        type="danger"
+                        icon={<DeleteOutlined />}
+                        onClick={() => deleteBiayaImport(record.id, record.code)}
+                    />
+                ) : null
+            }
+            {
+                record.can['update-cost'] ? (
+                    <Link to={`/biayaimport/edit/${record.id}`}>
+                        <Button
+                            size='small'
+                            type="success"
+                            icon={<EditOutlined />}
+                        />
+                    </Link>
+                ) : null
+            }
+           
+
+        </Space>
+    </>
+
+        // <>
+        //   <Space size="middle">
+        //     <Link to={`/biayaimport/detail/${record.id}`}>
+        //       <Button
+        //         size='small'
+        //         type="primary"
+        //         icon={<InfoCircleOutlined />}
+        //       />
+        //     </Link>
+        //     <Link to={`/biayaimport/edit/${record.id}`}>
+        //       <Button
+        //         size='small'
+        //         type="success"
+        //         icon={<EditOutlined />}
+        //       />
+        //     </Link>
+        //     <Button
+        //       size='small'
+        //       type="danger"
+        //       icon={<DeleteOutlined />}
+        //       onClick={() => deleteBiayaImport(record.id, record.code)}
+        //     />
+        //   </Space>
+        // </>
       ),
     },
   ];
 
-  useEffect(() => {
-    getBiayaImport();
-  }, []);
-
-  const getBiayaImport = async () => {
-    axios
-      .get(`${Url}/costs`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-      .then(res => {
-        const getData = res.data.data
-        setBiayaImport(getData)
-        // setStatus(getData.map(d => d.status))
-        setIsLoading(false);
-        console.log(getData)
-      })
-  };
-
-  // const deleteBiayaImport = async (id) => {
-  //   await axios.delete(`${Url}/costs/${id}`, {
-  //     headers: {
-  //       Accept: "application/json",
-  //       Authorization: `Bearer ${auth.token}`,
-  //     },
-  //   });
+  // useEffect(() => {
   //   getBiayaImport();
-  //   Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+  // }, []);
+
+  // const fetchData = async () => {
+  //   axios
+  //     .get(`${Url}/costs`, {
+  //       headers: {
+  //         Accept: "application/json",
+  //         Authorization: `Bearer ${auth.token}`,
+  //       },
+  //     })
+  //     .then(res => {
+  //       const getData = res.data.data
+  //       setBiayaImport(getData)
+  //       // setStatus(getData.map(d => d.status))
+  //       setIsLoading(false);
+  //       console.log(getData)
+  //     })
   // };
 
-  
+
+
   const deleteBiayaImport = async (id, code) => {
     Swal.fire({
       title: 'Apakah Anda Yakin?',
@@ -216,7 +295,7 @@ const BiayaImportTable = () => {
             Authorization: `Bearer ${auth.token}`,
           },
         });
-        getBiayaImport()
+        fetchData()
         Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
 
       }
@@ -231,6 +310,7 @@ const BiayaImportTable = () => {
         loading={isLoading}
         columns={columns}
         pagination={{ pageSize: 10 }}
+        onChange={handleTableChange}
         dataSource={biayaImport}
         scroll={{
           y: 295,

@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { Button, Input, Space, Table, Tag } from "antd";
 import { CloseOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import axios from "axios";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 import { useSelector } from "react-redux";
 
 const TallyPembelianTable = () => {
@@ -21,7 +22,63 @@ const TallyPembelianTable = () => {
   // const token = jsCookie.get('auth')
   const auth = useSelector(state => state.auth);
   const [dataTampil, setDataTampil] = useState([]);
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
 
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    console.log(qs.stringify(getParams(tableParams)))
+    fetch(`${Url}/tally_sheet_ins?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+        const getData = data;
+        setGetDataTally(getData)
+        setCode(getData.code)
+
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+            id: getData[i].id,
+            can: getData[i].can,
+            code: getData[i].code,
+            date: getData[i].date,
+            status: getData[i].status,
+            customer_name: getData[i].customer_name ? getData[i].customer_name : <div className="text-start">-</div>,
+            supplier_name: getData[i].supplier_name ? getData[i].supplier_name : <div className="text-start">-</div>,
+            warehouse_name: getData[i].warehouse_name ? getData[i].warehouse_name : <div className="text-start">-</div>,
+          })
+        }
+
+        setDataTampil(tmp)
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
 
   const deleteTallyPembelian = async (id, code) => {
     Swal.fire({
@@ -40,7 +97,7 @@ const TallyPembelianTable = () => {
             Authorization: `Bearer ${auth.token}`,
           },
         });
-        getTallySheet()
+        fetchData()
         Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
 
       }
@@ -69,7 +126,7 @@ const TallyPembelianTable = () => {
             },
           })
 
-          getTallySheet();
+          fetchData();
           Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
         }
         catch (err) {
@@ -176,58 +233,67 @@ const TallyPembelianTable = () => {
     //   ),
   });
 
-  useEffect(() => {
-    getTallySheet()
-  }, [])
+  // useEffect(() => {
+  //   fetchData()
+  // }, [])
 
-  const getTallySheet = async (params = {}) => {
-    setIsLoading(true);
-    await axios.get(`${Url}/tally_sheet_ins`, {
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${auth.token}`
-      }
-    })
-      .then(res => {
-        const getData = res.data.data;
-        setGetDataTally(getData)
-        setCode(getData.code)
+  // const getTallySheet = async (params = {}) => {
+  //   setIsLoading(true);
+  //   await axios.get(`${Url}/tally_sheet_ins`, {
+  //     headers: {
+  //       'Accept': 'application/json',
+  //       'Authorization': `Bearer ${auth.token}`
+  //     }
+  //   })
+  //     .then(res => {
+  //       const getData = res.data.data;
+  //       setGetDataTally(getData)
+  //       setCode(getData.code)
 
-        let tmp = []
-        for (let i = 0; i < getData.length; i++) {
-          tmp.push({
-            id: getData[i].id,
-            can: getData[i].can,
-            code: getData[i].code,
-            date:getData[i].date,
-            //phone_number: getData[i].phone_number ? getData[i].phone_number : <div>-</div>,
-            // customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
-            // total : getData[i].total,
-            // type : getData[i].type,
-            status : getData[i].status,
-            
-            //name:getData[i].name,
-            // _group:getData[i]._group,
-            // category:getData[i].category.name,
-            // department : getData[i].department.name ,
-            // position: getData[i].position.name,
-             customer_name: getData[i].customer_name ? getData[i].customer_name : <div className="text-center">-</div>,
-             supplier_name: getData[i].supplier_name ? getData[i].supplier_name : <div className="text-center">-</div>,
-            // date: getData[i].date,
-            // status: getData[i].status,
-             warehouse_name: getData[i].warehouse_name ? getData[i].warehouse_name : <div className="text-center">-</div>,
-          })
-        }
+  //       let tmp = []
+  //       for (let i = 0; i < getData.length; i++) {
+  //         tmp.push({
+  //           id: getData[i].id,
+  //           can: getData[i].can,
+  //           code: getData[i].code,
+  //           date: getData[i].date,
+  //           //phone_number: getData[i].phone_number ? getData[i].phone_number : <div>-</div>,
+  //           // customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
+  //           // total : getData[i].total,
+  //           // type : getData[i].type,
+  //           status: getData[i].status,
 
-        setDataTampil(tmp)
+  //           //name:getData[i].name,
+  //           // _group:getData[i]._group,
+  //           // category:getData[i].category.name,
+  //           // department : getData[i].department.name ,
+  //           // position: getData[i].position.name,
+  //           customer_name: getData[i].customer_name ? getData[i].customer_name : <div className="text-center">-</div>,
+  //           supplier_name: getData[i].supplier_name ? getData[i].supplier_name : <div className="text-center">-</div>,
+  //           // date: getData[i].date,
+  //           // status: getData[i].status,
+  //           warehouse_name: getData[i].warehouse_name ? getData[i].warehouse_name : <div className="text-center">-</div>,
+  //         })
+  //       }
+
+  //       setDataTampil(tmp)
 
 
 
-        // setStatus(getData.map(d => d.status))
-        setIsLoading(false);
-        console.log(getData)
-      })
-  }
+  //       // setStatus(getData.map(d => d.status))
+  //       setIsLoading(false);
+  //       console.log(getData)
+  //     })
+  // }
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
 
   const columns = [
     {
@@ -235,6 +301,8 @@ const TallyPembelianTable = () => {
       dataIndex: 'date',
       key: 'date',
       width: '15%',
+      sorter: (a, b) => a.date.length - b.date.length,
+      sortDirections: ['descend', 'ascend'],
       ...getColumnSearchProps('date'),
     },
     {
@@ -252,8 +320,8 @@ const TallyPembelianTable = () => {
       key: 'supplier_name',
       width: '20%',
       ...getColumnSearchProps('supplier_name'),
-      // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
-      // sortDirections: ['descend', 'ascend'],
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Customer',
@@ -261,8 +329,8 @@ const TallyPembelianTable = () => {
       key: 'customer_name',
       width: '20%',
       ...getColumnSearchProps('customer_name'),
-      // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
-      // sortDirections: ['descend', 'ascend'],
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Gudang',
@@ -270,6 +338,8 @@ const TallyPembelianTable = () => {
       key: 'warehouse_name',
       width: '15%',
       ...getColumnSearchProps('warehouse_name'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Status',
@@ -283,6 +353,7 @@ const TallyPembelianTable = () => {
 
         </>
       ),
+      sorter: (a, b) => a.status.length - b.status.length,
       ...getColumnSearchProps('status'),
     },
     {
@@ -341,10 +412,11 @@ const TallyPembelianTable = () => {
       )
     }
   ];
-   return <Table
+  return <Table
     size="small"
     loading={isLoading}
     columns={columns}
+    onChange={handleTableChange}
     pagination={{ pageSize: 10 }}
     dataSource={dataTampil}
 

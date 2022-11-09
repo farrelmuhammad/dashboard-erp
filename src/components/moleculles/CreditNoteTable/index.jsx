@@ -9,6 +9,7 @@ import { Button, Input, Space, Table, Tag } from "antd";
 import { CloseOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 import CurrencyFormat from 'react-currency-format';
 
 const CreditNoteTable = () => {
@@ -24,6 +25,69 @@ const CreditNoteTable = () => {
   const auth = useSelector(state => state.auth);
 
   const [dataTampil, setDataTampil] = useState([]);
+
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    fetch(`${Url}/credit_notes?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+
+        const getData = data;
+        setCreditNote(getData)
+
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+            id: getData[i].id,
+            can: getData[i].can,
+            code: getData[i].code,
+            date: getData[i].date,
+            nominal:
+              getData[i].currency.name == 'Rp' || getData[i].currency.name == 'IDR' ?
+                < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={getData[i].currency.name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].nominal).toFixed(2).replace('.', ',')} key="diskon" />
+                : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={getData[i].currency.name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].nominal).toLocaleString('id')} key="diskon" />,
+
+            status: getData[i].status,
+            supplier_name: getData[i].supplier_name ? getData[i].supplier_name : <div className="text-center">-</div>,
+          })
+        }
+
+        setDataTampil(tmp)
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+
+
+
 
 
   const deleteCredit = async (id, code) => {
@@ -43,7 +107,7 @@ const CreditNoteTable = () => {
             Authorization: `Bearer ${auth.token}`,
           },
         });
-        getCreditNote()
+        fetchData()
         Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
 
       }
@@ -72,7 +136,7 @@ const CreditNoteTable = () => {
             },
           })
 
-          getCreditNote();
+          fetchData();
           Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
         }
         catch (err) {
@@ -180,62 +244,59 @@ const CreditNoteTable = () => {
     //   ),
   });
 
-  useEffect(() => {
-    getCreditNote()
-  }, [])
+  // useEffect(() => {
+  //   fetchData()
+  // }, [])
 
-  const getCreditNote = async (params = {}) => {
-    setIsLoading(true);
-    await axios.get(`${Url}/credit_notes`, {
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${auth.token}`
-      }
-    })
-      .then(res => {
-        const getData = res.data.data;
-        setCreditNote(getData)
+  // const getCreditNote = async (params = {}) => {
+  //   setIsLoading(true);
+  //   await axios.get(`${Url}/credit_notes`, {
+  //     headers: {
+  //       'Accept': 'application/json',
+  //       'Authorization': `Bearer ${auth.token}`
+  //     }
+  //   })
+  //     .then(res => {
+  //       const getData = res.data.data;
+  //       setCreditNote(getData)
 
-        let tmp = []
-        for (let i = 0; i < getData.length; i++) {
-          tmp.push({
-            id: getData[i].id,
-            can: getData[i].can,
-            code: getData[i].code,
-            date:getData[i].date,
-           // phone_number: getData[i].phone_number ? getData[i].phone_number : <div>-</div>,
-            // customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
-             nominal : 
-             getData[i].currency.name == 'Rp' || getData[i].currency.name == 'IDR' ?
-        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={getData[i].currency.name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].nominal).toFixed(2).replace('.', ',')} key="diskon" />
-        : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={getData[i].currency.name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].nominal).toLocaleString('id')} key="diskon" />,
-            //type : getData[i].supplier._group,
-            status : getData[i].status,
-            
-            // name:getData[i].name,
-            // _group:getData[i]._group,
-            // category:getData[i].category.name,
-            // department : getData[i].department.name ,
-            // position: getData[i].position.name,
-            // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
-             supplier_name: getData[i].supplier_name ? getData[i].supplier_name : <div className="text-center">-</div>,
-            // date: getData[i].date,
-            // status: getData[i].status,
-            // warehouse_name: getData[i].warehouse_name ? getData[i].warehouse_name : <div className="text-center">-</div>,
-          })
-        }
+  //       let tmp = []
+  //       for (let i = 0; i < getData.length; i++) {
+  //         tmp.push({
+  //           id: getData[i].id,
+  //           can: getData[i].can,
+  //           code: getData[i].code,
+  //           date: getData[i].date,
+  //           nominal:
+  //             getData[i].currency.name == 'Rp' || getData[i].currency.name == 'IDR' ?
+  //               < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={getData[i].currency.name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].nominal).toFixed(2).replace('.', ',')} key="diskon" />
+  //               : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={getData[i].currency.name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].nominal).toLocaleString('id')} key="diskon" />,
 
-        setDataTampil(tmp)
+  //           status: getData[i].status,
+  //           supplier_name: getData[i].supplier_name ? getData[i].supplier_name : <div className="text-center">-</div>,
+  //         })
+  //       }
+
+  //       setDataTampil(tmp)
 
 
 
-        // setGetPenerimaanBarang(getData)
-        // setCode(getData.code)
-        // setStatus(getData.map(d => d.status))
-        setIsLoading(false);
-        // console.log(getData)
-      })
-  }
+  //       // setGetPenerimaanBarang(getData)
+  //       // setCode(getData.code)
+  //       // setStatus(getData.map(d => d.status))
+  //       setIsLoading(false);
+  //       // console.log(getData)
+  //     })
+  // }
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
 
   const columns = [
     {
@@ -243,6 +304,8 @@ const CreditNoteTable = () => {
       dataIndex: 'date',
       key: 'date',
       width: '15%',
+      sorter: (a, b) => a.date.length - b.date.length,
+      sortDirections: ['descend', 'ascend'],
       ...getColumnSearchProps('date'),
     },
     {
@@ -260,6 +323,8 @@ const CreditNoteTable = () => {
       key: 'supplier_name',
       width: '20%',
       ...getColumnSearchProps('supplier_name'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
 
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
       // sortDirections: ['descend', 'ascend'],
@@ -269,6 +334,10 @@ const CreditNoteTable = () => {
       dataIndex: 'nominal',
       key: 'nominal',
       width: '15%',
+
+      sorter: (a, b) => a.nominal - b.nominal,
+      ...getColumnSearchProps('nominal'),
+      sortDirections: ['descend', 'ascend'],
       //...getColumnSearchProps('nominal'),
       // render(text, record, index) {
       //   return {
@@ -277,7 +346,7 @@ const CreditNoteTable = () => {
       //         width: "100%",
       //         border: "none",
       //         backgroundColor: "transparent "
-              
+
       //       }}
       //       disabled
       //       thousandSeparator={'.'}
@@ -301,21 +370,18 @@ const CreditNoteTable = () => {
         </>
       ),
       ...getColumnSearchProps('status'),
+      sorter: (a, b) => a.status.length - b.status.length
+
     },
     {
       title: 'Actions',
       width: '15%',
       align: 'center',
       render: (_, record) => (
+
         <>
-          {record.status === 'Submitted' ? (
-            <Space size="middle">
-              <Button
-                size='small'
-                type="danger"
-                icon={<CloseOutlined />}
-                onClick={() => cancelCredit(record.id, record.code)}
-              />
+          <Space size="middle">
+            {record.can['read-credit_note'] ? (
               <Link to={`/creditnote/detail/${record.id}`}>
                 <Button
                   size='small'
@@ -323,85 +389,118 @@ const CreditNoteTable = () => {
                   icon={<InfoCircleOutlined />}
                 />
               </Link>
-              <Link to={`/creditnote/edit/${record.id}`}>
+            ) : null}
+            {
+              record.can['cancel-credit_note'] ? (
+
                 <Button
                   size='small'
-                  type="success"
-                  icon={<EditOutlined />}
+                  type="danger"
+                  icon={<CloseOutlined />}
+                  onClick={() => cancelCredit(record.id, record.code)}
                 />
-              </Link>
-            </Space>
-          ) : record.status === 'Draft' ? (
-            <Space size="middle">
-              <Link to={`/creditnote/detail/${record.id}`}>
+
+              ) : null
+            }
+            {
+              record.can['delete-credit_note'] ? (
                 <Button
                   size='small'
-                  type="primary"
-                  icon={<InfoCircleOutlined />}
+                  type="danger"
+                  icon={<DeleteOutlined />}
+                  onClick={() => deleteCredit(record.id, record.code)}
                 />
-              </Link>
-              <Link to={`/creditnote/edit/${record.id}`}>
-                <Button
-                  size='small'
-                  type="success"
-                  icon={<EditOutlined />}
-                />
-              </Link>
-              <Button
-                size='small'
-                type="danger"
-                icon={<DeleteOutlined />}
-                onClick={() => deleteCredit(record.id, record.code)}
-              />
-            </Space>
-          ) : record.status === 'Done' || record.status === 'Done' ? (
-            <Space size="middle">
-              <Link to={`/creditnote/detail/${record.id}`}>
-                <Button
-                  size='small'
-                  type="primary"
-                  icon={<InfoCircleOutlined />}
-                />
-              </Link>
-            </Space>
-          ) : (
-            <>
-            </>
-          )}
+              ) : null
+            }
+            {
+              record.can['update-credit_note'] ? (
+                <Link to={`/creditnote/edit/${record.id}`}>
+                  <Button
+                    size='small'
+                    type="success"
+                    icon={<EditOutlined />}
+                  />
+                </Link>
+              ) : null
+            }
+
+
+          </Space>
         </>
 
+
         // <>
-        //   <Space size="middle">
-        //     <Link to={`/penerimaanbarang/detail/${record.id}`}>
+        //   {record.status === 'Submitted' ? (
+        //     <Space size="middle">
         //       <Button
         //         size='small'
-        //         type="primary"
-        //         icon={<InfoCircleOutlined />}
+        //         type="danger"
+        //         icon={<CloseOutlined />}
+        //         onClick={() => cancelCredit(record.id, record.code)}
         //       />
-        //     </Link>
-        //     <Link to={`/penerimaanbarang/edit/${record.id}`}>
+        //       <Link to={`/creditnote/detail/${record.id}`}>
+        //         <Button
+        //           size='small'
+        //           type="primary"
+        //           icon={<InfoCircleOutlined />}
+        //         />
+        //       </Link>
+        //       <Link to={`/creditnote/edit/${record.id}`}>
+        //         <Button
+        //           size='small'
+        //           type="success"
+        //           icon={<EditOutlined />}
+        //         />
+        //       </Link>
+        //     </Space>
+        //   ) : record.status === 'Draft' ? (
+        //     <Space size="middle">
+        //       <Link to={`/creditnote/detail/${record.id}`}>
+        //         <Button
+        //           size='small'
+        //           type="primary"
+        //           icon={<InfoCircleOutlined />}
+        //         />
+        //       </Link>
+        //       <Link to={`/creditnote/edit/${record.id}`}>
+        //         <Button
+        //           size='small'
+        //           type="success"
+        //           icon={<EditOutlined />}
+        //         />
+        //       </Link>
         //       <Button
         //         size='small'
-        //         type="success"
-        //         icon={<EditOutlined />}
+        //         type="danger"
+        //         icon={<DeleteOutlined />}
+        //         onClick={() => deleteCredit(record.id, record.code)}
         //       />
-        //     </Link>
-        //     <Button
-        //       size='small'
-        //       type="danger"
-        //       icon={<DeleteOutlined />}
-        //       onClick={() => deleteTallySheet(record.id, record.code)}
-        //     />
-        //   </Space>
+        //     </Space>
+        //   ) : record.status === 'Done' || record.status === 'Done' ? (
+        //     <Space size="middle">
+        //       <Link to={`/creditnote/detail/${record.id}`}>
+        //         <Button
+        //           size='small'
+        //           type="primary"
+        //           icon={<InfoCircleOutlined />}
+        //         />
+        //       </Link>
+        //     </Space>
+        //   ) : (
+        //     <>
+        //     </>
+        //   )}
         // </>
+
       ),
     },
   ];
-   return <Table
+  return <Table
     size="small"
     loading={isLoading}
     columns={columns}
     pagination={{ pageSize: 10 }}
+    onChange={handleTableChange}
     dataSource={dataTampil}
   />;
 };
