@@ -413,7 +413,7 @@ console.log(kel2)
                        </div>
                         }
                   
-                            <div className="d-flex flex-row">
+                            {/* <div className="d-flex flex-row">
                                 <label className='col-3'>Kendaraan</label>
                                 {
                                     vehicle === null ? 
@@ -422,7 +422,7 @@ console.log(kel2)
                                 }
                                
                             </div>
-                        
+                         */}
                           
                       </div>
                       <div>
@@ -441,8 +441,8 @@ console.log(kel2)
                                 
                                         <div className=' mt-2 ps-3 pe-3' >
                                             {vehicle === null ? 
-                                            <div  className='align-items-start' style={{fontSize:"14px"}}>Dengan kendaraan - No:..................................................................... Kami kirim barang - barang tersebut di bawah ini: </div> :
-                                            <div  className='align-items-start' style={{fontSize:"14px"}}>Dengan kendaraan {vehicle} No:............................................................ Kami kirim barang - barang tersebut di bawah ini: </div>
+                                            <div  className='align-items-start' style={{fontSize:"14px"}}>Dengan kendaraan - No:..................................................................... kami kirim barang - barang tersebut di bawah ini: </div> :
+                                            <div  className='align-items-start' style={{fontSize:"14px"}}>Dengan kendaraan {vehicle} No:............................................................ kami kirim barang - barang tersebut di bawah ini: </div>
                                         }
                                         
                                             {/* <Table style={{fontSize: "10px", width: "100%", pageBreakAfter:"auto", backgroundColor:"white"}}

@@ -244,7 +244,8 @@ const BuatCreditNote = () => {
         formData.append("mata_uang", mataUangId);
         formData.append("bagan_akun", COAId);
         formData.append("biaya", biayaId);
-        formData.append("nominal", nominal.replace('.', '').replace(/[^0-9\.]+/g, ""));
+        //formData.append("nominal", nominal.replace('.', '').replace(/[^0-9\.]+/g, ""));
+formData.append("nominal",nominal.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',','.'))
 
         formData.append("deskripsi", deskripsi);
         formData.append("status", 'Draft');
@@ -348,7 +349,9 @@ const BuatCreditNote = () => {
         formData.append("mata_uang", mataUangId);
         formData.append("bagan_akun", COAId);
         formData.append("biaya", biayaId);
-        formData.append("nominal", nominal.replace('.', '').replace(/[^0-9\.]+/g, ""));
+        console.log(nominal)
+        //formData.append("nominal", nominal.replace('.', '').replace(/[^0-9\.]+/g, ""));
+        formData.append("nominal",nominal.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',','.'))
         formData.append("deskripsi", deskripsi);
         formData.append("status", 'Draft');
 
@@ -467,7 +470,7 @@ const BuatCreditNote = () => {
                                 />
                             </div>
                         </div>
-                        <div className="row mb-3">
+                        {/* <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Faktur Pembelian</label>
                             <div className="col-sm-7">
                                 <ReactSelect
@@ -482,7 +485,7 @@ const BuatCreditNote = () => {
                                     onChange={handleChangeFaktur}
                                 />
                             </div>
-                        </div>
+                        </div> */}
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
                             <div className="col-sm-7">
@@ -501,19 +504,51 @@ const BuatCreditNote = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Nominal</label>
                             <div className="col-sm-7">
-                                <CurrencyFormat
+                            <CurrencyFormat className=' form-control form-control-sm editable-input' 
+                            thousandSeparator={'.'} 
+                            decimalSeparator={','} 
+                            prefix={mataUang} 
+                            onKeyDown={(event) => klikEnter(event)} 
+                            //value={nominal.replace('.', ',')}
+                             onChange={(e) => setNominal(e.target.value)} />
+                                {/* <CurrencyFormat
                                     className='form-control form-control-sm'
                                     thousandSeparator={'.'}
                                     decimalSeparator={','}
                                     prefix={mataUang + ' '}
                                     onKeyDown={(event) => klikEnter(event)}
-                                    onChange={(e) => setNominal(e.target.value)} />
+                                    onChange={(e) => setNominal(e.target.value)} /> */}
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Biaya</label>
                             <div className="col-sm-7">
+                            {
+                                selectedCOA != null ? 
                                 <AsyncSelect
+                                placeholder="Pilih Biaya..."
+                                isDisabled
+                                cacheOptions
+                                defaultOptions
+                                value={selectedBiaya}
+                                getOptionLabel={(e) => e.name}
+                                getOptionValue={(e) => e.id}
+                                loadOptions={loadOptionsBiaya}
+                                onChange={handleChangeBiaya}
+                            /> :
+                            <AsyncSelect
+                            placeholder="Pilih Biaya..."
+                            cacheOptions
+                            defaultOptions
+                            value={selectedBiaya}
+                            getOptionLabel={(e) => e.name}
+                            getOptionValue={(e) => e.id}
+                            loadOptions={loadOptionsBiaya}
+                            onChange={handleChangeBiaya}
+                        />
+                            }
+
+                                {/* <AsyncSelect
                                     placeholder="Pilih Biaya..."
                                     cacheOptions
                                     defaultOptions
@@ -522,13 +557,36 @@ const BuatCreditNote = () => {
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsBiaya}
                                     onChange={handleChangeBiaya}
-                                />
+                                /> */}
                             </div>
                         </div>
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Akun Kredit</label>
                             <div className="col-sm-7">
+                                {selectedBiaya != null ? 
+                                    <AsyncSelect
+                                    placeholder="Pilih Akun Kredit..."
+                                    isDisabled
+                                    cacheOptions
+                                    defaultOptions
+                                    value={selectedCOA}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionscoa}
+                                    onChange={handleChangecoa}
+                                /> :
                                 <AsyncSelect
+                                placeholder="Pilih Akun Kredit..."
+                                cacheOptions
+                                defaultOptions
+                                value={selectedCOA}
+                                getOptionLabel={(e) => e.name}
+                                getOptionValue={(e) => e.id}
+                                loadOptions={loadOptionscoa}
+                                onChange={handleChangecoa}
+                            />
+                            }
+                                {/* <AsyncSelect
                                     placeholder="Pilih Akun Kredit..."
                                     cacheOptions
                                     defaultOptions
@@ -537,7 +595,7 @@ const BuatCreditNote = () => {
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionscoa}
                                     onChange={handleChangecoa}
-                                />
+                                /> */}
                             </div>
                         </div>
                        

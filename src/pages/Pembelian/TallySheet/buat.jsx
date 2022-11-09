@@ -161,6 +161,8 @@ const BuatTallySheet = () => {
     const [modalListLokal, setModalListLokal] = useState(false)
     const [modalListRetur, setModalListRetur] = useState(false)
     const [grup, setGrup] = useState()
+
+    const[tmpCentang, setTmpCentang] = useState([])
     // const [checked, setChecked] = useState(false)¿
 
 
@@ -691,6 +693,7 @@ const BuatTallySheet = () => {
                 dataIndex: 'product_name',
                 width: '25%',
                 key: 'name',
+              
             },
             {
                 title: 'Qty',
@@ -698,6 +701,15 @@ const BuatTallySheet = () => {
                 width: '10%',
                 align: 'center',
                 editable: true,
+                // render(_,text, record) {
+                //     return {
+                //         props: {
+                //         },
+                //         // children: <div>{formatQuantity(text)}</div>
+                //         children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
+                //     };
+                // }
+
             },
             {
                 title: 'Stn',
@@ -705,6 +717,7 @@ const BuatTallySheet = () => {
                 align: 'center',
                 width: '10%',
                 key: 'name',
+             
             },
             {
                 title: 'Box',
@@ -712,7 +725,7 @@ const BuatTallySheet = () => {
                 align: 'center',
                 width: '10%',
                 key: 'box',
-
+               
             },
             {
                 title: 'Status',
@@ -720,7 +733,7 @@ const BuatTallySheet = () => {
                 align: 'center',
                 width: '10%',
                 key: 'status',
-
+             
             },
             {
                 title: 'Action',
@@ -1403,13 +1416,24 @@ const BuatTallySheet = () => {
             })
             let tmp = []
             for (let i = 0; i < res.data.data.length; i++) {
-                tmp.push({
-                    detail: res.data.data[i],
-                    statusCek: false
-                });
+                if(tmpCentang.indexOf(res.data.data[i].id) >= 0){
+                    tmp.push({
+                        detail: res.data.data[i],
+                        statusCek: true
+                    });
+                }
+            }
+            for (let i = 0; i < res.data.data.length; i++) {
+                if (tmpCentang.indexOf(res.data.data[i].id) < 0) {
+                    tmp.push({
+                        detail: res.data.data[i],
+                        statusCek: false
+                    });
+                }
             }
             setGetDataProduct(tmp)
 
+            console.log(getDataProduct)
             // setGetDataProduct(res.data.data);
             // setGetDataDetailPO(res.data.data.map(d => d.purchase_order_details))
         };
@@ -1427,12 +1451,30 @@ const BuatTallySheet = () => {
             })
  
             let tmp = []
+            // for (let i = 0; i < res.data.data.length; i++) {
+            //     tmp.push({
+            //         detail: res.data.data[i],
+            //         statusCek: false
+            //     });
+            // }
+
             for (let i = 0; i < res.data.data.length; i++) {
-                tmp.push({
-                    detail: res.data.data[i],
-                    statusCek: false
-                });
+                if(tmpCentang.indexOf(res.data.data[i].id) >= 0){
+                    tmp.push({
+                        detail: res.data.data[i],
+                        statusCek: true
+                    });
+                }
             }
+            for (let i = 0; i < res.data.data.length; i++) {
+                if (tmpCentang.indexOf(res.data.data[i].id) < 0) {
+                    tmp.push({
+                        detail: res.data.data[i],
+                        statusCek: false
+                    });
+                }
+            }
+
             setGetDataRetur(tmp)
 
             // setGetDataDetailPO(res.data.data.map(d => d.purchase_order_details))
@@ -1450,13 +1492,29 @@ const BuatTallySheet = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            let tmp = []
+            let tmp = []    
             for (let i = 0; i < res.data.data.length; i++) {
-                tmp.push({
-                    detail: res.data.data[i],
-                    statusCek: false
-                });
+                if(tmpCentang.indexOf(res.data.data[i].id) >= 0){
+                    tmp.push({
+                        detail: res.data.data[i],
+                        statusCek: true
+                    });
+                }
             }
+            for (let i = 0; i < res.data.data.length; i++) {
+                if (tmpCentang.indexOf(res.data.data[i].id) < 0) {
+                    tmp.push({
+                        detail: res.data.data[i],
+                        statusCek: false
+                    });
+                }
+            }
+            // for (let i = 0; i < res.data.data.length; i++) {
+            //     tmp.push({
+            //         detail: res.data.data[i],
+            //         statusCek: false
+            //     });
+            // }
             setGetDataFaktur(tmp)
             // setGetDataFaktur(res.data.data);
         };
@@ -1474,6 +1532,8 @@ const BuatTallySheet = () => {
         console.log(sumber,"ssss")
         let tmpDataBaru = [];
 
+        let tmpDataCentang=[...tmpCentang]
+
         // perubahan data dan status ceked 
         if (sumber == 'Retur') {
             for (let i = 0; i < getDataRetur.length; i++) {
@@ -1486,7 +1546,20 @@ const BuatTallySheet = () => {
                 else {
                     tmpDataBaru.push(getDataRetur[i])
                 }
+
+                if(tmpDataBaru[i].statusCek == true){
+                    tmpDataCentang.push(tmpDataBaru[i].detail.id)
+                }
+                else{
+                    let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.id);
+
+                    if(index >= 0){
+                        tmpDataCentang.splice(index,1)
+                    }
+                }
             }
+            // let unikTmpCentang = [...new Set(tmpDataCentang)]
+            // setTmpCentang(unikTmpCentang)
             setGetDataRetur(tmpDataBaru)
         }
 
@@ -1501,7 +1574,19 @@ const BuatTallySheet = () => {
                 else {
                     tmpDataBaru.push(getDataProduct[i])
                 }
+
+                if(tmpDataBaru[i].statusCek == true){
+                    tmpDataCentang.push(tmpDataBaru[i].detail.id)
+                }
+                else{
+                    let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.id);
+
+                    if(index >= 0){
+                        tmpDataCentang.splice(index,1)
+                    }
+                }
             }
+        
             setGetDataProduct(tmpDataBaru)
         }
 
@@ -1516,10 +1601,25 @@ const BuatTallySheet = () => {
                 else {
                     tmpDataBaru.push(getDataFaktur[i])
                 }
+
+                if(tmpDataBaru[i].statusCek == true){
+                    tmpDataCentang.push(tmpDataBaru[i].detail.id)
+                }
+                else{
+                    let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.id);
+                    if(index >= 0){
+                        tmpDataCentang.splice(index,1)
+                    }
+                }
             }
+            // let unikTmpCentang = [...new Set(tmpDataCentang)]
+            // setTmpCentang(unikTmpCentang)
             setGetDataFaktur(tmpDataBaru)
         }
 
+   
+        let unikTmpCentang = [...new Set(tmpDataCentang)]
+        setTmpCentang(unikTmpCentang)
 
         var updatedList = [...product];
         let arrData = [];

@@ -732,8 +732,8 @@ const BuatRetur = () => {
                         Swal.fire({
                             icon: "error",
                             title: "Oops...",
-                            text: "Data belum lengkap, silahkan lengkapi datanya dan coba kembali"
-                            // text: err.response.data.error.nama,
+                           // text: "Data belum lengkap, silahkan lengkapi datanya dan coba kembali"
+                             text: err.response.data.message,
                         });
                     } else if (err.request) {
                         console.log("err.request ", err.request);

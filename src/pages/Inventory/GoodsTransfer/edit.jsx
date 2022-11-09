@@ -144,7 +144,7 @@ const EditGoodsTransfer = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const [getDataDetailWindow, setDataDetailWindow] = useState();
+  const [dataDetailWindow, setDataDetailWindow] = useState();
   const [loading, setLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -156,6 +156,9 @@ const EditGoodsTransfer = () => {
 
   const [selectedValue, setSelectedCustomer] = useState(null);
   const [modal2Visible, setModal2Visible] = useState(false);
+
+  const [tmpCentang, setTmpCentang] = useState([]);
+  const [jumlah, setJumlah] = useState([])
 
   const cardOutline = {
     borderTop: "3px solid #007bff",
@@ -223,8 +226,8 @@ const EditGoodsTransfer = () => {
     setReferenceNo(value.code);
     setWarehouseId(value.warehouse_id);
     setTallySheetId(value.id);
-    var updatedList = [];
-    setProduct(updatedList);
+    // var updatedList = [];
+    // setProduct(updatedList);
   };
 
   const handleChangeGoodsTransfer = (value) => {
@@ -236,8 +239,8 @@ const EditGoodsTransfer = () => {
     setWhDestination(value.warehouse_destination);
     setWhSourceName(value.warehouse_source_name);
     setWhDestinationName(value.warehouse_destination_name);
-    var updatedList = [];
-    setProduct(updatedList);
+    // var updatedList = [];
+    // setProduct(updatedList);
   };
 
   const handleChangeWarehouseSource = (value) => {
@@ -295,7 +298,27 @@ const EditGoodsTransfer = () => {
             },
           }
         );
-        setDataDetailWindow(res.data);
+        let tmp = []
+        for (let x = 0; x < product.length; x++) {
+          for (let i = 0; i < res.data.length; i++) {
+
+            if (res.data[i].product_id == product[x].product_id) {
+              tmp.push({
+                detail: res.data[i],
+                statusCek: true
+              });
+            }
+            else {
+              tmp.push({
+                detail: res.data[i],
+                statusCek: false
+              });
+            }
+
+          }
+
+        }
+        setDataDetailWindow(tmp)
       };
       if (query.length === 0 || query.length > 2) getTallySheet();
     }
@@ -310,7 +333,29 @@ const EditGoodsTransfer = () => {
             },
           }
         );
-        setDataDetailWindow(res.data);
+        // console.log(res.data);
+        // console.log(product);
+        let tmp = []
+        for (let x = 0; x < product.length; x++) {
+          for (let i = 0; i < res.data.length; i++) {
+
+            if (res.data[i].product_id == product[x].product_id) {
+              tmp.push({
+                detail: res.data[i],
+                statusCek: true
+              });
+            }
+            else {
+              tmp.push({
+                detail: res.data[i],
+                statusCek: false
+              });
+            }
+
+          }
+
+        }
+        setDataDetailWindow(tmp)
       };
       if (query.length === 0 || query.length > 2) getGoodsTransfer();
     }
@@ -326,8 +371,8 @@ const EditGoodsTransfer = () => {
       setSelectedGoodsTransfer("");
       setReferenceNo();
       setGoodsTransfer();
-      var updatedList = [];
-      setProduct(updatedList);
+      // var updatedList = [];
+      // setProduct(updatedList);
     }
     if (type == "receive") {
       setType("receive");
@@ -335,8 +380,8 @@ const EditGoodsTransfer = () => {
 
       document.getElementById("reference_transfer_gudang").style.display =
         "flex";
-      var updatedList = [];
-      setProduct(updatedList);
+      // var updatedList = [];
+      // setProduct(updatedList);
       setSelectedTallySheet("");
       setReferenceNo();
       setWarehouseId();
@@ -349,14 +394,17 @@ const EditGoodsTransfer = () => {
     {
       title: "Nama Produk",
       dataIndex: "product_name",
+      render: (_, record) => {
+        return <>{record.detail.product_name}</>;
+      },
     },
     {
       title: "Qty",
       dataIndex: "transfer_qty",
       width: "15%",
       align: "center",
-      render: (text) => {
-        return <>{text.toString().replace(".", ",")}</>;
+      render: (_, record) => {
+        return <>{record.detail.transfer_qty}</>;
       },
     },
     {
@@ -364,12 +412,14 @@ const EditGoodsTransfer = () => {
       dataIndex: "actions",
       width: "15%",
       align: "center",
-      render: (_, record) => (
+      render: (_, record, index) => (
         <>
           <Checkbox
             value={record}
             // checked
-            onChange={handleCheck}
+            // onChange={handleCheck}
+            checked={record.statusCek}
+            onChange={(e) => handleCheck(e, index)}
           />
           {/* <CheckBox
           type="checkbox"
@@ -380,6 +430,20 @@ const EditGoodsTransfer = () => {
       ),
     },
   ];
+
+  // const columnDataProduct =
+  //   [...dataDetailWindow.map((item, i) => ({
+  //     product_name: item.detail.product_name,
+  //     transfer_qty: item.detail.transfer_qty,
+  //     // actions: <>
+  //     //   <Checkbox
+  //     //     value={item}
+  //     //     checked={item.statusCek}
+  //     //     onChange={(e) => handleCheck(e, i)}
+  //     //   />
+  //     // </>
+  //   }))]
+
   const defaultColumns = [
     {
       title: "No.",
@@ -460,16 +524,74 @@ const EditGoodsTransfer = () => {
     };
   });
 
-  const handleCheck = (event) => {
-    var updatedList = [...product];
-    if (event.target.checked) {
-      updatedList = [...product, event.target.value];
-    } else {
-      updatedList.splice(product.indexOf(event.target.value), 1);
+  const handleCheck = (event, index) => {
+    let data = event.target.value
+
+    let tmpDataBaru = []
+    let tmpJumlah = [...jumlah]
+    let tmpDataCentang = [...tmpCentang]
+    for (let i = 0; i < dataDetailWindow.length; i++) {
+      if (i == index) {
+        tmpDataBaru.push({
+          detail: dataDetailWindow[i].detail,
+          statusCek: !dataDetailWindow[i].statusCek
+        })
+        // tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+
+      }
+      else {
+        tmpDataBaru.push(dataDetailWindow[i])
+      }
+
+
+      if (tmpDataBaru[i].statusCek == true) {
+        tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+      }
+      else {
+        let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.product_id);
+        if (index >= 0) {
+          tmpDataCentang.splice(index, 1)
+        }
+        // tmpDataCentang.push('')
+      }
     }
-    console.log(product.indexOf(event.target.value));
+    let unikTmpCentang = [...new Set(tmpDataCentang)]
+    setTmpCentang(unikTmpCentang)
+    setDataDetailWindow(tmpDataBaru)
+    console.log(tmpDataBaru);
+    var updatedList = [...product];
+    if (tmpDataBaru[index].statusCek) {
+      updatedList = [...product, data.detail];
+
+      for (let i = 0; i < updatedList.length; i++) {
+        if (i >= product.length) {
+          tmpJumlah.push(0)
+        }
+
+      }
+      console.log(tmpJumlah)
+    } else {
+      for (let i = 0; i < updatedList.length; i++) {
+        if (updatedList[i].product_id == data.detail.product_id) {
+          updatedList.splice(i, 1);
+          tmpJumlah.splice(i, 1)
+        }
+      }
+    }
     setProduct(updatedList);
+    setJumlah(tmpJumlah)
   };
+
+  // const handleCheck = (event) => {
+  //   var updatedList = [...product];
+  //   if (event.target.checked) {
+  //     updatedList = [...product, event.target.value];
+  //   } else {
+  //     updatedList.splice(product.indexOf(event.target.value), 1);
+  //   }
+  //   console.log(product.indexOf(event.target.value));
+  //   setProduct(updatedList);
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -819,7 +941,7 @@ const EditGoodsTransfer = () => {
                 </div>
                 <Table
                   columns={columnsModal}
-                  dataSource={getDataDetailWindow}
+                  dataSource={dataDetailWindow}
                   scroll={{
                     y: 250,
                   }}

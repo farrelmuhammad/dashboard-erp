@@ -52,7 +52,7 @@ const EditBiayaImport = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState();
   
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState();
 
   // const [idBaganAkun, setIdBaganAkun] = useState('');
   const [status, setStatus] = useState('');
@@ -67,16 +67,46 @@ const EditBiayaImport = () => {
 
   const [dataAkun, setDataAkun] = useState()
 
-  const onChange = () => {
-    checked ? setChecked(false) : setChecked(true)
+  // const statusAwal = () => {
 
-    if (checked === false) {
-        setStatus("Active");
-        // console.log('Active');
-    } else {
-        setStatus("Inactive");
-        // console.log('Inactive');
-    }
+  //  // status === "Inactive" ? setChecked(false) : setChecked(true)
+
+  //   if(status === 'Active'){
+  //     setChecked(checked)
+  //   }
+  //   else if(status === 'Inactive'){
+  //     setChecked(!checked)
+  //   }
+  // }
+
+  // useEffect(() => {
+  //   statusAwal()
+  // }, []);
+
+  const onChange = () => {
+    console.log(checked)
+   setChecked(!checked)
+    
+   if(checked === false){
+    setStatus("Active")
+    console.log("as")
+   }
+   else{
+    setStatus("Inactive")
+    console.log("ia")
+   }
+
+    //checked ? setStatus('Active') : setStatus ('InActive')
+
+    //checked ? setChecked(false) : setChecked(true)
+
+    // if (checked === false) {
+    //     setStatus("Active");
+    //     // console.log('Active');
+    // } else {
+    //     setStatus("Inactive");
+    //     // console.log('Inactive');
+    // }
 };
 
 
@@ -143,8 +173,21 @@ const EditBiayaImport = () => {
           setKategori(getData.category.name);
         }
         setReferensi(getData.reference);
+
         setStatus(getData.status);
+
+        if(getData.status === 'Active'){
+          setChecked(true)
+        }
+        else{
+          setChecked(false)
+        }
         setLoading(false);
+        console.log(res.data.data[0])
+
+        //setChecked(res.data.data[0].status)
+
+
       })
       .catch((err) => {
         // Jika Gagal
@@ -319,11 +362,13 @@ const EditBiayaImport = () => {
         <div className="row mb-3">
           <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Status</label>
           <div className="col-sm-7">
-            <Switch defaultChecked={checked} onChange={onChange} />
+            
+            <Switch defaultChecked={status === 'Active' ? true : false
+            } onChange={onChange} />
             <label htmlFor="inputNama3" className="col-sm-4 ms-3 col-form-label">
               {
-                checked ? "Aktif"
-                  : "Nonaktif"
+                checked === true ? "Aktif"
+                  : "NonAktif"
               }
             </label>
             </div>

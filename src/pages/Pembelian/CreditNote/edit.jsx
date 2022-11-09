@@ -28,6 +28,7 @@ const EditCreditNote = () => {
     const { id } = useParams();
     const [fakturId, setFakturId] = useState();
     const [mataUangId, setMataUangId] = useState();
+    const [code, setCode] = useState()
     const navigate = useNavigate()
 
     function klikEnter(event) {
@@ -127,6 +128,7 @@ const EditCreditNote = () => {
                 setDate(res.data.data[0].date);
                 setSelectedSupplier(res.data.data[0].supplier.name);
                 setSupplierId(res.data.data[0].supplier.id)
+                setCode(res.data.data[0].code)
 
                 if (res.data.data[0].purchase_invoice) {
 
@@ -178,7 +180,7 @@ const EditCreditNote = () => {
         formData.append("mata_uang", mataUangId);
         formData.append("bagan_akun", COAId);
         formData.append("biaya", biayaId);
-        formData.append("nominal", nominal);
+        formData.append("nominal", nominal.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',','.'));
         formData.append("deskripsi", deskripsi);
         formData.append("status", 'Submitted');
         axios({
@@ -228,7 +230,7 @@ const EditCreditNote = () => {
         formData.append("mata_uang", mataUangId);
         formData.append("bagan_akun", COAId);
         formData.append("biaya", biayaId);
-        formData.append("nominal", nominal.replaceAll('.', '').replace(/[^0-9\.]+/g, ""));
+        formData.append("nominal", nominal.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',','.'));
         formData.append("deskripsi", deskripsi);
         formData.append("status", 'Draft');
 
@@ -290,6 +292,18 @@ const EditCreditNote = () => {
                 </div>
                 <div className="row">
                     <div className="col">
+                    <div className="row mb-3">
+                            <label htmlFor="inputKode3" className="col-sm-4 col-form-label">No. Kredit Note</label>
+                            <div className="col-sm-7">
+                                <input
+                                    disabled
+                                    id="startDate"
+                                    className="form-control"
+                                    type="text"
+                                    defaultValue={code}
+                                />
+                            </div>
+                        </div>
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
                             <div className="col-sm-7">
@@ -321,7 +335,14 @@ const EditCreditNote = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Faktur Pembelian</label>
                             <div className="col-sm-7">
-                                <AsyncSelect
+                            <input
+                                    disabled
+                                    id="startDate"
+                                    className="form-control"
+                                    type="text"
+                                    defaultValue={selectedFaktur}
+                                />
+                                {/* <AsyncSelect
                                     placeholder="Pilih Faktur Pembelian..."
                                     cacheOptions
                                     defaultOptions
@@ -331,20 +352,45 @@ const EditCreditNote = () => {
                                     getOptionValue={(e) => e.id}
                                     loadOptions={loadOptionsFaktur}
                                     onChange={handleChangeFaktur}
-                                />
+                                /> */}
                             </div>
                         </div>
                         <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
+                            <div className="col-sm-7">
+                                <AsyncSelect
+                                    placeholder="Pilih Mata Uang..."
+                                    cacheOptions
+                                    defaultOptions
+                                    defaultInputValue={mataUang}
+                                    value={selectedMataUang}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsMataUang}
+                                    onChange={handleChangeMataUang}
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Nominal</label>
                             <div className="col-sm-7">
-                                <CurrencyFormat
+                            <CurrencyFormat className=' form-control form-control-sm editable-input' 
+                            thousandSeparator={'.'} 
+                            decimalSeparator={','} 
+                            prefix={mataUang} 
+                            onKeyDown={(event) => klikEnter(event)} 
+                            value={nominal.replace('.', ',')}
+                            //value={nominal.substring(0, nominal.length - 2) + ',' + nominal.slice(-2)}
+                             onChange={(e) => setNominal(e.target.value)} />
+                                {/* <CurrencyFormat
                                     className='form-control'
                                     thousandSeparator={'.'}
                                     decimalSeparator={','}
                                     value={nominal}
                                     onKeyDown={(event) => klikEnter(event)}
                                     onChange={(e) => setNominal(e.target.value)}
-                                    prefix={selectedMataUang.name + ' '} />
+                                    prefix={selectedMataUang.name + ' '} /> */}
                             </div>
                         </div>
                         <div className="row mb-3">
@@ -380,22 +426,7 @@ const EditCreditNote = () => {
 
                             </div>
                         </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
-                            <div className="col-sm-7">
-                                <AsyncSelect
-                                    placeholder="Pilih Mata Uang..."
-                                    cacheOptions
-                                    defaultOptions
-                                    defaultInputValue={mataUang}
-                                    value={selectedMataUang}
-                                    getOptionLabel={(e) => e.name}
-                                    getOptionValue={(e) => e.id}
-                                    loadOptions={loadOptionsMataUang}
-                                    onChange={handleChangeMataUang}
-                                />
-                            </div>
-                        </div>
+               
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Deskripsi</label>
                             <div className="col-sm-7">

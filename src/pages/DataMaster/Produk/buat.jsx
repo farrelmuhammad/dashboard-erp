@@ -9,6 +9,7 @@ import AsyncSelect from "react-select/async";
 import { useSelector } from "react-redux";
 import { Button, PageHeader, Radio, Switch } from "antd";
 import { SendOutlined } from "@ant-design/icons";
+import ReactSelect from "react-select";
 
 const BuatProduk = () => {
   // const auth = useSelector(state => state.auth);
@@ -337,6 +338,44 @@ const BuatProduk = () => {
     setStatus(value);
   };
 
+  const optionsGroup = [
+    {
+      label: "Lokal",
+      value: "Lokal"
+    },
+    {
+      label: "Impor",
+      value: "Impor"
+    },
+    {
+      label: "Meatshop",
+      value: "Meatshop"
+    }
+  ];
+
+  const optionsUnit = [
+    {
+      label: "Kg",
+      value: "kg"
+    },
+    {
+      label: "Ekor",
+      value: "ekor"
+    },
+    {
+      label: "Pack",
+      value: "pack"
+    }
+  ];
+
+  const handleSingleChange = (value) => {
+    setGroup(value.value);
+  };
+
+  const handleSingleChange1 = (value) => {
+    setUnit(value.value)
+  };
+
   return (
     <>
 
@@ -354,7 +393,7 @@ const BuatProduk = () => {
               type="kode"
               className="form-control"
               id="inputKode3"
-              value={getProduct}
+              value="Otomatis"
               disabled
             />
           </div>
@@ -446,12 +485,16 @@ const BuatProduk = () => {
             Grup
           </label>
           <div className="col-sm-10">
-            <select onChange={e => setGroup(e.target.value)} id="Typeselect" className="form-select">
-              <option>Pilih Grup</option>
-              <option value="Lokal">Lokal</option>
-              <option value="Impor">Impor</option>
-              <option value="Meatshop">Meatshop</option>
-            </select>
+            <ReactSelect
+              className="basic-single"
+              placeholder="Pilih Grup..."
+              classNamePrefix="select"
+              isSearchable
+              getOptionLabel={(value) => value.label}
+              getOptionValue={(value) => value.value}
+              onChange={handleSingleChange}
+              options={optionsGroup}
+            />
           </div>
         </div>
         <div className="row mb-3">
@@ -495,12 +538,16 @@ const BuatProduk = () => {
             Satuan
           </label>
           <div className="col-sm-10">
-            <select onChange={e => setUnit(e.target.value)} id="Typeselect" className="form-select">
-              <option>Pilih Satuan</option>
-              <option value="kg">Kg</option>
-              <option value="pack">Pack</option>
-              <option value="ekor">Ekor</option>
-            </select>
+            <ReactSelect
+              className="basic-single"
+              placeholder="Pilih Satuan..."
+              classNamePrefix="select"
+              isSearchable
+              getOptionLabel={(value) => value.label}
+              getOptionValue={(value) => value.value}
+              onChange={handleSingleChange1}
+              options={optionsUnit}
+            />
           </div>
         </div>
         <div className="row mb-3">

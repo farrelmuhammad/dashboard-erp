@@ -64,6 +64,8 @@ const BuatPenerimaanBarang = () => {
     const [supplierName, setSupplierName] = useState()
     const [grup, setGrup] = useState()
 
+    const [tmpCentang, setTmpCentang] = useState([])
+
 
     const expandedRowRender = (record) => {
         const columns = [
@@ -212,11 +214,21 @@ const BuatPenerimaanBarang = () => {
             })
             let tmp = []
             for (let i = 0; i < res.data.data.length; i++) {
+                if(tmpCentang.indexOf(res.data.data[i].id) >= 0)
                 tmp.push({
                     detail: res.data.data[i],
-                    statusCek: false
+                    statusCek: true
                 });
             }
+
+            for(let i=0; i < res.data.data.length; i++){
+                if(tmpCentang.indexOf(res.data.data[i].id) < 0)
+                tmp.push({
+                    detail:res.data.data[i],
+                    statusCek:false
+                })
+            }
+
             setGetDataProduct(tmp)
             // setGetDataProduct(res.data.data);
             setGudang(res.data.warehouse_id)
@@ -236,6 +248,15 @@ const BuatPenerimaanBarang = () => {
             })
             let tmp = []
             for (let i = 0; i < res.data.data.length; i++) {
+                if(tmpCentang.indexOf(res.data.data[i].id) >= 0)
+                tmp.push({
+                    detail: res.data.data[i],
+                    statusCek: true
+                });
+            }
+
+            for (let i = 0; i < res.data.data.length; i++) {
+                if(tmpCentang.indexOf(res.data.data[i].id) < 0)
                 tmp.push({
                     detail: res.data.data[i],
                     statusCek: false
@@ -308,7 +329,7 @@ const BuatPenerimaanBarang = () => {
         const value = event.target.value.detail;
         let dataTally = value.tally_sheet_details
 
-
+        let tmpDataCentang = [...tmpCentang]
         if (sumber == 'Retur') {
             for (let i = 0; i < getDataRetur.length; i++) {
                 if (i == index) {
@@ -319,6 +340,16 @@ const BuatPenerimaanBarang = () => {
                 }
                 else {
                     tmpDataBaru.push(getDataRetur[i])
+                }
+
+                if(tmpDataBaru[i].statusCek == true){
+                    tmpDataCentang.push(tmpDataBaru[i].detail.id)
+                }
+                else{
+                    let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.id)
+                    if(index >= 0){
+                        tmpDataCentang.splice(index,1)
+                    }
                 }
             }
             setGetDataRetur(tmpDataBaru)
@@ -336,9 +367,22 @@ const BuatPenerimaanBarang = () => {
                 else {
                     tmpDataBaru.push(getDataProduct[i])
                 }
+
+                if(tmpDataBaru[i].statusCek == true){
+                    tmpDataCentang.push(tmpDataBaru[i].detail.id)
+                }
+                else{
+                    let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.id)
+                    if(index >= 0){
+                        tmpDataCentang.splice(index,1)
+                    }
+                }
             }
             setGetDataProduct(tmpDataBaru)
         }
+
+        let unikTmpCentang = [...new Set(tmpDataCentang)]
+        setTmpCentang(unikTmpCentang)
 
         if (tmpDataBaru[index].statusCek) {
             updatedList = [...product, value];

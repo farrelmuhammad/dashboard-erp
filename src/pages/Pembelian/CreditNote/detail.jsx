@@ -23,6 +23,7 @@ export const DetailCreditNote = () => {
     const { id } = useParams();
     const [fakturId, setFakturId] = useState();
     const [mataUangId, setMataUangId] = useState();
+    const [code, setCode] = useState();
 
     useEffect(() => {
         getDataCreditNoteById();
@@ -39,6 +40,9 @@ export const DetailCreditNote = () => {
                 console.log(getData)
 
                 setDate(getData.date);
+                setCode(res.data.data[0].code)
+
+                console.log(code)
                 setSelectedSupplier(getData.supplier_name);
                 if (getData.purchase_invoice) {
 
@@ -47,6 +51,7 @@ export const DetailCreditNote = () => {
 
                     setSelectedFaktur('-')
                 }
+                console.log(res.data.data[0].purchase_invoice)
 
                 if(res.data.data[0].chart_of_account){
                     setSelectedCOA(getData.chart_of_account.name)
@@ -65,6 +70,7 @@ export const DetailCreditNote = () => {
              
                 setSelectedMataUang(getData.currency.name)
                 setNominal(getData.nominal);
+                console.log(nominal)
                
                 setDeskripsi(getData.description)
                 setLoading(false);
@@ -95,6 +101,18 @@ export const DetailCreditNote = () => {
                 </div>
                 <div className="row">
                     <div className="col">
+                    <div className="row mb-3">
+                            <label htmlFor="inputKode3" className="col-sm-4 col-form-label">No. Kredit Note</label>
+                            <div className="col-sm-7">
+                                <input
+                                    disabled
+                                    id="startDate"
+                                    className="form-control"
+                                    type="text"
+                                    defaultValue={code}
+                                />
+                            </div>
+                        </div>
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
                             <div className="col-sm-7">
@@ -132,13 +150,30 @@ export const DetailCreditNote = () => {
                             </div>
                         </div>
                         <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
+                            <div className="col-sm-7">
+                                <input
+                                    disabled
+                                    id="startDate"
+                                    className="form-control"
+                                    type="text"
+                                    defaultValue={selectedMataUang}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Nominal</label>
                             <div className="col-sm-7">
                             <CurrencyFormat
                                     className='form-control'
+                                    decimalSeparator=','
+                                    //fixedDecimalScale={2}
                                     thousandSeparator={'.'}
-                                    decimalSeparator={','}
-                                    value={nominal}
+                                   // decimalSeparator={','}
+                                    //value={nominal.substring(0, nominal.length - 2) + ',' + nominal.slice(-2)}
+                                    //decimalScale={2}
+                                    value={nominal.replace('.', ',')}
                                     disabled
                                     prefix={selectedMataUang + ' '} />
                             </div>
@@ -167,18 +202,7 @@ export const DetailCreditNote = () => {
                                 />
                             </div>
                         </div>
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Mata Uang</label>
-                            <div className="col-sm-7">
-                                <input
-                                    disabled
-                                    id="startDate"
-                                    className="form-control"
-                                    type="text"
-                                    defaultValue={selectedMataUang}
-                                />
-                            </div>
-                        </div>
+           
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Deskripsi</label>
                             <div className="col-sm-7">

@@ -18,6 +18,7 @@ const DetailBiayaImport = () => {
   const [data, setData] = useState([]);
   const [idKategori, setIDKategori] = useState('')
   const [namaKategori, setNamaKategori] = useState('')
+  const [dataKategori, setDataKategori] = useState([])
 
   useEffect(() => {
     getBiayaImport()
@@ -32,11 +33,13 @@ const DetailBiayaImport = () => {
     })
     .then((res) => {
       setData(res.data.data);
-      console.log(data.name);
+      console.log(res.data.data);
       // console.log(data.category.chart_of_account_id
       //   );
       setIDKategori(data.chart_of_account_id
         );
+      setDataKategori(res.data.data[0].category.name)
+      console.log(res.data.data[0].category.name)
       //console.log(idKategori)
       // setAddress(res.data.data[0].supplier_addresses);
       // console.log(res.data.data[0].customer_addresses)
@@ -132,7 +135,25 @@ const DetailBiayaImport = () => {
                 Kategori
               </label>
               <div className="col-sm-10">
-              {data.map((d) => (
+                {
+                  dataKategori === null  || dataKategori === '' ? 
+                    <input
+                    type="Nama"
+                    className="form-control"
+                    id="inputNama3"
+                    disabled
+                    value={'-'}
+                /> :
+                        <input
+                        type="Nama"
+                        className="form-control"
+                        id="inputNama3"
+                        disabled
+                        value={
+                        dataKategori}
+                      />
+                }
+              {/* {data.map((d) => (
                   <input
                     type="Nama"
                     className="form-control"
@@ -142,7 +163,7 @@ const DetailBiayaImport = () => {
                       d.category.name === null ? ' -  ' :
                       d.category.name}
                   />
-              ))}
+              ))} */}
               </div>
             </div>
             <div className="row mb-3">

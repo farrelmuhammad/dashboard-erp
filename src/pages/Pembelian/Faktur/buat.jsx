@@ -152,6 +152,8 @@ const BuatFakturPembelian = () => {
     const [dataSupplier, setDataSupplier] = useState([]);
     const [idSupplier, setIDSupplier] = useState("");
 
+    const [tmpCentang, setTmpCentang] = useState([])
+
     useEffect(() => {
         // getCodeFaktur()
         getAkun()
@@ -229,7 +231,26 @@ const BuatFakturPembelian = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data.data);
+            let tmp = []
+            for(let i=0; i<res.data.data.length; i++){
+                if(tmpCentang.indexOf(res.data.data[i].code) >= 0 ){
+                    tmp.push({
+                        detail:res.data.data[i],
+                        statusCek: true
+                    });
+                }
+            }
+            for(let i=0; i<res.data.data.length; i++){
+                if(tmpCentang.indexOf(res.data.data[i].code) < 0 ){
+                    tmp.push({
+                        detail:res.data.data[i],
+                        statusCek: false
+                    });
+                }
+            }
+
+            setGetDataProduct(tmp)
+           // setGetDataProduct(res.data.data);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -244,7 +265,27 @@ const BuatFakturPembelian = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProductImpor(res.data.data);
+            let tmp = []
+            for(let i=0; i<res.data.data.length; i++){
+                if(tmpCentang.indexOf(res.data.data[i].code) >= 0 ){
+                    tmp.push({
+                        detail:res.data.data[i],
+                        statusCek: true
+                    });
+                }
+            }
+            for(let i=0; i<res.data.data.length; i++){
+                if(tmpCentang.indexOf(res.data.data[i].code) < 0 ){
+                    tmp.push({
+                        detail:res.data.data[i],
+                        statusCek: false
+                    });
+                }
+            }
+
+            setGetDataProductImpor(tmp)
+
+            //setGetDataProductImpor(res.data.data);
         };
 
         if (query.length === 0 || query.length > 2) getProductImpor();
@@ -707,27 +748,42 @@ const BuatFakturPembelian = () => {
         {
             title: 'No. Penerimaan Barang',
             dataIndex: 'code',
+            render: (_, record) => {
+                return <>{record.detail.code}</>
+            }
         },
         {
             title: 'Supplier',
             align: 'center',
             dataIndex: 'supplier_name',
+            render: (_, record) => {
+                return <>{record.detail.supplier_name}</>
+            }
         },
         {
             title: 'Referensi',
             align: 'center',
             dataIndex: 'reference',
+            render: (_, record) => {
+                return <>{record.detail.reference}</>
+            }
         },
         {
             title: 'actions',
             dataIndex: 'address',
             width: '15%',
             align: 'center',
-            render: (_, record) => (
+            render: (_, record,index) => (
                 <>
-                    <Checkbox
+                    {/* <Checkbox
                         value={record}
                         onChange={handleCheck}
+                    /> */}
+                      <Checkbox
+                        // style={{ display: tampilCek ? "block" : "none"}}
+                        value={record}
+                        checked={record.statusCek}
+                        onChange={(e) => handleCheck(e,index)}
                     />
                 </>
             )
@@ -739,30 +795,40 @@ const BuatFakturPembelian = () => {
             title: 'No. Pesanan',
             width: '20%',
             dataIndex: 'code',
+            render: (_, record) => {
+                return <>{record.detail.code}</>
+            }
         },
         {
             title: 'Supplier',
             dataIndex: 'supplier_name',
             width: '15%',
             align: 'center',
+            render: (_, record) => {
+                return <>{record.detail.supplier_name}</>
+            }
         },
         {
             title: 'Referensi',
             dataIndex: 'reference',
             width: '30%',
             align: 'center',
+            render: (_, record) => {
+                return <>{record.detail.reference}</>
+            }
         },
         {
             title: 'actions',
             dataIndex: 'address',
             width: '8%',
             align: 'center',
-            render: (_, record) => (
+            render: (_, record,index) => (
                 <>
                     <Checkbox
                         // style={{ display: tampilCek ? "block" : "none"}}
                         value={record}
-                        onChange={handleCheck}
+                        checked={record.statusCek}
+                        onChange={(e) => handleCheck(e,index)}
                     />
                 </>
             )
@@ -1119,16 +1185,96 @@ const BuatFakturPembelian = () => {
         },
     };
 
-    const handleCheck = (event) => {
+    const handleCheck = (event, index) => {
         setLoadingTable(true)
         let tmpData = [];
-        if (event.target.checked) {
-            var idTerima = [...idTandaTerima];
-            idTerima = [...idTandaTerima, event.target.value.id];
-            setIdTandaTerima(idTerima);
-            var updatedList;
+        let tmpDataBaru = [];
+        let idTerima = [];
+        let tmpDataCentang = [...tmpCentang]
 
+        //pengecekan centang
+        if(grup == "Lokal"){
+            for(let i=0; i<getDataProduct.length; i++){
+                if(i == index){
+                    tmpDataBaru.push({
+                        detail:getDataProduct[i].detail,
+                        statusCek: !getDataProduct[i].statusCek
+                    })
+                    if(!tmpDataBaru[i].statusCek){
+                        let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
+                        tmpDataCentang.splice(idxHapus, 1)
+                    }
+                }
+                else{
+                    tmpDataBaru.push(getDataProduct[i])
+                }
+
+                if(tmpDataBaru[i].statusCek == true){
+                    tmpDataCentang.push(tmpDataBaru[i].detail.code)
+                }
+            }
+            setGetDataProduct(tmpDataBaru)
+        }
+        else if(grup == "Impor"){
+            for(let i=0; i<getDataProductImpor.length; i++){
+                if(i == index){
+                    tmpDataBaru.push({
+                        detail:getDataProductImpor[i].detail,
+                        statusCek: !getDataProductImpor[i].statusCek
+                    })
+                    if(!tmpDataBaru[i].statusCek){
+                        let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
+                        tmpDataCentang.splice(idxHapus, 1)
+                    }
+                }
+                else{
+                    tmpDataBaru.push(getDataProductImpor[i])
+                }
+
+                if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.code)
+                }
+            }
+            //console.log(tmpDataBaru)
+            setGetDataProductImpor(tmpDataBaru)
+        }
+
+        setTmpCentang(tmpDataCentang)
+
+
+        if (tmpDataBaru[index].statusCek) {
+
+
+            if(grup == 'Lokal'){
+
+                for (let i = 0; i < getDataProduct.length; i++) {
+                    if (tmpDataBaru[i].statusCek) {
+                        idTerima = [...idTandaTerima, getDataProduct[i].detail.id]
+
+                    }
+                }
+                setIdTandaTerima(idTerima);
+            }
+            else if(grup == 'Impor'){
+                for (let i = 0; i < getDataProductImpor.length; i++) {
+                    if (tmpDataBaru[i].statusCek) {
+                        idTerima = [...idTandaTerima, getDataProductImpor[i].detail.id]
+                    }
+                }
+                setIdTandaTerima(idTerima);
+            }
+
+
+
+
+            // var idTerima = [...idTandaTerima];
+            // idTerima = [...idTandaTerima, event.target.value.id];
+            // setIdTandaTerima(idTerima);
+
+
+            var updatedList;
             var strParams;
+
             if (grup == "Lokal") {
                 for (let i = 0; i < idTerima.length; i++) {
                     if (i == 0) {
@@ -1147,9 +1293,11 @@ const BuatFakturPembelian = () => {
                 })
                     .then((res) => {
                         updatedList = res.data.details;
+                       
                     })
                     .then(() => {
                         for (let i = 0; i < updatedList.length; i++) {
+                          
                             updatedList[i].currency_name ? setMataUang(updatedList[i].currency_name) : setMataUang('Rp')
                             tmpData.push(
                                 {
@@ -1168,8 +1316,12 @@ const BuatFakturPembelian = () => {
                                 }
                             )
 
-                        }
+                            // if(tmpData[i].statusCek == true){
+                            //     tmpDataCentang.push(tmpData[i].id)
+                            // }
 
+                        }
+                        console.log(updatedList)
                         setData(tmpData)
                         calculate(tmpData)
                         console.log(tmpData)
@@ -1195,6 +1347,7 @@ const BuatFakturPembelian = () => {
                 })
                     .then((res) => {
                         updatedList = res.data.details;
+                      
                     })
                     .then(() => {
                         for (let i = 0; i < updatedList.length; i++) {
@@ -1217,7 +1370,7 @@ const BuatFakturPembelian = () => {
                             )
 
                         }
-
+                        console.log(updatedList)
                         setData(tmpData)
                         calculate(tmpData)
                     })
@@ -1228,21 +1381,26 @@ const BuatFakturPembelian = () => {
 
         }
         else {
-            for (let i = 0; i < idTandaTerima.length; i++) {
-                if (event.target.value.id == idTandaTerima[i]) {
-                    idTandaTerima.splice(i, 1);
+
+            idTerima = [...idTandaTerima]
+
+            for (let i = 0; i < idTerima.length; i++) {
+                if (event.target.value.id == idTerima[i]) {
+                    idTerima.splice(i, 1);
                 }
             }
 
+            setIdTandaTerima(idTerima)
+
             if (grup == "Lokal") {
-                if (idTandaTerima.length != 0) {
+                if (idTerima.length != 0) {
                     var strParams;
-                    for (let i = 0; i < idTandaTerima.length; i++) {
+                    for (let i = 0; i < idTerima.length; i++) {
                         if (i == 0) {
-                            strParams = "id_tanda_terima_barang[]=" + idTandaTerima[i]
+                            strParams = "id_tanda_terima_barang[]=" + idTerima[i]
                         }
                         else {
-                            strParams = strParams + "&id_tanda_terima_barang[]=" + idTandaTerima[i]
+                            strParams = strParams + "&id_tanda_terima_barang[]=" + idTerima[i]
                         }
 
                     }
@@ -1290,14 +1448,14 @@ const BuatFakturPembelian = () => {
                 }
             }
             else if (grup == "Impor") {
-                if (idTandaTerima.length != 0) {
+                if (idTerima.length != 0) {
                     var strParams;
-                    for (let i = 0; i < idTandaTerima.length; i++) {
+                    for (let i = 0; i < idTerima.length; i++) {
                         if (i == 0) {
-                            strParams = "id_pesanan_pembelian[]=" + idTandaTerima[i]
+                            strParams = "id_pesanan_pembelian[]=" + idTerima[i]
                         }
                         else {
-                            strParams = strParams + "&id_pesanan_pembelian[]=" + idTandaTerima[i]
+                            strParams = strParams + "&id_pesanan_pembelian[]=" + idTerima[i]
                         }
 
                     }
@@ -1798,7 +1956,7 @@ const BuatFakturPembelian = () => {
                                     // isClearable={true}
                                     isSearchable={true}
                                     options={dataSupplier}
-                                    onChange={(e) => { setSupplier(e.value), setProduct([]) }}
+                                    onChange={(e) => {setSupplier(e.value), setProduct([]), setTmpCentang([])}}
                                 />
 
                             </div>
