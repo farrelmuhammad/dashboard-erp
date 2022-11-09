@@ -103,7 +103,7 @@ const EditableCell = ({
 const BuatFakturPembelian = () => {
     // const auth.token = jsCookie.get("auth");
     const auth = useSelector(state => state.auth);
-    const [date, setDate] = useState(null);
+    const [date, setDate] = useState('');
     const [jatuhTempo, setJatuhTempo] = useState(null);
 
     const [code, setCode] = useState('');
@@ -153,7 +153,7 @@ const BuatFakturPembelian = () => {
     const [idSupplier, setIDSupplier] = useState("");
 
     useEffect(() => {
-        getCodeFaktur()
+        // getCodeFaktur()
         getAkun()
         getCredit(idSupplier)
         getAlamat()
@@ -201,21 +201,21 @@ const BuatFakturPembelian = () => {
 
     }, [grup])
 
-    const getCodeFaktur = async () => {
-        await axios.get(`${Url}/get_new_purchase_invoice_code/Local?tanggal=${date}`, {
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then((res) => {
-                setCode(res.data.data);
-            })
-            .catch((err) => {
-                // Jika Gagal
-                console.log(err);
-            });
-    }
+    // const getCodeFaktur = async () => {
+    //     await axios.get(`${Url}/get_new_purchase_invoice_code/Local?tanggal=${date}`, {
+    //         headers: {
+    //             Accept: "application/json",
+    //             Authorization: `Bearer ${auth.token}`,
+    //         },
+    //     })
+    //         .then((res) => {
+    //             setCode(res.data.data);
+    //         })
+    //         .catch((err) => {
+    //             // Jika Gagal
+    //             console.log(err);
+    //         });
+    // }
 
     useEffect(() => {
         console.log(supplier)
@@ -1412,6 +1412,8 @@ const BuatFakturPembelian = () => {
             formData.append("muatan", muatan.replace(/[^0-9\.]+/g, ""))
         }
 
+        if(code){getCodeFaktur}
+        formData.append("kode", code);
         formData.append("karton", ctn);
         formData.append("pemasok", supplier);
         formData.append("catatan", description);
@@ -1559,6 +1561,7 @@ const BuatFakturPembelian = () => {
         }
 
 
+        if(code){getCodeFaktur}
         formData.append("karton", ctn);
         formData.append("pemasok", supplier);
         formData.append("catatan", description);
@@ -1649,7 +1652,7 @@ const BuatFakturPembelian = () => {
 
     function getAkun() {
         let tmp = [];
-        axios.get(`${Url}/filter_chart_of_accounts?induk=0&kode_kategori[]=511&kode_kategori[]=512&kode_kategori[]=611&kode_kategori[]=612&kode_kategori[]=811`, {
+        axios.get(`${Url}/select_chart_of_accounts?induk=0&kode_kategori[]=511&kode_kategori[]=512&kode_kategori[]=611&kode_kategori[]=612&kode_kategori[]=811`, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${auth.token}`
@@ -1762,11 +1765,12 @@ const BuatFakturPembelian = () => {
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">No. Faktur</label>
                             <div className="col-sm-7">
                                 <input
-                                    value='Otomatis'
+                                
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
-                                    disabled
+                                    onChange={(e) => setCode(e.target.value)}
+
 
                                 />
                             </div>

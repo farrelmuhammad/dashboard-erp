@@ -939,8 +939,8 @@ const EditFakturPembelian = () => {
             total: 
             
                 grup === 'Lokal' ? 
-                      < CurrencyFormat  className=' text-start editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','}  value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon"  />
-                   :< CurrencyFormat  className=' text-start  editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon"  />
+                      < CurrencyFormat disabled  className=' text-start editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','}  value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon"  />
+                   :< CurrencyFormat  disabled className=' text-start  editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon"  />
             
          
         }))
@@ -964,8 +964,8 @@ const EditFakturPembelian = () => {
         return <>
         {
             grup === 'Lokal' ? 
-                  < CurrencyFormat  className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm"  className="form-control form-control-sm"/>}  />
-                  :< CurrencyFormat  className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true"  id="colFormLabelSm"  className="form-control form-control-sm"/>} />
+                  < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon" renderText={value => <input disabled  value={value} readOnly="true" id="colFormLabelSm"  className="form-control form-control-sm"/>}  />
+                  :< CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input  disabled value={value} readOnly="true"  id="colFormLabelSm"  className="form-control form-control-sm"/>} />
         }
         </>
     }
@@ -2046,7 +2046,9 @@ const EditFakturPembelian = () => {
                                     prefix={mataUang + ' '}
                                     onKeyDown={(event) => klikEnter(event)}
                                     value={Number(uangMuka).toFixed(2).replace('.',',')}
-                                    onChange={(e) => tambahUangMuka(e.target.value)} /> :
+                                    onChange={(e) => tambahUangMuka(e.target.value)}
+                                    disabled
+                                    style={{ width: "70%", fontSize: "10px!important" }} /> :
 
                                     <CurrencyFormat
                                     className='form-control form-control-sm'
@@ -2055,7 +2057,9 @@ const EditFakturPembelian = () => {
                                     prefix={mataUang + ' '}
                                     onKeyDown={(event) => klikEnter(event)}
                                     value={Number(uangMuka).toLocaleString('id')}
-                                    onChange={(e) => tambahUangMuka(e.target.value)} />
+                                    onChange={(e) => tambahUangMuka(e.target.value)}
+                                    disabled
+                                    style={{ width: "70%", fontSize: "10px!important" }} />
                                 }
                               
 
@@ -2073,7 +2077,9 @@ const EditFakturPembelian = () => {
                                     prefix={mataUang + ' '}
                                     onKeyDown={(event) => klikEnter(event)}
                                     value={Number(totalPpn).toFixed(2).replace('.',',')}
-                                    onChange={(e) => tambahPPN(e.target.value)} /> : 
+                                    onChange={(e) => tambahPPN(e.target.value)}
+                                    disabled
+                                    style={{ width: "70%", fontSize: "10px!important" }} /> : 
 
                                     <CurrencyFormat
                                     className='form-control form-control-sm'
@@ -2082,7 +2088,9 @@ const EditFakturPembelian = () => {
                                     prefix={mataUang + ' '}
                                     onKeyDown={(event) => klikEnter(event)}
                                     value={Number(totalPpn).toLocaleString('id')}
-                                    onChange={(e) => tambahPPN(e.target.value)} />
+                                    onChange={(e) => tambahPPN(e.target.value)}
+                                    disabled
+                                    style={{ width: "70%", fontSize: "10px!important" }} />
 
                                 }
                              
