@@ -7,6 +7,7 @@ import Url from '../../../Config';
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 import CurrencyFormat from 'react-currency-format';
 
 const PesananPembelianTable = () => {
@@ -19,6 +20,86 @@ const PesananPembelianTable = () => {
     const [namaMataUang, setNamaMataUang] = useState([]);
     const [dataTampil, setDataTampil] = useState([]);
     const [getData1, setGetData1] = useState([])
+
+    const [tableParams, setTableParams] = useState({
+        pagination: {
+            current: 1,
+            pageSize: 10,
+        },
+    });
+
+    const getParams = (params) => ({
+        results: params.pagination?.pageSize,
+        page: params.pagination?.current,
+        ...params,
+    });
+
+    const fetchData = () => {
+        setIsLoading(true);
+        console.log(qs.stringify(getParams(tableParams)))
+        fetch(`${Url}/purchase_orders?${qs.stringify(getParams(tableParams))}`, {
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
+        }).then((res) => res.json())
+            .then(({ data }) => {
+
+                const getData = data
+                console.log(getData)
+
+                setStatus(getData.map(d => d.status))
+                let mataUang = [];
+                let varnull = null;
+                for (let i = 0; i < getData.length; i++) {
+                    if (getData[i].supplier._group === "Lokal" || !getData[i].currency) {
+                        mataUang.push("Rp ")
+                    }
+                    else if (getData[i].currency) {
+                        mataUang.push(getData[i].currency.name);
+                    }
+                }
+                setNamaMataUang(mataUang);
+                setIsLoading(false);
+                setGetData1(getData)
+
+                setPesananPembelian(getData)
+
+                let tmp = []
+                for (let i = 0; i < getData.length; i++) {
+                    // let uang = getData[i].currency.name;
+                    tmp.push({
+                        id: getData[i].id,
+                        can: getData[i].can,
+                        code: getData[i].code,
+                        date: getData[i].date,
+                        total: getData[i].supplier._group === "Lokal" || !getData[i].currency ?
+                            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={'Rp '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].total).toFixed(2).replace('.', ',')} key="diskon" />
+                            : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={getData[i].currency.name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].total).toLocaleString('id')} key="diskon" />,
+
+                        status: getData[i].status,
+                        name: getData[i].name,
+                        supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+                    })
+                }
+                setDataTampil(tmp)
+                setIsLoading(false);
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams.pagination,
+                        total: 200,
+                    },
+                });
+            });
+    };
+
+
+    useEffect(() => {
+        fetchData();
+    }, [JSON.stringify(tableParams)]);
+
+
 
     // const token = jsCookie.get('auth')
     const auth = useSelector(state => state.auth);
@@ -43,7 +124,7 @@ const PesananPembelianTable = () => {
                     },
                 })
 
-                getPesananPembelian()
+                fetchData()
                 Swal.fire("Berhasil Diubah!", `${code} Done`, "success");
 
             }
@@ -67,7 +148,7 @@ const PesananPembelianTable = () => {
                         Authorization: `Bearer ${auth.token}`,
                     },
                 });
-                getPesananPembelian()
+                fetchData()
                 Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
 
             }
@@ -101,7 +182,7 @@ const PesananPembelianTable = () => {
                         },
                     })
 
-                    getPesananPembelian();
+                    fetchData();
                     Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
                 }
                 catch (err) {
@@ -210,64 +291,72 @@ const PesananPembelianTable = () => {
         //   ),
     });
 
-    useEffect(() => {
-        getPesananPembelian()
-    }, [])
+    // useEffect(() => {
+    //     getPesananPembelian()
+    // }, [])
 
-    const getPesananPembelian = async (params = {}) => {
-        setIsLoading(true);
-        await axios.get(`${Url}/purchase_orders`, {
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${auth.token}`
-            }
-        })
-            .then(res => {
-                const getData = res.data.data
+    // const getPesananPembelian = async (params = {}) => {
+    //     setIsLoading(true);
+    //     await axios.get(`${Url}/purchase_orders`, {
+    //         headers: {
+    //             'Accept': 'application/json',
+    //             'Authorization': `Bearer ${auth.token}`
+    //         }
+    //     })
+    //         .then(res => {
+    //             const getData = res.data.data
 
-                setStatus(getData.map(d => d.status))
-                let mataUang = [];
-                let varnull = null;
-                for (let i = 0; i < getData.length; i++) {
-                    if (getData[i].supplier._group === "Lokal" || !getData[i].currency) {
-                        mataUang.push("Rp ")
-                    }
-                    else if (getData[i].currency) {
-                        mataUang.push(getData[i].currency.name);
-                    }
-                    // else{
-                    //     console.log(getData[i].currency)
+    //             setStatus(getData.map(d => d.status))
+    //             let mataUang = [];
+    //             let varnull = null;
+    //             for (let i = 0; i < getData.length; i++) {
+    //                 if (getData[i].supplier._group === "Lokal" || !getData[i].currency) {
+    //                     mataUang.push("Rp ")
+    //                 }
+    //                 else if (getData[i].currency) {
+    //                     mataUang.push(getData[i].currency.name);
+    //                 }
+    //                 // else{
+    //                 //     console.log(getData[i].currency)
 
-                    // }
-                }
-                setNamaMataUang(mataUang);
-                console.log(mataUang)
-                console.log(namaMataUang)
-                setIsLoading(false);
-                setGetData1(getData)
+    //                 // }
+    //             }
+    //             setNamaMataUang(mataUang);
+    //             console.log(mataUang)
+    //             console.log(namaMataUang)
+    //             setIsLoading(false);
+    //             setGetData1(getData)
 
-                setPesananPembelian(getData)
+    //             setPesananPembelian(getData)
 
-                let tmp = []
-                for (let i = 0; i < getData.length; i++) {
-                    // let uang = getData[i].currency.name;
-                  tmp.push({
-                    id: getData[i].id,
-                    can: getData[i].can,
-                    code: getData[i].code,
-                    date:getData[i].date,
-                    total : getData[i].supplier._group === "Lokal" || !getData[i].currency? 
-                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={'Rp '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].total).toFixed(2).replace('.' , ',')} key="diskon" />
-                    :   < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={getData[i].currency.name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].total).toLocaleString('id')} key="diskon" />,
-                 
-                    status : getData[i].status,
-                    name:getData[i].name,
-                    supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
-                  })
-                }
-                setDataTampil(tmp)
-            })
-    }
+    //             let tmp = []
+    //             for (let i = 0; i < getData.length; i++) {
+    //                 // let uang = getData[i].currency.name;
+    //                 tmp.push({
+    //                     id: getData[i].id,
+    //                     can: getData[i].can,
+    //                     code: getData[i].code,
+    //                     date: getData[i].date,
+    //                     total: getData[i].supplier._group === "Lokal" || !getData[i].currency ?
+    //                         < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={'Rp '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].total).toFixed(2).replace('.', ',')} key="diskon" />
+    //                         : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "100%", fontSize: "10px!important" }} prefix={getData[i].currency.name + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(getData[i].total).toLocaleString('id')} key="diskon" />,
+
+    //                     status: getData[i].status,
+    //                     name: getData[i].name,
+    //                     supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+    //                 })
+    //             }
+    //             setDataTampil(tmp)
+    //         })
+    // }
+
+    const handleTableChange = (pagination, filters, sorter) => {
+        setTableParams({
+            pagination,
+            filters,
+            ...sorter,
+        });
+    };
 
     const columns = [
         {
@@ -275,6 +364,8 @@ const PesananPembelianTable = () => {
             dataIndex: 'date',
             key: 'date',
             width: '15%',
+            sorter: (a, b) => a.date.length - b.date.length,
+            sortDirections: ['descend', 'ascend'],
             ...getColumnSearchProps('date'),
         },
         {
@@ -283,8 +374,8 @@ const PesananPembelianTable = () => {
             key: 'code',
             width: '20%',
             ...getColumnSearchProps('code'),
-            // sorter: true,
-            // sortDirections: ['descend', 'ascend'],
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Supplier',
@@ -292,14 +383,17 @@ const PesananPembelianTable = () => {
             key: 'supplier_name',
             width: '20%',
             ...getColumnSearchProps('supplier_name'),
-            // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
-            // sortDirections: ['descend', 'ascend'],
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Total',
             dataIndex: 'total',
             key: 'total',
             width: '20%',
+            sorter: (a, b) => a.total - b.total,
+            ...getColumnSearchProps('total'),
+            sortDirections: ['descend', 'ascend'],
             // render(text, record, index) {
             //     return {
             //       props: {
@@ -329,6 +423,8 @@ const PesananPembelianTable = () => {
                 </>
             ),
             ...getColumnSearchProps('status'),
+            sorter: (a, b) => a.status.length - b.status.length
+
         },
         {
             title: 'Actions',
@@ -337,70 +433,70 @@ const PesananPembelianTable = () => {
             align: 'center',
             render: (_, record) => (
                 <>
-                <Space size="middle">
-                    {record.can['read-purchase_order'] ? (
-                        <Link to={`/pesananpembelian/detail/${record.id}`}>
-                            <Button
-                                size='small'
-                                type="primary"
-                                icon={<InfoCircleOutlined />}
-                            />
-                        </Link>
-                    ) : null}
-                    {
-                        record.can['cancel-purchase_order'] ? (
+                    <Space size="middle">
+                        {record.can['read-purchase_order'] ? (
+                            <Link to={`/pesananpembelian/detail/${record.id}`}>
+                                <Button
+                                    size='small'
+                                    type="primary"
+                                    icon={<InfoCircleOutlined />}
+                                />
+                            </Link>
+                        ) : null}
+                        {
+                            record.can['cancel-purchase_order'] ? (
 
-                            <Button
-                                size='small'
-                                type="danger"
-                                icon={<CloseOutlined />}
-                                onClick={() => cancelPurchaseOrders(record.id, record.code)}
-                            />
+                                <Button
+                                    size='small'
+                                    type="danger"
+                                    icon={<CloseOutlined />}
+                                    onClick={() => cancelPurchaseOrders(record.id, record.code)}
+                                />
 
-                        ) : null
-                    }
-                    {
-                        record.can['delete-purchase_order'] ? (
+                            ) : null
+                        }
+                        {
+                            record.can['delete-purchase_order'] ? (
                                 <Button
                                     size='small'
                                     type="danger"
                                     icon={<DeleteOutlined />}
                                     onClick={() => deletePurchaseOrders(record.id, record.code)}
                                 />
-                        ) : null
-                    }
-                    {
-                        record.can['update-purchase_order'] ? (
-                            <Link to={`/pesananpembelian/edit/${record.id}`}>
+                            ) : null
+                        }
+                        {
+                            record.can['update-purchase_order'] ? (
+                                <Link to={`/pesananpembelian/edit/${record.id}`}>
+                                    <Button
+                                        size='small'
+                                        type="success"
+                                        icon={<EditOutlined />}
+                                    />
+                                </Link>
+                            ) : null
+                        }
+                        {
+
+                            record.can['force_done-purchase_order'] ? (
                                 <Button
                                     size='small'
                                     type="success"
-                                    icon={<EditOutlined />}
+                                    icon={<CheckCircleOutlined />}
+                                    onClick={() => forceDonePurchaseOrder(record.id, record.code)}
                                 />
-                            </Link>
-                        ) : null
-                    }
-                    {
-                        
-                        record.can['force_done-purchase_order'] ? (
-                            <Button
-                            size='small'
-                            type="success"
-                            icon={<CheckCircleOutlined />}
-                            onClick={() => forceDonePurchaseOrder(record.id, record.code)}
-                        />
                                 // <Button
                                 //     size='small'
                                 //     type="success"
                                 //     icon={<CheckCircleOutlined />}
                                 //     oncClick = {() => forceDonePurchaseOrder(record.id, record.code)}
                                 // />
-                            
-                        ) : null
-                    }
-                    
-                </Space>
-            </>
+
+                            ) : null
+                        }
+
+                    </Space>
+                </>
             )
         },
     ];
@@ -477,11 +573,13 @@ const PesananPembelianTable = () => {
         columns={columns}
         dataSource={dataTampil}
         pagination={{ pageSize: 10 }}
+        onChange={handleTableChange}
 
-        // pagination=
-        // {
-        //     pesananPembelian.length < 50 ? { pageSize: 5 } : null
-        // }
+
+    // pagination=
+    // {
+    //     pesananPembelian.length < 50 ? { pageSize: 5 } : null
+    // }
     />;
 };
 

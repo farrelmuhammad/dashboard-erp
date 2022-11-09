@@ -656,7 +656,7 @@ const PesananTable = () => {
         scroll={{
             y: 240,
         }}
-    />;
+    />; 
 };
 
 export default PesananTable;
