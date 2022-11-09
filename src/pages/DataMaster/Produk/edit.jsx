@@ -385,7 +385,6 @@ const EditProduk = () => {
                     <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Grup</label>
                     <div className="col-sm-10">
                         <select onChange={e => setGroup(e.target.value)} id="Typeselect" className="form-select">
-                            <option>Pilih Grup</option>
                             <option value="Lokal" selected={group === "Lokal"}>Lokal</option>
                             <option value="Impor" selected={group === "Impor"}>Impor</option>
                             <option value="Meatshop" selected={group === "Meatshop"}>Meatshop</option>
