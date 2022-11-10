@@ -646,7 +646,7 @@ const DetailPelunasan = () => {
     ...salesInvoicePayment.map((item , i ) => ({
         no_faktur: item.sales_invoice_code,
         total : <>
-                <CurrencyFormat disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp.' + ' '} value={Number(item.total).toFixed(2).replace('.' , ',')} />
+                <CurrencyFormat disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp.' + ' '} value={Number(item.sales_invoice_total_payment).toFixed(2).replace('.' , ',')} />
         </>,
         sisa: <>
         {

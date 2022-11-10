@@ -426,7 +426,8 @@ const BuatSupplier = () => {
               type="kode"
               className="form-control"
               id="inputKode3"
-              value={getSupplier}
+              value={'Otomatis'}
+              //value={getSupplier}
               disabled
             />
           </div>

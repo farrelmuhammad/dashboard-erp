@@ -155,6 +155,7 @@ const BuatPenerimaanBarang = () => {
 
     const handleChangeSupplier = (value) => {
         setSupplierId(value.id);
+        console.log(value)
         setProduct([])
         setSelectedSupplier(value);
         setGrup(value._group)
@@ -337,20 +338,28 @@ const BuatPenerimaanBarang = () => {
                         detail: getDataRetur[i].detail,
                         statusCek: !getDataRetur[i].statusCek
                     })
+                    if (!tmpDataBaru[i].statusCek) {
+                        let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.id);
+                        tmpDataCentang.splice(idxHapus, 1)
+                    }
+                    else if (tmpDataBaru[i].statusCek == true) {
+                        tmpDataCentang.push(tmpDataBaru[i].detail.id)
+                    }
+                    
                 }
                 else {
                     tmpDataBaru.push(getDataRetur[i])
                 }
 
-                if(tmpDataBaru[i].statusCek == true){
-                    tmpDataCentang.push(tmpDataBaru[i].detail.id)
-                }
-                else{
-                    let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.id)
-                    if(index >= 0){
-                        tmpDataCentang.splice(index,1)
-                    }
-                }
+                // if(tmpDataBaru[i].statusCek == true){
+                //     tmpDataCentang.push(tmpDataBaru[i].detail.id)
+                // }
+                // else{
+                //     let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.id)
+                //     if(index >= 0){
+                //         tmpDataCentang.splice(index,1)
+                //     }
+                // }
             }
             setGetDataRetur(tmpDataBaru)
 

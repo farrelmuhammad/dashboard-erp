@@ -112,7 +112,8 @@ const BuatMerek = () => {
               type="kode"
               className="form-control"
               id="inputKode3"
-              value={getBrand}
+              //value={getBrand}
+              value={'Otomatis'}
               disabled
             />
           </div>

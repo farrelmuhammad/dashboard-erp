@@ -6,7 +6,7 @@ import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
 import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, Typography, PageHeader } from 'antd'
-import { DeleteOutlined, PlusOutlined , SendOutlined} from '@ant-design/icons'
+import { DeleteOutlined, PlusOutlined, SendOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
@@ -142,40 +142,40 @@ const BuatPelunasan = () => {
     const [loadings2, setLoadings2] = useState([]);
 
     const enterLoading = (index) => {
-      setLoadings((prevLoadings) => {
-        const newLoadings = [...prevLoadings];
-        newLoadings[index] = true;
-        return newLoadings;
-      });
-      setTimeout(() => {
         setLoadings((prevLoadings) => {
-          const newLoadings = [...prevLoadings];
-          newLoadings[index] = false;
-          return newLoadings;
+            const newLoadings = [...prevLoadings];
+            newLoadings[index] = true;
+            return newLoadings;
         });
-        handleSubmit()
-        // setName('');
-        // setDescription('');
-      }, 2000);
+        setTimeout(() => {
+            setLoadings((prevLoadings) => {
+                const newLoadings = [...prevLoadings];
+                newLoadings[index] = false;
+                return newLoadings;
+            });
+            handleSubmit()
+            // setName('');
+            // setDescription('');
+        }, 2000);
     };
 
     const enterLoading2 = (index) => {
         setLoadings2((prevLoadings) => {
-          const newLoadings = [...prevLoadings];
-          newLoadings[index] = true;
-          return newLoadings;
+            const newLoadings = [...prevLoadings];
+            newLoadings[index] = true;
+            return newLoadings;
         });
         setTimeout(() => {
-          setLoadings((prevLoadings) => {
-            const newLoadings = [...prevLoadings];
-            newLoadings[index] = false;
-            return newLoadings;
-          });
-          handleDraft()
-          // setName('');
-          // setDescription('');
+            setLoadings((prevLoadings) => {
+                const newLoadings = [...prevLoadings];
+                newLoadings[index] = false;
+                return newLoadings;
+            });
+            handleDraft()
+            // setName('');
+            // setDescription('');
         }, 2000);
-      };
+    };
 
     const handleChangeCustomer = (value) => {
         console.log(value)
@@ -220,13 +220,13 @@ const BuatPelunasan = () => {
         }).then((res) => res.data);
     };
 
-    
-  const coaGrup = dataCOA.map((d) => {
-    return {
-      label: d.name,
-      value: d.code,
-    };
-  });
+
+    const coaGrup = dataCOA.map((d) => {
+        return {
+            label: d.name,
+            value: d.code,
+        };
+    });
 
 
     useEffect(() => {
@@ -236,16 +236,16 @@ const BuatPelunasan = () => {
                 'Authorization': `Bearer ${auth.token}`
             }
         }).then((res) => {
-            
+
             let tmp = []
             for (let i = 0; i < res.data.length; i++) {
-                    tmp.push({
-                        label: res.data[i].name,
-                        value: res.data[i].id
-                    });
-              
+                tmp.push({
+                    label: res.data[i].name,
+                    value: res.data[i].id
+                });
+
             }
-             
+
             setDataCOA(tmp)
             console.log(dataCOA)
         })
@@ -282,7 +282,7 @@ const BuatPelunasan = () => {
                 }
             }
             for (let i = 0; i < res.data.data.length; i++) {
-                if (tmpCentang.indexOf(res.data.data[i].code)  < 0) {
+                if (tmpCentang.indexOf(res.data.data[i].code) < 0) {
                     tmp.push({
                         detail: res.data.data[i],
                         statusCek: false
@@ -497,9 +497,12 @@ const BuatPelunasan = () => {
                     detail: getDataProduct[i].detail,
                     statusCek: !getDataProduct[i].statusCek
                 })
-                if(!tmpDataBaru[i].statusCek){
+                if (!tmpDataBaru[i].statusCek) {
                     let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
                     tmpDataCentang.splice(idxHapus, 1)
+                }
+                else if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.code)
                 }
             }
 
@@ -508,15 +511,15 @@ const BuatPelunasan = () => {
             }
 
 
-            if (tmpDataBaru[i].statusCek == true) {
-                tmpDataCentang.push(tmpDataBaru[i].detail.code)
-            }
-            else {
-                let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.code);
-                if(index>=0){
-                    tmpDataCentang.splice(index, 1)
-                } 
-            }
+            // if (tmpDataBaru[i].statusCek == true) {
+            //     tmpDataCentang.push(tmpDataBaru[i].detail.code)
+            // }
+            // else {
+            //     let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.code);
+            //     if(index>=0){
+            //         tmpDataCentang.splice(index, 1)
+            //     } 
+            // }
         }
 
         let unikTmpCentang = [...new Set(tmpDataCentang)]
@@ -870,13 +873,13 @@ const BuatPelunasan = () => {
                         Simpan
                     </button> */}
                     <Button
-                    type="button"
-                    className="btn btn-success rounded m-1 justify-content"
-                    value="Draft"
-                    // icon={<SendOutlined />}
-                    loading={loadings2[1]}
-                    onClick={() => enterLoading2(1)}
-                    style={{paddingBottom:"2px"}}
+                        type="button"
+                        className="btn btn-success rounded m-1 justify-content"
+                        value="Draft"
+                        // icon={<SendOutlined />}
+                        loading={loadings2[1]}
+                        onClick={() => enterLoading2(1)}
+                        style={{ paddingBottom: "2px" }}
                     >Simpan
                     </Button>
 
@@ -890,14 +893,14 @@ const BuatPelunasan = () => {
                     </button> */}
 
                     <Button
-                    type="button"
-                    className="btn btn-primary rounded m-1 justify-content"
-                    value="Submitted"
-                    // icon={<SendOutlined />}
-                    loading={loadings[1]}
-                    onClick={() => enterLoading(1)}
+                        type="button"
+                        className="btn btn-primary rounded m-1 justify-content"
+                        value="Submitted"
+                        // icon={<SendOutlined />}
+                        loading={loadings[1]}
+                        onClick={() => enterLoading(1)}
                     >
-                    Submit
+                        Submit
                     </Button>
                 </div>
             </PageHeader>

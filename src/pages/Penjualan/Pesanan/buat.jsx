@@ -84,6 +84,7 @@ const EditableCell = ({
                 {/* <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={1} max={1000} defaultValue={1} /> */}
                 <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
                     //               formatter={value => `${value.replace('.',',')}`} 
+                    thousandSeparator={'.'}
                     decimalSeparator={','}
                     onChange={value => {
                         value = parseFloat(value.toString().replace('.', ','))
@@ -105,6 +106,13 @@ const EditableCell = ({
 };
 
 const BuatPesanan = () => {
+
+    function klikEnter(event) {
+        if (event.code == "Enter") {
+            event.target.blur()
+        }
+    }
+
     // const auth.token = jsCookie.get("auth");
     const [date, setDate] = useState(null);
     const [referensi, setReferensi] = useState('');
@@ -257,8 +265,8 @@ const BuatPesanan = () => {
                     }
                     else if (value == 'nominal') {
 
-                        hasilDiskon += Number(jumlahDiskon[i]);
-                        rowDiscount = Number(jumlahDiskon[i]);
+                        hasilDiskon += Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
+                        rowDiscount = Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
                     }
                 }
                 else {
@@ -268,8 +276,8 @@ const BuatPesanan = () => {
                         rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
                     }
                     else if (pilihanDiskon[i] == 'nominal') {
-                        hasilDiskon += Number(jumlahDiskon[i]);
-                        rowDiscount = Number(jumlahDiskon[i]);
+                        hasilDiskon += Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
+                        rowDiscount = Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
                     }
                 }
                 // subTotalDiscount   = totalPerProduk - rowDiscount;
@@ -308,8 +316,8 @@ const BuatPesanan = () => {
                     }
                     else if (value == 'nominal') {
 
-                        hasilDiskon += Number(jumlahDiskon[i]);
-                        rowDiscount = Number(jumlahDiskon[i]);
+                        hasilDiskon += Number((jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.')));
+                        rowDiscount = Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
                     }
                 }
                 else {
@@ -319,8 +327,8 @@ const BuatPesanan = () => {
                         rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
                     }
                     else if (pilihanDiskon[i] == 'nominal') {
-                        hasilDiskon += Number(jumlahDiskon[i]);
-                        rowDiscount = Number(jumlahDiskon[i]);
+                        hasilDiskon += Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
+                        rowDiscount = Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
                     }
                 }
                 grandTotal = Number(total) - Number(hasilDiskon) + Number(totalPpn);
@@ -363,14 +371,15 @@ const BuatPesanan = () => {
 
                 if (i === index) {
                     tmp[i] = value;
+                    console.log(value)
                     if (value == 'percent') {
                         hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
                         rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
                     }
                     else if (value == 'nominal') {
 
-                        hasilDiskon += Number(jumlahDiskon[i]);
-                        rowDiscount = Number(jumlahDiskon[i]);
+                        hasilDiskon += Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
+                        rowDiscount = Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
                     }
                 }
                 else {
@@ -380,8 +389,8 @@ const BuatPesanan = () => {
                         rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
                     }
                     else if (pilihanDiskon[i] == 'nominal') {
-                        hasilDiskon += Number(jumlahDiskon[i]);
-                        rowDiscount = Number(jumlahDiskon[i]);
+                        hasilDiskon += Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
+                        rowDiscount = Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
                     }
                 }
                 subTotalDiscount = totalPerProduk - rowDiscount;
@@ -406,8 +415,8 @@ const BuatPesanan = () => {
                     }
                     else if (pilihanDiskon[i] == 'nominal') {
 
-                        hasilDiskon += Number(value);
-                        rowDiscount = Number(value);
+                        hasilDiskon += Number(value.toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
+                        rowDiscount = Number(value.toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
                     }
                 }
                 else {
@@ -418,8 +427,8 @@ const BuatPesanan = () => {
                     }
                     else if (pilihanDiskon[i] == 'nominal') {
 
-                        hasilDiskon += Number(jumlahDiskon[i]);
-                        rowDiscount = Number(jumlahDiskon[i]);
+                        hasilDiskon += Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
+                        rowDiscount = Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
                     }
                 }
 
@@ -483,8 +492,8 @@ const BuatPesanan = () => {
                 }
                 else if (pilihanDiskon[i] == 'nominal') {
 
-                    hasilDiskon += Number(jumlahDiskon[i]);
-                    rowDiscount = Number(jumlahDiskon[i]);
+                    hasilDiskon += Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
+                    rowDiscount = Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
                 }
                 totalDiscount += ((rowDiscount * 100) / (100 + Number(values.ppn)));
                 subTotalDiscount = totalPerProduk - rowDiscount;
@@ -492,10 +501,10 @@ const BuatPesanan = () => {
                 totalPpn = (subTotal * Number(values.ppn)) / 100;
                 grandTotal = subTotal - hasilDiskon + Number(totalPpn);
 
-                // setSubTotal(subTotal)
+                setSubTotal(subTotal)
                  setGrandTotalDiscount(totalDiscount);
-                // setTotalPpn(totalPpn)
-                // setGrandTotal(grandTotal);
+                 setTotalPpn(totalPpn)
+                 setGrandTotal(grandTotal);
             } else {
                 total += (Number(values.quantity) * Number(values.price));
                 totalPerProduk = (Number(values.quantity) * Number(values.price));
@@ -506,8 +515,8 @@ const BuatPesanan = () => {
                 }
                 else if (pilihanDiskon[i] == 'nominal') {
 
-                    hasilDiskon += Number(jumlahDiskon[i]);
-                    rowDiscount = Number(jumlahDiskon[i]);
+                    hasilDiskon += Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
+                    rowDiscount = Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
                 }
                 totalDiscount += Number(rowDiscount);
                 subTotal = total - (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
@@ -515,10 +524,10 @@ const BuatPesanan = () => {
                 totalPpn += (subTotalDiscount * Number(values.ppn)) / 100;
                 grandTotal = total - totalDiscount + Number(totalPpn);
 
-                // setSubTotal(total)
+                 setSubTotal(total)
                  setGrandTotalDiscount(totalDiscount);
-                // setTotalPpn(totalPpn)
-                // setGrandTotal(grandTotal);
+                setTotalPpn(totalPpn)
+                 setGrandTotal(grandTotal);
             }
         })
     }, [jumlahDiskon]);
@@ -560,7 +569,9 @@ const BuatPesanan = () => {
                 return {
                     props: {
                     },
-                    children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
+                    children: 
+                    <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={text} key="qty" />
+                    //<div>{Number(text).toFixed(2).replace('.', ',')}</div>
                 };
             }
         },
@@ -629,7 +640,13 @@ const BuatPesanan = () => {
             align: 'center',
             render: (text, record, index) => {
                 return <div className="input-group input-group-sm mb-3">
-                    <input style={{ width: "20px" }} type="text" className="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} defaultValue={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
+
+            <CurrencyFormat className='text-center editable-input' style={{width:"80px"}} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)}
+                        value={
+                            jumlahDiskon[index]} onChange={(e) => ubahJumlahDiskon( e.target.value, index)} key="diskon" />
+
+
+                    {/* <input style={{ width: "20px" }} type="text" className="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} defaultValue={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" /> */}
                     <div className="input-group-prepend">
                         <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "70px", height: "35px" }}>
                             <select
@@ -660,7 +677,9 @@ const BuatPesanan = () => {
                 return {
                     props: {
                     },
-                    children: <div>{text} %</div>
+                    children: 
+                    <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} suffix={' %'} onKeyDown={(event) => klikEnter(event)} value={text} />
+                   // <div>{text} %</div>
                 };
             }
         },
@@ -683,7 +702,7 @@ const BuatPesanan = () => {
                             grandTotalAmount = tableToRupiah(totalDiscount + getPpn, "Rp");
                         }
                     } else if (pilihanDiskon[index] == 'nominal') {
-                        let total = (record.quantity * record.price) - jumlahDiskon[index];
+                        let total = (record.quantity * record.price) - jumlahDiskon[index].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.');
                         let getPpn = (total * record.ppn) / 100;
                         if (checked) {
                             grandTotalAmount = tableToRupiah(total, "Rp");
@@ -740,8 +759,8 @@ const BuatPesanan = () => {
                 }
                 else if (pilihanDiskon[i] == 'nominal') {
 
-                    hasilDiskon += Number(jumlahDiskon[i]);
-                    rowDiscount = Number(jumlahDiskon[i]);
+                    hasilDiskon += Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
+                    rowDiscount = Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
                 }
 
                 subTotalDiscount = totalPerProduk - rowDiscount;
@@ -764,8 +783,8 @@ const BuatPesanan = () => {
                 }
                 else if (pilihanDiskon[i] == 'nominal') {
 
-                    hasilDiskon += Number(jumlahDiskon[i]);
-                    rowDiscount = Number(jumlahDiskon[i]);
+                    hasilDiskon += Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
+                    rowDiscount = Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
                 }
 
                 totalDiscount += Number(rowDiscount);
@@ -821,14 +840,15 @@ const BuatPesanan = () => {
                     let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.alias_name);
                     tmpDataCentang.splice(idxHapus, 1)
                 }
+                else if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.alias_name)
+                }
             }
             else {
                 tmpDataBaru.push(getDataProduct[i])
             }
 
-            if (tmpDataBaru[i].statusCek == true) {
-                tmpDataCentang.push(tmpDataBaru[i].detail.alias_name)
-            }
+          
         }
         setTmpCentang(tmpDataCentang)
         setGetDataProduct(tmpDataBaru)
@@ -937,7 +957,8 @@ const BuatPesanan = () => {
                     userData.append("diskon_tetap[]", 0);
                 }
                 else if (pilihanDiskon[i] == 'nominal') {
-                    userData.append("diskon_tetap[]", jumlahDiskon[i]);
+                    userData.append("diskon_tetap[]", jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
+                   // userData.append("diskon_tetap[]", jumlahDiskon[i]);
                     userData.append("persentase_diskon[]", 0);
                 }
                 userData.append("ppn[]", p.ppn);
@@ -1018,12 +1039,13 @@ const BuatPesanan = () => {
                 userData.append("satuan[]", p.unit);
                 userData.append("harga[]", p.price);
                 if (pilihanDiskon[i] == 'percent') {
+
                     userData.append("persentase_diskon[]", jumlahDiskon[i]);
 
                     userData.append("diskon_tetap[]", 0);
                 }
                 else if (pilihanDiskon[i] == 'nominal') {
-                    userData.append("diskon_tetap[]", jumlahDiskon[i]);
+                    userData.append("diskon_tetap[]", jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
 
                     userData.append("persentase_diskon[]", 0);
                 }
@@ -1109,14 +1131,14 @@ const BuatPesanan = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
                             <div className="col-sm-7">
-                                <ReactSelect
+                                <AsyncSelect
                                     placeholder="Pilih Customer..."
                                     cacheOptions
                                     defaultOptions
                                     value={selectedValue}
-                                    getOptionLabel={(e) => e.label}
-                                    getOptionValue={(e) => e.value}
-                                    options={dataCustomer}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsCustomer}
                                     onChange={handleChangeCustomer}
                                 />
                             </div>

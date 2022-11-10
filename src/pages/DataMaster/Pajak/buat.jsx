@@ -136,7 +136,8 @@ const BuatPajak = () => {
           <div className="col-sm-10">
             {/* <Input
               // size="large"
-              value={getTaxes}
+              // value={getTaxes}
+              value={'Otomatis'}
               style={{
                 fontWeight: "bold",
               }}

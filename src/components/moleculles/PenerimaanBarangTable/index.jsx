@@ -59,7 +59,7 @@ const PenerimaanBarangTable = () => {
             status: getData[i].status,
             customer_name: getData[i].customer_name ? getData[i].customer_name : <div className="text-start">-</div>,
             supplier_name: getData[i].supplier_name ? getData[i].supplier_name : <div className="text-start">-</div>,
-            warehouse_name: getData[i].warehouse_name ? getData[i].warehouse_name : <div className="text-start">-</div>,
+            // warehouse_name: getData[i].warehouse_name ? getData[i].warehouse_name : <div className="text-start">-</div>,
           })
         }
 
@@ -317,16 +317,16 @@ const PenerimaanBarangTable = () => {
       sorter: true,
       sortDirections: ['descend', 'ascend'],
     },
-    {
-      title: 'Gudang',
-      dataIndex: 'warehouse_name',
-      key: 'warehouse_name',
-      width: '15%',
-      ...getColumnSearchProps('warehouse_name'),
-      sorter: (a, b) => a.warehouse_name.length - b.warehouse_name.length,
-      sortDirections: ['descend', 'ascend'],
+    // {
+    //   title: 'Gudang',
+    //   dataIndex: 'warehouse_name',
+    //   key: 'warehouse_name',
+    //   width: '15%',
+    //   ...getColumnSearchProps('warehouse_name'),
+    //   sorter: (a, b) => a.warehouse_name.length - b.warehouse_name.length,
+    //   sortDirections: ['descend', 'ascend'],
 
-    },
+    // },
     {
       title: 'Status',
       dataIndex: 'status',

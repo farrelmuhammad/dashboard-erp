@@ -213,7 +213,9 @@ const EditPelunasan = () => {
                 console.log(getData)
                 setGetCode(getData.code)
                 setDate(getData.date)
-                setReferensi(getData.reference);
+                if (getData.reference) {
+                    setReferensi(getData.reference);
+                }
                 if (getData.chart_of_account) {
                     setSelectedPembayaran(getData.chart_of_account)
                 }
@@ -228,6 +230,7 @@ const EditPelunasan = () => {
                     tmpData.push({
                         id: data[i].id,
                         bayar: Number(data[i].paid).toString().replace('.', ','),
+                        bayarNoEdit: Number(data[i].paid).toString().replace('.', ','),
                         sisa: Number(data[i].remains).toString().replace('.', ','),
                         sisaNoEDit: Number(data[i].remains).toString().replace('.', ','),
                         code: data[i].sales_invoice_code,
@@ -288,13 +291,14 @@ const EditPelunasan = () => {
         console.log(hasilValue)
         let tmpData = [];
         for (let i = 0; i < dataTampil.length; i++) {
-            let sisaBaru = Number(dataTampil[i].sisaNoEDit.toString().replace(',', '.')) - Number(hasilValue.toString().replace(',', '.'));
+            let sisaBaru =  Number(dataTampil[i].sisaNoEDit.toString().replace(',', '.')) + Number(dataTampil[i].bayarNoEdit.toString().replace(',', '.')) - Number(hasilValue.toString().replace(',', '.'));
             console.log(sisaBaru)
             if (i == index) {
                 tmpData.push({
                     id: dataTampil[i].id,
                     bayar: hasilValue,
-                    sisa: Number(sisaBaru).toFixed(2).toString().replace('.', ','),
+                    bayarNoEdit: dataTampil[i].bayarNoEdit,
+                    sisa : sisaBaru,
                     sisaNoEDit: dataTampil[i].sisaNoEDit,
                     code: dataTampil[i].code,
                     sales_invoice_id: dataTampil[i].sales_invoice_id,
@@ -313,8 +317,8 @@ const EditPelunasan = () => {
     const data =
         [...dataTampil.map((item, i) => ({
             code: item.code,
-            total: <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={item.total} />,
-            sisa: <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={item.sisa} />,
+            total: <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(item.total).toFixed(2).toString().replace('.', ',')} />,
+            sisa: <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(item.sisa).toFixed(2).toString().replace('.', ',')} />,
             paid: <CurrencyFormat onKeyDown={(event) => klikEnter(event)} className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={item.bayar} onChange={(e) => klikUbahBayar(e.target.value, i)} />
         })
 
@@ -717,7 +721,7 @@ const EditPelunasan = () => {
                                 <Table.Summary.Row>
                                     <Table.Summary.Cell index={0} colSpan={3}>Total yang dibayarkan</Table.Summary.Cell>
                                     <Table.Summary.Cell index={1}>
-                                        <CurrencyFormat disabled onKeyDown={(event) => klikEnter(event)} className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={totalTotal} />
+                                        <CurrencyFormat disabled onKeyDown={(event) => klikEnter(event)} className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(totalTotal).toFixed(2).toString().replace('.',',')} />
                                     </Table.Summary.Cell>
                                     {/* <Table.Summary.Cell index={2}>
                                             <Text>{totalRepayment}</Text>

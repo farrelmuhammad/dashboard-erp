@@ -420,7 +420,8 @@ else{
                 type="kode"
                 className="form-control"
                 id="inputKode3"
-                value={getEmployee}
+                // value={getEmployee}
+                value={'Otomatis'}
                 disabled
               />
             </div>

@@ -47,6 +47,20 @@ const EditMataUang = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
+
+  const [hutangUsaha, setHutangUsaha] = useState('');
+  const [selectedValue, setSelectedHU] = useState(null);
+
+  const [uangMukaPembelian, setUangMukaPembelian] = useState('');
+  const [selectedValue2, setSelectedUMP] = useState(null);
+
+  const [creditNote, setCreditNote] = useState('');
+  const [selectedValue3, setSelectedCN] = useState(null);
+
+  const [selisihKurs, setSelisihKurs] = useState('');
+  const [selectedValue4, setSelectedSK] = useState(null);
+
+
   // const [getCustomer, setGetCustomer] = useState();
 
   const [address, setAddress] = useState([]);
@@ -161,6 +175,62 @@ const EditMataUang = () => {
   }
 
 
+  const loadOptionsHU = (inputValue) => {
+    return fetch(`${Url}/select_chart_of_accounts?kode_kategori[]=211&kode_kategori[]=221&nama=${inputValue}`, {
+        headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${auth.token}`,
+        },
+    }).then((res) => res.json());
+};
+
+const handleChangeHU = (value) => {
+  setSelectedHU(value);
+  setHutangUsaha(value.id);
+};
+
+
+const loadOptionsUMP = (inputValue) => {
+  return fetch(`${Url}/select_chart_of_accounts?kode_kategori[]=113&nama=${inputValue}`, {
+      headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${auth.token}`,
+      },
+  }).then((res) => res.json());
+};
+
+const handleChangeUMP = (value) => {
+setSelectedUMP(value);
+setUangMukaPembelian(value.id);
+};
+
+const loadOptionsCN = (inputValue) => {
+  return fetch(`${Url}/select_chart_of_accounts?kode_kategori[]=113&nama=${inputValue}`, {
+      headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${auth.token}`,
+      },
+  }).then((res) => res.json());
+};
+
+const handleChangeCN = (value) => {
+setSelectedCN(value);
+setCreditNote(value.id);
+};
+
+const loadOptionsSK = (inputValue) => {
+  return fetch(`${Url}/select_chart_of_accounts?kode_kategori[]=512&kode_kategori[]=611&kode_kategori[]=612&kode_kategori[]=811&nama=${inputValue}`, {
+      headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${auth.token}`,
+      },
+  }).then((res) => res.json());
+};
+
+const handleChangeSK = (value) => {
+setSelectedSK(value);
+setSelisihKurs(value.id);
+};
 
   return (
     <>
@@ -215,6 +285,73 @@ const EditMataUang = () => {
             />
           </div>
         </div>
+        <div className="row mb-3">
+                <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Akun Hutang Usaha</label>
+                <div className="col-sm-10">
+                 <AsyncSelect
+                    placeholder="Pilih Akun Hutang Usaha..."
+                    cacheOptions
+                    defaultOptions
+                    // defaultInputValue={masterAccountName}
+                    // value={selectedValue2}
+                    getOptionLabel={(e) => e.name}
+                    getOptionValue={(e) => e.id}
+                    loadOptions={loadOptionsHU}
+                    onChange={handleChangeHU}
+                  />
+                </div>
+          </div>
+          <div className="row mb-3">
+                <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Akun Uang Muka Pembelian</label>
+                <div className="col-sm-10">
+                 <AsyncSelect
+                    placeholder="Pilih Akun Uang Muka Pembelian..."
+                    cacheOptions
+                    defaultOptions
+                    // defaultInputValue={masterAccountName}
+                    // value={selectedValue2}
+                    getOptionLabel={(e) => e.name}
+                    getOptionValue={(e) => e.id}
+                    loadOptions={loadOptionsUMP}
+                    onChange={handleChangeUMP}
+                  />
+                </div>
+          </div>
+          <div className="row mb-3">
+                <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Akun Credit Note</label>
+                <div className="col-sm-10">
+                 <AsyncSelect
+                    placeholder="Pilih Akun Credit Note..."
+                    cacheOptions
+                    defaultOptions
+                    // defaultInputValue={masterAccountName}
+                    // value={selectedValue2}
+                    getOptionLabel={(e) => e.name}
+                    getOptionValue={(e) => e.id}
+                    loadOptions={loadOptionsCN}
+                    onChange={handleChangeCN}
+                  />
+                </div>
+          </div>
+          <div className="row mb-3">
+                <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Akun Selisih Kurs</label>
+                <div className="col-sm-10">
+                 <AsyncSelect
+                    placeholder="Pilih Akun Selisih Kurs..."
+                    cacheOptions
+                    defaultOptions
+                    // defaultInputValue={masterAccountName}
+                    // value={selectedValue2}
+                    getOptionLabel={(e) => e.name}
+                    getOptionValue={(e) => e.id}
+                    loadOptions={loadOptionsSK}
+                    onChange={handleChangeSK}
+                  />
+                </div>
+          </div>
+
+
+
         <div className="d-grid mt-3 gap-2 d-md-flex justify-content-md-end">
           <button onClick={handleUpdate} className="btn btn-primary" type="button">
             Simpan <SendIcon className="ms-1" />

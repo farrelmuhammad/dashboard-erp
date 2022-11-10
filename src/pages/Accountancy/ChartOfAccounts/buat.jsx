@@ -7,6 +7,7 @@ import AsyncSelect from "react-select/async";
 import { Switch, PageHeader } from 'antd'
 import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
+import ReactSelect from "react-select";
 
 const BuatCoa = () => {
     // const auth.token = jsCookie.get("auth");
@@ -22,6 +23,8 @@ const BuatCoa = () => {
     const [notes, setNotes] = useState('');
     const [checked, setChecked] = useState(true);
     const [status, setStatus] = useState('Active');
+
+    const [entity, setEntity] = useState('');
 
     const navigate = useNavigate();
 
@@ -77,6 +80,7 @@ const BuatCoa = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log(entity)
         const userData = new FormData();
         userData.append("tanggal", date);
         userData.append("kategori", accountCategory);
@@ -87,6 +91,7 @@ const BuatCoa = () => {
         userData.append("saldo_awal", firstBalance);
         userData.append("catatan", notes);
         userData.append("status", status);
+        userData.append("entitas", entity)
 
         // for (var pair of userData.entries()) {
         //     console.log(pair[0] + ', ' + pair[1]);
@@ -153,7 +158,22 @@ const BuatCoa = () => {
         //   // console.log('Inactive');
         // }
       };
-    
+
+      const optionsBussiness = [
+        {
+          label: "Head Office",
+          value: "Head Office"
+        },
+        {
+          label: "Meat Shop",
+          value: "Meat Shop"
+        },
+      ];
+
+      const handleSingleChange = (e) => {
+        setEntity(e.value);
+        //console.log(e.value)
+      };
 
     return (
         <>
@@ -232,6 +252,21 @@ const BuatCoa = () => {
                                     onChange={(e) => setAccountName(e.target.value)}
                                 />
                             </div>
+                        </div>
+                        <div className="row mb-3">
+                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">
+                            Entitas
+                        </label>
+                        <div className="col-sm-7">
+                            <ReactSelect
+                            className="basic-single"
+                            placeholder="Pilih Entitas..."
+                            classNamePrefix="select"
+                            isSearchable
+                            onChange={handleSingleChange}
+                            options={optionsBussiness}
+                            />
+                        </div>
                         </div>
                     </div>
                     <div className="col">

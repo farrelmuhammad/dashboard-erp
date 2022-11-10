@@ -79,7 +79,8 @@ const EditableCell = ({
                     },
                 ]}
             >
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
+                <InputNumber ref={inputRef}  onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
+                    thousandSeparator={'.'}
                     decimalSeparator={','}
                     onChange={value => {
                         value = parseFloat(value.toString().replace('.', ','))
@@ -304,7 +305,7 @@ const BuatPesananPembelian = () => {
                 }
                 else if (value == namaMataUang) {
 
-                    hasilDiskon += Number(jumlahDiskon[i]);
+                    hasilDiskon += Number(jumlahDiskon[i].replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
                 }
             }
             else {
@@ -314,7 +315,7 @@ const BuatPesananPembelian = () => {
                 }
                 else if (pilihanDiskon[i] == namaMataUang) {
                     console.log(jumlahDiskon[i]);
-                    hasilDiskon += Number(jumlahDiskon[i]);
+                    hasilDiskon += Number(jumlahDiskon[i].replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
                 }
             }
         }
@@ -345,6 +346,7 @@ const BuatPesananPembelian = () => {
             total += (Number(product[i].quantity) * Number(product[i].purchase_price));
             totalPerProduk = (Number(product[i].quantity) * Number(product[i].purchase_price));
             console.log(pilihanDiskon[i])
+            console.log(value)
             if (i === index) {
                 tmp[i] = value;
                 if (pilihanDiskon[i] == '%') {
@@ -352,7 +354,8 @@ const BuatPesananPembelian = () => {
                 }
                 else if (pilihanDiskon[i] == namaMataUang) {
 
-                    hasilDiskon += Number(value);
+                    hasilDiskon += Number((value.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.')));
+                    console.log(hasilDiskon)
                 }
             }
             else {
@@ -363,7 +366,7 @@ const BuatPesananPembelian = () => {
                 }
                 else if (pilihanDiskon[i] == namaMataUang) {
 
-                    hasilDiskon += Number(jumlahDiskon[i]);
+                    hasilDiskon += Number(jumlahDiskon[i].replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
                 }
             }
         }
@@ -371,6 +374,7 @@ const BuatPesananPembelian = () => {
         grandTotal = Number(total) - Number(hasilDiskon) + Number(totalPpn);
         console.log(total)
         setSubTotal(Number(total));
+        console.log(hasilDiskon)
         setGrandTotalDiscount(hasilDiskon);
         setGrandTotal(grandTotal);
         setJumlahDiskon(tmp);
@@ -412,7 +416,7 @@ const BuatPesananPembelian = () => {
             }
             else if (pilihanDiskon[i] == namaMataUang) {
 
-                hasilDiskon += Number(jumlahDiskon[i]);
+                hasilDiskon += Number(jumlahDiskon[i].replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
             }
 
             grandTotal = total - hasilDiskon + Number(totalPpn);
@@ -457,10 +461,15 @@ const BuatPesananPembelian = () => {
             align: 'center',
             editable: true,
             render(text, record) {
+
                 return {
                     props: {
                     },
-                    children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
+                    children: 
+                    <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={text} key="qty" />
+                  
+                 
+                     //<div>{Number(text).toFixed(2).replace('.', ',')}</div>
                 };
             }
         },
@@ -495,15 +504,54 @@ const BuatPesananPembelian = () => {
             width: '20%',
             align: 'center',
             render: (text, record, index) => {
+
+                // data[i].pilihanDiskon == '%' ?
+                // <div className='d-flex p-1' style={{ height: "100%" }} >
+                //     <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)}
+                //         value={
+                //             data[i].discount_percentage != null ?
+                //                 data[i].discount_percentage : 0} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
+                //     <div className="input-group-prepend" >
+                //         <select
+                //             onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
+                //             id="grupSelect"
+                //             className="form-select select-diskon"
+                //         >
+                //             <option selected value="%" >
+                //                 %
+                //             </option>
+                //             <option value={namaMataUang}>
+                //                 {namaMataUang}
+                //             </option>
+
+                //         </select>
+                //     </div>
+                // </div>
+
+
+
+
+
+
+
+
+
+
                 return <div className="input-group input-group-sm mb-3">
-                    <input style={{ width: "25px" }} type="text" className="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} value={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
+
+
+                <CurrencyFormat className='text-center editable-input' style={{width:"80px"}} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)}
+                        value={
+                            jumlahDiskon[index]} onChange={(e) => ubahJumlahDiskon( e.target.value, index)} key="diskon" />
+                    
+                    {/* <input style={{ width: "25px" }} type="text" thousandSeparator={'.'} decimalSeparator={','} className="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} value={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" /> */}
                     <div className="input-group-prepend">
-                        <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
+                        <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "70px" }}>
                             <select
                                 onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
                                 id="grupSelect"
                                 className="form-select select-diskon"
-                                style={{ width: "60px" }}
+                                style={{ width: "50px" }}
                             >
                                 {/* <option value="pilih" >
                             Pilih
@@ -535,7 +583,7 @@ const BuatPesananPembelian = () => {
                         grandTotal = total - Number(getPercent);
                     }
                     else if (pilihanDiskon[index] == namaMataUang) {
-                        grandTotal = (Number(record.quantity) * Number(record.purchase_price)) - jumlahDiskon[index];
+                        grandTotal = (Number(record.quantity) * Number(record.purchase_price)) - jumlahDiskon[index].replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.');
                     }
                     else {
                         grandTotal = record.quantity * Number(record.purchase_price);
@@ -613,7 +661,7 @@ const BuatPesananPembelian = () => {
             }
             else if (pilihanDiskon[i] == namaMataUang) {
 
-                hasilDiskon += Number(jumlahDiskon[i]);
+                hasilDiskon += Number(jumlahDiskon[i].replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
             }
 
             grandTotal = total - hasilDiskon + Number(totalPpn);
@@ -658,20 +706,27 @@ const BuatPesananPembelian = () => {
                     detail: getDataProduct[i].detail,
                     statusCek: !getDataProduct[i].statusCek
                 })
+                if (!tmpDataBaru[i].statusCek) {
+                    let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.id);
+                    tmpDataCentang.splice(idxHapus, 1)
+                }
+                else if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.id)
+                }
             }
             else {
                 tmpDataBaru.push(getDataProduct[i])
             }
 
-            if (tmpDataBaru[i].statusCek == true) {
-                tmpDataCentang.push(tmpDataBaru[i].detail.id)
-            }
-            else {
-                let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.id);
-                if (index >= 0) {
-                    tmpDataCentang.splice(index, 1)
-                }
-            }
+            // if (tmpDataBaru[i].statusCek == true) {
+            //     tmpDataCentang.push(tmpDataBaru[i].detail.id)
+            // }
+            // else {
+            //     let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.id);
+            //     if (index >= 0) {
+            //         tmpDataCentang.splice(index, 1)
+            //     }
+            // }
         }
 
         let unikTmpCentang = [...new Set(tmpDataCentang)]

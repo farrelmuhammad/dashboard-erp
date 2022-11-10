@@ -293,8 +293,10 @@ const BuatPengguna = () => {
                 type="kode"
                 className="form-control"
                 id="inputKode3"
-                value={getUser}
-                readOnly={getUser}
+                value={'Otomatis'}
+                disabled
+                // value={getUser}
+                // readOnly={getUser}
               // onChange={e => setName(e.target.value)}
               />
             </div>

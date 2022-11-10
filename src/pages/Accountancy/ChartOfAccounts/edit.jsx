@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 import { Code } from '@mui/icons-material';
 import { PageHeader } from 'antd';
+import ReactSelect from "react-select";
 
 const EditCoa = () => {
     // const auth.token = jsCookie.get("auth");
@@ -32,6 +33,7 @@ const EditCoa = () => {
     const [masterAccountName, setMasterAccountName] = useState(null);
     const [currencyName, setCurrencyName] = useState(null);
 
+    const [entityName, setEntityName] = useState(null)
 
     const { id } = useParams();
 
@@ -40,6 +42,7 @@ const EditCoa = () => {
     const [selectedValue, setSelectedAccountCategory] = useState(null);
     const [selectedValue2, setSelectedMasterAcc] = useState(null);
     const [selectedValue3, setSelectedCurrency] = useState(null);
+    const [selectedValue4, setSelectedEntity] = useState(null);
 
     const handleChangeCategoryAcc = (value) => {
         setSelectedAccountCategory(value);
@@ -56,6 +59,7 @@ const EditCoa = () => {
     };
 
     const handleChangeMasterAcc = (value) => {
+        console.log(value)
         setSelectedMasterAcc(value);
         setMasterAcc(value.id);
     };
@@ -97,15 +101,17 @@ const EditCoa = () => {
                 setAccountCategory(getData.chart_of_account_category_id)
                 setAccountCategoryname(getData.chart_of_account_category.name)
                 setAccountName(getData.name)
-                // setMasterAcc(getData.parent.id)
-                // setMasterAccountName(getData.parent.name)
+                 setMasterAcc(getData.parent.id)
+                setMasterAccountName(getData.parent.name)
                 setCurrency(getData.currency.id)
                 setCurrencyName(getData.currency.name)
                 setExchangeRate(getData.exchange_rate)
                 setFirstBalance(getData.opening_balance)
                 setNotes(getData.notes)
                 setStatus(getData.status)
+                setEntityName(getData.entity)
                 setLoading(false)
+                setSelectedMasterAcc(getData.parent)
                 console.log(getData)
             })
     }
@@ -126,6 +132,7 @@ const EditCoa = () => {
         userData.append("saldo_awal", firstBalance);
         userData.append("catatan", notes);
         userData.append("status", status);
+        userData.append("entitas",entityName)
 
         // for (var pair of userData.entries()) {
         //     console.log(pair[0] + ', ' + pair[1]);
@@ -166,6 +173,28 @@ const EditCoa = () => {
                 }
             });
     };
+
+    const optionsBussiness = [
+        {
+          label: "Head Office",
+          value: "Head Office"
+        },
+        {
+          label: "Meat Shop",
+          value: "Meat Shop"
+        },
+      ];
+
+    const handleSingleChange = (e) => {
+        setSelectedEntity(e.value)
+        setEntityName(e.value);
+        console.log(e)
+      };
+
+    //   const handleChangeCurrency = (value) => {
+    //     setSelectedCurrency(value);
+    //     setCurrency(value.id);
+    // };
 
     const onChange = () => {
         checked ? setChecked(false) : setChecked(true)
@@ -272,6 +301,28 @@ const EditCoa = () => {
                                     id="inputNama3"
                                     onChange={(e) => setAccountName(e.target.value)}
                                 />
+                            </div>
+                        </div>
+                        <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">
+                                Entitas
+                            </label>
+                            <div className="col-sm-7">
+                            <ReactSelect
+                            placeholder="Pilih Entitas..."
+                            className="basic-single"
+                            classNamePrefix="select"
+                            value={{ value: entityName, label: entityName }}
+                          
+                            isSearchable
+                            name="color"
+                            options={optionsBussiness}
+                            onChange={(item) => {
+                                console.log(item);
+                                // set item instead of item.value
+                                setEntityName(item.value);
+                            }}
+                            />
                             </div>
                         </div>
                     </div>

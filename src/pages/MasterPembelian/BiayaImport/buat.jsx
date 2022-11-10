@@ -215,8 +215,10 @@ const BuatBiayaImport = () => {
               type="kode"
               className="form-control"
               id="inputKode3"
-              value={getBiayaImport}
-              readOnly={getBiayaImport}
+              value={'Otomatis'}
+              disabled
+              // value={getBiayaImport}
+              // readOnly={getBiayaImport}
             />
           </div>
         </div>
