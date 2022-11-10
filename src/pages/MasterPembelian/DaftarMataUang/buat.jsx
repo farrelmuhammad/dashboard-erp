@@ -114,8 +114,10 @@ const BuatMataUang = () => {
               type="kode"
               className="form-control"
               id="inputKode3"
-              value={getMataUang}
-              readOnly={getMataUang}
+              // value={getMataUang}
+              // readOnly={getMataUang}
+              value={'Otomatis'}
+              disabled
             />
           </div>
         </div>

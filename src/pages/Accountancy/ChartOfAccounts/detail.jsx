@@ -25,6 +25,7 @@ const DetailCoa = () => {
     const [notes, setNotes] = useState('');
     const [checked, setChecked] = useState(true);
     const [status, setStatus] = useState('');
+    const [entity, setEntity] = useState('');
 
     const [loading, setLoading] = useState(true);
 
@@ -108,6 +109,7 @@ const DetailCoa = () => {
                 setFirstBalance(getData.opening_balance)
                 setNotes(getData.notes)
                 setStatus(getData.status)
+                setEntity(getData.entity)
                 setLoading(false)
                 console.log(getData)
             })
@@ -337,6 +339,20 @@ const DetailCoa = () => {
                                     disabled
                                 />
                             </div>
+                        </div>
+                        <div className="row mb-3">
+                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">
+                            Entitas
+                        </label>
+                        <div className="col-sm-7">
+                        <input
+                            value={entity}
+                            type="Nama"
+                            className="form-control"
+                            id="inputNama3"
+                           disabled
+                                />
+                        </div>
                         </div>
                     </div>
                     <div className="col">

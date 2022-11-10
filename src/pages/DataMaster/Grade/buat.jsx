@@ -107,7 +107,8 @@ const BuatGrade = () => {
             <input
               type="kode"
               className="form-control"
-              value={getGrade}
+              // value={getGrade}
+              value={'Otomatis'}
               disabled
             />
           </div>

@@ -426,7 +426,8 @@ const BuatPelanggan = () => {
               type="kode"
               className="form-control"
               id="inputKode3"
-              value={getCustomer}
+              value={'Otomatis'}
+              //value={getCustomer}
               disabled
             />
           </div>

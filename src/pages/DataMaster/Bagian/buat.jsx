@@ -143,7 +143,8 @@ const BuatBagian = () => {
               className="form-control"
               id="inputKode3"
               // onChange={e => setId(e.target.value)}
-              value={getPiece}
+              // value={getPiece}
+              value={'Otomatis'}
               disabled
             />
           </div>

@@ -208,7 +208,8 @@ const BuatGudang = () => {
               type="kode"
               className="form-control"
               id="inputKode3"
-              value={getWarehouse}
+              value={'Otomatis'}
+              //value={getWarehouse}
               disabled
             />
           </div>
