@@ -14,6 +14,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import Url from "../../../Config";
 import "./form.css";
+import AsyncSelect from "react-select/async";
 import SendIcon from "@mui/icons-material/Send";
 import Button from "@mui/material/Button";
 import EditIcon from '@mui/icons-material/Edit';
@@ -48,16 +49,16 @@ const EditMataUang = () => {
   const { id } = useParams();
 
 
-  const [hutangUsaha, setHutangUsaha] = useState('');
+  const [hutangUsaha, setHutangUsaha] = useState(null);
   const [selectedValue, setSelectedHU] = useState(null);
 
-  const [uangMukaPembelian, setUangMukaPembelian] = useState('');
+  const [uangMukaPembelian, setUangMukaPembelian] = useState(null);
   const [selectedValue2, setSelectedUMP] = useState(null);
 
-  const [creditNote, setCreditNote] = useState('');
+  const [creditNote, setCreditNote] = useState(null);
   const [selectedValue3, setSelectedCN] = useState(null);
 
-  const [selisihKurs, setSelisihKurs] = useState('');
+  const [selisihKurs, setSelisihKurs] = useState(null);
   const [selectedValue4, setSelectedSK] = useState(null);
 
 
@@ -152,6 +153,11 @@ const EditMataUang = () => {
 
   useEffect(() => {
     getMataUangById()
+    // getDataCOAName(hutangUsaha)
+    // getDataCOAName2(uangMukaPembelian)
+    // getDataCOAName3(creditNote)
+    // getDataCOAName4(selisihKurs)
+
   }, []);
 
   const getMataUangById = async () => {
@@ -167,6 +173,14 @@ const EditMataUang = () => {
         setCode(getData.code);
         setName(getData.name);
         setKeterangan(getData.description);
+        console.log(getData)
+
+        setHutangUsaha(res.data.data[0].accounts_payable)
+        setUangMukaPembelian(res.data.data[0].prepaid_expenses)
+        setCreditNote(res.data.data[0].credit_note_account)
+        setSelisihKurs(res.data.data[0].exchange_rate_difference)
+  
+
       })
       .catch((err) => {
         // Jika Gagal
@@ -292,9 +306,9 @@ setSelisihKurs(value.id);
                     placeholder="Pilih Akun Hutang Usaha..."
                     cacheOptions
                     defaultOptions
-                    // defaultInputValue={masterAccountName}
-                    // value={selectedValue2}
-                    getOptionLabel={(e) => e.name}
+                    defaultInputValue={hutangUsaha}
+                  //  value={selectedValue2}
+                    getOptionLabel={(e) => e.id}
                     getOptionValue={(e) => e.id}
                     loadOptions={loadOptionsHU}
                     onChange={handleChangeHU}
@@ -308,9 +322,9 @@ setSelisihKurs(value.id);
                     placeholder="Pilih Akun Uang Muka Pembelian..."
                     cacheOptions
                     defaultOptions
-                    // defaultInputValue={masterAccountName}
-                    // value={selectedValue2}
-                    getOptionLabel={(e) => e.name}
+                    defaultInputValue={uangMukaPembelian}
+                   // value={selectedValue2}
+                    getOptionLabel={(e) => e.id}
                     getOptionValue={(e) => e.id}
                     loadOptions={loadOptionsUMP}
                     onChange={handleChangeUMP}
@@ -324,9 +338,9 @@ setSelisihKurs(value.id);
                     placeholder="Pilih Akun Credit Note..."
                     cacheOptions
                     defaultOptions
-                    // defaultInputValue={masterAccountName}
+                     defaultInputValue={creditNote}
                     // value={selectedValue2}
-                    getOptionLabel={(e) => e.name}
+                    getOptionLabel={(e) => e.id}
                     getOptionValue={(e) => e.id}
                     loadOptions={loadOptionsCN}
                     onChange={handleChangeCN}
@@ -340,9 +354,9 @@ setSelisihKurs(value.id);
                     placeholder="Pilih Akun Selisih Kurs..."
                     cacheOptions
                     defaultOptions
-                    // defaultInputValue={masterAccountName}
+                    defaultInputValue={selisihKurs}
                     // value={selectedValue2}
-                    getOptionLabel={(e) => e.name}
+                    getOptionLabel={(e) => e.id}
                     getOptionValue={(e) => e.id}
                     loadOptions={loadOptionsSK}
                     onChange={handleChangeSK}
