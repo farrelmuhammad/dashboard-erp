@@ -323,41 +323,52 @@ const EditFaktur = () => {
                 }
             })
 
+            console.log(tmpCentang)
 
             let tmp = []
-            for (let i = 0; i < res.data.length; i++) {
-                if (statusUbah) {
-                    for (let i = 0; i < res.data.length; i++) {
-                        if (tmpCentang.indexOf(res.data[i].code) >= 0) {
-                            tmp.push({
-                                detail: res.data[i],
-                                statusCek: true
-                            });
-                        }
-                    }
-                    for (let i = 0; i < res.data.length; i++) {
-                        if (tmpCentang.indexOf(res.data[i].code) < 0) {
-                            tmp.push({
-                                detail: res.data[i],
-                                statusCek: false
-                            });
-                        }
+            if (statusUbah) {
+                for (let i = 0; i < res.data.length; i++) {
+                    if (tmpCentang.indexOf(res.data[i].code) >= 0) {
+                        tmp.push({
+                            detail: res.data[i],
+                            statusCek: true
+                        });
                     }
                 }
-                // jika belum diubah samsek 
-                else {
+                for (let i = 0; i < res.data.length; i++) {
+                    if (tmpCentang.indexOf(res.data[i].code) < 0) {
+                        tmp.push({
+                            detail: res.data[i],
+                            statusCek: false
+                        });
+                    }
+                }
+            }
+
+            // jika belum diubah samsek 
+            else {
+                console.log("sfsf")
+                for (let i = 0; i < res.data.length; i++) {
+
                     if (res.data[i].is_checked) {
                         tmp.push({
                             detail: res.data[i],
                             statusCek: true
                         });
-                        setTmpCentang([...tmpCentang, res.data[i].code]);
+                        if (tmpCentang.length <= 0) {
+                            setTmpCentang([...tmpCentang, res.data[i].code]);
+                        }
+                    }
+                    else {
+                        tmp.push({
+                            detail: res.data[i],
+                            statusCek: false
+                        });
                     }
                 }
-
-
             }
             setGetDataSurat(tmp);
+
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -969,14 +980,17 @@ const EditFaktur = () => {
                         let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
                         tmpDataCentang.splice(idxHapus, 1)
                     }
+                    else if (tmpDataBaru[i].statusCek == true) {
+                        tmpDataCentang.push(tmpDataBaru[i].detail.code)
+                    }
                 }
                 else {
                     tmpDataBaru.push(getDataProduct[i])
                 }
 
-                if (tmpDataBaru[i].statusCek == true) {
-                    tmpDataCentang.push(tmpDataBaru[i].detail.code)
-                }
+                // if (tmpDataBaru[i].statusCek == true) {
+                //     tmpDataCentang.push(tmpDataBaru[i].detail.code)
+                // }
             }
             setGetDataProduct(tmpDataBaru)
 
@@ -990,22 +1004,27 @@ const EditFaktur = () => {
                         statusCek: !getDataSurat[i].statusCek
                     })
                     if (!tmpDataBaru[i].statusCek) {
+                        console.log("dfdf")
                         let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
                         tmpDataCentang.splice(idxHapus, 1)
                     }
+                    else if (tmpDataBaru[i].statusCek == true) {
+                        tmpDataCentang.push(tmpDataBaru[i].detail.code)
+                    }
+
                 }
                 else {
                     tmpDataBaru.push(getDataSurat[i])
                 }
 
-                if (tmpDataBaru[i].statusCek == true) {
-                    tmpDataCentang.push(tmpDataBaru[i].detail.code)
-                }
+
             }
             setGetDataSurat(tmpDataBaru)
+
             // setIdTandaTerima(idTerima);
         }
 
+        console.log(tmpDataCentang)
         setTmpCentang(tmpDataCentang)
 
         if (tmpDataBaru[index].statusCek) {

@@ -162,7 +162,7 @@ const BuatTallySheet = () => {
     const [modalListRetur, setModalListRetur] = useState(false)
     const [grup, setGrup] = useState()
 
-    const[tmpCentang, setTmpCentang] = useState([])
+    const [tmpCentang, setTmpCentang] = useState([])
     // const [checked, setChecked] = useState(false)¿
 
 
@@ -693,7 +693,7 @@ const BuatTallySheet = () => {
                 dataIndex: 'product_name',
                 width: '25%',
                 key: 'name',
-              
+
             },
             {
                 title: 'Qty',
@@ -717,7 +717,7 @@ const BuatTallySheet = () => {
                 align: 'center',
                 width: '10%',
                 key: 'name',
-             
+
             },
             {
                 title: 'Box',
@@ -725,7 +725,7 @@ const BuatTallySheet = () => {
                 align: 'center',
                 width: '10%',
                 key: 'box',
-               
+
             },
             {
                 title: 'Status',
@@ -733,7 +733,7 @@ const BuatTallySheet = () => {
                 align: 'center',
                 width: '10%',
                 key: 'status',
-             
+
             },
             {
                 title: 'Action',
@@ -757,7 +757,7 @@ const BuatTallySheet = () => {
                 if (result.isConfirmed) {
                     let arrStatus = []
                     let dataProduk = []
-                   // console.log(product)
+                    // console.log(product)
                     for (let x = 0; x < product.length; x++) {
                         let status = []
                         if (sumber == 'Retur') {
@@ -770,7 +770,7 @@ const BuatTallySheet = () => {
                             dataProduk = product[x].purchase_invoice_details;
                         }
 
-                        
+
 
                         if (x == baris) {
                             for (let y = 0; y < dataProduk.length; y++) {
@@ -1365,18 +1365,19 @@ const BuatTallySheet = () => {
     };
 
     const handleChangeWarehouse = (value) => {
-        if(!value){
-          
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text:"Data GUDANG kosong, silahkan lengkapi datanya"
-                })
-           
+        if (!value) {
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data GUDANG kosong, silahkan lengkapi datanya"
+            })
+
         }
-        else{
-        setSelectedWarehouse(value);
-        setWarehouse(value.id);}
+        else {
+            setSelectedWarehouse(value);
+            setWarehouse(value.id);
+        }
     };
     // load options using API call
     const loadOptionsWarehouse = (inputValue) => {
@@ -1416,7 +1417,7 @@ const BuatTallySheet = () => {
             })
             let tmp = []
             for (let i = 0; i < res.data.data.length; i++) {
-                if(tmpCentang.indexOf(res.data.data[i].id) >= 0){
+                if (tmpCentang.indexOf(res.data.data[i].id) >= 0) {
                     tmp.push({
                         detail: res.data.data[i],
                         statusCek: true
@@ -1449,7 +1450,7 @@ const BuatTallySheet = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
- 
+
             let tmp = []
             // for (let i = 0; i < res.data.data.length; i++) {
             //     tmp.push({
@@ -1459,7 +1460,7 @@ const BuatTallySheet = () => {
             // }
 
             for (let i = 0; i < res.data.data.length; i++) {
-                if(tmpCentang.indexOf(res.data.data[i].id) >= 0){
+                if (tmpCentang.indexOf(res.data.data[i].id) >= 0) {
                     tmp.push({
                         detail: res.data.data[i],
                         statusCek: true
@@ -1492,9 +1493,9 @@ const BuatTallySheet = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            let tmp = []    
+            let tmp = []
             for (let i = 0; i < res.data.data.length; i++) {
-                if(tmpCentang.indexOf(res.data.data[i].id) >= 0){
+                if (tmpCentang.indexOf(res.data.data[i].id) >= 0) {
                     tmp.push({
                         detail: res.data.data[i],
                         statusCek: true
@@ -1529,10 +1530,10 @@ const BuatTallySheet = () => {
         setSelectedCustomer('')
     }
     const handleCheck = (event, indexTransaksi) => {
-        console.log(sumber,"ssss")
+        console.log(sumber, "ssss")
         let tmpDataBaru = [];
 
-        let tmpDataCentang=[...tmpCentang]
+        let tmpDataCentang = [...tmpCentang]
 
         // perubahan data dan status ceked 
         if (sumber == 'Retur') {
@@ -1542,21 +1543,29 @@ const BuatTallySheet = () => {
                         detail: getDataRetur[i].detail,
                         statusCek: !getDataRetur[i].statusCek
                     })
+                    if (!tmpDataBaru[i].statusCek) {
+                        let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.id);
+                        tmpDataCentang.splice(idxHapus, 1)
+                    }
+                    else if (tmpDataBaru[i].statusCek == true) {
+                        tmpDataCentang.push(tmpDataBaru[i].detail.id)
+                    }
+
                 }
                 else {
                     tmpDataBaru.push(getDataRetur[i])
                 }
 
-                if(tmpDataBaru[i].statusCek == true){
-                    tmpDataCentang.push(tmpDataBaru[i].detail.id)
-                }
-                else{
-                    let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.id);
+                // if(tmpDataBaru[i].statusCek == true){
+                //     tmpDataCentang.push(tmpDataBaru[i].detail.id)
+                // }
+                // else{
+                //     let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.id);
 
-                    if(index >= 0){
-                        tmpDataCentang.splice(index,1)
-                    }
-                }
+                //     if(index >= 0){
+                //         tmpDataCentang.splice(index,1)
+                //     }
+                // }
             }
             // let unikTmpCentang = [...new Set(tmpDataCentang)]
             // setTmpCentang(unikTmpCentang)
@@ -1575,18 +1584,18 @@ const BuatTallySheet = () => {
                     tmpDataBaru.push(getDataProduct[i])
                 }
 
-                if(tmpDataBaru[i].statusCek == true){
+                if (tmpDataBaru[i].statusCek == true) {
                     tmpDataCentang.push(tmpDataBaru[i].detail.id)
                 }
-                else{
+                else {
                     let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.id);
 
-                    if(index >= 0){
-                        tmpDataCentang.splice(index,1)
+                    if (index >= 0) {
+                        tmpDataCentang.splice(index, 1)
                     }
                 }
             }
-        
+
             setGetDataProduct(tmpDataBaru)
         }
 
@@ -1602,13 +1611,13 @@ const BuatTallySheet = () => {
                     tmpDataBaru.push(getDataFaktur[i])
                 }
 
-                if(tmpDataBaru[i].statusCek == true){
+                if (tmpDataBaru[i].statusCek == true) {
                     tmpDataCentang.push(tmpDataBaru[i].detail.id)
                 }
-                else{
+                else {
                     let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.id);
-                    if(index >= 0){
-                        tmpDataCentang.splice(index,1)
+                    if (index >= 0) {
+                        tmpDataCentang.splice(index, 1)
                     }
                 }
             }
@@ -1617,7 +1626,7 @@ const BuatTallySheet = () => {
             setGetDataFaktur(tmpDataBaru)
         }
 
-   
+
         let unikTmpCentang = [...new Set(tmpDataCentang)]
         setTmpCentang(unikTmpCentang)
 
@@ -2040,7 +2049,7 @@ const BuatTallySheet = () => {
                         arrStatus[i] = stts;
                         arrqty[i] = qty;
                         arrBox[i] = tempBox;
-                 }
+                    }
                     else {
                         arrStatus[i] = statusPO[i];
                         arrBox[i] = totalBox[i];
@@ -2250,317 +2259,318 @@ const BuatTallySheet = () => {
 
     const handleSubmit = async (e) => {
 
-        if(!date){
+        if (!date) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(sumber == ''){
+        else if (sumber == '') {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Transaksi kosong, silahkan lengkapi datanya"
             })
         }
-        else if(sumber == 'Retur' && !customer){
-          
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text:"Data customer kosong, silahkan lengkapi datanya"
-                })
-            
-        }
-        else if(sumber == 'PO' && !supplier){
-           
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text:"Data Supplier kosong, silahkan lengkapi datanya"
-                })
-            
-        }
-        else if (sumber == 'Faktur' && !supplier){
-           
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text:"Data Supplier kosong, silahkan lengkapi datanya"
-                })
-           
-        }
-        else if(!warehouse){
-            
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text:"Data Gudang kosong, silahkan lengkapi datanya"
-                })
-           
-        }
-        
-        else{
-        
+        else if (sumber == 'Retur' && !customer) {
 
-        e.preventDefault();
-        const tallySheetData = new FormData();
-        tallySheetData.append("tanggal", date);
-        if (sumber == 'Retur') {
-            tallySheetData.append("pelanggan", customer);
-        }
-        else {
-            tallySheetData.append("pemasok", supplier);
-        }
-        // tallySheetData.append("pemasok", supplier);
-        tallySheetData.append("gudang", warehouse);
-        tallySheetData.append("catatan", description);
-        tallySheetData.append("status", "Submitted");
-
-        if (sumber == 'Retur') {
-            product.map((p, pi) => {
-                p.sales_return_details.map((po, i) => {
-                    tallySheetData.append("id_retur_penjualan[]", p.id);
-                    tallySheetData.append("id_produk[]", po.product_id);
-                    tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
-                    tallySheetData.append("aksi[]", statusPO[pi][i]);
-                    tallySheetData.append("satuan_box[]", po.unit);
-                    tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
-
-                })
-            });
-        }
-        else if (sumber == 'PO') {
-            product.map((p, pi) => {
-                p.purchase_order_details.map((po, i) => {
-                    tallySheetData.append("id_pesanan_pembelian[]", p.id);
-                    tallySheetData.append("id_produk[]", po.product_id);
-                    tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
-                    tallySheetData.append("aksi[]", statusPO[pi][i]);
-                    tallySheetData.append("satuan_box[]", po.unit);
-                    tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
-
-                })
-            });
-        }
-        else if (sumber == 'Faktur') {
-            product.map((p, pi) => {
-                p.purchase_invoice_details.map((po, i) => {
-                    tallySheetData.append("id_faktur_pembelian[]", p.id);
-                    tallySheetData.append("id_produk[]", po.product_id);
-                    tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
-                    tallySheetData.append("aksi[]", statusPO[pi][i]);
-                    tallySheetData.append("satuan_box[]", po.unit);
-                    tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
-
-                })
-            });
-        }
-
-        let key = 0;
-        for (let idx = 0; idx < kuantitasBox.length; idx++) {
-            for (let x = 0; x < kuantitasBox[idx].length; x++) {
-                for (let y = 0; y < kuantitasBox[idx][x].length; y++) {
-                    tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + y + "]", kuantitasBox[idx][x][y].toString().replace(',', '.'))
-
-                }
-                key++;
-            }
-        }
-        axios({
-            method: "post",
-            url: `${Url}/tally_sheet_ins`,
-            data: tallySheetData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/tallypembelian");
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data customer kosong, silahkan lengkapi datanya"
             })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        //text:"Data Kuantiti Produk belum Diisi, silahkan lengkapi datanya dan coba kembali",
-                        text: err.response.data.message,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+
+        }
+        else if (sumber == 'PO' && !supplier) {
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, silahkan lengkapi datanya"
+            })
+
+        }
+        else if (sumber == 'Faktur' && !supplier) {
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, silahkan lengkapi datanya"
+            })
+
+        }
+        else if (!warehouse) {
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Gudang kosong, silahkan lengkapi datanya"
+            })
+
+        }
+
+        else {
+
+
+            e.preventDefault();
+            const tallySheetData = new FormData();
+            tallySheetData.append("tanggal", date);
+            if (sumber == 'Retur') {
+                tallySheetData.append("pelanggan", customer);
+            }
+            else {
+                tallySheetData.append("pemasok", supplier);
+            }
+            // tallySheetData.append("pemasok", supplier);
+            tallySheetData.append("gudang", warehouse);
+            tallySheetData.append("catatan", description);
+            tallySheetData.append("status", "Submitted");
+
+            if (sumber == 'Retur') {
+                product.map((p, pi) => {
+                    p.sales_return_details.map((po, i) => {
+                        tallySheetData.append("id_retur_penjualan[]", p.id);
+                        tallySheetData.append("id_produk[]", po.product_id);
+                        tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
+                        tallySheetData.append("aksi[]", statusPO[pi][i]);
+                        tallySheetData.append("satuan_box[]", po.unit);
+                        tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
+
+                    })
+                });
+            }
+            else if (sumber == 'PO') {
+                product.map((p, pi) => {
+                    p.purchase_order_details.map((po, i) => {
+                        tallySheetData.append("id_pesanan_pembelian[]", p.id);
+                        tallySheetData.append("id_produk[]", po.product_id);
+                        tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
+                        tallySheetData.append("aksi[]", statusPO[pi][i]);
+                        tallySheetData.append("satuan_box[]", po.unit);
+                        tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
+
+                    })
+                });
+            }
+            else if (sumber == 'Faktur') {
+                product.map((p, pi) => {
+                    p.purchase_invoice_details.map((po, i) => {
+                        tallySheetData.append("id_faktur_pembelian[]", p.id);
+                        tallySheetData.append("id_produk[]", po.product_id);
+                        tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
+                        tallySheetData.append("aksi[]", statusPO[pi][i]);
+                        tallySheetData.append("satuan_box[]", po.unit);
+                        tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
+
+                    })
+                });
+            }
+
+            let key = 0;
+            for (let idx = 0; idx < kuantitasBox.length; idx++) {
+                for (let x = 0; x < kuantitasBox[idx].length; x++) {
+                    for (let y = 0; y < kuantitasBox[idx][x].length; y++) {
+                        tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + y + "]", kuantitasBox[idx][x][y].toString().replace(',', '.'))
+
+                    }
+                    key++;
                 }
-            });
-     }  
+            }
+            axios({
+                method: "post",
+                url: `${Url}/tally_sheet_ins`,
+                data: tallySheetData,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            })
+                .then(function (response) {
+                    //handle success
+                    Swal.fire(
+                        "Berhasil Ditambahkan",
+                        ` Masuk dalam list`,
+                        "success"
+                    );
+                    navigate("/tallypembelian");
+                })
+                .catch((err) => {
+                    if (err.response) {
+                        console.log("err.response ", err.response);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            //text:"Data Kuantiti Produk belum Diisi, silahkan lengkapi datanya dan coba kembali",
+                            text: err.response.data.message,
+                        });
+                    } else if (err.request) {
+                        console.log("err.request ", err.request);
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    } else if (err.message) {
+                        // do something other than the other two
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    }
+                });
+        }
     };
 
     const handleDraft = async (e) => {
 
-        if(!date){
+        if (!date) {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Tanggal kosong, Silahkan Lengkapi datanya ",
-              });
+            });
         }
-        else if(sumber == ''){
+        else if (sumber == '') {
             Swal.fire({
                 icon: "error",
                 title: "Oops...",
                 text: "Data Transaksi kosong, silahkan lengkapi datanya"
             })
         }
-        else if(sumber == 'Retur' && !customer){
-          
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text:"Data customer kosong, silahkan lengkapi datanya"
-                })
-            
+        else if (sumber == 'Retur' && !customer) {
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data customer kosong, silahkan lengkapi datanya"
+            })
+
         }
-        else if(sumber == 'PO' && !supplier){
-           
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text:"Data Supplier kosong, silahkan lengkapi datanya"
-                })
-            
+        else if (sumber == 'PO' && !supplier) {
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, silahkan lengkapi datanya"
+            })
+
         }
-        else if (sumber == 'Faktur' && !supplier){
-           
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text:"Data Supplier kosong, silahkan lengkapi datanya"
-                })
-           
+        else if (sumber == 'Faktur' && !supplier) {
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Supplier kosong, silahkan lengkapi datanya"
+            })
+
         }
-        else if(!warehouse){
-            
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text:"Data Gudang kosong, silahkan lengkapi datanya"
-                })
-           
-        }
-        else{
-        
-        e.preventDefault();
-        const tallySheetData = new FormData();
-        tallySheetData.append("tanggal", date);
-        if (sumber == 'Retur') {
-            tallySheetData.append("pelanggan", customer);
+        else if (!warehouse) {
+
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Data Gudang kosong, silahkan lengkapi datanya"
+            })
+
         }
         else {
-            tallySheetData.append("pemasok", supplier);
-        }
-        tallySheetData.append("gudang", warehouse);
-        tallySheetData.append("catatan", description);
-        tallySheetData.append("status", "Draft");
-        if (sumber == 'Retur') {
-            product.map((p, pi) => {
-                p.sales_return_details.map((po, i) => {
-                    tallySheetData.append("id_retur_penjualan[]", p.id);
-                    tallySheetData.append("id_produk[]", po.product_id);
-                    tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
-                    tallySheetData.append("aksi[]", statusPO[pi][i]);
-                    tallySheetData.append("satuan_box[]", po.unit);
-                    tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
 
-                })
-            });
-        }
-        else if (sumber == 'PO') {
-            product.map((p, pi) => {
-                p.purchase_order_details.map((po, i) => {
-                    tallySheetData.append("id_pesanan_pembelian[]", p.id);
-                    tallySheetData.append("id_produk[]", po.product_id);
-                    tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
-                    tallySheetData.append("aksi[]", statusPO[pi][i]);
-                    tallySheetData.append("satuan_box[]", po.unit);
-                    tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
-
-                })
-            });
-        }
-        else if (sumber == 'Faktur') {
-            product.map((p, pi) => {
-                p.purchase_invoice_details.map((po, i) => {
-                    tallySheetData.append("id_faktur_pembelian[]", p.id);
-                    tallySheetData.append("id_produk[]", po.product_id);
-                    tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
-                    tallySheetData.append("aksi[]", statusPO[pi][i]);
-                    tallySheetData.append("satuan_box[]", po.unit);
-                    tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
-
-                })
-            });
-        }
-
-        let key = 0;
-        for (let idx = 0; idx < kuantitasBox.length; idx++) {
-            for (let x = 0; x < kuantitasBox[idx].length; x++) {
-                for (let y = 0; y < kuantitasBox[idx][x].length; y++) {
-                    tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + y + "]", kuantitasBox[idx][x][y].toString().replace(',', '.'))
-
-                }
-                key++;
+            e.preventDefault();
+            const tallySheetData = new FormData();
+            tallySheetData.append("tanggal", date);
+            if (sumber == 'Retur') {
+                tallySheetData.append("pelanggan", customer);
             }
-        }
+            else {
+                tallySheetData.append("pemasok", supplier);
+            }
+            tallySheetData.append("gudang", warehouse);
+            tallySheetData.append("catatan", description);
+            tallySheetData.append("status", "Draft");
+            if (sumber == 'Retur') {
+                product.map((p, pi) => {
+                    p.sales_return_details.map((po, i) => {
+                        tallySheetData.append("id_retur_penjualan[]", p.id);
+                        tallySheetData.append("id_produk[]", po.product_id);
+                        tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
+                        tallySheetData.append("aksi[]", statusPO[pi][i]);
+                        tallySheetData.append("satuan_box[]", po.unit);
+                        tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
 
+                    })
+                });
+            }
+            else if (sumber == 'PO') {
+                product.map((p, pi) => {
+                    p.purchase_order_details.map((po, i) => {
+                        tallySheetData.append("id_pesanan_pembelian[]", p.id);
+                        tallySheetData.append("id_produk[]", po.product_id);
+                        tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
+                        tallySheetData.append("aksi[]", statusPO[pi][i]);
+                        tallySheetData.append("satuan_box[]", po.unit);
+                        tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
 
-        axios({
-            method: "post",
-            url: `${Url}/tally_sheet_ins`,
-            data: tallySheetData,
-            headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-            },
-        })
-            .then(function (response) {
-                //handle success
-                Swal.fire(
-                    "Berhasil Ditambahkan",
-                    ` Masuk dalam list`,
-                    "success"
-                );
-                navigate("/tallypembelian");
-            })
-            .catch((err) => {
-                if (err.response) {
-                    console.log("err.response ", err.response);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                       // text:"Data Kuantiti Produk belum Diisi, silahkan lengkapi datanya dan coba kembali",
-                         text: err.response.data.message,
-                    });
-                } else if (err.request) {
-                    console.log("err.request ", err.request);
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
-                } else if (err.message) {
-                    // do something other than the other two
-                    Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    })
+                });
+            }
+            else if (sumber == 'Faktur') {
+                product.map((p, pi) => {
+                    p.purchase_invoice_details.map((po, i) => {
+                        tallySheetData.append("id_faktur_pembelian[]", p.id);
+                        tallySheetData.append("id_produk[]", po.product_id);
+                        tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
+                        tallySheetData.append("aksi[]", statusPO[pi][i]);
+                        tallySheetData.append("satuan_box[]", po.unit);
+                        tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
+
+                    })
+                });
+            }
+
+            let key = 0;
+            for (let idx = 0; idx < kuantitasBox.length; idx++) {
+                for (let x = 0; x < kuantitasBox[idx].length; x++) {
+                    for (let y = 0; y < kuantitasBox[idx][x].length; y++) {
+                        tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + y + "]", kuantitasBox[idx][x][y].toString().replace(',', '.'))
+
+                    }
+                    key++;
                 }
-            });
- 
-           }       };
+            }
+
+
+            axios({
+                method: "post",
+                url: `${Url}/tally_sheet_ins`,
+                data: tallySheetData,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            })
+                .then(function (response) {
+                    //handle success
+                    Swal.fire(
+                        "Berhasil Ditambahkan",
+                        ` Masuk dalam list`,
+                        "success"
+                    );
+                    navigate("/tallypembelian");
+                })
+                .catch((err) => {
+                    if (err.response) {
+                        console.log("err.response ", err.response);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            // text:"Data Kuantiti Produk belum Diisi, silahkan lengkapi datanya dan coba kembali",
+                            text: err.response.data.message,
+                        });
+                    } else if (err.request) {
+                        console.log("err.request ", err.request);
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    } else if (err.message) {
+                        // do something other than the other two
+                        Swal.fire("Gagal Ditambahkan", "Mohon Cek Dahulu..", "error");
+                    }
+                });
+
+        }
+    };
 
     return (
         <>

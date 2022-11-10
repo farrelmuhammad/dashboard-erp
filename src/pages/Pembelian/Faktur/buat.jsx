@@ -232,25 +232,25 @@ const BuatFakturPembelian = () => {
                 }
             })
             let tmp = []
-            for(let i=0; i<res.data.data.length; i++){
-                if(tmpCentang.indexOf(res.data.data[i].code) >= 0 ){
+            for (let i = 0; i < res.data.data.length; i++) {
+                if (tmpCentang.indexOf(res.data.data[i].code) >= 0) {
                     tmp.push({
-                        detail:res.data.data[i],
+                        detail: res.data.data[i],
                         statusCek: true
                     });
                 }
             }
-            for(let i=0; i<res.data.data.length; i++){
-                if(tmpCentang.indexOf(res.data.data[i].code) < 0 ){
+            for (let i = 0; i < res.data.data.length; i++) {
+                if (tmpCentang.indexOf(res.data.data[i].code) < 0) {
                     tmp.push({
-                        detail:res.data.data[i],
+                        detail: res.data.data[i],
                         statusCek: false
                     });
                 }
             }
 
             setGetDataProduct(tmp)
-           // setGetDataProduct(res.data.data);
+            // setGetDataProduct(res.data.data);
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -266,18 +266,18 @@ const BuatFakturPembelian = () => {
                 }
             })
             let tmp = []
-            for(let i=0; i<res.data.data.length; i++){
-                if(tmpCentang.indexOf(res.data.data[i].code) >= 0 ){
+            for (let i = 0; i < res.data.data.length; i++) {
+                if (tmpCentang.indexOf(res.data.data[i].code) >= 0) {
                     tmp.push({
-                        detail:res.data.data[i],
+                        detail: res.data.data[i],
                         statusCek: true
                     });
                 }
             }
-            for(let i=0; i<res.data.data.length; i++){
-                if(tmpCentang.indexOf(res.data.data[i].code) < 0 ){
+            for (let i = 0; i < res.data.data.length; i++) {
+                if (tmpCentang.indexOf(res.data.data[i].code) < 0) {
                     tmp.push({
-                        detail:res.data.data[i],
+                        detail: res.data.data[i],
                         statusCek: false
                     });
                 }
@@ -773,17 +773,17 @@ const BuatFakturPembelian = () => {
             dataIndex: 'address',
             width: '15%',
             align: 'center',
-            render: (_, record,index) => (
+            render: (_, record, index) => (
                 <>
                     {/* <Checkbox
                         value={record}
                         onChange={handleCheck}
                     /> */}
-                      <Checkbox
+                    <Checkbox
                         // style={{ display: tampilCek ? "block" : "none"}}
                         value={record}
                         checked={record.statusCek}
-                        onChange={(e) => handleCheck(e,index)}
+                        onChange={(e) => handleCheck(e, index)}
                     />
                 </>
             )
@@ -822,13 +822,13 @@ const BuatFakturPembelian = () => {
             dataIndex: 'address',
             width: '8%',
             align: 'center',
-            render: (_, record,index) => (
+            render: (_, record, index) => (
                 <>
                     <Checkbox
                         // style={{ display: tampilCek ? "block" : "none"}}
                         value={record}
                         checked={record.statusCek}
-                        onChange={(e) => handleCheck(e,index)}
+                        onChange={(e) => handleCheck(e, index)}
                     />
                 </>
             )
@@ -1163,8 +1163,8 @@ const BuatFakturPembelian = () => {
                         prefix={mataUang + ' '}
                         onKeyDown={(event) => klikEnter(event)}
                         value={item.jumlah.toString().replace('.', ',')}
-                        onChange={(e) => ubahCredit(e.target.value, i)} 
-                        disabled/>
+                        onChange={(e) => ubahCredit(e.target.value, i)}
+                        disabled />
                 </div>,
 
             action: <Space size="middle">
@@ -1193,41 +1193,42 @@ const BuatFakturPembelian = () => {
         let tmpDataCentang = [...tmpCentang]
 
         //pengecekan centang
-        if(grup == "Lokal"){
-            for(let i=0; i<getDataProduct.length; i++){
-                if(i == index){
+        if (grup == "Lokal") {
+            for (let i = 0; i < getDataProduct.length; i++) {
+                if (i == index) {
                     tmpDataBaru.push({
-                        detail:getDataProduct[i].detail,
+                        detail: getDataProduct[i].detail,
                         statusCek: !getDataProduct[i].statusCek
                     })
-                    if(!tmpDataBaru[i].statusCek){
+                    if (!tmpDataBaru[i].statusCek) {
                         let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
                         tmpDataCentang.splice(idxHapus, 1)
                     }
+                    else if (tmpDataBaru[i].statusCek == true) {
+                        tmpDataCentang.push(tmpDataBaru[i].detail.code)
+                    }
                 }
-                else{
+                else {
                     tmpDataBaru.push(getDataProduct[i])
                 }
 
-                if(tmpDataBaru[i].statusCek == true){
-                    tmpDataCentang.push(tmpDataBaru[i].detail.code)
-                }
+
             }
             setGetDataProduct(tmpDataBaru)
         }
-        else if(grup == "Impor"){
-            for(let i=0; i<getDataProductImpor.length; i++){
-                if(i == index){
+        else if (grup == "Impor") {
+            for (let i = 0; i < getDataProductImpor.length; i++) {
+                if (i == index) {
                     tmpDataBaru.push({
-                        detail:getDataProductImpor[i].detail,
+                        detail: getDataProductImpor[i].detail,
                         statusCek: !getDataProductImpor[i].statusCek
                     })
-                    if(!tmpDataBaru[i].statusCek){
+                    if (!tmpDataBaru[i].statusCek) {
                         let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
                         tmpDataCentang.splice(idxHapus, 1)
                     }
                 }
-                else{
+                else {
                     tmpDataBaru.push(getDataProductImpor[i])
                 }
 
@@ -1245,7 +1246,7 @@ const BuatFakturPembelian = () => {
         if (tmpDataBaru[index].statusCek) {
 
 
-            if(grup == 'Lokal'){
+            if (grup == 'Lokal') {
 
                 for (let i = 0; i < getDataProduct.length; i++) {
                     if (tmpDataBaru[i].statusCek) {
@@ -1255,7 +1256,7 @@ const BuatFakturPembelian = () => {
                 }
                 setIdTandaTerima(idTerima);
             }
-            else if(grup == 'Impor'){
+            else if (grup == 'Impor') {
                 for (let i = 0; i < getDataProductImpor.length; i++) {
                     if (tmpDataBaru[i].statusCek) {
                         idTerima = [...idTandaTerima, getDataProductImpor[i].detail.id]
@@ -1293,11 +1294,11 @@ const BuatFakturPembelian = () => {
                 })
                     .then((res) => {
                         updatedList = res.data.details;
-                       
+
                     })
                     .then(() => {
                         for (let i = 0; i < updatedList.length; i++) {
-                          
+
                             updatedList[i].currency_name ? setMataUang(updatedList[i].currency_name) : setMataUang('Rp')
                             tmpData.push(
                                 {
@@ -1347,7 +1348,7 @@ const BuatFakturPembelian = () => {
                 })
                     .then((res) => {
                         updatedList = res.data.details;
-                      
+
                     })
                     .then(() => {
                         for (let i = 0; i < updatedList.length; i++) {
@@ -1956,7 +1957,7 @@ const BuatFakturPembelian = () => {
                                     // isClearable={true}
                                     isSearchable={true}
                                     options={dataSupplier}
-                                    onChange={(e) => {setSupplier(e.value), setProduct([]), setTmpCentang([])}}
+                                    onChange={(e) => { setSupplier(e.value), setProduct([]), setTmpCentang([]) }}
                                 />
 
                             </div>
