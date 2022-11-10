@@ -1,12 +1,12 @@
 import './form.css'
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
 import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, Tooltip } from 'antd'
-import { DeleteOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons'
+import { DeleteOutlined, PlusOutlined,EditOutlined, PrinterOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
@@ -65,6 +65,7 @@ const DetailReturPembelian = () => {
     const [dataFaktur, setDataFaktur] = useState([])
     const [tampilTabel, setTampilTabel] = useState(true)
     const [dataHeader, setDataHeader] = useState([])
+    const [canEdit, setCanEdit] = useState([])
     const [getStatus, setGetStatus] = useState()
     const [produkRetur, setProdukRetur] = useState([])
     const [mataUang, setMataUang] = useState('Rp.')
@@ -88,6 +89,7 @@ const DetailReturPembelian = () => {
         })
             .then((res) => {
                 let getData = res.data.data[0]
+                setCanEdit(getData.can['update-purchase_return'])
                 setDataHeader(getData)
                 setGetStatus(getData.status)
                 setProdukRetur(getData.purchase_return_details)
@@ -482,26 +484,53 @@ const DetailReturPembelian = () => {
             <form className="p-3 mb-3 bg-body rounded">
                 <div className="row">
                     <div className="col text-title text-start">
-                        <PageHeader
-                            ghost={false}
-                            onBack={() => window.history.back()}
-                            title="Detail Retur Pembelian"
-                            extra={[
-                                <Tooltip title="Cetak" placement="bottom">
-                                    <Button
-                                        type="primary"
-                                        icon={<PrinterOutlined />}
-                                        style={{ background: "orange", borderColor: "orange" }}
-                                        onClick={handlePrint}
-                                    />
-                                </Tooltip>,
-                            ]}
-                        >
+                        {
+                            canEdit ?
+                                <PageHeader
+                                    ghost={false}
+                                    onBack={() => window.history.back()}
+                                    title="Detail Retur Pembelian"
+                                    extra={[
+                                        <Link to={`/returpembelian/edit/${id}`}>
+                                            <Button
+                                                type="primary"
+                                                icon={<EditOutlined />}
+                                            />
+                                        </Link>,
+                                        <Tooltip title="Cetak" placement="bottom">
+                                            <Button
+                                                type="primary"
+                                                icon={<PrinterOutlined />}
+                                                style={{ background: "orange", borderColor: "orange" }}
+                                                onClick={handlePrint}
+                                            />
+                                        </Tooltip>,
+                                    ]}
+                                >
 
-                        </PageHeader>
+                                </PageHeader> :
+                                <PageHeader
+                                    ghost={false}
+                                    onBack={() => window.history.back()}
+                                    title="Detail Retur Pembelian"
+                                    extra={[
+                                        <Tooltip title="Cetak" placement="bottom">
+                                            <Button
+                                                type="primary"
+                                                icon={<PrinterOutlined />}
+                                                style={{ background: "orange", borderColor: "orange" }}
+                                                onClick={handlePrint}
+                                            />
+                                        </Tooltip>,
+                                    ]}
+                                >
+
+                                </PageHeader>
+                        }
+
                     </div>
                     {/* <div className="col button-add text-end me-3">
-                        <button type="button" onClick={handlePrint} class="btn btn-warning rounded m-1">
+                        <button type="button" onClick={handlePrint} className="btn btn-warning rounded m-1">
                             Cetak
                         </button>
                     </div> */}

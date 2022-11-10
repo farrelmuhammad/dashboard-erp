@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Skeleton, Space, Table, Tag } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Modal, PageHeader, Select, Skeleton, Space, Table, Tag } from 'antd'
 import { PlusOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
@@ -385,7 +385,6 @@ const EditAdjustment = () => {
         let unikTmpCentang = [...new Set(tmpDataCentang)]
         setTmpCentang(unikTmpCentang)
         setGetDataProduct(tmpDataBaru)
-        setGetDataProduct(tmpDataBaru)
         var updatedList = [...product];
         if (tmpDataBaru[index].statusCek) {
             updatedList = [...product, data.detail];
@@ -531,145 +530,130 @@ const EditAdjustment = () => {
     }
     return (
         <>
-            <div className="p-3 mb-3 bg-body rounded">
-                <div className="p-3 mb-3">
-                    <div className="card" style={cardOutline}>
-                        <div className="card-header bg-white">
-                            <h6 className="title fw-bold">
-                                <Button
-                                    style={{ border: 'none' }}
-                                    icon={<ArrowLeftOutlined />}
-                                    onClick={() => navigate(-1)}
+            <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                onBack={() => window.history.back()}
+                title="Edit Penyesuaian Stok"
+            >
+                <div className="row">
+                    <div className="col-md-6">
+                        <div className="form-group row mb-1">
+                            <label for="adjustment_no" className="col-sm-4 col-form-label">No</label>
+                            <div className="col-sm-8">
+                                <input type="text" className="form-control" id="adjustment_no" name="adjustment_no" value={getCode} placeholder="Otomatis" readOnly />
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label for="adjustment_date" className="col-sm-4 col-form-label">Tanggal</label>
+                            <div className="col-sm-8">
+                                <input type="date" className="form-control" id="adjustment_date" name="adjustment_date" value={adjustment_date} onChange={(e) => setAdjustmentDate(e.target.value)} />
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang</label>
+                            <div className="col-sm-8">
+                                <AsyncSelect
+                                    placeholder="Pilih Gudang..."
+                                    cacheOptions
+                                    defaultOptions
+                                    defaultInputValue={warehouseName}
+                                    value={selectedWarehouse}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsWarehouse}
+                                    onChange={handleChangeWarehouse}
                                 />
-                                Edit Penyesuaian Stok
-                            </h6>
+                            </div>
                         </div>
-                        <div className="card-body">
-                            <div className="row">
-                                <div className="col-md-6">
-                                    <div className="form-group row mb-1">
-                                        <label for="adjustment_no" className="col-sm-4 col-form-label">No</label>
-                                        <div className="col-sm-8">
-                                            <input type="text" className="form-control" id="adjustment_no" name="adjustment_no" value={getCode} placeholder="Otomatis" readOnly />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label for="adjustment_date" className="col-sm-4 col-form-label">Tanggal</label>
-                                        <div className="col-sm-8">
-                                            <input type="date" className="form-control" id="adjustment_date" name="adjustment_date" value={adjustment_date} onChange={(e) => setAdjustmentDate(e.target.value)} />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang</label>
-                                        <div className="col-sm-8">
-                                            <AsyncSelect
-                                                placeholder="Pilih Gudang..."
-                                                cacheOptions
-                                                defaultOptions
-                                                defaultInputValue={warehouseName}
-                                                value={selectedWarehouse}
-                                                getOptionLabel={(e) => e.name}
-                                                getOptionValue={(e) => e.id}
-                                                loadOptions={loadOptionsWarehouse}
-                                                onChange={handleChangeWarehouse}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-6">
-                                    <div className="form-group row mb-1">
-                                        <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
-                                        <div className="col-sm-8">
-                                            {status === 'Submitted' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'Draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label for="adjustment_notes" className="col-sm-4 col-form-label">Catatan</label>
-                                        <div className="col-sm-8">
-                                            <textarea
-                                                className="form-control"
-                                                name="adjustment_notes" id="adjustment_notes"
-                                                rows="4"
-                                                value={notes}
-                                                onChange={(e) => setAdjustmentNotes(e.target.value)}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
+                    </div>
+                    <div className="col-md-6">
+                        <div className="form-group row mb-1">
+                            <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
+                            <div className="col-sm-8">
+                                {status === 'Submitted' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'Draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label for="adjustment_notes" className="col-sm-4 col-form-label">Catatan</label>
+                            <div className="col-sm-8">
+                                <textarea
+                                    className="form-control"
+                                    name="adjustment_notes" id="adjustment_notes"
+                                    rows="4"
+                                    value={notes}
+                                    onChange={(e) => setAdjustmentNotes(e.target.value)}
+                                />
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="p-3 mb-3">
-                    <div className="card" style={cardOutline}>
-                        <div className="card-header bg-white">
-                            <h6 className="title fw-bold">Daftar Produk</h6>
-                        </div>
-                        <div className="card-body">
-                            <div className="row">
-                                <div className="col text-end me-2">
-                                    <Button
-                                        type="primary"
-                                        icon={<PlusOutlined />}
-                                        // onClick={() => setModal2Visible(true)}
-                                        onClick={checkWarehouse}
-                                    />
-                                    <Modal
-                                        title="Tambah Produk"
-                                        centered
-                                        visible={modal2Visible}
-                                        onCancel={() => setModal2Visible(false)}
-                                        // footer={[
-                                        //     <Button
-                                        //         key="submit"
-                                        //         type="primary"
+            </PageHeader>
 
-                                        //     >
-                                        //         Tambah
-                                        //     </Button>,
-                                        // ]}
-                                        footer={null}
-                                    >
-                                        <div className="text-title text-start">
-                                            <div className="row">
-                                                <div className="col mb-3">
-                                                    <Search
-                                                        placeholder="Cari Produk..."
-                                                        style={{
-                                                            width: 400,
-                                                        }}
-                                                        onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                                    />
-                                                </div>
-                                                <Table
-                                                    columns={columnsModal}
-                                                    dataSource={columnDataProduct}
-                                                    scroll={{
-                                                        y: 250,
-                                                    }}
-                                                    pagination={false}
-                                                    loading={isLoading}
-                                                    size="middle"
-                                                />
-                                            </div>
-                                        </div>
-                                    </Modal>
+            <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                title="Daftar Produk"
+                extra={[
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        // onClick={() => setModal2Visible(true)}
+                        onClick={checkWarehouse}
+                    />,
+                    <Modal
+                        title="Tambah Produk"
+                        centered
+                        visible={modal2Visible}
+                        onCancel={() => setModal2Visible(false)}
+                        // footer={[
+                        //     <Button
+                        //         key="submit"
+                        //         type="primary"
+
+                        //     >
+                        //         Tambah
+                        //     </Button>,
+                        // ]}
+                        footer={null}
+                    >
+                        <div className="text-title text-start">
+                            <div className="row">
+                                <div className="col mb-3">
+                                    <Search
+                                        placeholder="Cari Produk..."
+                                        style={{
+                                            width: 400,
+                                        }}
+                                        onChange={(e) => setQuery(e.target.value.toLowerCase())}
+                                    />
                                 </div>
+                                <Table
+                                    columns={columnsModal}
+                                    dataSource={columnDataProduct}
+                                    scroll={{
+                                        y: 250,
+                                    }}
+                                    pagination={false}
+                                    loading={isLoading}
+                                    size="middle"
+                                />
                             </div>
-                            <Table
-                                loading={isLoading}
-                                components={components}
-                                rowClassName={() => 'editable-row'}
-                                bordered
-                                pagination={false}
-                                dataSource={product}
-                                columns={columns}
-                                onChange={(e) => setProduct(e.target.value)}
-                            />
                         </div>
-                    </div>
-                </div>
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
+                    </Modal>
+                ]}
+            >
+                <Table
+                    loading={isLoading}
+                    components={components}
+                    rowClassName={() => 'editable-row'}
+                    bordered
+                    pagination={false}
+                    dataSource={product}
+                    columns={columns}
+                    onChange={(e) => setProduct(e.target.value)}
+                />
+                <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2" role="group" aria-label="Basic mixed styles example">
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -693,8 +677,7 @@ const EditAdjustment = () => {
                             : null
                     }
                 </div>
-                <div style={{ clear: 'both' }}></div>
-            </div>
+            </PageHeader>
         </>
     )
 }

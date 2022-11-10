@@ -169,7 +169,7 @@ const BuatPesananPembelian = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_products?nama=${query}`, {
+            const res = await axios.get(`${Url}/select_products?status=Active&nama=${query}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`

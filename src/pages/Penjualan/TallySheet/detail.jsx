@@ -42,6 +42,7 @@ export const DetailTally = () => {
     const [modal2Visible2, setModal2Visible2] = useState(false);
     const [detailTallySheet, setDetailTallySheet] = useState([]);
     const [beCust, setbeCust] = useState("");
+    const [canEdit, setCanEdit] = useState("");
 
     const valueRenderer = (cell) => cell.value;
     const onContextMenu = (e, cell, i, j) =>
@@ -57,11 +58,12 @@ export const DetailTally = () => {
         })
             .then((res) => {
                 const getData = res.data.data[0];
+                setCanEdit(getData.can['update-tally_sheet'])
                 setLoading(false)
                 setGetTallySheet(getData)
                 setDetailTallySheet(getData.tally_sheet_details);
 
-              
+
                 console.log(getData)
 
                 if (getData.customer_id) {
@@ -425,16 +427,16 @@ export const DetailTally = () => {
                                                 <div className="d-flex flex-row">
                                                     <label className='col-6'>KEPADA</label>
                                                     {
-                                                        sumber == 'SO' ? 
-                                                            beCust == 'Lainnya' ? 
-                                                            <div className='col-6'> :  {getTallySheet.customer.name}</div> : 
-                                                            <div className='col-6'> : {beCust} {getTallySheet.customer.name}</div>
-                                                        :
-                                                            beCust == 'Lainnya' ? 
-                                                            <div className='col-6'> : {getTallySheet.supplier_name}</div> : 
-                                                            <div className='col-6'> : {beCust} {getTallySheet.supplier_name}</div>
+                                                        sumber == 'SO' ?
+                                                            beCust == 'Lainnya' ?
+                                                                <div className='col-6'> :  {getTallySheet.customer.name}</div> :
+                                                                <div className='col-6'> : {beCust} {getTallySheet.customer.name}</div>
+                                                            :
+                                                            beCust == 'Lainnya' ?
+                                                                <div className='col-6'> : {getTallySheet.supplier_name}</div> :
+                                                                <div className='col-6'> : {beCust} {getTallySheet.supplier_name}</div>
 
-                                                        
+
                                                     }
                                                 </div>
                                                 <div className="d-flex flex-row">
@@ -690,31 +692,52 @@ export const DetailTally = () => {
 
                 </div>
             </div> */}
+            <form className="p-3 mb-3 bg-body rounded">
+                {
+                    canEdit ?
+                        <PageHeader
+                            ghost={false}
+                            className="bg-body rounded mb-2"
+                            title="Detail Tally Sheet"
+                            onBack={() => window.history.back()}
+                            extra={[
+                                <Tooltip title="Edit" placement="bottom">
+                                    <Link to={`/tally/edit/${id}`}>
+                                        <Button
+                                            type="primary"
+                                            icon={<EditOutlined />}
+                                        />
+                                    </Link>
+                                </Tooltip>,
+                                <Tooltip title="Cetak" placement="bottom">
+                                    <Button
+                                        type="primary"
+                                        icon={<PrinterOutlined />}
+                                        style={{ background: "orange", borderColor: "orange" }}
+                                        onClick={handlePrint}
+                                    />
+                                </Tooltip>,
+                            ]}
+                        ></PageHeader>
+                        :
+                        <PageHeader
+                            ghost={false}
+                            className="bg-body rounded mb-2"
+                            title="Detail Tally Sheet"
+                            onBack={() => window.history.back()}
+                            extra={[
+                                <Tooltip title="Cetak" placement="bottom">
+                                    <Button
+                                        type="primary"
+                                        icon={<PrinterOutlined />}
+                                        style={{ background: "orange", borderColor: "orange" }}
+                                        onClick={handlePrint}
+                                    />
+                                </Tooltip>,
+                            ]}
+                        ></PageHeader>
+                }
 
-            <PageHeader
-                ghost={false}
-                className="bg-body rounded mb-2"
-                title="Detail Tally Sheet"
-                onBack={() => window.history.back()}
-                extra={[
-                    <Tooltip title="Edit" placement="bottom">
-                        <Link to={`/tally/edit/${id}`}>
-                            <Button
-                                type="primary"
-                                icon={<EditOutlined />}
-                            />
-                        </Link>
-                    </Tooltip>,
-                    <Tooltip title="Cetak" placement="bottom">
-                        <Button
-                            type="primary"
-                            icon={<PrinterOutlined />}
-                            style={{ background: "orange", borderColor: "orange" }}
-                            onClick={handlePrint}
-                        />
-                    </Tooltip>,
-                ]}
-            >
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -738,7 +761,7 @@ export const DetailTally = () => {
 
                                     </div> :
                                     <div className="col-sm-7">
-                                        <input disabled="true" value='Retur Pembelian'id="startDate" className="form-control" type="text" />
+                                        <input disabled="true" value='Retur Pembelian' id="startDate" className="form-control" type="text" />
 
                                     </div>
                             }
@@ -784,22 +807,27 @@ export const DetailTally = () => {
                         </div>
                     </div>
                 </div>
-            </PageHeader>
+            </form>
 
-            <PageHeader
-                ghost={false}
-                title="Daftar Pesanan"
-            >
-                <Table
-                    bordered
-                    pagination={false}
-                    dataSource={dataPurchase}
-                    // expandable={{ expandedRowRender }}
-                    // defaultExpandAllRows
-                    columns={columns}
-                    onChange={(e) => setProduct(e.target.value)}
-                />
-            </PageHeader>
+            <form className="p-3 mb-5 bg-body rounded">
+
+
+
+                <PageHeader
+                    ghost={false}
+                    title="Daftar Pesanan"
+                >
+                    <Table
+                        bordered
+                        pagination={false}
+                        dataSource={dataPurchase}
+                        // expandable={{ expandedRowRender }}
+                        // defaultExpandAllRows
+                        columns={columns}
+                        onChange={(e) => setProduct(e.target.value)}
+                    />
+                </PageHeader>
+            </form>
         </>
     )
 }

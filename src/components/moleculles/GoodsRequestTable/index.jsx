@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import 'antd/dist/antd.css';
-import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { CloseOutlined, DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Tag } from 'antd';
 import axios from 'axios';
 import Url from '../../../Config';
@@ -12,7 +12,7 @@ import { toTitleCase } from '../../../utils/helper';
 import qs from "https://cdn.skypack.dev/qs@6.11.0";
 
 const GoodsRequestTable = () => {
-  const [searchText, setSearchText] = useState('');
+    const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);
     const [getDataGoodsRequest, setGetDataGoodsRequest] = useState([]);
@@ -23,12 +23,12 @@ const GoodsRequestTable = () => {
 
     const [tableParams, setTableParams] = useState({
         pagination: {
-          current: 1,
-          pageSize: 10,
+            current: 1,
+            pageSize: 10,
         },
-      });
+    });
 
-    const deleteGoodsRequest= async (id) => {
+    const deleteGoodsRequest = async (id) => {
         await axios.delete(`${Url}/goodsrequests/${id}`, {
             headers: {
                 Accept: "application/json",
@@ -137,9 +137,9 @@ const GoodsRequestTable = () => {
 
     const handleTableChange = (pagination, filters, sorter) => {
         setTableParams({
-          pagination,
-          filters,
-          ...sorter,
+            pagination,
+            filters,
+            ...sorter,
         });
     };
     const getParams = (params) => ({
@@ -148,7 +148,7 @@ const GoodsRequestTable = () => {
         ...params,
     });
 
-    const getGoodsRequest= async (params = {}) => {
+    const getGoodsRequest = async (params = {}) => {
         setIsLoading(true);
         await axios.get(`${Url}/goodsrequests?${qs.stringify(getParams(tableParams))}`, {
             headers: {
@@ -164,16 +164,16 @@ const GoodsRequestTable = () => {
                 setTableParams({
                     ...tableParams,
                     pagination: {
-                      ...tableParams.pagination,
-                      total: 200,
+                        ...tableParams.pagination,
+                        total: 200,
                     },
-                  });
+                });
             })
     }
 
     useEffect(() => {
         getGoodsRequest();
-      }, [JSON.stringify(tableParams)]);
+    }, [JSON.stringify(tableParams)]);
 
     const columns = [
         {
@@ -236,48 +236,49 @@ const GoodsRequestTable = () => {
                 <>
                     {record.status === 'Submitted' ? (
                         <Space size="middle">
-                        <Link to={`/permintaanbarang/detail/${record.id}`}>
                             <Button
                                 size='small'
-                                type="primary"
-                                icon={<InfoCircleOutlined />}
+                                type="danger"
+                                icon={<CloseOutlined />}
+                            // onClick={() => cancelTallySheet(record.id, record.code)}
                             />
-                        </Link>
-                    </Space>
-                    ):record.status === 'Done'? (
+                            <Link to={`/permintaanbarang/detail/${record.id}`}>
+                                <Button
+                                    size='small'
+                                    type="primary"
+                                    icon={<InfoCircleOutlined />}
+                                />
+                            </Link>
+                            <Link to={`/permintaanbarang/edit/${record.id}`}>
+                                <Button
+                                    size='small'
+                                    type="success"
+                                    icon={<EditOutlined />}
+                                />
+                            </Link>
+                        </Space>
+                    ) : record.status === 'Done' ? (
                         <Space size="middle">
-                        <Link to={`/permintaanbarang/detail/${record.id}`}>
-                            <Button
-                                size='small'
-                                type="primary"
-                                icon={<InfoCircleOutlined />}
-                            />
-                        </Link>
-                    </Space>
-                    ) : (
+                            <Link to={`/permintaanbarang/detail/${record.id}`}>
+                                <Button
+                                    size='small'
+                                    type="primary"
+                                    icon={<InfoCircleOutlined />}
+                                />
+                            </Link>
+                        </Space>
+                    ) : record.status === 'Processed' ? (
                         <Space size="middle">
-                        <Link to={`/permintaanbarang/detail/${record.id}`}>
-                            <Button
-                                size='small'
-                                type="primary"
-                                icon={<InfoCircleOutlined />}
-                            />
-                        </Link>
-                        <Link to={`/permintaanbarang/edit/${record.id}`}>
-                            <Button
-                                size='small'
-                                type="success"
-                                icon={<EditOutlined />}
-                            />
-                        </Link>
-                        <Button
-                            size='small'
-                            type="danger"
-                            icon={<DeleteOutlined />}
-                            onClick={() => deleteGoodsRequest(record.id)}
-                        />
-                    </Space>
-                    )}
+                            <Link to={`/permintaanbarang/detail/${record.id}`}>
+                                <Button
+                                    size='small'
+                                    type="primary"
+                                    icon={<InfoCircleOutlined />}
+                                />
+                            </Link>
+                        </Space>
+                    ) : null
+                    }
                 </>
             ),
         },

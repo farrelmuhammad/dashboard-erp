@@ -19,6 +19,7 @@ export const DetailSuratJalan = () => {
     const [dataSO, setDataSO] = useState([]);
     const [code, setCode] = useState('');
     const [date, setDate] = useState('');
+    const [canEdit, setCanEdit] = useState('');
     const [customer, setCustomer] = useState([]);
     const [sumber, setSumber] = useState([]);
     const [supplier, setSupplier] = useState([]);
@@ -109,6 +110,7 @@ export const DetailSuratJalan = () => {
                 setDataSO(getData);
                 setCode(getData.code)
                 setDate(getData.date)
+                setCanEdit(getData.can['update-delivery_note'])
 
                 console.log(getData)
                 if (getData.customer) {
@@ -536,28 +538,50 @@ export const DetailSuratJalan = () => {
                 </div>
             </div>
 
+            <form className="p-3 mb-3 bg-body rounded">
 
-            <PageHeader
-                className="bg-body rounded mb-2"
-                onBack={() => window.history.back()}
-                title="Detail Surat Jalan"
-                extra={[
-                    <Link to={`/suratjalan/edit/${id}`}>
-                        <Button
-                            type="primary"
-                            icon={<EditOutlined />}
-                        />
-                    </Link>,
-                    <Tooltip title="Cetak" placement="bottom">
-                        <Button
-                            type="primary"
-                            icon={<PrinterOutlined />}
-                            style={{ background: "orange", borderColor: "orange" }}
-                            onClick={handlePrint}
-                        />
-                    </Tooltip>,
-                ]}
-            >
+                {
+                    canEdit ?
+                        <PageHeader
+                            className="bg-body rounded mb-2"
+                            onBack={() => window.history.back()}
+                            title="Detail Surat Jalan"
+                            extra={[
+                                <Link to={`/suratjalan/edit/${id}`}>
+                                    <Button
+                                        type="primary"
+                                        icon={<EditOutlined />}
+                                    />
+                                </Link>,
+                                <Tooltip title="Cetak" placement="bottom">
+                                    <Button
+                                        type="primary"
+                                        icon={<PrinterOutlined />}
+                                        style={{ background: "orange", borderColor: "orange" }}
+                                        onClick={handlePrint}
+                                    />
+                                </Tooltip>,
+                            ]}
+                        ></PageHeader> :
+                        <PageHeader
+                            className="bg-body rounded mb-2"
+                            onBack={() => window.history.back()}
+                            title="Detail Surat Jalan"
+                            extra={[
+
+                                <Tooltip title="Cetak" placement="bottom">
+                                    <Button
+                                        type="primary"
+                                        icon={<PrinterOutlined />}
+                                        style={{ background: "orange", borderColor: "orange" }}
+                                        onClick={handlePrint}
+                                    />
+                                </Tooltip>,
+                            ]}
+                        ></PageHeader>
+                }
+
+
                 <div className="row">
                     <div className="col">
                         <div className="row mb-3">
@@ -704,22 +728,26 @@ export const DetailSuratJalan = () => {
                         </div>
                     </div>
                 </div>
-            </PageHeader>
+            </form>
 
-            <PageHeader
-                ghost={false}
-                title="Daftar Tally Sheet"
-            >
-                <Table
-                    columns={columns}
-                    dataSource={details}
-                    pagination={false}
-                    scroll={{
-                        y: 200,
-                    }}
-                    size="middle"
-                />
-            </PageHeader>
+            <form className="p-3 mb-5 bg-body rounded">
+
+                <PageHeader
+                    ghost={false}
+                    title="Daftar Tally Sheet"
+                >
+                    <Table
+                        columns={columns}
+                        dataSource={details}
+                        pagination={false}
+                        scroll={{
+                            y: 200,
+                        }}
+                        size="middle"
+                    />
+                </PageHeader>
+            </form>
+
         </>
     )
 }

@@ -1,12 +1,12 @@
 import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tag } from 'antd'
-import { DeleteOutlined, LoadingOutlined, MinusOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons'
+import { DeleteOutlined, LoadingOutlined, MinusOutlined, PlusOutlined,EditOutlined, PrinterOutlined } from '@ant-design/icons'
 import React, { useEffect, useState } from 'react'
 import Search from 'antd/lib/transfer/search'
 import axios from 'axios'
 import Url from '../../../Config';
-import { useParams } from 'react-router-dom'
+import { useParams , Link} from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { PageHeader, Tooltip} from 'antd';
+import { PageHeader, Tooltip } from 'antd';
 import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
 import logo from "../../Logo.jpeg";
@@ -17,6 +17,7 @@ export const DetailPenerimaanBarang = () => {
 
     const auth = useSelector(state => state.auth);
     const [modal2Visible, setModal2Visible] = useState(false);
+    const [canEdit, setCanEdit] = useState("");
     const [query, setQuery] = useState("");
     const [getDataProduct, setGetDataProduct] = useState('');
     const [status, setStatus] = useState()
@@ -34,19 +35,19 @@ export const DetailPenerimaanBarang = () => {
     const [brand, setBrand] = useState([]);
     const [noTrans, setNoTrans] = useState([])
     const [dataTS1, setDataTS1] = useState([]);
-    const[codePB, setCodePB] = useState("")
+    const [codePB, setCodePB] = useState("")
     const [custName, setCustName] = useState("")
     const [custAdd, setCustAdd] = useState("")
-    useEffect(()=> {
+    useEffect(() => {
         getDataPOById();
         //nomorTS();
 
         //console.log(nomorTS());
-      //  console.log(brand);
-    //   for(let i=0; i< dataTS.length; i++){
-    //     console.log(dataTS[i].tally_sheet_code);
-    //   }
-        
+        //  console.log(brand);
+        //   for(let i=0; i< dataTS.length; i++){
+        //     console.log(dataTS[i].tally_sheet_code);
+        //   }
+
     }, [])
     const getDataPOById = async () => {
         await axios.get(`${Url}/goods_receipts?id=${id}`, {
@@ -54,53 +55,52 @@ export const DetailPenerimaanBarang = () => {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }) 
+        })
             .then((res) => {
                 const getData = res.data.data[0];
                 setDataPenerimaan(getData);
+                setCanEdit(getData.can['update-goods_receipt'])
                 setStatus(getData.status)
                 setDataTS(getData.goods_receipt_details);
                 setCodePB(getData.code)
 
-                if(getData.code.includes("TR")){
+                if (getData.code.includes("TR")) {
                     setCustName(getData.customer_name)
                     setCustAdd(getData.customer.business_entity)
                     console.log(custName)
                 }
-                else{
-                   setSupplierName(getData.supplier.name);
+                else {
+                    setSupplierName(getData.supplier.name);
                     setSupplierEntity(getData.supplier.business_entity);
                 }
 
-              
+
                 //setAddress(getData.address.address);
-        
+
                 setLoading(false);
                 setBrand(nomorTS());
 
                 console.log(getData)
                 //setDataPBBarang(getData.goods_receipt_details);
                 //console.log(dataTS);
-                
-                
-              
+
+
+
             })
             .catch((err) => {
                 // Jika Gagal
                 console.log(err);
             });
     }
-  
+
     let arrBrand = []
-    function nomorTS()
-    {
-        for(let i=0; i<dataTS.length; i++)
-        {
+    function nomorTS() {
+        for (let i = 0; i < dataTS.length; i++) {
             arrBrand.push(dataTS[i].tally_sheet_code);
 
         }
         const hasilBrand = [...new Set(arrBrand)];
-       //console.log(hasilBrand)
+        //console.log(hasilBrand)
         return hasilBrand;
     }
 
@@ -182,13 +182,13 @@ export const DetailPenerimaanBarang = () => {
 
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
-         copyStyles: true,
+        copyStyles: true,
         //pageStyle: pageStyle
-       
+
     })
 
 
-    
+
 
     const defaultColumns = [
         {
@@ -202,7 +202,7 @@ export const DetailPenerimaanBarang = () => {
         {
             title: 'Qty',
             dataIndex: 'quantity',
-            width:"10%",
+            width: "10%",
             render: (text) => {
                 return Number(text).toFixed(2).replace('.', ',')
             }
@@ -215,32 +215,32 @@ export const DetailPenerimaanBarang = () => {
         //     title: 'Action',
         //     dataIndex: 'action',
         // },
-        
+
     ];
 
     const dataPBPenerimaan =
-    [...dataPBBarang?.map((item, i) => ({
-        tally_sheet_code: item.tally_sheet_code,
-        product_name: item.product_name,
-        quantity: item.quantity,
-        unit: item.unit,
+        [...dataPBBarang?.map((item, i) => ({
+            tally_sheet_code: item.tally_sheet_code,
+            product_name: item.product_name,
+            quantity: item.quantity,
+            unit: item.unit,
 
-      
-    }))
 
-    ]
+        }))
+
+        ]
 
     const cetakData =
-    [...details.map((item, i) => ({
-        notrans: item.tally_sheet_code,
-        nama: item.product_name,
-        qty: item.quantity,
-        stn: item.unit,
-    }))
+        [...details.map((item, i) => ({
+            notrans: item.tally_sheet_code,
+            nama: item.product_name,
+            qty: item.quantity,
+            stn: item.unit,
+        }))
 
-    ]
+        ]
 
-    
+
     const columnsModal = []
 
     if (loading) {
@@ -253,98 +253,98 @@ export const DetailPenerimaanBarang = () => {
     return (
         <>
 
-<div style={{ display: "none",  position: "absolute"}} >
-                <div ref={componentRef} className="p-4" style={{width:"100%"}} >
+            <div style={{ display: "none", position: "absolute" }} >
+                <div ref={componentRef} className="p-4" style={{ width: "100%" }} >
 
-  <table style={{width:"100%"}}>
-    <thead>
-      <tr>
-       
-         
-          <div className="page-header-space"></div>
-          <div className="page-header">
-          <div className='row'>
-          <div className='d-flex mb-3 float-container' style={{position:"fixed", height:"100px", top:"0", width:"100%"}}>
-                
-              
-              
-             
-                <div className='col-1' style={{marginTop:"10px"}}><img src={logo} width="60px"></img></div>
-                <div className='col-4' style={{marginTop:"10px", marginRight:"100px"}}>  
-                      <div className='ms-2' >
-                          <div className='header-cetak'><b>PT. BUMI MAESTROAYU</b></div>
-                          <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
-                          <div className='header-cetak'>JAKARTA SELATAN 12760</div>
-                          <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
-                      </div> 
-                  </div>
-                 
-               
+                    <table style={{ width: "100%" }}>
+                        <thead>
+                            <tr>
 
-            <div className='col'>
-                <div className='col float-child'>
-                    <div className='col' width="100px"></div>
 
-                <div className=' mt-3 mb-4 col d-flex justify-content-right ps-4 pe-4' height="100px" style={{ fontSize: "12px", fontStyle:"bold"}}>
-                      <div className='col-6'>
-                          <div className="d-flex flex-row">
-                          <label className='col-8'>Tanggal</label>
-                              <div className='col-6'> : {dataPenerimaan.date}</div>
-                          </div>
-                          <div className="d-flex flex-row">
-                              <label className='col-8'>No. Tally Sheet</label>
-                              {/* <div>:</div> */}
-                              <div className='col-8'>
-                                   : {
-                                        nomorTS().map((item) => (
-                                            <> {item}</>
-                                        ))
-                                    }
+                                <div className="page-header-space"></div>
+                                <div className="page-header">
+                                    <div className='row'>
+                                        <div className='d-flex mb-3 float-container' style={{ position: "fixed", height: "100px", top: "0", width: "100%" }}>
 
+
+
+
+                                            <div className='col-1' style={{ marginTop: "10px" }}><img src={logo} width="60px"></img></div>
+                                            <div className='col-4' style={{ marginTop: "10px", marginRight: "100px" }}>
+                                                <div className='ms-2' >
+                                                    <div className='header-cetak'><b>PT. BUMI MAESTROAYU</b></div>
+                                                    <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
+                                                    <div className='header-cetak'>JAKARTA SELATAN 12760</div>
+                                                    <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
+                                                </div>
+                                            </div>
+
+
+
+                                            <div className='col'>
+                                                <div className='col float-child'>
+                                                    <div className='col' width="100px"></div>
+
+                                                    <div className=' mt-3 mb-4 col d-flex justify-content-right ps-4 pe-4' height="100px" style={{ fontSize: "12px", fontStyle: "bold" }}>
+                                                        <div className='col-6'>
+                                                            <div className="d-flex flex-row">
+                                                                <label className='col-8'>Tanggal</label>
+                                                                <div className='col-6'> : {dataPenerimaan.date}</div>
+                                                            </div>
+                                                            <div className="d-flex flex-row">
+                                                                <label className='col-8'>No. Tally Sheet</label>
+                                                                {/* <div>:</div> */}
+                                                                <div className='col-8'>
+                                                                    : {
+                                                                        nomorTS().map((item) => (
+                                                                            <> {item}</>
+                                                                        ))
+                                                                    }
+
+                                                                </div>
+                                                                {/* <div className='col-8'> : {dataPenerimaan.code}</div> */}
+                                                            </div>
+                                                            <div className="d-flex flex-row">
+                                                                <label className='col-8'>Dari</label>
+                                                                {
+                                                                    codePB.includes("TR") ?
+                                                                        custAdd == 'Lainnya' ?
+                                                                            <div className='col-6'> : {custName}  </div> :
+                                                                            <div className='col-12'> : {custAdd} {custName}  </div> :
+
+                                                                        supplierEntity == 'Lainnya' ?
+                                                                            <div className='col-6'> : {supplierName}  </div> :
+                                                                            <div className='col-12'> : {supplierEntity} {supplierName}  </div>
+                                                                }
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
                                 </div>
-                              {/* <div className='col-8'> : {dataPenerimaan.code}</div> */}
-                          </div>
-                          <div className="d-flex flex-row">
-                              <label className='col-8'>Dari</label>
-                              {
-                                codePB.includes("TR") ? 
-                                custAdd == 'Lainnya' ? 
-                                <div className='col-6'> : {custName}  </div> : 
-                                <div className='col-12'> : {custAdd} {custName}  </div> :
+                                <br />
+                                <br />
+                                <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold", textAlign: "center" }}>
+                                    <div className='align-items-center' style={{ fontSize: "16px", textDecoration: "underline", textAlign: "center" }}>PENERIMAAN BARANG</div>
+                                    <div style={{ fontSize: "10px", marginTop: "-5px" }}>NO. {dataPenerimaan.code}</div>
+                                </div>
 
-                                supplierEntity == 'Lainnya' ? 
-                                <div className='col-6'> : {supplierName}  </div> : 
-                                <div className='col-12'> : {supplierEntity} {supplierName}  </div>
-                              }
-                              
-                          </div>
-                      </div>
-                  </div>
-                </div>
-                </div>
-               
-        </div>
-        </div>  
-        </div>
-        <br/>
-<br/>
-        <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold", textAlign:"center"}}>
-                      <div className='align-items-center' style={{ fontSize: "16px", textDecoration: "underline", textAlign:"center"}}>PENERIMAAN BARANG</div>
-                      <div style={{ fontSize: "10px",marginTop: "-5px" }}>NO. {dataPenerimaan.code}</div>
-        </div>
-       
-      </tr>
-    </thead>
+                            </tr>
+                        </thead>
 
-    <tbody style={{marginTop:"600px"}}>
-      <tr>
-        <td>
-       
-          <div className="page" style={{lineHeight:"3"}}>
-           
-          <div className='d-flex mt-1 ps-4 pe-4' >
+                        <tbody style={{ marginTop: "600px" }}>
+                            <tr>
+                                <td>
 
-                       {/* <Table style={{fontSize: "10px", width: "100%", pageBreakAfter:"auto", backgroundColor:"white"}}
+                                    <div className="page" style={{ lineHeight: "3" }}>
+
+                                        <div className='d-flex mt-1 ps-4 pe-4' >
+
+                                            {/* <Table style={{fontSize: "10px", width: "100%", pageBreakAfter:"auto", backgroundColor:"white"}}
                         bordered
                         pagination={false}
                         dataSource={dataTS}
@@ -354,35 +354,35 @@ export const DetailPenerimaanBarang = () => {
 
                     /> */}
 
-                        <table style={{ fontSize: "10px", width: "100%"}}>
-                            <tr className='text-center border' style={{ height: "50px" }}>
-                                <th width="50px"  className='border' >No</th>
-                                <th width="350px" className='border'>Nama Produk</th>
-                                <th width="100px" className='border'>Qty</th>
-                                <th width="100px" className='border'>Stn</th>
-                            
-                            </tr>
-                            <tbody className="text-center border">
-                                {
-                                    dataTS.map((item, i) => (
-                                        <tr  >
-                                            <td className='border-isi' >{i+1}</td>
-                                            <td className='border-isi'>{item.product_name}  
-                                             </td>
-                                            <td className='border-isi' >{Number(item.quantity).toFixed(2).replace('.', ',')}</td>
-                                            <td className='border-isi' >{item.unit}</td>
-                                        </tr>
-                                        ))
-                                    
-                                }
-                            </tbody>
+                                            <table style={{ fontSize: "10px", width: "100%" }}>
+                                                <tr className='text-center border' style={{ height: "50px" }}>
+                                                    <th width="50px" className='border' >No</th>
+                                                    <th width="350px" className='border'>Nama Produk</th>
+                                                    <th width="100px" className='border'>Qty</th>
+                                                    <th width="100px" className='border'>Stn</th>
+
+                                                </tr>
+                                                <tbody className="text-center border">
+                                                    {
+                                                        dataTS.map((item, i) => (
+                                                            <tr  >
+                                                                <td className='border-isi' >{i + 1}</td>
+                                                                <td className='border-isi'>{item.product_name}
+                                                                </td>
+                                                                <td className='border-isi' >{Number(item.quantity).toFixed(2).replace('.', ',')}</td>
+                                                                <td className='border-isi' >{item.unit}</td>
+                                                            </tr>
+                                                        ))
+
+                                                    }
+                                                </tbody>
 
 
-                        </table>
-                    </div>
+                                            </table>
+                                        </div>
 
 
-                    {/* <div className='d-flex mt-3 ps-4 pe-4'>
+                                        {/* <div className='d-flex mt-3 ps-4 pe-4'>
                         <div style={{ width: "80%" }}>
                         </div>
                         <div style={{ width: "20%" }}>
@@ -397,77 +397,103 @@ export const DetailPenerimaanBarang = () => {
                             </div>
                         </div>
                     </div> */}
-                    </div>
-                    </td>
-                </tr>
-                </tbody>
-
-    <tfoot style={{position:"fixed", marginTop:"500px"}}>
-      <tr>
-        <td>
-         
-        <div className="page-footer-space"></div>
-          <div className="page-footer" style={{position:"fixed", Bottom:"0px", width:"95%"}} >
-          <div className='d-flex' style={{width:"100%", bottom:"0"}}>
-          <table style={{ fontSize: "10px", width: "100%", height:"100%"}} >
-                            <tr className='text-center border' style={{ height: "50px", width:"70%" }}>
-                                <th width="45px" className='border'>Dibuat Oleh,</th>
-                                <th width="45px" className='border'>Disetujui Oleh,</th>
-                                <th width="45px" className='border'>Diterima Oleh,</th>
+                                    </div>
+                                </td>
                             </tr>
-                           
-                                    <tr className='text-center border ' style={{ height: "80px" ,width:"70%"}}>
-                                     
-                                    <td width="45px" className='border'><b>_________________</b></td>
-                                    <td width="45px"className='border'><b>_________________</b></td>
-                                    <td width="45px"className='border'><b>_________________</b></td>
-                                       
-                                    </tr>
-                        </table>
-                        </div>
-                        </div>
-                        </td>
-                    </tr>
-                    </tfoot>
+                        </tbody>
+
+                        <tfoot style={{ position: "fixed", marginTop: "500px" }}>
+                            <tr>
+                                <td>
+
+                                    <div className="page-footer-space"></div>
+                                    <div className="page-footer" style={{ position: "fixed", Bottom: "0px", width: "95%" }} >
+                                        <div className='d-flex' style={{ width: "100%", bottom: "0" }}>
+                                            <table style={{ fontSize: "10px", width: "100%", height: "100%" }} >
+                                                <tr className='text-center border' style={{ height: "50px", width: "70%" }}>
+                                                    <th width="45px" className='border'>Dibuat Oleh,</th>
+                                                    <th width="45px" className='border'>Disetujui Oleh,</th>
+                                                    <th width="45px" className='border'>Diterima Oleh,</th>
+                                                </tr>
+
+                                                <tr className='text-center border ' style={{ height: "80px", width: "70%" }}>
+
+                                                    <td width="45px" className='border'><b>_________________</b></td>
+                                                    <td width="45px" className='border'><b>_________________</b></td>
+                                                    <td width="45px" className='border'><b>_________________</b></td>
+
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
 
                     </table>
 
-                    </div>
-                    </div>
+                </div>
+            </div>
 
 
 
 
 
             <form className="  p-3 mb-5 bg-body rounded">
-            <div className='row'>
-                <div className="col text-title text-start">
-                <PageHeader
-                        ghost={false}
-                        onBack={() => window.history.back()}
-                        title="Detail Penerimaan Barang"
-                        extra={[
-                            <Tooltip title="Cetak" placement="bottom">
-                            <Button
-                                type="primary"
-                                icon={<PrinterOutlined />}
-                                style={{ background: "orange", borderColor: "orange" }}
-                                onClick={handlePrint}
-                            />
-                        </Tooltip>,
-                        ]}
-                        >
-                </PageHeader>
-                    {/* <h3 className="title fw-bold">Buat Penerimaan Barang</h3> */}
-                </div>
-                {/* <div className="col button-add text-end me-3">
-                        <button type="button" onClick={handlePrint} class="btn btn-warning rounded m-1">
+                <div className='row'>
+                    <div className="col text-title text-start">
+                        {
+                            canEdit ?
+                                <PageHeader
+                                    ghost={false}
+                                    onBack={() => window.history.back()}
+                                    title="Detail Penerimaan Barang"
+                                    extra={[
+                                        <Link to={`/penerimaanbarang/edit/${id}`}>
+                                            <Button
+                                                type="primary"
+                                                icon={<EditOutlined />}
+                                            />
+                                        </Link>,
+                                        <Tooltip title="Cetak" placement="bottom">
+                                            <Button
+                                                type="primary"
+                                                icon={<PrinterOutlined />}
+                                                style={{ background: "orange", borderColor: "orange" }}
+                                                onClick={handlePrint}
+                                            />
+                                        </Tooltip>,
+                                    ]}
+                                >
+                                </PageHeader> :
+                                <PageHeader
+                                    ghost={false}
+                                    onBack={() => window.history.back()}
+                                    title="Detail Penerimaan Barang"
+                                    extra={[
+                                        <Tooltip title="Cetak" placement="bottom">
+                                            <Button
+                                                type="primary"
+                                                icon={<PrinterOutlined />}
+                                                style={{ background: "orange", borderColor: "orange" }}
+                                                onClick={handlePrint}
+                                            />
+                                        </Tooltip>,
+                                    ]}
+                                >
+                                </PageHeader>
+                        }
+
+                        {/* <h3 className="title fw-bold">Buat Penerimaan Barang</h3> */}
+                    </div>
+                    {/* <div className="col button-add text-end me-3">
+                        <button type="button" onClick={handlePrint} className="btn btn-warning rounded m-1">
                             Cetak
                         </button>
                     </div> */}
-            </div>
-                <div class="row">
-                    <div class="col">
+                </div>
+                <div className="row">
+                    <div className="col">
                         <div className="row mb-3">
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal</label>
                             <div className="col-sm-7">
@@ -481,22 +507,22 @@ export const DetailPenerimaanBarang = () => {
                             </div>
                         </div>
                         {
-                            codePB.includes("TR") ? 
-                            <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
-                            <div className="col-sm-7">
-                                <input disabled="true" value={custName} type="Nama" className="form-control" id="inputNama3" />
-                            </div>
-                        </div>
-                         :
-                            <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
-                            <div className="col-sm-7">
-                                <input disabled="true" value={supplierName} type="Nama" className="form-control" id="inputNama3" />
-                            </div>
-                            </div>
+                            codePB.includes("TR") ?
+                                <div className="row mb-3">
+                                    <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
+                                    <div className="col-sm-7">
+                                        <input disabled="true" value={custName} type="Nama" className="form-control" id="inputNama3" />
+                                    </div>
+                                </div>
+                                :
+                                <div className="row mb-3">
+                                    <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Supplier</label>
+                                    <div className="col-sm-7">
+                                        <input disabled="true" value={supplierName} type="Nama" className="form-control" id="inputNama3" />
+                                    </div>
+                                </div>
                         }
-                     
+
                         {/* <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Alamat</label>
                             <div className="col-sm-7">
@@ -535,7 +561,7 @@ export const DetailPenerimaanBarang = () => {
                         columns={defaultColumns}
                         onChange={(e) => setProduct(e.target.value)}
                     />
-                    
+
                 </div>
             </form>
         </>

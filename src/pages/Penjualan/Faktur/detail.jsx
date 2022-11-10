@@ -1,12 +1,12 @@
 import './form.css'
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
 import { Button, Checkbox, Form, Input, InputNumber, Modal, PageHeader, Select, Skeleton, Space, Table, Tabs, Tag, Tooltip } from 'antd'
-import { PlusOutlined, PrinterOutlined } from '@ant-design/icons'
+import { PlusOutlined, PrinterOutlined, EditOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
@@ -111,6 +111,7 @@ const DetailFaktur = () => {
     const [fakturType, setFakturType] = useState("");
     const [code, setCode] = useState('');
     const [taxIncluded, setTaxIncluded] = useState(null);
+    const [canEdit, setCanEdit] = useState(null);
     const [getCode, setGetCode] = useState('');
     const navigate = useNavigate();
     const auth = useSelector(state => state.auth);
@@ -151,7 +152,7 @@ const DetailFaktur = () => {
     const [selectedSupplier, setSelectedSupplier] = useState()
     const [beCust, setbeCust] = useState("")
 
-    const[kel1, setKel1] = useState('')
+    const [kel1, setKel1] = useState('')
     const [kec1, setKec1] = useState('')
     const [kota1, setKota1] = useState('')
     const [kodepos1, setKodePos1] = useState('')
@@ -169,6 +170,7 @@ const DetailFaktur = () => {
             .then((res) => {
                 let getData = res.data[0]
                 console.log(getData);
+                setCanEdit(getData.can['update-sales_invoice'])
                 setTaxIncluded(getData.tax_included)
                 setDataHeader(getData);
                 setDate(getData.date)
@@ -916,19 +918,19 @@ const DetailFaktur = () => {
                                                 <div className="d-flex flex-row">
                                                     <label className='col-4'>Kepada Yth.</label>
                                                     {
-                                                        beCust == 'Lainnya' ? 
-                                                        <div className='col-4'> : {selectedPenerima.name} </div> : 
-                                                        <div className='col-4'> : {beCust} {selectedPenerima.name} </div>
+                                                        beCust == 'Lainnya' ?
+                                                            <div className='col-4'> : {selectedPenerima.name} </div> :
+                                                            <div className='col-4'> : {beCust} {selectedPenerima.name} </div>
                                                     }
                                                 </div>
-                                                    <div className="d-flex flex-row">
+                                                <div className="d-flex flex-row">
                                                     <label className='col-4'>Alamat</label>
-                                                        <div>:</div>
-                                                    <div className='col-10' style={{overflowWrap:"break-word", maxWidth:"550px", marginLeft:"3px"}}> 
-                                                    {selectedAddress.address}, Kel. {kel1}, Kec. {kec1}, Kota {kota1} {kodepos1}
-                                                    
-                                                     </div>
+                                                    <div>:</div>
+                                                    <div className='col-10' style={{ overflowWrap: "break-word", maxWidth: "550px", marginLeft: "3px" }}>
+                                                        {selectedAddress.address}, Kel. {kel1}, Kec. {kec1}, Kota {kota1} {kodepos1}
+
                                                     </div>
+                                                </div>
                                             </div>
 
                                         </div>
@@ -1047,23 +1049,51 @@ const DetailFaktur = () => {
 
                 </div>
             </div>
+            <form className="p-3 mb-3 bg-body rounded">
 
 
-            <PageHeader
-                className="bg-body rounded mb-2"
-                onBack={() => window.history.back()}
-                title="Detail Faktur Penjualan"
-                extra={[
-                    <Tooltip title="Cetak" placement="bottom">
-                        <Button
-                            type="primary"
-                            icon={<PrinterOutlined />}
-                            style={{ background: "orange", borderColor: "orange" }}
-                            onClick={handlePrint}
-                        />
-                    </Tooltip>,
-                ]}
-            >
+                {
+                    canEdit ?
+                        <PageHeader
+                            className="bg-body rounded mb-2"
+                            onBack={() => window.history.back()}
+                            title="Detail Faktur Penjualan"
+                            extra={[
+                                <Link to={`/faktur/edit/${id}`}>
+                                    <Button
+                                        type="primary"
+                                        icon={<EditOutlined />}
+                                    />
+                                </Link>,
+                                <Tooltip title="Cetak" placement="bottom">
+                                    <Button
+                                        type="primary"
+                                        icon={<PrinterOutlined />}
+                                        style={{ background: "orange", borderColor: "orange" }}
+                                        onClick={handlePrint}
+                                    />
+                                </Tooltip>,
+                            ]}
+                        ></PageHeader>
+                        :
+                        <PageHeader
+                            className="bg-body rounded mb-2"
+                            onBack={() => window.history.back()}
+                            title="Detail Faktur Penjualan"
+                            extra={[
+                                <Tooltip title="Cetak" placement="bottom">
+                                    <Button
+                                        type="primary"
+                                        icon={<PrinterOutlined />}
+                                        style={{ background: "orange", borderColor: "orange" }}
+                                        onClick={handlePrint}
+                                    />
+                                </Tooltip>,
+                            ]}
+                        ></PageHeader>
+                }
+
+
                 <div className="row" >
                     <div className="col">
                         <div className="row mb-3">
@@ -1166,64 +1196,65 @@ const DetailFaktur = () => {
                         </div>
                     </div>
                 </div>
-            </PageHeader>
+            </form>
+            <form className="p-3 mb-5 bg-body rounded">
 
-            <PageHeader
-             
-                ghost={false}
-                title={sumber == 'SO' ? "Daftar Pesanan" : "Daftar Surat Jalan"}
-                className="bg-body rounded mb-2"
-            >
-                {sumber == 'SO' ? <Table
-                    components={components}
-                    rowClassName={() => 'editable-row'}
-                    bordered
-                    pagination={false}
-                    dataSource={getProduct}
-                    columns={columns}
-                    onChange={(e) => setProduct(e.target.value)}
-                /> : <Table
-                    components={components}
-                    rowClassName={() => 'editable-row'}
-                    bordered
-                    pagination={false}
-                    dataSource={getProduct}
-                    columns={columns}
-                    onChange={(e) => setProduct(e.target.value)}
-                />}
-                <div className="row p-0 mt-3">
-                    <div className="col ms-5">
-                        <div className="form-check">
-                            <input className="form-check-input" type="checkbox" id="flexCheckDefault" onChange={handleChange} defaultChecked={taxIncluded} disabled />
-                            <label className="form-check-label" for="flexCheckDefault">
-                                Harga Termasuk PPN
-                            </label>
-                        </div>
-                    </div>
-                    <div className="col">
-                        <div className="row mb-3">
-                            <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>
-                            <div className="col-sm-6">
-                                {convertToRupiah(subTotal, "Rp")}
+                <PageHeader
+
+                    ghost={false}
+                    title={sumber == 'SO' ? "Daftar Pesanan" : "Daftar Surat Jalan"}
+                    className="bg-body rounded mb-2"
+                >
+                    {sumber == 'SO' ? <Table
+                        components={components}
+                        rowClassName={() => 'editable-row'}
+                        bordered
+                        pagination={false}
+                        dataSource={getProduct}
+                        columns={columns}
+                        onChange={(e) => setProduct(e.target.value)}
+                    /> : <Table
+                        components={components}
+                        rowClassName={() => 'editable-row'}
+                        bordered
+                        pagination={false}
+                        dataSource={getProduct}
+                        columns={columns}
+                        onChange={(e) => setProduct(e.target.value)}
+                    />}
+                    <div className="row p-0 mt-3">
+                        <div className="col ms-5">
+                            <div className="form-check">
+                                <input className="form-check-input" type="checkbox" id="flexCheckDefault" onChange={handleChange} defaultChecked={taxIncluded} disabled />
+                                <label className="form-check-label" for="flexCheckDefault">
+                                    Harga Termasuk PPN
+                                </label>
                             </div>
                         </div>
-                        <div className="row mb-3">
-                            <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Diskon</label>
-                            <div className="col-sm-6">
-                                {convertToRupiah(grandTotalDiscount, "Rp")}
+                        <div className="col">
+                            <div className="row mb-3">
+                                <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>
+                                <div className="col-sm-6">
+                                    {convertToRupiah(subTotal, "Rp")}
+                                </div>
                             </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">PPN</label>
-                            <div className="col-sm-6">
-                                {convertToRupiah(totalPpn, "Rp")}
+                            <div className="row mb-3">
+                                <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Diskon</label>
+                                <div className="col-sm-6">
+                                    {convertToRupiah(grandTotalDiscount, "Rp")}
+                                </div>
                             </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Uang Muka</label>
-                            <div className="col-sm-6">
-                                {convertToRupiah(uangMuka, "Rp")}
-                                {/* <input
+                            <div className="row mb-3">
+                                <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">PPN</label>
+                                <div className="col-sm-6">
+                                    {convertToRupiah(totalPpn, "Rp")}
+                                </div>
+                            </div>
+                            <div className="row mb-3">
+                                <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Uang Muka</label>
+                                <div className="col-sm-6">
+                                    {convertToRupiah(uangMuka, "Rp")}
+                                    {/* <input
                                     defaultValue={grandTotalDiscount}
                                     readOnly="true"
                                     type="number"
@@ -1231,17 +1262,17 @@ const DetailFaktur = () => {
                                     id="colFormLabelSm"
                                 // placeholder='(total disc/item) ditotal semua'
                                 /> */}
+                                </div>
                             </div>
-                        </div>
-                        <div className="row mb-3">
-                            <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Total</label>
-                            <div className="col-sm-6">
-                                {convertToRupiah(grandTotal, "Rp")}
+                            <div className="row mb-3">
+                                <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Total</label>
+                                <div className="col-sm-6">
+                                    {convertToRupiah(grandTotal, "Rp")}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                {/* <div className="btn-group mt-2" role="group" aria-label="Basic mixed styles example">
+                    {/* <div className="btn-group mt-2" role="group" aria-label="Basic mixed styles example">
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -1266,7 +1297,8 @@ const DetailFaktur = () => {
                         Cetak
                     </button>
                 </div> */}
-            </PageHeader>
+                </PageHeader>
+            </form>
         </>
     )
 }

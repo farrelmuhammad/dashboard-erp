@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Component } from 'react'
-import { useParams } from 'react-router-dom';
+import { useParams , Link} from 'react-router-dom';
 import jsCookie from "js-cookie";
 import axios from 'axios';
 import Url from '../../../Config';
@@ -12,7 +12,7 @@ import logo from "../../Logo.jpeg"
 import "./form.css";
 import { PageHeader } from 'antd';
 import CurrencyFormat from 'react-currency-format';
-import { DeleteOutlined, PlusOutlined , PrinterOutlined} from '@ant-design/icons'
+import { DeleteOutlined, PlusOutlined, PrinterOutlined, EditOutlined } from '@ant-design/icons'
 
 
 export const DetailPesananPembelian = () => {
@@ -21,6 +21,7 @@ export const DetailPesananPembelian = () => {
     const auth = useSelector(state => state.auth);
     const { id } = useParams();
     const [dataPO, setDataPO] = useState([]);
+    const [canEdit, setCanEdit] = useState([]);
     const [supplier, setSupplier] = useState([]);
     const [status, setStatus] = useState([]);
     const [details, setDetails] = useState([]);
@@ -36,14 +37,14 @@ export const DetailPesananPembelian = () => {
     const [brand, setBrand] = useState([])
 
     const convertToRupiahTabel = (angka) => {
-    return <>
-    {
-        namaMataUang === 'Rp' ? 
-        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon" />
-        :< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" />
-        
-    }
-    </>
+        return <>
+            {
+                namaMataUang === 'Rp' ?
+                    < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" />
+                    : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" />
+
+            }
+        </>
     }
 
     // const convertToRupiah = (angka) => {
@@ -56,32 +57,32 @@ export const DetailPesananPembelian = () => {
     //         readOnly="true"
     //         className="form-control form-control-sm"
     //         id="colFormLabelSm"
-            
+
     //     />
     // }
 
     const convertToRupiah = (angka) => {
         return <>
-        {
-            namaMataUang === 'Rp' ? 
-                  < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm"  className="form-control form-control-sm"/>}  />
-                  :< CurrencyFormat  disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true"  id="colFormLabelSm"  className="form-control form-control-sm"/>} />
-        }
+            {
+                namaMataUang === 'Rp' ?
+                    < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                    : < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+            }
         </>
     }
 
     const convertToRupiah2 = (angka) => {
         return <>
-        {
-            namaMataUang === 'Rp' ? 
-                  < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "50px", fontSize: "10px!important" }}  thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm"  className="form-control form-control-sm"/>}  />
-                  :< CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "50px", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true"  id="colFormLabelSm"  className="form-control form-control-sm"/>} />
-        }
+            {
+                namaMataUang === 'Rp' ?
+                    < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "50px", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                    : < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "50px", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+            }
         </>
     }
-    
 
-    
+
+
 
     const columns = [
         {
@@ -118,9 +119,9 @@ export const DetailPesananPembelian = () => {
             render(text, record) {
                 return {
                     props: {
-                        style: {  borderWidth:"0px"}
+                        style: { borderWidth: "0px" }
                     },
-                    children: <div style={{ borderWidth:"0px"}}>{convertToRupiahTabel(text)}</div>
+                    children: <div style={{ borderWidth: "0px" }}>{convertToRupiahTabel(text)}</div>
                 };
             }
         },
@@ -148,9 +149,9 @@ export const DetailPesananPembelian = () => {
                                     <input style={{ width: "50px" }} readOnly type="text" className="form-control" aria-label="Small" defaultValue={namaMataUang} aria-describedby="inputGroup-sizing-sm" />
                                 </div>
                                 {
-                                    namaMataUang === 'Rp'?
-                                    convertToRupiah2(dataPO[0].purchase_order_details[index].discount_percentage) :
-                                    convertToRupiah2(dataPO[0].purchase_order_details[index].discount_percentage)
+                                    namaMataUang === 'Rp' ?
+                                        convertToRupiah2(dataPO[0].purchase_order_details[index].discount_percentage) :
+                                        convertToRupiah2(dataPO[0].purchase_order_details[index].discount_percentage)
                                 }
                             </>
 
@@ -167,11 +168,11 @@ export const DetailPesananPembelian = () => {
             render(text, record) {
                 return {
                     props: {
-                        style: {  borderWidth:"0px"}
+                        style: { borderWidth: "0px" }
                     },
-                    children: <div style={{ borderWidth:"0px"}}>{convertToRupiahTabel(text)}</div>
+                    children: <div style={{ borderWidth: "0px" }}>{convertToRupiahTabel(text)}</div>
                 };
-                
+
             }
         },
     ];
@@ -238,6 +239,7 @@ export const DetailPesananPembelian = () => {
             .then((res) => {
                 const getData = res.data.data;
                 setDataPO(getData);
+                setCanEdit(getData[0].can['update-purchase_order'])
                 setCode(getData[0].code);
                 setDate(getData[0].date);
                 setStatus(getData[0].status);
@@ -266,7 +268,7 @@ export const DetailPesananPembelian = () => {
                 let arrBrand = []
                 let total = 0;
                 for (let i = 0; i < po.length; i++) {
-                    if(po[i].product.brand){
+                    if (po[i].product.brand) {
                         arrBrand.push(po[i].product.brand.name);
                     }
                 }
@@ -381,10 +383,10 @@ export const DetailPesananPembelian = () => {
         [...details.map((item, i) => ({
             desc: item.product_name,
             qty: Number(item.quantity).toFixed(2),
-            stn:item.unit,
+            stn: item.unit,
             disc: item.fixed_discount != null ? <>{
                 namaMataUang + ' ' + Number(item.fixed_discount).toFixed(2)
-                }</> : <>{item.discount_percentage + '%'}</>,
+            }</> : <>{item.discount_percentage + '%'}</>,
             prc: namaMataUang + ' ' + Number(item.price).toFixed(2).toLocaleString('id'),
             total: namaMataUang + ' ' + Number(item.total).toFixed(2).toLocaleString('id')
         }))
@@ -399,216 +401,216 @@ export const DetailPesananPembelian = () => {
             <div style={{ display: "none", position: "absolute" }}>
                 <div ref={componentRef} className="p-4" >
 
-<table style={{width:"100%"}}>
-    <thead>
-      <tr>
-        <td>
-            <div className="page-header-space"></div>
-            <div className="page-header">
-                    <div className='d-flex'>
-                        <div><img src={logo} width="60px"></img></div>
-                        <div className='ms-2'>
-                            <div className='header-cetak'><b>PT. BUMI MAESTROAYU</b></div>
-                            <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
-                            <div className='header-cetak'>JAKARTA SELATAN 12760</div>
-                            <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
-                        </div>
-                    </div>
+                    <table style={{ width: "100%" }}>
+                        <thead>
+                            <tr>
+                                <td>
+                                    <div className="page-header-space"></div>
+                                    <div className="page-header">
+                                        <div className='d-flex'>
+                                            <div><img src={logo} width="60px"></img></div>
+                                            <div className='ms-2'>
+                                                <div className='header-cetak'><b>PT. BUMI MAESTROAYU</b></div>
+                                                <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
+                                                <div className='header-cetak'>JAKARTA SELATAN 12760</div>
+                                                <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
+                                            </div>
+                                        </div>
 
-                    <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold" }}>
-                        <div style={{ fontSize: "16px", textDecoration: "underline" }}>PURCHASE ORDER</div>
-                        <div style={{ fontSize: "10px", marginTop: "-5px" }}>NO. {code}</div>
-                    </div>
+                                        <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold" }}>
+                                            <div style={{ fontSize: "16px", textDecoration: "underline" }}>PURCHASE ORDER</div>
+                                            <div style={{ fontSize: "10px", marginTop: "-5px" }}>NO. {code}</div>
+                                        </div>
 
-                    <div className='mt-4 mb-4 col d-flex justify-content-center ps-4 pe-4' style={{ fontSize: "12px" }}>
-                        <div className='col-6'>
-                            <div className="d-flex flex-row">
-                                <label className='col-6'>ORDER DATE</label>
-                                <div className='col-6'> : {date}</div>
-                            </div>
-                            <div className="d-flex flex-row">
-                                <label className='col-6'>TO</label>
-                                {
-                                    beCust == 'Lainnya' ? 
-                                    <div className='col-6'> : {supplier}</div> : 
-                                    <div className='col-6'> : {beCust} {supplier}</div>
-                                }
-                               
-                            </div>
-                            <div className="d-flex flex-row">
-                                <label className='col-6'>ACCORDING TO</label>
-                                <div className='col-6'> : {namaPIC} </div>
-                            </div>
-                            <div className="d-flex flex-row">
-                                <label className='col-6'>CURRENCY</label>
-                                <div className='col-6'> : {namaMataUang}</div>
-                            </div>
-                        </div>
-                        <div className='col-6'>
-                            <div className="d-flex flex-row">
-                                <label className='col-8'>DATE OF CONFIRMATION</label>
-                                <div className='col-4'> : {date}</div>
-                            </div>
-                            <div className="d-flex flex-row">
-                                <label className='col-8'>PURCHASED BY</label>
-                                <div className='col-4'> : {namaPenerima} </div>
-                            </div>
-                        </div>
-                    </div>
-            </div>
-            </td></tr></thead>
+                                        <div className='mt-4 mb-4 col d-flex justify-content-center ps-4 pe-4' style={{ fontSize: "12px" }}>
+                                            <div className='col-6'>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>ORDER DATE</label>
+                                                    <div className='col-6'> : {date}</div>
+                                                </div>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>TO</label>
+                                                    {
+                                                        beCust == 'Lainnya' ?
+                                                            <div className='col-6'> : {supplier}</div> :
+                                                            <div className='col-6'> : {beCust} {supplier}</div>
+                                                    }
 
-            <tbody>
-                <tr>
-                    <td>
-                    <div className="page" style={{lineHeight:"3"}}>
-                    <div className='mt-4 ps-4 pe-4 ' >
-                        {/* <Table pagination={false} columns={cetakColumn} dataSource={cetakData} /> */}
-                        <table style={{ fontSize: "10px", width: "100%" }}>
-                            <tr className='text-center border' style={{ height: "50px" }}>
-                                <th width="50px" className='border'>NO</th>
-                                <th width="350px" className='border'>DESCRIPTION OF GOODS</th>
-                                <th width="100px" className='border'>QTY</th>
-                                <th width="100px" className='border'>STN</th>
-                                <th width="160px" className='border'>PRICE</th>
-                                <th width="180px" className='border'>DISC</th>
-                                <th width="180px" className='border'>TOTAL</th>
+                                                </div>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>ACCORDING TO</label>
+                                                    <div className='col-6'> : {namaPIC} </div>
+                                                </div>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>CURRENCY</label>
+                                                    <div className='col-6'> : {namaMataUang}</div>
+                                                </div>
+                                            </div>
+                                            <div className='col-6'>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-8'>DATE OF CONFIRMATION</label>
+                                                    <div className='col-4'> : {date}</div>
+                                                </div>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-8'>PURCHASED BY</label>
+                                                    <div className='col-4'> : {namaPenerima} </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td></tr></thead>
+
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div className="page" style={{ lineHeight: "3" }}>
+                                        <div className='mt-4 ps-4 pe-4 ' >
+                                            {/* <Table pagination={false} columns={cetakColumn} dataSource={cetakData} /> */}
+                                            <table style={{ fontSize: "10px", width: "100%" }}>
+                                                <tr className='text-center border' style={{ height: "50px" }}>
+                                                    <th width="50px" className='border'>NO</th>
+                                                    <th width="350px" className='border'>DESCRIPTION OF GOODS</th>
+                                                    <th width="100px" className='border'>QTY</th>
+                                                    <th width="100px" className='border'>STN</th>
+                                                    <th width="160px" className='border'>PRICE</th>
+                                                    <th width="180px" className='border'>DISC</th>
+                                                    <th width="180px" className='border'>TOTAL</th>
+                                                </tr>
+                                                <tbody className="border">
+                                                    {
+                                                        details.map((item, i) => (
+                                                            <tr >
+                                                                <td className='border-isi text-center'>{i + 1}</td>
+                                                                <td className='border-isi text-start'>{item.product_name}</td>
+                                                                <td className='border-isi text-center'>{Number(item.quantity).toFixed(2)}</td>
+                                                                <td className='border-isi text-center'>{item.unit}</td>
+                                                                <td className='border-isi text-center'>{
+                                                                    namaMataUang === 'Rp' ?
+                                                                        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toFixed(2).replace('.', ',')} key="diskon" /> :
+                                                                        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toLocaleString('id')} key="diskon" />
+                                                                }</td>
+                                                                {item.fixed_discount != 0 && item.discount_percentage == 0 ? <td className='text-center border-isi'>{
+                                                                    namaMataUang === 'Rp' ?
+                                                                        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.fixed_discount).toFixed(2).replace('.', ',')} key="diskon" /> :
+                                                                        < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.fixed_discount).toLocaleString('id')} key="diskon" />
+                                                                }</td> :
+                                                                    item.fixed_discount == 0 && item.discount_percentage != 0 ? <td className='text-center border-isi'>{item.discount_percentage + '%'}</td> : <td className='text-center border-isi'>-</td>
+                                                                }
+
+                                                                <td className='border-isi text-center'>
+                                                                    {
+                                                                        namaMataUang === 'Rp' ?
+                                                                            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.', ',')} key="diskon" /> :
+                                                                            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />
+                                                                    }</td>
+
+                                                            </tr>
+
+                                                        ))
+                                                    }
+                                                </tbody>
+
+
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </td>
                             </tr>
-                            <tbody className="border">
-                                {
-                                    details.map((item, i) => (
-                                        <tr >
-                                            <td className='border-isi text-center'>{i + 1}</td>
-                                            <td className='border-isi text-start'>{item.product_name}</td>
-                                            <td className='border-isi text-center'>{Number(item.quantity).toFixed(2)}</td>
-                                            <td className='border-isi text-center'>{item.unit}</td>
-                                            <td className='border-isi text-center'>{
-                                                 namaMataUang === 'Rp' ?
-                                                 < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toFixed(2).replace('.' , ',')} key="diskon" /> :
-                                                 < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.price).toLocaleString('id')} key="diskon" />
-                                            }</td>
-                                            {item.fixed_discount != 0 && item.discount_percentage == 0 ? <td className='text-center border-isi'>{
-                                             namaMataUang === 'Rp' ?
-                                             < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.fixed_discount).toFixed(2).replace('.' , ',')} key="diskon" /> :
-                                             < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.fixed_discount).toLocaleString('id')} key="diskon" />                        
-                                            }</td> :
-                                                item.fixed_discount == 0 && item.discount_percentage != 0 ? <td className='text-center border-isi'>{item.discount_percentage + '%'}</td> : <td className='text-center border-isi'>-</td>
-                                            }
+                        </tbody>
 
-                                            <td className='border-isi text-center'>
-                                                {
-                                                     namaMataUang === 'Rp' ?
-                                                     < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toFixed(2).replace('.' , ',')} key="diskon" /> :
-                                                     < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.total).toLocaleString('id')} key="diskon" />
-                                                }</td>
+                        <tfoot>
+                            <tr>
+                                <td>
+                                    <div className="page-footer-space"></div>
+                                    <div className="page-footer" >
 
-                                        </tr>
-
-                                    ))
-                                }
-                            </tbody>
-
-
-                        </table>
-                    </div>
-
-                    </div>
-                    </td>
-                </tr>
-            </tbody>
-              
-         <tfoot>
-           <tr>
-            <td>
-                    <div className="page-footer-space"></div>
-                    <div className="page-footer" >
-
-                    <div className='d-flex flex-column align-contents-end ps-4 pe-4' style={{ width: "200px", fontSize: "12px", marginLeft: "auto", marginTop: "200px" }}>
-                            {/* <div className='text-center' >_________________</div>
+                                        <div className='d-flex flex-column align-contents-end ps-4 pe-4' style={{ width: "200px", fontSize: "12px", marginLeft: "auto", marginTop: "200px" }}>
+                                            {/* <div className='text-center' >_________________</div>
                             <div className='text-center' >{namaPenerima}</div> */}
-                        </div>
-                     
-            <div className='d-flex flex-row mt-8 ps-4 pe-4' style={{ fontSize: "10px" }}>
-                        <div style={{ width: "65%" }}>
-                            <div className='mb-2 mt-4' ><b>Condition of Purchase</b></div>
-                            <div className='d-flex'>
-                                <label style={{ width: "150px" }}>Brand</label>
-                                <div >:
-                                    {
-                                        brand.map((item, i) => (
-                                            <> {item}</>
-                                        ))
-                                    }
+                                        </div>
 
-                                </div>
-                            </div>
-                            <div className='d-flex'>
-                                <label style={{ width: "150px" }}>Shipment Period</label>
+                                        <div className='d-flex flex-row mt-8 ps-4 pe-4' style={{ fontSize: "10px" }}>
+                                            <div style={{ width: "65%" }}>
+                                                <div className='mb-2 mt-4' ><b>Condition of Purchase</b></div>
+                                                <div className='d-flex'>
+                                                    <label style={{ width: "150px" }}>Brand</label>
+                                                    <div >:
+                                                        {
+                                                            brand.map((item, i) => (
+                                                                <> {item}</>
+                                                            ))
+                                                        }
 
-                                {
-                                    tanggalAkhir == tanggalAwal ?
-                                        <div>: {tanggalAkhir}</div> :
-                                        <div>: {tanggalAwal} TO {tanggalAkhir}</div>
-                                }
-                            </div>
-                        </div>
-                        <div style={{ width: "35%" }}>
-                            <div className='d-flex mt-5'>
-                                <label className='col-6'>Sub Total</label>
-                                <div>:</div>
-                                <div className='ms-3 text-start' width="100%">  {
-                                  namaMataUang === 'Rp' ?
-                                  < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(subTotal).toFixed(2).replace('.' , ',')} key="diskon" /> :
-                                  < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(subTotal).toLocaleString('id')} key="diskon" />
-                               }
-                               </div>
-                            </div>
-                            <div className='d-flex'>
-                                <label className='col-6'>Discount</label>
-                                <div>:</div>
-                                <div className='ms-3 text-start' width="100%">  {
-                                 namaMataUang === 'Rp' ? 
-                                 < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(diskon).toFixed(2).replace('.' , ',')} key="diskon" /> :
-                                 < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(diskon).toLocaleString('id')} key="diskon" />
-                            }</div>
-                            </div>
-                            <div className='d-flex'>
-                                <label className='col-6'>VAT</label>
-                                <div>:</div>
-                                <div className='ms-3 text-start' width="100%">  {
-                                  namaMataUang === 'Rp' ? 
-                                  < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(PPN).toFixed(2).replace('.' , ',')} key="diskon" /> :
-                                  < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(PPN).toLocaleString('id')} key="diskon" />
-                            }
-                            </div>
-                            </div>
-                            <div className='d-flex'>
-                                <label className='col-6'><b>Total</b></label>
-                                <div>:</div>
-                                <div className='ms-3 text-start' width="100%">  {
-                                  namaMataUang === 'Rp' ?    
-                                  < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(total).toFixed(2).replace('.' , ',')} key="diskon" /> :
-                                  < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(total).toLocaleString('id')} key="diskon" />
-                                }</div>
-                            </div>
+                                                    </div>
+                                                </div>
+                                                <div className='d-flex'>
+                                                    <label style={{ width: "150px" }}>Shipment Period</label>
 
-                        </div>
-                    </div>
+                                                    {
+                                                        tanggalAkhir == tanggalAwal ?
+                                                            <div>: {tanggalAkhir}</div> :
+                                                            <div>: {tanggalAwal} TO {tanggalAkhir}</div>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div style={{ width: "35%" }}>
+                                                <div className='d-flex mt-5'>
+                                                    <label className='col-6'>Sub Total</label>
+                                                    <div>:</div>
+                                                    <div className='ms-3 text-start' width="100%">  {
+                                                        namaMataUang === 'Rp' ?
+                                                            < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(subTotal).toFixed(2).replace('.', ',')} key="diskon" /> :
+                                                            < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(subTotal).toLocaleString('id')} key="diskon" />
+                                                    }
+                                                    </div>
+                                                </div>
+                                                <div className='d-flex'>
+                                                    <label className='col-6'>Discount</label>
+                                                    <div>:</div>
+                                                    <div className='ms-3 text-start' width="100%">  {
+                                                        namaMataUang === 'Rp' ?
+                                                            < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(diskon).toFixed(2).replace('.', ',')} key="diskon" /> :
+                                                            < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(diskon).toLocaleString('id')} key="diskon" />
+                                                    }</div>
+                                                </div>
+                                                <div className='d-flex'>
+                                                    <label className='col-6'>VAT</label>
+                                                    <div>:</div>
+                                                    <div className='ms-3 text-start' width="100%">  {
+                                                        namaMataUang === 'Rp' ?
+                                                            < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(PPN).toFixed(2).replace('.', ',')} key="diskon" /> :
+                                                            < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(PPN).toLocaleString('id')} key="diskon" />
+                                                    }
+                                                    </div>
+                                                </div>
+                                                <div className='d-flex'>
+                                                    <label className='col-6'><b>Total</b></label>
+                                                    <div>:</div>
+                                                    <div className='ms-3 text-start' width="100%">  {
+                                                        namaMataUang === 'Rp' ?
+                                                            < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(total).toFixed(2).replace('.', ',')} key="diskon" /> :
+                                                            < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(total).toLocaleString('id')} key="diskon" />
+                                                    }</div>
+                                                </div>
 
-                    <div className='d-flex flex-column align-contents-end ps-4 pe-4' style={{ width: "300px", fontSize: "12px", marginLeft: "auto", marginTop: "100px" }}>
-                            <div className='text-center' >_________________</div>
-                            <div className='text-center' >{namaPenerima}</div>
-                        </div>
+                                            </div>
+                                        </div>
+
+                                        <div className='d-flex flex-column align-contents-end ps-4 pe-4' style={{ width: "300px", fontSize: "12px", marginLeft: "auto", marginTop: "100px" }}>
+                                            <div className='text-center' >_________________</div>
+                                            <div className='text-center' >{namaPenerima}</div>
+                                        </div>
 
 
-                   
-                        </div>
-                    </td>
-                </tr>
-              </tfoot>
-            
 
-                  
+                                    </div>
+                                </td>
+                            </tr>
+                        </tfoot>
+
+
+
 
                     </table>
                 </div>
@@ -618,22 +620,48 @@ export const DetailPesananPembelian = () => {
                 <div className="row">
                     <div className="col text-title text-start">
                         <div className="text-title text-start mb-4">
-                            <PageHeader
-                                ghost={false}
-                                onBack={() => window.history.back()}
-                                title="Detail Pesanan"
-                                extra={ status == 'Cancelled' ? null : [
-                                    <Tooltip title="Cetak" placement="bottom">
-                                    <Button
-                                        type="primary"
-                                        icon={<PrinterOutlined />}
-                                        style={{ background: "orange", borderColor: "orange" }}
-                                        onClick={handlePrint}
-                                    />
-                                </Tooltip>,
-                                ]}
-                                >
-                            </PageHeader>
+                            {
+                                canEdit ?
+                                    <PageHeader
+                                        ghost={false}
+                                        onBack={() => window.history.back()}
+                                        title="Detail Pesanan"
+                                        extra={status == 'Cancelled' ? null : [
+                                            <Link to={`/pesananpembelian/edit/${id}`}>
+                                                <Button
+                                                    type="primary"
+                                                    icon={<EditOutlined />}
+                                                />
+                                            </Link>,
+                                            <Tooltip title="Cetak" placement="bottom">
+                                                <Button
+                                                    type="primary"
+                                                    icon={<PrinterOutlined />}
+                                                    style={{ background: "orange", borderColor: "orange" }}
+                                                    onClick={handlePrint}
+                                                />
+                                            </Tooltip>,
+                                        ]}
+                                    >
+                                    </PageHeader> :
+                                    <PageHeader
+                                        ghost={false}
+                                        onBack={() => window.history.back()}
+                                        title="Detail Pesanan"
+                                        extra={status == 'Cancelled' ? null : [
+                                            <Tooltip title="Cetak" placement="bottom">
+                                                <Button
+                                                    type="primary"
+                                                    icon={<PrinterOutlined />}
+                                                    style={{ background: "orange", borderColor: "orange" }}
+                                                    onClick={handlePrint}
+                                                />
+                                            </Tooltip>,
+                                        ]}
+                                    >
+                                    </PageHeader>
+                            }
+
                             {/* <h3 className="title fw-bold">Detail Pesanan</h3> */}
                         </div>
                     </div>
@@ -826,7 +854,7 @@ export const DetailPesananPembelian = () => {
                     <div className="col">
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>
-                            <div className="col-sm-6 form-control-sm" style={{borderWidth:"1px"}} >
+                            <div className="col-sm-6 form-control-sm" style={{ borderWidth: "1px" }} >
                                 {convertToRupiah(subTotal)}
                             </div>
                         </div>

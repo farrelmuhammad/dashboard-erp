@@ -159,7 +159,7 @@ const BuatPesanan = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_product_alias?nama_alias=${query}`, {
+            const res = await axios.get(`${Url}/select_product_alias?status=Active&nama_alias=${query}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -513,10 +513,10 @@ const BuatPesanan = () => {
                 totalPpn = (subTotal * Number(values.ppn)) / 100;
                 grandTotal = subTotal - hasilDiskon + Number(totalPpn);
 
-                // setSubTotal(subTotal)
-                setGrandTotalDiscount(totalDiscount);
-                // setTotalPpn(totalPpn)
-                // setGrandTotal(grandTotal);
+                setSubTotal(subTotal)
+                 setGrandTotalDiscount(totalDiscount);
+                 setTotalPpn(totalPpn)
+                 setGrandTotal(grandTotal);
             } else {
                 total += (Number(values.quantity) * Number(values.price));
                 totalPerProduk = (Number(values.quantity) * Number(values.price));
@@ -536,10 +536,10 @@ const BuatPesanan = () => {
                 totalPpn += (subTotalDiscount * Number(values.ppn)) / 100;
                 grandTotal = total - totalDiscount + Number(totalPpn);
 
-                // setSubTotal(total)
-                setGrandTotalDiscount(totalDiscount);
-                // setTotalPpn(totalPpn)
-                // setGrandTotal(grandTotal);
+                 setSubTotal(total)
+                 setGrandTotalDiscount(totalDiscount);
+                setTotalPpn(totalPpn)
+                 setGrandTotal(grandTotal);
             }
         })
     }, [jumlahDiskon]);
@@ -971,7 +971,8 @@ const BuatPesanan = () => {
                     userData.append("diskon_tetap[]", 0);
                 }
                 else if (pilihanDiskon[i] == 'nominal') {
-                    userData.append("diskon_tetap[]", jumlahDiskon[i]);
+                    userData.append("diskon_tetap[]", jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
+                   // userData.append("diskon_tetap[]", jumlahDiskon[i]);
                     userData.append("persentase_diskon[]", 0);
                 }
                 userData.append("ppn[]", p.ppn);
@@ -1052,12 +1053,13 @@ const BuatPesanan = () => {
                 userData.append("satuan[]", p.unit);
                 userData.append("harga[]", p.price);
                 if (pilihanDiskon[i] == 'percent') {
+
                     userData.append("persentase_diskon[]", jumlahDiskon[i]);
 
                     userData.append("diskon_tetap[]", 0);
                 }
                 else if (pilihanDiskon[i] == 'nominal') {
-                    userData.append("diskon_tetap[]", jumlahDiskon[i]);
+                    userData.append("diskon_tetap[]", jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
 
                     userData.append("persentase_diskon[]", 0);
                 }

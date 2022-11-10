@@ -1,10 +1,10 @@
 import { Button, Checkbox, Form, Input, InputNumber, Menu, Modal, Select, Space, Table, Tag, Tooltip } from 'antd'
-import { DeleteOutlined, LoadingOutlined, MinusOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons'
+import { DeleteOutlined, LoadingOutlined, MinusOutlined, PlusOutlined,EditOutlined , PrinterOutlined } from '@ant-design/icons'
 import React, { useEffect, useState, useRef } from 'react'
 import Search from 'antd/lib/transfer/search'
 import axios from 'axios'
 import Url from '../../../Config';
-import { useParams } from 'react-router-dom'
+import { useParams , Link} from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import CurrencyFormat from 'react-currency-format';
 import { PageHeader } from 'antd';
@@ -30,6 +30,7 @@ export const DetailPIB = () => {
     const [fakturId, setFakturId] = useState();
     const [mataUangId, setMataUangId] = useState();
     const [dataHeader, setDataHeader] = useState()
+    const [canEdit, setCanEdit] = useState()
     const [term, setTerm] = useState()
     const [dataPIB, setDataPIB] = useState([])
     const [totalP, setTotalP] = useState([])
@@ -48,6 +49,7 @@ export const DetailPIB = () => {
             .then((res) => {
                 const getData = res.data.data[0];
                 console.log(getData);
+                setCanEdit(getData.can['update-goods_import_declaration'])
                 setDataHeader(getData);
                 setTerm(getData.term)
                 setDataPIB(getData.goods_import_declaration_details)
@@ -525,24 +527,51 @@ export const DetailPIB = () => {
             </div>
 
 
+            {
+                canEdit ?
+                    <PageHeader
+                        ghost={false}
+                        onBack={() => window.history.back()}
+                        title="Detail PIB"
+                        extra={[
+                            <Link to={`/pib/edit/${id}`}>
+                                <Button
+                                    type="primary"
+                                    icon={<EditOutlined />}
+                                />
+                            </Link>,
+                            <Tooltip title="Cetak" placement="bottom">
+                                <Button
+                                    type="primary"
+                                    icon={<PrinterOutlined />}
+                                    style={{ background: "orange", borderColor: "orange" }}
+                                    onClick={handlePrint}
+                                />
+                            </Tooltip>,
+                        ]}
+                    >
 
-            <PageHeader
-                ghost={false}
-                onBack={() => window.history.back()}
-                title="Detail PIB"
-                extra={[
-                    <Tooltip title="Cetak" placement="bottom">
-                        <Button
-                            type="primary"
-                            icon={<PrinterOutlined />}
-                            style={{ background: "orange", borderColor: "orange" }}
-                            onClick={handlePrint}
-                        />
-                    </Tooltip>,
-                ]}
-            >
+                    </PageHeader> :
+                    <PageHeader
+                        ghost={false}
+                        onBack={() => window.history.back()}
+                        title="Detail PIB"
+                        extra={[
+                            <Tooltip title="Cetak" placement="bottom">
+                                <Button
+                                    type="primary"
+                                    icon={<PrinterOutlined />}
+                                    style={{ background: "orange", borderColor: "orange" }}
+                                    onClick={handlePrint}
+                                />
+                            </Tooltip>,
+                        ]}
+                    >
 
-            </PageHeader>
+                    </PageHeader>
+            }
+
+
             <form className="p-3 mb-3 bg-body rounded">
                 {/* <div className="text-title text-start mb-4">
                     

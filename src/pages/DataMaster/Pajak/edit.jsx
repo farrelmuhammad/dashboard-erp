@@ -117,22 +117,13 @@ const EditPajak = () => {
             Kode
           </label>
           <div className="col-sm-10">
-            <Input
-              size="large"
-              value={code}
-              style={{
-                fontWeight: "bold",
-              }}
-              disabled
-            // onChange={(e) => setType(e.target.value)}
-            />
-            {/* <input
+            <input
               type="kode"
               className="form-control"
               id="inputKode3"
               value={code}
               disabled
-            /> */}
+            />
           </div>
         </div>
         <div className="row mb-3">
@@ -140,19 +131,19 @@ const EditPajak = () => {
             Nama Pajak
           </label>
           <div className="col-sm-10">
-            <Input
+            {/* <Input
               size="large"
               placeholder="Masukkan Nama Pajak"
               defaultValue={type}
               onChange={(e) => setType(e.target.value)}
-            />
-            {/* <input
+            /> */}
+            <input
               type="Nama"
               className="form-control"
               id="inputNama3"
               defaultValue={type}
               onChange={(e) => setType(e.target.value)}
-            /> */}
+            />
           </div>
         </div>
         <div className="row mb-3">
@@ -161,33 +152,19 @@ const EditPajak = () => {
           </label>
           <div className="col-sm-2">
             <div className="input-group">
-              <InputNumber
-                size="large"
-                addonAfter="%"
-                defaultValue={rate}
-                decimalSeparator = {','}
-                // formatter={(value) => { convertToRupiahTabel(value) }}
-                onChange={onChange}
-              />
-              {/* <InputNumber
-                size="large"
-                defaultValue={rate}
-                formatter={(value) =>
-                  `${value} %`.replace(/\B(?=(\d{2})+(?!\d))/g, ",")
-                }
-                // parser={(value) => value.replace(/\%\s?|(,*)/g, "")}
-                // onChange={(e) => setRate(e.target.value)}
-                onChange={onChange}
-              /> */}
-              {/* <input
-                type="number"
+              <input
+                type='number'
                 className="form-control"
-                aria-label="Dollar amount (with dot and two decimal places)"
-                defaultValue={0}
-                pattern="/\B(?=(\d{2})+(?!\d))/g"
+                step='0.01'
+                // value='0.00'
+                defaultValue={rate}
+                addonAfter="%"
+                placeholder='0.00'
                 onChange={(e) => setRate(e.target.value)}
               />
-              <span className="input-group-text">%</span> */}
+              <div className="input-group-append">
+                <span className="input-group-text">%</span>
+              </div>
             </div>
           </div>
         </div>

@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Skeleton, Space, Table, Tag } from 'antd'
+import { Button, Checkbox, Form, Input, InputNumber, Modal, PageHeader, Select, Skeleton, Space, Table, Tag } from 'antd'
 import { PlusOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
@@ -100,7 +100,7 @@ const EditableCell = ({
     return <td {...restProps}>{childNode}</td>;
 };
 
-const EditAdjustment = () => {
+const DetailAdjustment = () => {
     // const token = jsCookie.get("auth");
     const auth = useSelector(state => state.auth);
 
@@ -457,41 +457,33 @@ const EditAdjustment = () => {
     }
     return (
         <>
-            <div className="p-3 mb-3 bg-body rounded">
-                <div className="p-3 mb-3">
-                    <div className="card" style={cardOutline}>
-                        <div className="card-header bg-white">
-                            <h6 className="title fw-bold">
-                                <Button
-                                    style={{ border: 'none' }}
-                                    icon={<ArrowLeftOutlined />}
-                                    onClick={() => navigate(-1)}
-                                />
-                                Detail Penyesuaian Stok
-                            </h6>
+            <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                onBack={() => window.history.back()}
+                title="Detail Penyesuaian Stok"
+            >
+                <div className="row">
+                    <div className="col-md-6">
+                        <div className="form-group row mb-1">
+                            <label for="adjustment_no" className="col-sm-4 col-form-label">No</label>
+                            <div className="col-sm-8">
+                                <input type="text" className="form-control" id="adjustment_no" disabled name="adjustment_no" value={getCode} placeholder="Otomatis" readOnly />
+                            </div>
                         </div>
-                        <div className="card-body">
-                            <div className="row">
-                                <div className="col-md-6">
-                                    <div className="form-group row mb-1">
-                                        <label for="adjustment_no" className="col-sm-4 col-form-label">No</label>
-                                        <div className="col-sm-8">
-                                            <input type="text" className="form-control" id="adjustment_no" disabled name="adjustment_no" value={getCode} placeholder="Otomatis" readOnly />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label for="adjustment_date" className="col-sm-4 col-form-label">Tanggal</label>
-                                        <div className="col-sm-8">
-                                            <input type="date" className="form-control" id="adjustment_date" disabled name="adjustment_date" value={adjustment_date} onChange={(e) => setAdjustmentDate(e.target.value)} />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang</label>
-                                        <div className="col-sm-8">
-                                            <select disabled name="warehouse_id" className="form-select">
-                                                <option selected>{warehouseName}</option>
-                                            </select>
-                                            {/* <AsyncSelect
+                        <div className="form-group row mb-1">
+                            <label for="adjustment_date" className="col-sm-4 col-form-label">Tanggal</label>
+                            <div className="col-sm-8">
+                                <input type="date" className="form-control" id="adjustment_date" disabled name="adjustment_date" value={adjustment_date} onChange={(e) => setAdjustmentDate(e.target.value)} />
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang</label>
+                            <div className="col-sm-8">
+                                <select disabled name="warehouse_id" className="form-select">
+                                    <option selected>{warehouseName}</option>
+                                </select>
+                                {/* <AsyncSelect
                                                 placeholder="Pilih Gudang..."
                                                 cacheOptions
                                                 defaultOptions
@@ -502,100 +494,51 @@ const EditAdjustment = () => {
                                                 loadOptions={loadOptionsWarehouse}
                                                 onChange={handleChangeWarehouse}
                                             /> */}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-6">
-                                    <div className="form-group row mb-1">
-                                        <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
-                                        <div className="col-sm-8">
-                                            {status === 'Submitted' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'Draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label for="adjustment_notes" className="col-sm-4 col-form-label">Catatan</label>
-                                        <div className="col-sm-8">
-                                            <textarea
-                                                className="form-control"
-                                                name="adjustment_notes" id="adjustment_notes"
-                                                rows="4"
-                                                value={notes}
-                                                onChange={(e) => setAdjustmentNotes(e.target.value)}
-                                                disabled
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-md-6">
+                        <div className="form-group row mb-1">
+                            <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
+                            <div className="col-sm-8">
+                                {status === 'Submitted' ? <Tag color="blue">{toTitleCase(status)}</Tag> : status === 'Draft' ? <Tag color="orange">{toTitleCase(status)}</Tag> : status === 'Done' ? <Tag color="green">{toTitleCase(status)}</Tag> : <Tag color="red">{toTitleCase(status)}</Tag>}
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label for="adjustment_notes" className="col-sm-4 col-form-label">Catatan</label>
+                            <div className="col-sm-8">
+                                <textarea
+                                    className="form-control"
+                                    name="adjustment_notes" id="adjustment_notes"
+                                    rows="4"
+                                    value={notes}
+                                    onChange={(e) => setAdjustmentNotes(e.target.value)}
+                                    disabled
+                                />
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="p-3 mb-3">
-                    <div className="card" style={cardOutline}>
-                        <div className="card-header bg-white">
-                            <h6 className="title fw-bold">Daftar Produk</h6>
-                        </div>
-                        <div className="card-body">
-                            <div className="row">
-                                <div className="col text-end me-2">
-                                    <Modal
-                                        title="Tambah Produk"
-                                        centered
-                                        visible={modal2Visible}
-                                        onCancel={() => setModal2Visible(false)}
-                                        // footer={[
-                                        //     <Button
-                                        //         key="submit"
-                                        //         type="primary"
+            </PageHeader>
 
-                                        //     >
-                                        //         Tambah
-                                        //     </Button>,
-                                        // ]}
-                                        footer={null}
-                                    >
-                                        <div className="text-title text-start">
-                                            <div className="row">
-                                                <div className="col mb-3">
-                                                    <Search
-                                                        placeholder="Cari Produk..."
-                                                        style={{
-                                                            width: 400,
-                                                        }}
-                                                        onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                                    />
-                                                </div>
-                                                <Table
-                                                    columns={columnsModal}
-                                                    dataSource={getDataProduct}
-                                                    scroll={{
-                                                        y: 250,
-                                                    }}
-                                                    pagination={false}
-                                                    loading={isLoading}
-                                                    size="middle"
-                                                />
-                                            </div>
-                                        </div>
-                                    </Modal>
-                                </div>
-                            </div>
-                            <Table
-                                loading={isLoading}
-                                components={components}
-                                rowClassName={() => 'editable-row'}
-                                bordered
-                                pagination={false}
-                                dataSource={product}
-                                columns={columns}
-                                onChange={(e) => setProduct(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                title="Daftar Produk"
+            >
+                <Table
+                    loading={isLoading}
+                    components={components}
+                    rowClassName={() => 'editable-row'}
+                    bordered
+                    pagination={false}
+                    dataSource={product}
+                    columns={columns}
+                    onChange={(e) => setProduct(e.target.value)}
+                />
+            </PageHeader>
         </>
     )
 }
 
-export default EditAdjustment
+export default DetailAdjustment
