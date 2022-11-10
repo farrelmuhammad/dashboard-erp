@@ -155,6 +155,7 @@ const BuatPenerimaanBarang = () => {
 
     const handleChangeSupplier = (value) => {
         setSupplierId(value.id);
+        console.log(value)
         setProduct([])
         setSelectedSupplier(value);
         setGrup(value._group)

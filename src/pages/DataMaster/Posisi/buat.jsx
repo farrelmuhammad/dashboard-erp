@@ -156,7 +156,8 @@ const BuatPosisi = () => {
                 className="form-control"
                 id="inputKode3"
                 // onChange={e => setId(e.target.value)}
-                value={getPosition}
+                //value={getPosition}
+                value={'Otomatis'}
                 disabled
               // readOnly={getPosition}
               />

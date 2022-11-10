@@ -152,7 +152,8 @@ const BuatTipeProduk = () => {
               className="form-control"
               id="inputKode3"
               // onChange={e => setId(e.target.value)}
-              value={getType}
+              //value={getType}
+              value={'Otomatis'}
               disabled
             />
           </div>

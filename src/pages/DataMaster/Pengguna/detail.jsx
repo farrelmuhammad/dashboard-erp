@@ -12,6 +12,7 @@ import { EditOutlined } from '@ant-design/icons';
 export const DetailPengguna = () => {
     // const token = jsCookie.get("auth");
     const auth = useSelector(state => state.auth);
+    const [code, setCode] = useState([])
     const { id } = useParams();
     const [data, setData] = useState([]);
     const [groups, setGroups] = useState([]);
@@ -34,6 +35,8 @@ export const DetailPengguna = () => {
                 setData(response.data.data);
                 console.log(response.data.data)
                 setGroups(response.data.data[0].groups);
+                setCode(response.data.data[0].code)
+                //console.log()
                 // console.log(response.data.data[0].groups)
             })
             .catch((err) => {
@@ -135,7 +138,7 @@ export const DetailPengguna = () => {
                             type="kode"
                             className="form-control"
                             id="inputKode3"
-                            value={id}
+                            value={code}
                             disabled
                         />
                     </div>

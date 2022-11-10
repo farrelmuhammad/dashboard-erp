@@ -183,7 +183,8 @@ const BuatDepartemen = () => {
               className="form-control"
               // id="inputKode3"
               // onChange={e => setId(e.target.value)}
-              value={getDepartment}
+              // value={getDepartment}
+              value={'Otomatis'}
               disabled
             />
           </div>
