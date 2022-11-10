@@ -616,14 +616,14 @@ const CreateTallyTransfer = () => {
                 key: 'box',
 
             },
-            // {
-            //     title: 'Status',
-            //     dataIndex: 'status',
-            //     align: 'center',
-            //     width: '10%',
-            //     key: 'status',
+            {
+                title: 'Status',
+                dataIndex: 'status',
+                align: 'center',
+                width: '10%',
+                key: 'status',
 
-            // },
+            },
             {
                 title: 'Action',
                 dataIndex: 'action',
@@ -1506,7 +1506,7 @@ const CreateTallyTransfer = () => {
                     tallySheetData.append("id_permintaan_barang[]", p.id);
                     tallySheetData.append("id_produk[]", po.product_id);
                     tallySheetData.append("jumlah_box[]", totalBox[pi][i]);
-                    tallySheetData.append("aksi[]", "Done");
+                    tallySheetData.append("aksi[]", statusPO[pi][i]);
                     tallySheetData.append("satuan_box[]", po.unit);
                     tallySheetData.append("kuantitas_box[]", totalTallySheet[pi][i]);
 
@@ -1591,8 +1591,6 @@ const CreateTallyTransfer = () => {
                 key++;
             }
         }
-
-
         axios({
             method: "post",
             url: `${Url}/tally_sheet_tf`,
