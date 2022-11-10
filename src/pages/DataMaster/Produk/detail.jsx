@@ -31,6 +31,7 @@ export const DetailProduk = () => {
 
     useEffect(() => {
         getDetailProducts();
+        console.log(brands)
     }, [])
 
     const getDetailProducts = async () => {
@@ -42,7 +43,10 @@ export const DetailProduk = () => {
         })
             .then((res) => {
                 const getData = res.data.data[0]
-                console.log(getData);
+                console.log(getData)
+                console.log(getData.brand.name);
+                setBrands(getData.brand.name)
+                setGrade(getData.grade.name)
                 setCode(getData.code)
                 setName(getData.name || "")
                 setAlias(getData.alias_name || "")
@@ -51,7 +55,7 @@ export const DetailProduk = () => {
                 setCategory(getData.category.name || "")
                 setGrade(getData.grade.name || "")
                 setType(getData.type.name || "")
-                setBrands(getData.brand.name || "")
+                setBrands(getData.brand.name)
                 setUnit(getData.unit)
                 setPackaging(getData.packaging_type || "")
                 setBuy_price(getData.purchase_price || "")
@@ -60,6 +64,7 @@ export const DetailProduk = () => {
                 setTaxes(getData.tax.type) || ""
                 setStatus(getData.status || "")
                 // setLoading(false)
+            
             })
             .catch((err) => {
                 // Jika Gagal

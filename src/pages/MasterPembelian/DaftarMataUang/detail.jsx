@@ -99,6 +99,73 @@ const DetailMataUang = () => {
               ))}
               </div>
             </div>
+            <div className="row mb-3">
+              <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+                Akun Hutang Usaha
+              </label>
+              <div className="col-sm-10">
+              {data.map((d) => (
+                  <input
+                    type="Nama"
+                    className="form-control"
+                    id="inputNama3"
+                    disabled
+                    value={d.accounts_payable}
+                  />
+              ))}
+              </div>
+            </div>
+
+            <div className="row mb-3">
+              <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+                Akun Uang Muka Pembelian
+              </label>
+              <div className="col-sm-10">
+              {data.map((d) => (
+                  <input
+                    type="Nama"
+                    className="form-control"
+                    id="inputNama3"
+                    disabled
+                    value={d.prepaid_expenses}
+                  />
+              ))}
+              </div>
+            </div>
+
+            <div className="row mb-3">
+              <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+                Akun Credit Note
+              </label>
+              <div className="col-sm-10">
+              {data.map((d) => (
+                  <input
+                    type="Nama"
+                    className="form-control"
+                    id="inputNama3"
+                    disabled
+                    value={d.credit_note_account}
+                  />
+              ))}
+              </div>
+            </div>
+
+            <div className="row mb-3">
+              <label htmlFor="inputNama3" className="col-sm-2 col-form-label">
+                Akun Selisih Kurs
+              </label>
+              <div className="col-sm-10">
+              {data.map((d) => (
+                  <input
+                    type="Nama"
+                    className="form-control"
+                    id="inputNama3"
+                    disabled
+                    value={d.exchange_rate_difference}
+                  />
+              ))}
+              </div>
+            </div>
            
           </form>
         </>

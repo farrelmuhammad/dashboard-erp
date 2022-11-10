@@ -8,6 +8,7 @@ import jsCookie from 'js-cookie'
 import Swal from 'sweetalert2';
 import { Link, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 
 const CoaTable = () => {
     const [searchText, setSearchText] = useState('');
@@ -21,6 +22,69 @@ const CoaTable = () => {
 
 
     const { id } = useParams();
+
+    
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+  
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+
+    const deleteCOA = async (id, code) => {
+        Swal.fire({
+          title: 'Apakah Anda Yakin?',
+          text: "Data ini akan dihapus",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Ya'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            axios.delete(`${Url}/chart_of_accounts/${id}`, {
+              headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+              },
+            });
+            fetchData()
+            Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+    
+          }
+        })
+    
+      };
+
+      const fetchData = () => {
+        setIsLoading(true);
+        fetch(`${Url}/chart_of_accounts?${qs.stringify(getParams(tableParams))}`, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${auth.token}`,
+          },
+        }).then((res) => res.json())
+          .then(({ data }) => {
+            const getData = data
+            setGetDataSO(getData)
+            setIsLoading(false);
+            setTableParams({
+              ...tableParams,
+              pagination: {
+                ...tableParams.pagination,
+                total: 200,
+              },
+            });
+          });
+      };
 
     const deleteSalesOrder = async (id) => {
         await axios.delete(`${Url}/chart_of_accounts/${id}`, {
@@ -54,6 +118,12 @@ const CoaTable = () => {
         clearFilters();
         setSearchText('');
     };
+
+
+    useEffect(() => {
+        fetchData();
+      }, [JSON.stringify(tableParams)]);
+    
 
     const getColumnSearchProps = (dataIndex) => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -213,14 +283,20 @@ const CoaTable = () => {
             align: 'center',
             render: (_, record) => (
                 <>
-                    <Space size="middle">
+                  <Space size="middle">
+                    {
+                        record.can['read-chart_of_account'] ? 
                         <Link to={`/coa/detail/${record.id}`}>
-                            <Button
-                                size='small'
-                                type="primary"
-                                icon={<InfoCircleOutlined />}
-                            />
-                        </Link>
+                        <Button
+                            size='small'
+                            type="primary"
+                            icon={<InfoCircleOutlined />}
+                        />
+                    </Link> :
+                    null
+                    }
+                    {
+                        record.can ['update-chart_of_account'] ? 
                         <Link to={`/coa/edit/${record.id}`}>
                             <Button
                                 size='small'
@@ -228,13 +304,18 @@ const CoaTable = () => {
                                 icon={<EditOutlined />}
                             />
                         </Link>
-                        <Button
-                            size='small'
-                            type="danger"
-                            icon={<DeleteOutlined />}
-                            // onClick={() => deleteSalesOrder(record.id)}
-                        />
-                    </Space>
+                       : null
+                    }
+                  {
+                    record.can ['delete-chart_of_account'] ? 
+                    <Button
+                    size='small'
+                    type="danger"
+                    icon={<DeleteOutlined />}
+                     onClick={() => deleteCOA(record.id, record.code)}
+                /> : null
+                }
+                  </Space>
                 </>
             ),
         },

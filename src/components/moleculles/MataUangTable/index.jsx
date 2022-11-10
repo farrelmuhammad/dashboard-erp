@@ -158,7 +158,7 @@ const MataUangTable = () => {
               size='small'
               type="danger"
               icon={<DeleteOutlined />}
-              onClick={() => deleteMataUang(record.id)}
+              onClick={() => deleteMataUang(record.id,record.code)}
             />
           </Space>
         </>
@@ -187,15 +187,42 @@ const MataUangTable = () => {
       })
   };
 
-  const deleteMataUang = async (id) => {
-    await axios.delete(`${Url}/currencies/${id}`, {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-    });
-    getMataUang();
-    Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+  // const deleteMataUang = async (id) => {
+  //   await axios.delete(`${Url}/currencies/${id}`, {
+  //     headers: {
+  //       Accept: "application/json",
+  //       Authorization: `Bearer ${auth.token}`,
+  //     },
+  //   });
+  //   getMataUang();
+  //   Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
+  // };
+
+
+  
+  const deleteMataUang = async (id, code) => {
+    Swal.fire({
+      title: 'Apakah Anda Yakin?',
+      text: "Data akan dihapus",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.delete(`${Url}/currencies/${id}`, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${auth.token}`,
+          },
+        });
+        getMataUang()
+        Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
+
+      }
+    })
+
   };
 
   return (

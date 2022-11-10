@@ -101,7 +101,7 @@ const EditCoa = () => {
                 setAccountCategory(getData.chart_of_account_category_id)
                 setAccountCategoryname(getData.chart_of_account_category.name)
                 setAccountName(getData.name)
-                setMasterAcc(getData.parent.id)
+                 setMasterAcc(getData.parent.id)
                 setMasterAccountName(getData.parent.name)
                 setCurrency(getData.currency.id)
                 setCurrencyName(getData.currency.name)
