@@ -79,7 +79,8 @@ const EditableCell = ({
                     },
                 ]}
             >
-                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
+                <InputNumber ref={inputRef}  onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
+                    thousandSeparator={'.'}
                     decimalSeparator={','}
                     onChange={value => {
                         value = parseFloat(value.toString().replace('.', ','))
@@ -457,10 +458,15 @@ const BuatPesananPembelian = () => {
             align: 'center',
             editable: true,
             render(text, record) {
+
                 return {
                     props: {
                     },
-                    children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
+                    children: 
+                    <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={text} key="qty" />
+                  
+                 
+                     //<div>{Number(text).toFixed(2).replace('.', ',')}</div>
                 };
             }
         },
@@ -496,7 +502,7 @@ const BuatPesananPembelian = () => {
             align: 'center',
             render: (text, record, index) => {
                 return <div className="input-group input-group-sm mb-3">
-                    <input style={{ width: "25px" }} type="text" className="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} value={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
+                    <InputNumber style={{ width: "25px" }} type="text" thousandSeparator={'.'} decimalSeparator={','} className="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} value={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" />
                     <div className="input-group-prepend">
                         <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
                             <select

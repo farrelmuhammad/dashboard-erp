@@ -79,6 +79,7 @@ const PesananPembelianTable = () => {
                         status: getData[i].status,
                         name: getData[i].name,
                         supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
+                        reference: getData[i].reference ? getData[i].reference : <div className='text-center'>-</div>,
                     })
                 }
                 setDataTampil(tmp)
@@ -409,6 +410,15 @@ const PesananPembelianTable = () => {
             //     }
             // }
 
+        },
+        {
+            title: 'Reference', 
+            dataIndex: 'reference',
+            key: 'reference',
+            width: '20%',
+            ...getColumnSearchProps('reference'),
+            // sorter: true,
+            // sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Status',
