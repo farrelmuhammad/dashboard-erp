@@ -134,7 +134,7 @@ const BuatPajak = () => {
             Kode
           </label>
           <div className="col-sm-10">
-            <Input
+            {/* <Input
               // size="large"
               // value={getTaxes}
               value={'Otomatis'}
@@ -144,14 +144,14 @@ const BuatPajak = () => {
               disabled
               className="form-control"
             // onChange={(e) => setType(e.target.value)}
-            />
-            {/* <input
+            /> */}
+            <input
               type="text"
               className="form-control"
               id="inputKode3"
-              value={getTaxes}
+              value="Otomatis"
               disabled
-            /> */}
+            />
           </div>
         </div>
         <div className="row mb-3">
@@ -159,21 +159,13 @@ const BuatPajak = () => {
             Nama Pajak
           </label>
           <div className="col-sm-10">
-            <Input
-              size="large"
-              placeholder="Masukkan Nama Pajak"
-              className="form-control"
-              onChange={(e) => setType(e.target.value)}
-            // style={{
-            //   borderRadius: "25px"
-            // }}
-            />
-            {/* <input
+            <input
               type="Nama"
               className="form-control"
+              placeholder="Masukkan Nama Pajak"
               id="inputNama3"
               onChange={(e) => setType(e.target.value)}
-            /> */}
+            />
           </div>
         </div>
         <div className="row mb-3">
@@ -182,26 +174,17 @@ const BuatPajak = () => {
           </label>
           <div className="col-sm-2">
             <div className="input-group">
-              <InputNumber
-                size="large"
-                style={{
-                  borderRadius: "25px"
-                }}
-                addonAfter="%"
-                defaultValue={0}
-                decimalSeparator={','}
-                formatter={(value) => { convertToRupiahTabel(value) }}
-                onChange={onChange}
-              />
-              {/* <input
-                type="number"
+              <input
+                type='number'
                 className="form-control"
-                aria-label="Dollar amount (with dot and two decimal places)"
-                defaultValue={0}
-                pattern="/\B(?=(\d{2})+(?!\d))/g"
+                step='0.01'
+                // value='0.00'
+                placeholder='0.00'
                 onChange={(e) => setRate(e.target.value)}
               />
-              <span className="input-group-text">%</span> */}
+              <div className="input-group-append">
+                <span className="input-group-text">%</span>
+              </div>
             </div>
           </div>
         </div>

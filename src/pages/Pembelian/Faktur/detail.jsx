@@ -758,7 +758,7 @@ const DetailFakturPembelian = () => {
                         </div>
                     </div>
                     {/* <div className="col button-add text-end me-3">
-                        <button type="button" onClick={handlePrint} class="btn btn-warning rounded m-1">
+                        <button type="button" onClick={handlePrint} className="btn btn-warning rounded m-1">
                     <div className="col button-add text-end me-3">
                         <button type="button" onClick={handlePrint} className="btn btn-warning rounded m-1">
                             Cetak
@@ -937,7 +937,7 @@ const DetailFakturPembelian = () => {
                     />
                 </div>
                 <div className="mt-4 row p-0 ">
-                    <div class="col ms-5"></div>
+                    <div className="col ms-5"></div>
                     <div className="col">
                         <div className="row mb-3">
                             <label for="colFormLabelSm" className="col-sm-2 col-form-label col-form-label-sm">Subtotal</label>

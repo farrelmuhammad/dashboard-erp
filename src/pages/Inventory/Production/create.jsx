@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag } from 'antd'
-import { PlusOutlined,ArrowLeftOutlined } from '@ant-design/icons'
+import { Button, Checkbox, Form, Input, InputNumber, Modal, PageHeader, Select, Space, Table, Tag } from 'antd'
+import { PlusOutlined, ArrowLeftOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
@@ -58,7 +58,7 @@ const EditableCell = ({
         try {
             const values = await form.validateFields();
             toggleEdit();
-            handleSave({ ...record, ...values },type_production);
+            handleSave({ ...record, ...values }, type_production);
             // console.log({ ...record, ...values },"aaa",type_production);
         } catch (errInfo) {
             console.log('Save failed:', errInfo);
@@ -82,11 +82,11 @@ const EditableCell = ({
                 ]}
             >
                 <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
-                    decimalSeparator = {','}
+                    decimalSeparator={','}
                     onChange={value => {
                         value = parseFloat(value.toString().replace('.', ','))
-                      }}
-                      
+                    }}
+
                 />
             </Form.Item>
         ) : (
@@ -186,7 +186,7 @@ const CreateProduction = () => {
         };
 
         if (query.length >= 0) getProduct();
-    }, [query,warehouse_input])
+    }, [query, warehouse_input])
 
     useEffect(() => {
         const getProductOut = async () => {
@@ -217,7 +217,7 @@ const CreateProduction = () => {
         };
 
         if (query_out.length >= 0) getProductOut();
-    }, [query_out,warehouse_output])
+    }, [query_out, warehouse_output])
 
     // Column for modal input product
     const columnsModal = [
@@ -233,7 +233,7 @@ const CreateProduction = () => {
             dataIndex: 'qty',
             width: '15%',
             align: 'center',
-            render: (_,record) => {
+            render: (_, record) => {
                 return <>{record.detail.qty.toString().replace('.', ',')}</>
 
             }
@@ -246,9 +246,9 @@ const CreateProduction = () => {
             render:
                 (_, record, index) => {
                     if (checked === "input") {
-                        return <Checkbox value={record} onChange={ event  => handleCheck(event, index,'input')}/>
+                        return <Checkbox value={record} onChange={event => handleCheck(event, index, 'input')} />
                     } else if (record) {
-                        return <Checkbox value={record} onChange={ event  => handleCheck(event, index,'output')}/>
+                        return <Checkbox value={record} onChange={event => handleCheck(event, index, 'output')} />
                     }
                 }
         },
@@ -259,7 +259,7 @@ const CreateProduction = () => {
             dataIndex: '',
             width: '5%',
             align: 'center',
-            render(text, record,index) {
+            render(text, record, index) {
                 return {
                     props: {
                         style: { background: "#f5f5f5" }
@@ -307,21 +307,21 @@ const CreateProduction = () => {
     ];
     const convertToRupiahTabel = (angka) => {
         return <>
-        {
-            < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.' , ',')} />
-            
-        }
+            {
+                < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} />
+
+            }
         </>
     }
-    const handleSave = (row,type_production) => {
-        console.log(row,type_production)
+    const handleSave = (row, type_production) => {
+        console.log(row, type_production)
         if (type_production === 'input') {
             const newData = [...product];
             const index = newData.findIndex((item) => row.product_id === item.product_id);
             const item = newData[index];
             newData.splice(index, 1, { ...item, ...row });
             setProduct(newData);
-        }else {
+        } else {
             const newData = [...productOutput];
             const index = newData.findIndex((item) => row.product_id === item.product_id);
             const item = newData[index];
@@ -347,7 +347,7 @@ const CreateProduction = () => {
                 editable: col.editable,
                 dataIndex: col.dataIndex,
                 title: col.title,
-                type_production:"input",
+                type_production: "input",
                 handleSave,
             }),
         };
@@ -365,14 +365,14 @@ const CreateProduction = () => {
                 editable: col.editable,
                 dataIndex: col.dataIndex,
                 title: col.title,
-                type_production:"output",
+                type_production: "output",
                 handleSave,
             }),
         };
     });
 
-    const handleCheck = (event, index,param) => {
-        
+    const handleCheck = (event, index, param) => {
+
         if (param === "input") {
             let data = event.target.value
 
@@ -396,7 +396,7 @@ const CreateProduction = () => {
                 }
                 else {
                     let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.product_id);
-                    if(index>=0){
+                    if (index >= 0) {
                         tmpDataCentang.splice(index, 1)
                     }
                     // tmpDataCentang.push('')
@@ -449,7 +449,7 @@ const CreateProduction = () => {
                 }
                 else {
                     let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.product_id);
-                    if(index>=0){
+                    if (index >= 0) {
                         tmpDataCentang.splice(index, 1)
                     }
                     // tmpDataCentang.push('')
@@ -483,11 +483,11 @@ const CreateProduction = () => {
     };
 
     const showBtnModal = (event) => {
-        if(event === "input"){
+        if (event === "input") {
             setModal2Visible(true)
             setChecked("input");
         }
-        if(event === "output"){
+        if (event === "output") {
             setModal2VisibleOutput(true)
             setChecked("output");
         }
@@ -606,225 +606,206 @@ const CreateProduction = () => {
 
     return (
         <>
-            <form className="p-3 mb-3 bg-body rounded">
-                <div className="p-3 mb-3">
-                    <div className="card" style={cardOutline}>
-                        <div className="card-header bg-white">
-                            <h6 className="title fw-bold">
-                                <Button
-                                    style={{border: 'none'}}
-                                    icon={<ArrowLeftOutlined />}
-                                    onClick={() => navigate(-1)}
+            <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                onBack={() => window.history.back()}
+                title="Buat Produksi"
+            >
+                <div className="row">
+                    <div className="col-md-6">
+                        <div className="form-group row mb-1">
+                            <label for="code" className="col-sm-4 col-form-label">No Produksi</label>
+                            <div className="col-sm-8">
+                                <input type="text" className="form-control" id="code" name="code" placeholder="Otomatis" readOnly />
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label for="date" className="col-sm-4 col-form-label">Tanggal</label>
+                            <div className="col-sm-8">
+                                <input type="date" className="form-control" id="date" name="date" onChange={(e) => setDate(e.target.value)} />
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Input</label>
+                            <div className="col-sm-8">
+                                <AsyncSelect
+                                    placeholder="Pilih Gudang Input..."
+                                    cacheOptions
+                                    defaultOptions
+                                    value={selectedWarehouseInput}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsWarehouse}
+                                    onChange={handleChangeWarehouseInput}
                                 />
-                                Buat Produksi
-                            </h6>
+                            </div>
                         </div>
-                        <div className="card-body">
-                            <div className="row">
-                                <div className="col-md-6">
-                                    <div className="form-group row mb-1">
-                                        <label for="code" className="col-sm-4 col-form-label">No Produksi</label>
-                                        <div className="col-sm-8">
-                                            <input type="text" className="form-control" id="code" name="code" placeholder="Otomatis" readOnly />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label for="date" className="col-sm-4 col-form-label">Tanggal</label>
-                                        <div className="col-sm-8">
-                                            <input type="date" className="form-control" id="date" name="date" onChange={(e) => setDate(e.target.value)} />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Input</label>
-                                        <div className="col-sm-8">
-                                            <AsyncSelect
-                                                placeholder="Pilih Gudang Input..."
-                                                cacheOptions
-                                                defaultOptions
-                                                value={selectedWarehouseInput}
-                                                getOptionLabel={(e) => e.name}
-                                                getOptionValue={(e) => e.id}
-                                                loadOptions={loadOptionsWarehouse}
-                                                onChange={handleChangeWarehouseInput}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Output</label>
-                                        <div className="col-sm-8">
-                                            <AsyncSelect
-                                                placeholder="Pilih Gudang Output..."
-                                                cacheOptions
-                                                defaultOptions
-                                                value={selectedWarehouseOutput}
-                                                getOptionLabel={(e) => e.name}
-                                                getOptionValue={(e) => e.id}
-                                                loadOptions={loadOptionsWarehouse}
-                                                onChange={handleChangeWarehouseOutput}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-6">
-                                    <div className="form-group row mb-1">
-                                        <label for="notes" className="col-sm-4 col-form-label">Catatan</label>
-                                        <div className="col-sm-8">
-                                            <textarea
-                                                className="form-control"
-                                                name="notes" id="notes"
-                                                rows="3"
-                                                onChange={(e) => setNotes(e.target.value)}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="form-group row mb-1">
-                                        <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
-                                        <div className="col-sm-8">
-                                            <Tag color="orange">{toTitleCase("Draft")}</Tag>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div className="form-group row mb-1">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Output</label>
+                            <div className="col-sm-8">
+                                <AsyncSelect
+                                    placeholder="Pilih Gudang Output..."
+                                    cacheOptions
+                                    defaultOptions
+                                    value={selectedWarehouseOutput}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsWarehouse}
+                                    onChange={handleChangeWarehouseOutput}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-md-6">
+                        <div className="form-group row mb-1">
+                            <label for="notes" className="col-sm-4 col-form-label">Catatan</label>
+                            <div className="col-sm-8">
+                                <textarea
+                                    className="form-control"
+                                    name="notes" id="notes"
+                                    rows="3"
+                                    onChange={(e) => setNotes(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                        <div className="form-group row mb-1">
+                            <label for="adjustment_status" className="col-sm-4 col-form-label">Status</label>
+                            <div className="col-sm-8">
+                                <Tag color="orange">{toTitleCase("Draft")}</Tag>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div className="p-3 mb-3">
-                    <div className="card" style={cardOutline}>
-                        <div className="card-header bg-white">
-                            <h6 className="title fw-bold">Bahan Baku</h6>
-                        </div>
-                        <div className="card-body">
-                            <div className="row">
-                                <div className="col text-end me-2">
-                                    <Button
-                                        type="primary"
-                                        icon={<PlusOutlined />}
-                                        // onClick={() => setModal2Visible(true)}
-                                        onClick={ () => showBtnModal("input")}
-                                    />
-                                    <Modal
-                                        title="Tambah Produk"
-                                        centered
-                                        visible={modal2Visible}
-                                        onCancel={() => setModal2Visible(false)}
-                                        // footer={[
-                                        //     <Button
-                                        //         key="submit"
-                                        //         type="primary"
+            </PageHeader>
 
-                                        //     >
-                                        //         Tambah
-                                        //     </Button>,
-                                        // ]}
-                                        footer={null}
-                                    >
-                                        <div className="text-title text-start">
-                                            <div className="row">
-                                                <div className="col mb-3">
-                                                    <Search
-                                                        placeholder="Cari Bahan Baku..."
-                                                        style={{
-                                                            width: 400,
-                                                        }}
-                                                        onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                                    />
-                                                </div>
-                                                <Table
-                                                    columns={columnsModal}
-                                                    dataSource={getDataProduct}
-                                                    scroll={{
-                                                        y: 250,
-                                                    }}
-                                                    pagination={false}
-                                                    loading={isLoading}
-                                                    size="middle"
-                                                />
-                                            </div>
-                                        </div>
-                                    </Modal>
-                                </div>
-                            </div>
-                            <Table
-                                components={components}
-                                rowClassName={() => 'editable-row'}
-                                bordered
-                                pagination={false}
-                                dataSource={product}
-                                columns={columns}
-                                onChange={(e) => setProduct(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                </div>
-                <div className="p-3 mb-3">
-                    <div className="card" style={cardOutline}>
-                        <div className="card-header bg-white">
-                            <h6 className="title fw-bold">Hasil Produksi</h6>
-                        </div>
-                        <div className="card-body">
-                            <div className="row">
-                                <div className="col text-end me-2">
-                                    <Button
-                                        type="primary"
-                                        icon={<PlusOutlined />}
-                                        // onClick={() => setModal2Visible(true)}
-                                        onClick={ () => showBtnModal("output")}
-                                    />
-                                    <Modal
-                                        title="Tambah Produk"
-                                        centered
-                                        visible={modal2VisibleOutput}
-                                        onCancel={() => setModal2VisibleOutput(false)}
-                                        // footer={[
-                                        //     <Button
-                                        //         key="submit"
-                                        //         type="primary"
+            <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                title="Bahan Baku"
+                extra={[
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        // onClick={() => setModal2Visible(true)}
+                        onClick={() => showBtnModal("input")}
+                    />,
+                    <Modal
+                        title="Tambah Produk"
+                        centered
+                        visible={modal2Visible}
+                        onCancel={() => setModal2Visible(false)}
+                        // footer={[
+                        //     <Button
+                        //         key="submit"
+                        //         type="primary"
 
-                                        //     >
-                                        //         Tambah
-                                        //     </Button>,
-                                        // ]}
-                                        footer={null}
-                                    >
-                                        <div className="text-title text-start">
-                                            <div className="row">
-                                                <div className="col mb-3">
-                                                    <Search
-                                                        placeholder="Cari Hasil Produksi..."
-                                                        style={{
-                                                            width: 400,
-                                                        }}
-                                                        onChange={(e) => setQueryOut(e.target.value.toLowerCase())}
-                                                    />
-                                                </div>
-                                                <Table
-                                                    columns={columnsModal}
-                                                    dataSource={getDataOutput}
-                                                    scroll={{
-                                                        y: 250,
-                                                    }}
-                                                    pagination={false}
-                                                    loading={isLoading}
-                                                    size="middle"
-                                                />
-                                            </div>
-                                        </div>
-                                    </Modal>
+                        //     >
+                        //         Tambah
+                        //     </Button>,
+                        // ]}
+                        footer={null}
+                    >
+                        <div className="text-title text-start">
+                            <div className="row">
+                                <div className="col mb-3">
+                                    <Search
+                                        placeholder="Cari Bahan Baku..."
+                                        style={{
+                                            width: 400,
+                                        }}
+                                        onChange={(e) => setQuery(e.target.value.toLowerCase())}
+                                    />
                                 </div>
+                                <Table
+                                    columns={columnsModal}
+                                    dataSource={getDataProduct}
+                                    scroll={{
+                                        y: 250,
+                                    }}
+                                    pagination={false}
+                                    loading={isLoading}
+                                    size="middle"
+                                />
                             </div>
-                            <Table
-                                components={components}
-                                rowClassName={() => 'editable-row'}
-                                bordered
-                                pagination={false}
-                                dataSource={productOutput}
-                                columns={columnOuts}
-                                onChange={(e) => setProductOutput(e.target.value)}
-                            />
                         </div>
-                    </div>
-                </div>
-                <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
+                    </Modal>
+                ]}
+            >
+                <Table
+                    components={components}
+                    rowClassName={() => 'editable-row'}
+                    bordered
+                    pagination={false}
+                    dataSource={product}
+                    columns={columns}
+                    onChange={(e) => setProduct(e.target.value)}
+                />
+            </PageHeader>
+
+            <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                title="Hasil Produksi"
+                extra={[
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        // onClick={() => setModal2Visible(true)}
+                        onClick={() => showBtnModal("output")}
+                    />,
+                    <Modal
+                        title="Tambah Produk"
+                        centered
+                        visible={modal2VisibleOutput}
+                        onCancel={() => setModal2VisibleOutput(false)}
+                        // footer={[
+                        //     <Button
+                        //         key="submit"
+                        //         type="primary"
+
+                        //     >
+                        //         Tambah
+                        //     </Button>,
+                        // ]}
+                        footer={null}
+                    >
+                        <div className="text-title text-start">
+                            <div className="row">
+                                <div className="col mb-3">
+                                    <Search
+                                        placeholder="Cari Hasil Produksi..."
+                                        style={{
+                                            width: 400,
+                                        }}
+                                        onChange={(e) => setQueryOut(e.target.value.toLowerCase())}
+                                    />
+                                </div>
+                                <Table
+                                    columns={columnsModal}
+                                    dataSource={getDataOutput}
+                                    scroll={{
+                                        y: 250,
+                                    }}
+                                    pagination={false}
+                                    loading={isLoading}
+                                    size="middle"
+                                />
+                            </div>
+                        </div>
+                    </Modal>
+                ]}
+            >
+                <Table
+                    components={components}
+                    rowClassName={() => 'editable-row'}
+                    bordered
+                    pagination={false}
+                    dataSource={productOutput}
+                    columns={columnOuts}
+                    onChange={(e) => setProductOutput(e.target.value)}
+                />
+                <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2" role="group" aria-label="Basic mixed styles example">
                     <button
                         type="button"
                         className="btn btn-success rounded m-1"
@@ -842,8 +823,7 @@ const CreateProduction = () => {
                         Submit
                     </button>
                 </div>
-                <div style={{ clear: 'both' }}></div>
-            </form>
+            </PageHeader>
         </>
     )
 }

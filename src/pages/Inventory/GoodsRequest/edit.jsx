@@ -125,7 +125,8 @@ const EditGoodsRequest = () => {
     const navigate = useNavigate();
     const { id } = useParams();
 
-    const [getDataProduct, setGetDataProduct] = useState();
+    const [getDataProduct, setGetDataProduct] = useState([]);
+    const [getGoodRequest, setGetGoodRequest] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const [subTotal, setSubTotal] = useState("");
@@ -156,6 +157,7 @@ const EditGoodsRequest = () => {
                 // setGetPosition(res.data.data[0]);
                 // console.log(res.data.data[0])
                 const getData = res.data.data[0]
+                setGetGoodRequest(getData)
                 setCode(getData.code);
                 setType(getData.type);
                 setDate(getData.date);
@@ -224,25 +226,30 @@ const EditGoodsRequest = () => {
                 }
             })
             let tmp = []
-            for (let i = 0; i < res.data.length; i++) {
-                if (tmpCentang.indexOf(res.data[i].product_id) >= 0) {
-                    tmp.push({
-                        detail: res.data[i],
-                        statusCek: true
-                    });
+            for (let x = 0; x < product.length; x++) {
+                for (let i = 0; i < res.data.length; i++) {
+
+                    if (res.data[i].product_id == product[x].product_id) {
+                        tmp.push({
+                            detail: res.data[i],
+                            statusCek: true
+                        });
+                    }
+                    else {
+                        tmp.push({
+                            detail: res.data[i],
+                            statusCek: false
+                        });
+                    }
+
                 }
-                else {
-                    tmp.push({
-                        detail: res.data[i],
-                        statusCek: false
-                    });
-                }
+
             }
-            setGetDataProduct(tmp);
+            setGetDataProduct(tmp)
         };
 
-        if (query.length === 0 || query.length > 2) getProduct();
-    }, [query])
+        if (query.length >= 0) getProduct();
+    }, [query, warehouse_source, getGoodRequest])
 
     // Column for modal input product
     const columnsModal = [
@@ -255,34 +262,32 @@ const EditGoodsRequest = () => {
             dataIndex: 'qty',
             width: '15%',
             align: 'center',
-            render: (text) => {
-                return <>{text.toString().replace('.', ',')}</>
-
-            }
         },
         {
             title: 'actions',
             dataIndex: 'actions',
             width: '15%',
             align: 'center',
-            render: (_, record) => (
-                <>
-                    <Checkbox
-                        value={record}
-                        // checked
-                        // onChange={handleCheck}
-                        checked={record.statusCek}
-                        onChange={(e) => handleCheck(e, index)}
-                    />
-                    {/* <CheckBox
-          type="checkbox"
-          checked={selected}
-          onChange={handleOnChange} 
-        ></CheckBox> */}
-                </>
-            )
         },
     ];
+
+    const columnDataProduct =
+        [...getDataProduct.map((item, i) => ({
+            product_name: item.detail.product_name,
+            qty: item.detail.qty,
+            notes: item.detail.notes,
+            actions:
+                <>
+                    <Checkbox
+                        value={item}
+                        checked={item.statusCek}
+                        onChange={(e) => handleCheck(e, i)}
+                    />
+                </>
+        }))
+
+        ]
+
     const defaultColumns = [
         {
             title: 'No.',
@@ -483,7 +488,6 @@ const EditGoodsRequest = () => {
         }
         setProduct(updatedList);
         setJumlah(tmpJumlah)
-        console.log(tmpDataBaru, "Cekk", updatedList)
     }
 
 
@@ -748,7 +752,7 @@ const EditGoodsRequest = () => {
                                 </div>
                                 <Table
                                     columns={columnsModal}
-                                    dataSource={getDataProduct}
+                                    dataSource={columnDataProduct}
                                     scroll={{
                                         y: 250,
                                     }}
