@@ -295,20 +295,27 @@ const BuatPembayaranPembelian = () => {
                     detail:getDataFaktur[i].detail,
                     statusCek: !getDataFaktur[i].statusCek
                 })
+                if (!tmpDataBaru[i].statusCek) {
+                    let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
+                    tmpDataCentang.splice(idxHapus, 1)
+                }
+                else if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.code)
+                }
             }
             else{
                 tmpDataBaru.push(getDataFaktur[i])
             }
 
-            if (tmpDataBaru[i].statusCek == true) {
-                tmpDataCentang.push(tmpDataBaru[i].detail.code)
-            }
-            else {
-                let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.code);
-                if (index >= 0) {
-                    tmpDataCentang.splice(index, 1)
-                }
-            }
+            // if (tmpDataBaru[i].statusCek == true) {
+            //     tmpDataCentang.push(tmpDataBaru[i].detail.code)
+            // }
+            // else {
+            //     let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.code);
+            //     if (index >= 0) {
+            //         tmpDataCentang.splice(index, 1)
+            //     }
+            // }
         }
 
         let unikTmpCentang = [...new Set(tmpDataCentang)]

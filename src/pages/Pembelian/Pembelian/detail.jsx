@@ -93,6 +93,7 @@ export const DetailPesananPembelian = () => {
         {
             title: 'Nama Produk',
             dataIndex: 'product_name',
+            width: '8%',
         },
         {
             title: 'Qty',
@@ -106,7 +107,7 @@ export const DetailPesananPembelian = () => {
         {
             title: 'Stn',
             dataIndex: 'unit',
-            width: '6%',
+            width: '5%',
             align: 'center',
         },
         {
@@ -126,7 +127,7 @@ export const DetailPesananPembelian = () => {
         {
             title: 'Discount',
             dataIndex: 'diskon',
-            width: '12%',
+            width: '15%',
             align: 'center',
             // editable: true,
             render: (text, record, index) => {
@@ -161,7 +162,7 @@ export const DetailPesananPembelian = () => {
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '16%',
+            width: '20%',
             align: 'center',
             render(text, record) {
                 return {
@@ -265,9 +266,9 @@ export const DetailPesananPembelian = () => {
                 let arrBrand = []
                 let total = 0;
                 for (let i = 0; i < po.length; i++) {
-
-                    arrBrand.push(po[i].product.brand.name);
-
+                    if(po[i].product.brand){
+                        arrBrand.push(po[i].product.brand.name);
+                    }
                 }
                 const hasilBrand = [...new Set(arrBrand)];
                 setBrand(hasilBrand);

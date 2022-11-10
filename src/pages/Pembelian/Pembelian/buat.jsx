@@ -706,20 +706,27 @@ const BuatPesananPembelian = () => {
                     detail: getDataProduct[i].detail,
                     statusCek: !getDataProduct[i].statusCek
                 })
+                if (!tmpDataBaru[i].statusCek) {
+                    let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.id);
+                    tmpDataCentang.splice(idxHapus, 1)
+                }
+                else if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.id)
+                }
             }
             else {
                 tmpDataBaru.push(getDataProduct[i])
             }
 
-            if (tmpDataBaru[i].statusCek == true) {
-                tmpDataCentang.push(tmpDataBaru[i].detail.id)
-            }
-            else {
-                let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.id);
-                if (index >= 0) {
-                    tmpDataCentang.splice(index, 1)
-                }
-            }
+            // if (tmpDataBaru[i].statusCek == true) {
+            //     tmpDataCentang.push(tmpDataBaru[i].detail.id)
+            // }
+            // else {
+            //     let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.id);
+            //     if (index >= 0) {
+            //         tmpDataCentang.splice(index, 1)
+            //     }
+            // }
         }
 
         let unikTmpCentang = [...new Set(tmpDataCentang)]

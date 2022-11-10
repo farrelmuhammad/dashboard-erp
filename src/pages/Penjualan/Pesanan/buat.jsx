@@ -840,14 +840,15 @@ const BuatPesanan = () => {
                     let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.alias_name);
                     tmpDataCentang.splice(idxHapus, 1)
                 }
+                else if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.alias_name)
+                }
             }
             else {
                 tmpDataBaru.push(getDataProduct[i])
             }
 
-            if (tmpDataBaru[i].statusCek == true) {
-                tmpDataCentang.push(tmpDataBaru[i].detail.alias_name)
-            }
+          
         }
         setTmpCentang(tmpDataCentang)
         setGetDataProduct(tmpDataBaru)

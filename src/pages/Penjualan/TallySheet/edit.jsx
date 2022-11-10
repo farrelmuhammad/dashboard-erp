@@ -411,13 +411,14 @@ const EditTally = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/tally_sheets_available_purchase_returns?include_tally_sheet_sales_orders=${id}&kode=${query}&id_pemasok=${supplier}`, {
+            const res = await axios.get(`${Url}/tally_sheets_available_purchase_returns?include_tally_sheet_purchase_returns=${id}&kode=${query}&id_pemasok=${supplier}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
             let tmp = []
+            console.log(res.data)
             for (let i = 0; i < res.data.length; i++) {
                 for (let x = 0; x < product.length; x++) {
 

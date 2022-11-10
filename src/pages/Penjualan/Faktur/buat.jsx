@@ -779,14 +779,15 @@ const BuatFaktur = () => {
                         let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
                         tmpDataCentang.splice(idxHapus, 1)
                     }
+                    else if (tmpDataBaru[i].statusCek == true) {
+                        tmpDataCentang.push(tmpDataBaru[i].detail.code)
+                    }
                 }
                 else {
                     tmpDataBaru.push(getDataProduct[i])
                 }
 
-                if (tmpDataBaru[i].statusCek == true) {
-                    tmpDataCentang.push(tmpDataBaru[i].detail.code)
-                }
+              
             }
             setGetDataProduct(tmpDataBaru)
             // setIdTandaTerima(idTerima);
@@ -804,14 +805,15 @@ const BuatFaktur = () => {
                         let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
                         tmpDataCentang.splice(idxHapus, 1)
                     }
+                    else if (tmpDataBaru[i].statusCek == true) {
+                        tmpDataCentang.push(tmpDataBaru[i].detail.code)
+                    }
                 }
                 else {
                     tmpDataBaru.push(getDataSurat[i])
                 }
 
-                if (tmpDataBaru[i].statusCek == true) {
-                    tmpDataCentang.push(tmpDataBaru[i].detail.code)
-                }
+                
             }
             setGetDataSurat(tmpDataBaru)
         }

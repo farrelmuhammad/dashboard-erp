@@ -68,7 +68,7 @@ const PelunasanTable = () => {
                         code: getData[i].code,
                         date: getData[i].date,
                         customer: getData[i].customer.name ? getData[i].customer.name : <div className='text-center'>'-'</div>,
-                        total: getData[i].total,
+                        total: getData[i].paid,
                         status: getData[i].status
                     })
                 }
@@ -415,7 +415,7 @@ const PelunasanTable = () => {
             sortDirections: ['descend', 'ascend'],
             ...getColumnSearchProps('total'),
             render: (text) => {
-                return < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.', ',')} key="diskon" />
+                return < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp ' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.', ',')} key="diskon" />
             }
         },
         {
