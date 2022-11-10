@@ -216,7 +216,7 @@ const BuatPesananPembelian = () => {
             document.getElementById('ppn').style.display = "flex";
         }
 
-        axios.get(`${Url}/suppliers?grup=${grup}`, {
+        axios.get(`${Url}/suppliers?grup=${grup}&status=Active`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
