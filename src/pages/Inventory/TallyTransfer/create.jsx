@@ -936,7 +936,7 @@ const CreateTallyTransfer = () => {
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
-    }, [query, supplier])
+    }, [query, warehouse])
 
     const handleCheck = (event, indexTransaksi) => {
         console.log(sumber,"ssss")
