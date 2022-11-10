@@ -36,13 +36,13 @@ export const DetailSuratJalan = () => {
     const [beCust, setbeCust] = useState("");
     const [beSup, setbeSup] = useState("")
 
-    const[kel1, setKel1] = useState('')
+    const [kel1, setKel1] = useState('')
     const [kec1, setKec1] = useState('')
     const [kota1, setKota1] = useState('')
     const [kodepos1, setKodePos1] = useState('')
 
 
-    const[kel2, setKel2] = useState('')
+    const [kel2, setKel2] = useState('')
     const [kec2, setKec2] = useState('')
     const [kota2, setKota2] = useState('')
     const [kodepos2, setKodePos2] = useState('')
@@ -134,7 +134,7 @@ export const DetailSuratJalan = () => {
 
                     setSumber('Retur')
                 }
-                
+
                 setVehicle(getData.vehicle)
                 setSender(getData.sender)
                 setNotes(getData.notes)
@@ -151,7 +151,7 @@ export const DetailSuratJalan = () => {
                 setKota2(getData.recipient_address.city)
                 setKodePos2(getData.recipient_address.postal_code)
 
-console.log(kel2)
+                console.log(kel2)
 
                 console.log(getData)
                 console.log(getData.delivery_note_details)
@@ -189,7 +189,7 @@ console.log(kel2)
                 //     setAddress(getData.supplier_address.address)
                 //     setSumber('Retur')
                 // }
-                
+
                 // setVehicle(getData.vehicle)
                 // setSender(getData.sender)
                 // setNotes(getData.notes)
@@ -211,7 +211,7 @@ console.log(kel2)
             });
     }
 
-    
+
     useEffect(() => {
         getRecipientName()
     }, [recipientID])
@@ -337,83 +337,83 @@ console.log(kel2)
                                     <div style={{ fontSize: "10px", marginTop: "-5px" }}>NO. {code}</div>
                                 </div>
 
-                <div className='mt-4 mb-1 col d-flex justify-content-center '  style={{ fontSize: "12px", width:"100%" }}>
-                      <div className='col-5'>
-                            <div className="d-flex flex-row">
-                                    <label className='col-4'>Tanggal</label>
-                                    <div className='col-4'> : {date}</div>
-                            </div>
+                                <div className='mt-4 mb-1 col d-flex justify-content-center ' style={{ fontSize: "12px", width: "100%" }}>
+                                    <div className='col-5'>
+                                        <div className="d-flex flex-row">
+                                            <label className='col-4'>Tanggal</label>
+                                            <div className='col-4'> : {date}</div>
+                                        </div>
 
-                                    {delivered === true ?
-                                                    <>
-                                                   <div className="d-flex flex-row">
-                                                        <label className='col-4'>Kepada Yth.</label>
-                                                            <div className='col-4'>
-                                                                 : {recipient}
-                                                            </div> 
+                                        {delivered === true ?
+                                            <>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-4'>Kepada Yth.</label>
+                                                    <div className='col-4'>
+                                                        : {recipient}
                                                     </div>
-                                                    {/* <div className="d-flex flex-row">
+                                                </div>
+                                                {/* <div className="d-flex flex-row">
                                                         <label className='col-8'>Alamat</label>
                                                                 <div>:</div>
                                                                 <div className='col-12' style={{overflowWrap:"break-word", maxWidth:"260px", marginLeft:"3px"}}> {recipientAdd}  </div>
                                                     </div> */}
-                                             </>
-                                                : 
-                                              <>
-                                                    <div className="d-flex flex-row">
-                                                                <label className='col-4'>Kepada Yth.</label>
-                                                                {
-                
-                                                                    sumber === 'SO' ?
-                                                                        beCust == 'Lainnya' ? 
-                                                                        <div className='col-4'>
-                                                                            : {customer}
-                                                                        </div>  : 
-                                                                           <div className='col-6'>
-                                                                           : {beCust} {customer}
-                                                                       </div> 
-                                                                        :
-                                                                        beSup == 'Lainnya' ? 
-                                                                        <div className='col-4'>
-                                                                            :  {supplier}
-                                                                        </div> :
-                                                                          <div className='col-4'>
-                                                                          : {beSup} {supplier}
-                                                                      </div>
-                                                                }
+                                            </>
+                                            :
+                                            <>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-4'>Kepada Yth.</label>
+                                                    {
 
-                                                            </div>
-                                                            {/* <div className="d-flex flex-row">
+                                                        sumber === 'SO' ?
+                                                            beCust == 'Lainnya' ?
+                                                                <div className='col-4'>
+                                                                    : {customer}
+                                                                </div> :
+                                                                <div className='col-6'>
+                                                                    : {beCust} {customer}
+                                                                </div>
+                                                            :
+                                                            beSup == 'Lainnya' ?
+                                                                <div className='col-4'>
+                                                                    :  {supplier}
+                                                                </div> :
+                                                                <div className='col-4'>
+                                                                    : {beSup} {supplier}
+                                                                </div>
+                                                    }
+
+                                                </div>
+                                                {/* <div className="d-flex flex-row">
                                                                 <label className='col-8'>Alamat</label>
                                                                 <div>:</div>
                                                                 <div className='col-12' style={{overflowWrap:"break-word", maxWidth:"260px", marginLeft:"3px"}}> {address}  </div>
                                                             </div> */}
-                                              </>
-                                                        }
-                     
-                          
-                      </div>
-                      <div className='col-6'>
-                        {
-                            delivered == true? 
-                            <div className="d-flex flex-row">
-                            <label className='col-3'>Alamat</label>
-                                    <div>:</div>
-                                    <div className='col-9' style={{overflowWrap:"break-word", maxWidth:"275px", marginLeft:"3px"}}>
-                                         {recipientAdd}, Kel. {kel2}, Kec. {kec2}, Kota {kota2} {kodepos2}
+                                            </>
+                                        }
+
+
                                     </div>
-                        </div>
-                         :
-                           <div className="d-flex flex-row">
-                           <label className='col-3'>Alamat</label>
-                           <div>:</div>
-                           <div className='col-9' style={{overflowWrap:"break-word", maxWidth:"275px", marginLeft:"3px"}}> 
-                           {address}, Kel. {kel1}, Kec. {kec1}, Kota {kota1} {kodepos1}
-                           </div>
-                       </div>
-                        }
-                  
-                            {/* <div className="d-flex flex-row">
+                                    <div className='col-6'>
+                                        {
+                                            delivered == true ?
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-3'>Alamat</label>
+                                                    <div>:</div>
+                                                    <div className='col-9' style={{ overflowWrap: "break-word", maxWidth: "275px", marginLeft: "3px" }}>
+                                                        {recipientAdd}, Kel. {kel2}, Kec. {kec2}, Kota {kota2} {kodepos2}
+                                                    </div>
+                                                </div>
+                                                :
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-3'>Alamat</label>
+                                                    <div>:</div>
+                                                    <div className='col-9' style={{ overflowWrap: "break-word", maxWidth: "275px", marginLeft: "3px" }}>
+                                                        {address}, Kel. {kel1}, Kec. {kec1}, Kota {kota1} {kodepos1}
+                                                    </div>
+                                                </div>
+                                        }
+
+                                        {/* <div className="d-flex flex-row">
                                 <label className='col-3'>Kendaraan</label>
                                 {
                                     vehicle === null ? 
@@ -423,12 +423,12 @@ console.log(kel2)
                                
                             </div>
                          */}
-                          
-                      </div>
-                      <div>
-                        
-                      </div>
-                  </div>
+
+                                    </div>
+                                    <div>
+
+                                    </div>
+                                </div>
 
                             </tr>
                         </thead>
@@ -438,13 +438,13 @@ console.log(kel2)
                                 <td>
 
                                     <div className="page" style={{ lineHeight: "3" }}>
-                                
+
                                         <div className=' mt-2 ps-3 pe-3' >
-                                            {vehicle === null ? 
-                                            <div  className='align-items-start' style={{fontSize:"14px"}}>Dengan kendaraan - No:..................................................................... kami kirim barang - barang tersebut di bawah ini: </div> :
-                                            <div  className='align-items-start' style={{fontSize:"14px"}}>Dengan kendaraan {vehicle} No:............................................................ kami kirim barang - barang tersebut di bawah ini: </div>
-                                        }
-                                        
+                                            {vehicle === null ?
+                                                <div className='align-items-start' style={{ fontSize: "14px" }}>Dengan kendaraan - No:..................................................................... kami kirim barang - barang tersebut di bawah ini: </div> :
+                                                <div className='align-items-start' style={{ fontSize: "14px" }}>Dengan kendaraan {vehicle} No:............................................................ kami kirim barang - barang tersebut di bawah ini: </div>
+                                            }
+
                                             {/* <Table style={{fontSize: "10px", width: "100%", pageBreakAfter:"auto", backgroundColor:"white"}}
                         bordered
                         pagination={false}
@@ -454,7 +454,7 @@ console.log(kel2)
                         onChange={(e) => setProduct(e.target.value)}
 
                     /> */}
-                  
+
                                             <table style={{ fontSize: "10px", width: "100%" }}>
                                                 <tr className='text-center border' style={{ height: "50px" }}>
                                                     <th width="50px" className='border' >No</th>
@@ -624,29 +624,29 @@ console.log(kel2)
                                 </select>
                             </div>
                         </div>
-                     
+
                         {delivered === true ?
-                        <>
-                            <div className="row mb-3">
-                                <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
+                            <>
+                                <div className="row mb-3">
+                                    <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Penerima</label>
                                     <div className="col-sm-7">
                                         <select disabled="true" id="PelangganSelect" className="form-select">
                                             <option>{recipient}</option>
                                         </select>
                                     </div>
-                            </div>
+                                </div>
 
-                        <div className="row mb-3">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Alamat Penerima</label>
-                            <div className="col-sm-7">
-                                <select disabled="true" id="PelangganSelect" className="form-select">
-                                    <option>{recipientAdd}</option>
-                                </select>
-                            </div>
-                        </div>
-                        </>
-                        : 
-                     null
+                                <div className="row mb-3">
+                                    <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Alamat Penerima</label>
+                                    <div className="col-sm-7">
+                                        <select disabled="true" id="PelangganSelect" className="form-select">
+                                            <option>{recipientAdd}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </>
+                            :
+                            null
                         }
 
                     </div>

@@ -108,6 +108,8 @@ const EditSuratJalan = () => {
     const [supplier, setSupplier] = useState("");
     const [supplierName, setSupplierName] = useState("");
     const [sumber, setSumber] = useState("");
+    const [status, setStatus] = useState("");
+    const [delivered, setDelivered] = useState('')
     const [address, setAddress] = useState("");
     const [product, setProduct] = useState('');
     const [idTallySheet, setIdTallySheet] = useState([]);
@@ -150,6 +152,8 @@ const EditSuratJalan = () => {
                     setAddressId(getData.customer_address.id)
                     setSelectedAddress(getData.customer_address)
                     setSumber('SO')
+                    setDelivered(getData.is_delivered)
+
                 }
                 else if (getData.supplier) {
                     setSupplier(getData.supplier.id)
@@ -157,8 +161,10 @@ const EditSuratJalan = () => {
                     setAddressId(getData.supplier_address.id)
                     setSelectedSupplier(getData.supplier)
                     setSumber('Retur')
-                }
+                    setDelivered(true)
 
+                }
+                setStatus(getData.status)
                 setProduct(getData.delivery_note_details)
                 let tmp = []
                 for (let i = 0; i < getData.delivery_note_details.length; i++) {
@@ -873,6 +879,21 @@ const EditSuratJalan = () => {
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                             />
+                        </div>
+                        <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Status</label>
+                            <div className="col-sm-7 p-2">
+                                {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : <Tag color="red">{status}</Tag>}
+                            </div>
+                        </div>
+                        <div className="row mb-3">
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Status Pengiriman</label>
+                            <div className="col-sm-7 p-2">
+                                {delivered === true ?
+                                    <Tag color="green">Sudah Diterima</Tag>
+                                    : <Tag color="red">Belum Diterima</Tag>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>

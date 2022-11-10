@@ -110,9 +110,11 @@ const EditFaktur = () => {
     // const auth.token = jsCookie.get("auth");
     const auth = useSelector(state => state.auth);
     const [date, setDate] = useState(null);
+    const [statusUbah, setStatusUbah] = useState(false);
     const [code, setCode] = useState('');
     const [transaksi, setTransaksi] = useState('');
     const [fakturType, setFakturType] = useState('');
+    const [tmpCentang, setTmpCentang] = useState([]);
     const [description, setDescription] = useState('');
     const [address, setAddress] = useState("");
     const [customer, setCustomer] = useState("");
@@ -314,7 +316,7 @@ const EditFaktur = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?nama_alias=${query}&id_penerima=${customer}`, {
+            const res = await axios.get(`${Url}/sales_invoices_available_delivery_notes?include_sales_invoice_delivery_notes=${id}&kode=${query}&id_penerima=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -324,10 +326,36 @@ const EditFaktur = () => {
 
             let tmp = []
             for (let i = 0; i < res.data.length; i++) {
-                tmp.push({
-                    detail: res.data[i],
-                    statusCek: false
-                });
+                if (statusUbah) {
+                    for (let i = 0; i < res.data.length; i++) {
+                        if (tmpCentang.indexOf(res.data[i].code) >= 0) {
+                            tmp.push({
+                                detail: res.data[i],
+                                statusCek: true
+                            });
+                        }
+                    }
+                    for (let i = 0; i < res.data.length; i++) {
+                        if (tmpCentang.indexOf(res.data[i].code) < 0) {
+                            tmp.push({
+                                detail: res.data[i],
+                                statusCek: false
+                            });
+                        }
+                    }
+                }
+                // jika belum diubah samsek 
+                else {
+                    if (res.data[i].is_checked) {
+                        tmp.push({
+                            detail: res.data[i],
+                            statusCek: true
+                        });
+                        setTmpCentang([...tmpCentang, res.data[i].code]);
+                    }
+                }
+
+
             }
             setGetDataSurat(tmp);
         };
@@ -921,22 +949,33 @@ const EditFaktur = () => {
     });
 
     const handleCheck = (event, index) => {
+        setStatusUbah(true)
         setLoadingTable(true)
         let tmpData = [];
         let tmpDataBaru = [];
+        let tmpDataCentang = [...tmpCentang]
         let idTerima = [];
 
         // pengecekan centang
         if (sumber == 'SO') {
             for (let i = 0; i < getDataProduct.length; i++) {
+
                 if (i == index) {
                     tmpDataBaru.push({
                         detail: getDataProduct[i].detail,
                         statusCek: !getDataProduct[i].statusCek
                     })
+                    if (!tmpDataBaru[i].statusCek) {
+                        let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
+                        tmpDataCentang.splice(idxHapus, 1)
+                    }
                 }
                 else {
                     tmpDataBaru.push(getDataProduct[i])
+                }
+
+                if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.code)
                 }
             }
             setGetDataProduct(tmpDataBaru)
@@ -950,14 +989,24 @@ const EditFaktur = () => {
                         detail: getDataSurat[i].detail,
                         statusCek: !getDataSurat[i].statusCek
                     })
+                    if (!tmpDataBaru[i].statusCek) {
+                        let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
+                        tmpDataCentang.splice(idxHapus, 1)
+                    }
                 }
                 else {
                     tmpDataBaru.push(getDataSurat[i])
+                }
+
+                if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.code)
                 }
             }
             setGetDataSurat(tmpDataBaru)
             // setIdTandaTerima(idTerima);
         }
+
+        setTmpCentang(tmpDataCentang)
 
         if (tmpDataBaru[index].statusCek) {
             // mencari id 

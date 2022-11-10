@@ -1109,14 +1109,14 @@ const BuatPesanan = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Customer</label>
                             <div className="col-sm-7">
-                                <ReactSelect
+                                <AsyncSelect
                                     placeholder="Pilih Customer..."
                                     cacheOptions
                                     defaultOptions
                                     value={selectedValue}
-                                    getOptionLabel={(e) => e.label}
-                                    getOptionValue={(e) => e.value}
-                                    options={dataCustomer}
+                                    getOptionLabel={(e) => e.name}
+                                    getOptionValue={(e) => e.id}
+                                    loadOptions={loadOptionsCustomer}
                                     onChange={handleChangeCustomer}
                                 />
                             </div>
