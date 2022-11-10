@@ -234,7 +234,7 @@ const EditPelunasan = () => {
                         sales_invoice_id: data[i].sales_invoice_id,
                         sales_invoice_payment_id: data[i].sales_invoice_payment_id,
                         sales_invoice_total_payment: data[i].sales_invoice_total_payment,
-                        total: Number(data[i].total).toString().replace('.', ',')
+                        total: Number(data[i].sales_invoice_total_payment).toString().replace('.', ',')
                     })
                     // tmpCentang[i] = data[i].sales_invoice_code
                 }
@@ -288,7 +288,7 @@ const EditPelunasan = () => {
         console.log(hasilValue)
         let tmpData = [];
         for (let i = 0; i < dataTampil.length; i++) {
-            let sisaBaru =Number(dataTampil[i].sisaNoEDit.toString().replace(',', '.')) -  Number(hasilValue.toString().replace(',', '.'));
+            let sisaBaru = Number(dataTampil[i].sisaNoEDit.toString().replace(',', '.')) - Number(hasilValue.toString().replace(',', '.'));
             console.log(sisaBaru)
             if (i == index) {
                 tmpData.push({
@@ -442,10 +442,10 @@ const EditPelunasan = () => {
         userData.append("bagan_akun", COA);
         userData.append("pelanggan", customer);
         userData.append("status", "Submitted");
-        product.map((p, i) => {
+        dataTampil.map((p, i) => {
             console.log(p);
-            userData.append("id_faktur_penjualan[]", p.id);
-            userData.append("terbayar[]", jumlah[i]);
+            userData.append("id_faktur_penjualan[]", p.sales_invoice_id);
+            userData.append("terbayar[]", p.bayar);
 
             // userData.append("terbayar[]", p.pays);
         });
@@ -470,7 +470,7 @@ const EditPelunasan = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/pesanan");
+                navigate("/pelunasan");
             })
             .catch((err) => {
                 if (err.response) {
@@ -500,10 +500,12 @@ const EditPelunasan = () => {
         userData.append("pelanggan", customer);
         userData.append("bagan_akun", COA);
         userData.append("status", "Draft");
-        dataTampil.map((p) => {
+        dataTampil.map((p, i) => {
             console.log(p);
-            userData.append("id_faktur_penjualan[]", p.sales_invoice_id)
-            userData.append("terbayar[]", p.total);
+            userData.append("id_faktur_penjualan[]", p.sales_invoice_id);
+            userData.append("terbayar[]", p.bayar);
+
+            // userData.append("terbayar[]", p.pays);
         });
         // userData.append("termasuk_pajak", checked);
 
@@ -523,7 +525,7 @@ const EditPelunasan = () => {
                     ` Masuk dalam list`,
                     "success"
                 );
-                navigate("/pesanan");
+                navigate("/pelunasan");
             })
             .catch((err) => {
                 if (err.response) {
@@ -733,27 +735,35 @@ const EditPelunasan = () => {
                 />
 
                 <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2" role="group" aria-label="Basic mixed styles example">
-                    <button
-                        type="button"
-                        className="btn btn-success rounded m-1"
-                        value="Draft"
-                        onClick={handleDraft}
-                    >
-                        Simpan
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-primary rounded m-1"
-                        value="Submitted"
-                        onClick={handleSubmit}
-                    >
-                        Submit
-                    </button>
-                    {/* <button
-                        type="button"
-                        className="btn btn-warning rounded m-1">
-                        Cetak
-                    </button> */}
+                    {
+                        status == 'Submitted' ?
+                            <button
+                                type="button"
+                                className="btn btn-success rounded m-1"
+                                value="Draft"
+                                onClick={handleSubmit}
+                            >
+                                Simpan
+                            </button> :
+                            <>
+                                <button
+                                    type="button"
+                                    className="btn btn-success rounded m-1"
+                                    value="Draft"
+                                    onClick={handleDraft}
+                                >
+                                    Simpan
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary rounded m-1"
+                                    value="Submitted"
+                                    onClick={handleSubmit}
+                                >
+                                    Submit
+                                </button>
+                            </>
+                    }
                 </div>
             </PageHeader>
         </>
