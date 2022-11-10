@@ -686,7 +686,7 @@ export const DetailTallySheet = () => {
                         </div> */}
                     </div>
                     {/* <div className="col button-add text-end me-3">
-                        <button type="button" onClick={handlePrint} class="btn btn-warning rounded m-1">
+                        <button type="button" onClick={handlePrint} className="btn btn-warning rounded m-1">
                             Cetak
                         </button>
                     </div> */}

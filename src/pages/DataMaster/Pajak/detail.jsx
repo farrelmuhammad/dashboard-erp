@@ -53,62 +53,45 @@ export const DetailPajak = () => {
                 <div className="row mb-3">
                     <label htmlFor="inputKode3" className="col-sm-2 col-form-label">Kode</label>
                     <div className="col-sm-10">
-                        <Input
-                            size="large"
-                            value={data.code}
-                            style={{
-                                fontWeight: "bold",
-                            }}
-                            disabled
-                        />
-                        {/* <input
+                        <input
                             disabled="true"
                             type="kode"
                             className="form-control"
                             id="inputKode3"
                             value={data.code}
-                        /> */}
+                        />
                     </div>
                 </div>
                 <div className="row mb-3">
                     <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Nama Pajak</label>
                     <div className="col-sm-10">
-                        <Input
-                            size="large"
-                            value={data.type}
-                            style={{
-                                fontWeight: "bold",
-                            }}
-                            disabled
-                        />
-                        {/* <input
+                        <input
                             disabled="true"
                             type="Nama"
                             className="form-control"
                             id="inputNama3"
                             value={data.type}
-                        /> */}
+                        />
                     </div>
                 </div>
                 <div className="row mb-3">
                     <label htmlFor="inputNama3" className="col-sm-2 col-form-label">Persentase</label>
-                    <div className="col-sm-5">
-                        <InputNumber
-                            size="large"
-                            addonAfter="%"
-                            defaultValue={0}
-                            value={data.rate}
-                            disabled
-                        // formatter={(value) => { convertToRupiahTabel(`${value} %`) }}
-                        // onChange={onChange}
-                        />
-                        {/* <input
-                            disabled="true"
-                            type="Nama"
-                            className="form-control"
-                            id="inputNama3"
-                            value={data.rate}
-                        /> */}
+                    <div className="col-sm-2">
+                        <div className="input-group">
+                            <input
+                                type='number'
+                                className="form-control"
+                                step='0.01'
+                                // value='0.00'
+                                defaultValue={data.rate}
+                                addonAfter="%"
+                                placeholder='0.00'
+                                disabled
+                            />
+                            <div className="input-group-append">
+                                <span className="input-group-text">%</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </PageHeader>

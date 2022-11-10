@@ -5,7 +5,7 @@ import Url from '../../../Config'
 import axios from 'axios'
 import TallyTable from '../../../components/moleculles/TallyTable'
 import { PlusOutlined } from '@ant-design/icons'
-import { Button } from 'antd'
+import { Button, PageHeader } from 'antd'
 import TallyTransferTable from '../../../components/moleculles/TallyTransferTable'
 import { useSelector } from 'react-redux'
 
@@ -29,38 +29,62 @@ const TallySheetPembelian = () => {
 
   if (userAccess) {
     return (
-      <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
-        <div className="row">
-          <div className="col text-title text-start">
-            <h3 className="title fw-bold">Daftar Tally Transfer</h3>
-          </div>
-          {userAccess?.map(d => {
-            if (d.ability_name === "create-tax") {
-              return (
-                <div className="col button-add text-end me-3">
+      <>
+        {userAccess?.map(d => {
+          if (d.ability_name === "create-product") {
+            return (
+              <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                title="Daftar Tally Transfer"
+                extra={[
                   <Link to="/tallytransfer/create">
                     <Button
                       type="primary"
                       icon={<PlusOutlined />}
                     />
-                  </Link>
-                </div>
-              )
+                  </Link>,
+                ]}
+              >
+                <TallyTransferTable />
+              </PageHeader>
+            )
+          }
+        })}
+      </>
+      // <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
+      //   <div className="row">
+      //     <div className="col text-title text-start">
+      //       <h3 className="title fw-bold">Daftar Tally Transfer</h3>
+      //     </div>
+      //     {userAccess?.map(d => {
+      //       if (d.ability_name === "create-tax") {
+      //         return (
+      //           <div className="col button-add text-end me-3">
+      //             <Link to="/tallytransfer/create">
+      //               <Button
+      //                 type="primary"
+      //                 icon={<PlusOutlined />}
+      //               />
+      //             </Link>
+      //           </div>
+      //         )
 
-              
-            }
-          })}
-        </div>
-        <TallyTransferTable />
-      </div>
+
+      //       }
+      //     })}
+      //   </div>
+      //   <TallyTransferTable />
+      // </div>
     )
   } else {
-    <div>
-      <div className="text-title text-start">
-        <h3 className="title fw-bold">Daftar Tally Transfer</h3>
-      </div>
+    <PageHeader
+      ghost={false}
+      className="bg-body rounded mb-2"
+      title="Daftar Tally Transfer"
+    >
       <TallyTransferTable />
-    </div>
+    </PageHeader>
   }
 }
 

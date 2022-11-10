@@ -4,7 +4,7 @@ import jsCookie from "js-cookie";
 import Url from "../../../Config";
 import axios from "axios";
 import GoodsRequestTable from "../../../components/moleculles/GoodsRequestTable";
-import { Button } from 'antd'
+import { Button, PageHeader } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { useSelector } from "react-redux";
 
@@ -29,42 +29,39 @@ const GoodsRequest = () => {
 
   if (userAccess) {
     return (
-      <div className="container   p-3 mb-5 bg-body rounded d-flex flex-column">
-        <div className="row">
-          <div className="col text-title text-start">
-            <h5 className="title fw-bold">Daftar Permintaan Barang</h5>
-          </div>
-          {userAccess?.map(d => {
-            if (d.ability_name === "create-adjustment") {
-              return (
-                <div className="col button-add text-end me-3">
+      <>
+        {userAccess?.map(d => {
+          if (d.ability_name === "create-adjustment") {
+            return (
+              <PageHeader
+                ghost={false}
+                className="bg-body rounded mb-2"
+                title="Daftar Permintaan Barang"
+                extra={[
                   <Link to="/permintaanbarang/create">
                     <Button
                       type="primary"
                       icon={<PlusOutlined />}
                     />
-                  </Link>
-                </div>
-              )
-            }
-          })}
-        </div>
-        {userAccess?.map(d => {
-          if (d.ability_name === "create-adjustment") {
-            return (
-              <GoodsRequestTable />
+                  </Link>,
+                ]}
+              >
+                <GoodsRequestTable />
+              </PageHeader>
             )
           }
         })}
-      </div>
+      </>
     )
   } else {
-    <div>
-      <div className="text-title text-start">
-        <h3 className="title fw-bold">Daftar Permintaan Barang</h3>
-      </div>
+    <PageHeader
+      ghost={false}
+      className="bg-body rounded mb-2"
+      title="Daftar Permintaan Barang"
+
+    >
       <GoodsRequestTable />
-    </div>
+    </PageHeader>
   }
 };
 
