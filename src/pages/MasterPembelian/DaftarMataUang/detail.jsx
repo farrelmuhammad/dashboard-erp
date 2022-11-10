@@ -16,9 +16,22 @@ const DetailMataUang = () => {
   const auth = useSelector(state => state.auth);
   const { id } = useParams();
   const [data, setData] = useState([]);
+  const [HU, setHU] = useState('')
+  const [UMP,setUMP] = useState()
+  const [cn, setCN] = useState()
+  const [sk, setSK] = useState()
+
+  const [dataHU, setDataHU] = useState('')
+  const [dataUMP, setDataUMP] = useState('')
+  const [dataCN, setDataCN] = useState('')
+  const [dataSK, setDataSK] = useState('')
 
   useEffect(() => {
     getDetailSupplier()
+    getDataCOAName(HU)
+    getDataCOAName2(UMP)
+    getDataCOAName3(cn)
+    getDataCOAName4(sk)
   }, []);
 
   const getDetailSupplier = async () => {
@@ -30,6 +43,15 @@ const DetailMataUang = () => {
     })
     .then((res) => {
       setData(res.data.data);
+      console.log(res.data.data)
+
+      setHU(res.data.data[0].accounts_payable)
+      setUMP(res.data.data[0].prepaid_expenses)
+      setCN(res.data.data[0].credit_note_account)
+      setSK(res.data.data[0].exchange_rate_difference)
+
+      
+      console.log(res.data.data[0].prepaid_expenses)
     })
     .catch((err) => {
       // Jika Gagal
@@ -37,6 +59,77 @@ const DetailMataUang = () => {
     });
   }
 
+  const getDataCOAName = async (idCOA) => {
+  await  axios.get(`${Url}/chart_of_accounts?id=${idCOA}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    })
+    .then((res) => {
+      setDataHU(res.data.data[0].name)
+     // setData(res.data.data);
+     // console.log(res.data.data[0].name)
+    })
+    .catch((err) => {
+      // Jika Gagal
+      console.log(err);
+    });
+  }
+
+  const getDataCOAName2 = async (idCOA) => {
+    await  axios.get(`${Url}/chart_of_accounts?id=${idCOA}`, {
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${auth.token}`,
+        },
+      })
+      .then((res) => {
+        setDataUMP(res.data.data[0].name)
+       // setData(res.data.data);
+       // console.log(res.data.data[0].name)
+      })
+      .catch((err) => {
+        // Jika Gagal
+        console.log(err);
+      });
+    }
+
+    const getDataCOAName3 = async (idCOA) => {
+      await  axios.get(`${Url}/chart_of_accounts?id=${idCOA}`, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${auth.token}`,
+          },
+        })
+        .then((res) => {
+          setDataCN(res.data.data[0].name)
+         // setData(res.data.data);
+         // console.log(res.data.data[0].name)
+        })
+        .catch((err) => {
+          // Jika Gagal
+          console.log(err);
+        });
+      }
+
+      const getDataCOAName4 = async (idCOA) => {
+        await  axios.get(`${Url}/chart_of_accounts?id=${idCOA}`, {
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+          })
+          .then((res) => {
+            setDataSK(res.data.data[0].name)
+           // setData(res.data.data);
+           // console.log(res.data.data[0].name)
+          })
+          .catch((err) => {
+            // Jika Gagal
+            console.log(err);
+          });
+        }
 
   if(data) {
       return (
@@ -104,15 +197,14 @@ const DetailMataUang = () => {
                 Akun Hutang Usaha
               </label>
               <div className="col-sm-10">
-              {data.map((d) => (
-                  <input
-                    type="Nama"
-                    className="form-control"
-                    id="inputNama3"
-                    disabled
-                    value={d.accounts_payable}
-                  />
-              ))}
+              <input
+              type="Nama"
+              className="form-control"
+              id="inputNama3"
+              disabled
+              value={dataHU}
+              
+              />
               </div>
             </div>
 
@@ -121,15 +213,14 @@ const DetailMataUang = () => {
                 Akun Uang Muka Pembelian
               </label>
               <div className="col-sm-10">
-              {data.map((d) => (
+            
                   <input
                     type="Nama"
                     className="form-control"
                     id="inputNama3"
                     disabled
-                    value={d.prepaid_expenses}
-                  />
-              ))}
+                    value={dataUMP}
+              />
               </div>
             </div>
 
@@ -138,15 +229,15 @@ const DetailMataUang = () => {
                 Akun Credit Note
               </label>
               <div className="col-sm-10">
-              {data.map((d) => (
+            
                   <input
                     type="Nama"
                     className="form-control"
                     id="inputNama3"
                     disabled
-                    value={d.credit_note_account}
+                    value={dataCN}
                   />
-              ))}
+            
               </div>
             </div>
 
@@ -155,15 +246,15 @@ const DetailMataUang = () => {
                 Akun Selisih Kurs
               </label>
               <div className="col-sm-10">
-              {data.map((d) => (
+            
                   <input
                     type="Nama"
                     className="form-control"
                     id="inputNama3"
                     disabled
-                    value={d.exchange_rate_difference}
+                    value={dataSK}
                   />
-              ))}
+             
               </div>
             </div>
            

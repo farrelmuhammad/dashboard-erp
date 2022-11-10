@@ -54,8 +54,10 @@ const BuatMataUang = () => {
 
     userData.append("nama", name);
     userData.append("deskripsi", keterangan);
-   // userData.append("hutang_usaha",hutangUsaha);
- //  userData.append("")
+    userData.append("accounts_payable",hutangUsaha);
+    userData.append("prepaid_expenses",uangMukaPembelian);
+    userData.append("credit_note_account",creditNote)
+    userData.append("exchange_rate_difference",selisihKurs);
 
     axios({
       method: "post",

@@ -31,7 +31,6 @@ export const DetailProduk = () => {
 
     useEffect(() => {
         getDetailProducts();
-        console.log(brands)
     }, [])
 
     const getDetailProducts = async () => {
@@ -44,35 +43,36 @@ export const DetailProduk = () => {
             .then((res) => {
                 const getData = res.data.data[0]
                 console.log(getData)
-                console.log(getData.brand.name);
-                setBrands(getData.brand.name)
-                setGrade(getData.grade.name)
+               // console.log(res.data.data[0].brand.name);
+                setBrands(getData.brand ? getData.brand.name : "")
+                setUnit(getData.unit)
                 setCode(getData.code)
                 setName(getData.name || "")
                 setAlias(getData.alias_name || "")
                 setGroup(getData._group || "")
                 setPieces(getData.piece.name || "")
                 setCategory(getData.category.name || "")
-                setGrade(getData.grade.name || "")
-                setType(getData.type.name || "")
-                setBrands(getData.brand.name)
-                setUnit(getData.unit)
+                setGrade(getData.grade ? getData.grade.name : "")
+                setType(getData.type ? getData.type.name :  "")
+                //console.log(res.data.data[0].brand.name);
+               
+                // setUnit(getData.unit)
                 setPackaging(getData.packaging_type || "")
                 setBuy_price(getData.purchase_price || "")
                 setSell_price(getData.selling_price || "")
                 setDiscount(getData.discount || "")
-                setTaxes(getData.tax.type) || ""
+                setTaxes(getData.tax? getData.tax.type :  "")
                 setStatus(getData.status || "")
-                // setLoading(false)
-            
-            })
-            .catch((err) => {
-                // Jika Gagal
-                // console.log(err)
-            })
-            .finally((res) => {
                 setLoading(false)
+              
             })
+            // .catch((err) => {
+            //     // Jika Gagal
+            //     // console.log(err)
+            // })
+            // .finally((res) => {
+            //     setLoading(false)
+            // })
     }
 
     if (loading) {

@@ -639,14 +639,14 @@ const EditTallyTransfer = () => {
             key: 'box',
 
         },
-        // {
-        //     title: 'Status',
-        //     dataIndex: 'status',
-        //     align: 'center',
-        //     width: '10%',
-        //     key: 'status',
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            align: 'center',
+            width: '10%',
+            key: 'status',
 
-        // },
+        },
         {
             title: 'Action',
             dataIndex: 'action',
@@ -662,7 +662,7 @@ const EditTallyTransfer = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/tally_sheet_tf_available_goods_request?kode=${query}&warehouse_id=${warehouse}`, {
+            const res = await axios.get(`${Url}/tally_sheet_tf_available_goods_request?include_tally_sheet_goods_request=${id}&kode=${query}&warehouse_id=${warehouse}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -1445,32 +1445,40 @@ const EditTallyTransfer = () => {
                 </div>
 
                 <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
-                    <button
-                        type="button"
-                        className="btn btn-success rounded m-1"
-                        value="Draft"
-                        onChange={(e) => setStatus(e.target.value)}
-                        onClick={handleDraft}
-                        style={{ width: '100px' }}
-                    >
-                        Simpan
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-primary rounded m-1"
-                        value="Submitted"
-                        onChange={(e) => setStatus(e.target.value)}
-                        onClick={handleSubmit}
-                        style={{ width: '100px' }}
-                    >
-                        Submit
-                    </button>
-                    <button
-                        type="button"
-                        style={{ width: '100px' }}
-                        className="btn btn-warning rounded m-1">
-                        Cetak
-                    </button>
+                    {
+                        getStatus != "Submitted" ? <>
+                            <button
+                                type="button"
+                                className="btn btn-success rounded m-1"
+                                value="Draft"
+                                onChange={(e) => setStatus(e.target.value)}
+                                onClick={handleDraft}
+                                width="100px"
+                            >
+                                Simpan
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-primary rounded m-1"
+                                value="Submitted"
+                                onChange={(e) => setStatus(e.target.value)}
+                                onClick={handleSubmit}
+                                width="100px"
+                            >
+                                Submit
+                            </button></>
+                            : <>
+                                <button
+                                    type="button"
+                                    className="btn btn-success rounded m-1"
+                                    value="Draft"
+                                    onChange={(e) => setStatus(e.target.value)}
+                                    onClick={handleSubmit}
+                                    width="100px"
+                                >
+                                    Simpan
+                                </button></>
+                    }
                 </div>
                 <div style={{ clear: 'both' }}></div>
             </form>
