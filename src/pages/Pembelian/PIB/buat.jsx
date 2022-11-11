@@ -273,7 +273,7 @@ const BuatPIB = () => {
     // };
 
     useEffect(() => {
-        axios.get(`${Url}/chart_of_accounts?induk=0&kode_kategori[]=111`, {
+        axios.get(`${Url}/select_chart_of_accounts?induk=0&kode_kategori[]=111`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -485,7 +485,7 @@ const BuatPIB = () => {
 
             code: ambilCode(item.purchase_invoice_id),
             nama: item.product_name,
-            qty: Number(item.quantity).toFixed(2).replace('.', ','),
+            qty: <CurrencyFormat disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={Number(item.quantity).toFixed(2).replace('.',',')} />,
             // hrg: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.price} key="total" />,
             dsc: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.price} key="total" />,
             uangasing: <CurrencyFormat prefix={item.currency_name + ' '} disabled className='edit-disabled  text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={item.total.replace('.', ',')} key="total" />,

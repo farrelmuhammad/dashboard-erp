@@ -392,7 +392,7 @@ const BuatPelunasan = () => {
     ];
 
     function klikUbahBayar(value, index) {
-        let hasilValue = value.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "");
+        let hasilValue = value.toString().replace('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',', '.')
         console.log(hasilValue)
         let tmpData = [...product];
         for (let i = 0; i < product.length; i++) {
@@ -412,7 +412,11 @@ const BuatPelunasan = () => {
             code: item.code,
             total: <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(item.total).toFixed(2).toString().replace('.', ',')} />,
             sisa: <CurrencyFormat disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={Number(item.remains).toFixed(2).toString().replace('.', ',')} />,
-            paid: <CurrencyFormat onKeyDown={(event) => klikEnter(event)} className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={jumlah[i]} onChange={(e) => klikUbahBayar(e.target.value, i)} />
+            paid: 
+            // <CurrencyFormat className='text-center editable-input' style={{ width: "80px" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)}
+            // value={jumlah[i]} onChange={(e) => klikUbahBayar(e.target.value, i)} />
+
+            <CurrencyFormat onKeyDown={(event) => klikEnter(event)} className='text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} value={jumlah[i].toString().replace('.',',')} onChange={(e) => klikUbahBayar(e.target.value, i)} />
         })
 
         )]
@@ -621,8 +625,8 @@ const BuatPelunasan = () => {
                         Swal.fire({
                             icon: "error",
                             title: "Oops...",
-                            text: "Data belum lengkap, silahkan lengkapi datanya dan coba kembali"
-                            //text: err.response.data.error.nama,
+                            //text: "Data belum lengkap, silahkan lengkapi datanya dan coba kembali"
+                            text: err.response.data.message,
                         });
                     } else if (err.request) {
                         console.log("err.request ", err.request);
@@ -697,8 +701,8 @@ const BuatPelunasan = () => {
                         Swal.fire({
                             icon: "error",
                             title: "Oops...",
-                            text: "Data belum lengkap, silahkan lengkapi datanya dan coba kembali"
-                            //text: err.response.data.error.nama,
+                            //text: "Data belum lengkap, silahkan lengkapi datanya dan coba kembali"
+                            text: err.response.data.message,
                         });
                     } else if (err.request) {
                         console.log("err.request ", err.request);

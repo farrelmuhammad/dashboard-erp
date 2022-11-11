@@ -69,6 +69,7 @@ const DetailReturPembelian = () => {
     const [getStatus, setGetStatus] = useState()
     const [produkRetur, setProdukRetur] = useState([])
     const [mataUang, setMataUang] = useState('Rp.')
+    const [notes, setNotes] = useState('')
 
     function klikEnter(event) {
         if (event.code == "Enter") {
@@ -97,6 +98,10 @@ const DetailReturPembelian = () => {
                 if (getData.purchase_return_details[0].currency) {
 
                     setMataUang(getData.purchase_return_details[0].currency)
+                }
+
+                if(getData.notes != null){
+                    setNotes(getData.notes)
                 }
                 setLoading(false);
             })
@@ -641,12 +646,32 @@ const DetailReturPembelian = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputPassword3" className="col-sm-4 col-form-label">Catatan</label>
                             <div className="col-sm-7">
-                                <textarea
+                            {/* <>
+                                {
+                                    dataHeader.notes != null ? 
+                                    <textarea
                                     className="form-control"
                                     id="form4Example3"
                                     rows="4"
                                     disabled
                                     value={dataHeader.notes}
+                                /> :
+                                <textarea
+                                className="form-control"
+                                id="form4Example3"
+                                rows="4"
+                                disabled
+                                value={''}
+                            />
+                                }
+                                </> */}
+
+                                <textarea
+                                    className="form-control"
+                                    id="form4Example3"
+                                    rows="4"
+                                    disabled
+                                    value={notes}
                                 />
                             </div>
                         </div>

@@ -455,6 +455,13 @@ export const DetailPesananPembelian = () => {
                                                     <label className='col-8'>PURCHASED BY</label>
                                                     <div className='col-4'> : {namaPenerima} </div>
                                                 </div>
+
+                                                <div className="d-flex flex-row p-2 mt-2" style={{float:"right", alignContent:"right"}}>
+                                                    <div className='col-8'>
+                                                               {status === 'Cancelled'  ?  <Tag color="red">{status}</Tag> : null }
+                                                     </div>
+                                               </div>
+
                                             </div>
                                         </div>
                                     </div>
@@ -626,7 +633,7 @@ export const DetailPesananPembelian = () => {
                                         ghost={false}
                                         onBack={() => window.history.back()}
                                         title="Detail Pesanan"
-                                        extra={status == 'Cancelled' ? null : [
+                                        extra={[
                                             <Link to={`/pesananpembelian/edit/${id}`}>
                                                 <Button
                                                     type="primary"
@@ -648,7 +655,7 @@ export const DetailPesananPembelian = () => {
                                         ghost={false}
                                         onBack={() => window.history.back()}
                                         title="Detail Pesanan"
-                                        extra={status == 'Cancelled' ? null : [
+                                        extra={[
                                             <Tooltip title="Cetak" placement="bottom">
                                                 <Button
                                                     type="primary"

@@ -544,9 +544,14 @@ export const DetailTallySheet = () => {
                                                     style={{ resize: "none" }}
                                                 />
                                             </div>
-                                            <br />
+    
+                                        </div>
 
-
+                                        <div className='col-12'>
+                                            <div className="d-flex flex-row p-2" style={{float:"right", alignContent:"right"}}>
+                                                {getTallySheet.status === 'Cancelled'  ?  <Tag color="red">{getTallySheet.status}</Tag> : null }
+                                            </div>
+                                            <br/>
                                         </div>
 
                                     </div>

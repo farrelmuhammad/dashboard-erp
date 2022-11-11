@@ -199,13 +199,13 @@ const BuatCreditNote = () => {
                 text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
               });
         }
-        else if(!fakturId){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Faktur kosong, Silahkan Lengkapi datanya ",
-              });
-        }
+        // else if(!fakturId){
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data Faktur kosong, Silahkan Lengkapi datanya ",
+        //       });
+        // }
         else if(!nominal){
             Swal.fire({
                 icon: "error",
@@ -303,13 +303,13 @@ formData.append("nominal",nominal.replaceAll('.', '').replace(/[^0-9_,\.]+/g, ""
                 text: "Data Supplier kosong, Silahkan Lengkapi datanya ",
               });
         }
-        else if(!fakturId){
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: "Data Faktur kosong, Silahkan Lengkapi datanya ",
-              });
-        }
+        // else if(!fakturId){
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Oops...",
+        //         text: "Data Faktur kosong, Silahkan Lengkapi datanya ",
+        //       });
+        // }
         else if(!nominal){
             Swal.fire({
                 icon: "error",

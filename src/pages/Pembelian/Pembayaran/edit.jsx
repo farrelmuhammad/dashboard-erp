@@ -842,7 +842,7 @@ const EditPembayaranPembelian = () => {
                                 let sisaa = sisa.props.value
                                 let pay2 = 0; 
                                 let sisa2 = 0;
-                               if( selectedMataUang === 'IDR ' ){
+                               if( selectedMataUang === 'IDR ' || selectedMataUang === 'Rp ' ){
                                
                                 let p1 = pay.replace(',','.')
                                 totalAkhir = totalAkhir + Number(p1)    
@@ -878,7 +878,7 @@ const EditPembayaranPembelian = () => {
 
                                             {
                                                   selectedMataUang === 'IDR ' || selectedMataUang === 'Rp ' ?
-                                                  <CurrencyFormat prefix={selectedMataUang} fixedDecimalScale decimalScale={2} disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={
+                                                  <CurrencyFormat prefix={selectedMataUang} disabled className='edit-disabled text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} value={
                                                    // totalAkhir.toLocaleString(undefined, {maximumFractionDigits:2}).replace('.',',')
                                                    // parseInt(totalAkhir).toString().replace(/\B(?=(\d{2})+(?!\d))/g, ",")
                                                    // totalAkhir.toFixed(2)
