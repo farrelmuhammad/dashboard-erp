@@ -269,13 +269,18 @@ const BuatFaktur = () => {
         },
         {
             title: 'Nama Produk Alias',
-            width: '17%',
+            width: '8%',
             dataIndex: 'product_alias_name',
+        },
+        {
+            title: 'Nama Produk',
+            width: '8%',
+            dataIndex: 'product_name',
         },
         {
             title: 'Qty',
             dataIndex: 'quantity',
-            width: '12%',
+            width: '10%',
             align: 'center',
             editable: true,
         },
@@ -288,14 +293,14 @@ const BuatFaktur = () => {
         {
             title: 'Harga',
             dataIndex: 'price',
-            width: '10%',
+            width: '15%',
             align: 'center',
             editable: true,
         },
         {
             title: 'Discount',
             dataIndex: 'discount',
-            width: '18%',
+            width: '10%',
             align: 'center',
         },
         {
@@ -308,7 +313,7 @@ const BuatFaktur = () => {
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '16%',
+            width: '20%',
             align: 'center',
         },
     ];
@@ -709,18 +714,12 @@ const BuatFaktur = () => {
                     detail: subtotal2
                 })
 
-                console.log(databaru)
                 setTotal1Produk(databaru);
-
-                console.log(subTotal)
-                console.log(hasilDiskon)
-                console.log(totalPpn)
 
                 setSubTotal(subTotal)
                 setGrandTotalDiscount(totalDiscount);
                 setTotalPpn(totalPpn)
                 setGrandTotal(grandTotal);
-                console.log(grandTotal)
 
             }
 
@@ -765,6 +764,7 @@ const BuatFaktur = () => {
         let tmpDataBaru = [];
         let idTerima = [];
         let tmpDataCentang = [...tmpCentang]
+        console.log(event)
 
         // pengecekan centang
         if (sumber == 'SO') {
@@ -833,9 +833,6 @@ const BuatFaktur = () => {
                 setIdTandaTerima(idTerima);
 
             }
-
-
-
             else if (sumber == 'Surat') {
                 for (let i = 0; i < getDataSurat.length; i++) {
                     if (tmpDataBaru[i].statusCek) {
@@ -844,7 +841,6 @@ const BuatFaktur = () => {
                 }
                 setIdTandaTerima(idTerima);
             }
-
 
             console.log(idTerima)
             var strParams;
@@ -943,6 +939,9 @@ const BuatFaktur = () => {
 
                     })
             }
+
+
+
             setProduct(tmpData);
         }
         else {

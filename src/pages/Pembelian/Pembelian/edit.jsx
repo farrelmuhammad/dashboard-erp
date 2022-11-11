@@ -279,7 +279,7 @@ const EditPesananPembelian = () => {
 
 
     function ubahJumlahDiskon(diskon, index) {
-        let value = diskon.replace(',','.').replace(/[^0-9_,\.]+/g, "")
+        let value = diskon.replace(',', '.').replace(/[^0-9_,\.]+/g, "")
         console.log(value)
         let totalPerProduk = 0;
         let grandTotal = 0;
@@ -429,7 +429,7 @@ const EditPesananPembelian = () => {
         {
             title: 'Nama Produk',
             dataIndex: 'product_name',
-            width: '12%',
+            width: '8%',
             render: (text) => {
                 return {
                     props: {
@@ -449,7 +449,9 @@ const EditPesananPembelian = () => {
                 return {
                     props: {
                     },
-                    children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
+                    children:
+                        <div>{< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.', ',')} key="diskon" />}</div>
+                    // <div>{Number(text).toFixed(2).replace('.', ',')}</div>
                 };
             }
         },
@@ -463,14 +465,15 @@ const EditPesananPembelian = () => {
                     props: {
                         style: { background: "#f5f5f5" }
                     },
-                    children: <div>{text}</div>
+                    children:
+                        <div>{text}</div>
                 };
             }
         },
         {
             title: 'Harga',
             dataIndex: 'price',
-            width: '18%',
+            width: '15%',
             align: 'center',
             editable: true,
             render(text, record) {
@@ -482,7 +485,7 @@ const EditPesananPembelian = () => {
         {
             title: 'Discount',
             dataIndex: 'diskon',
-            width: '20%',
+            width: '15%',
             align: 'center',
             // editable: true,
             render: (text, record, index) => {
@@ -490,83 +493,113 @@ const EditPesananPembelian = () => {
                     {
                         getProduct[index].discount_percentage != 0 ?
                             <>
-                                <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" defaultValue={getProduct[index].discount_percentage} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" />
+                                <CurrencyFormat
+                                    className='text-center editable-input'
+                                    style={{ width: "50%" }}
+                                    thousandSeparator={'.'}
+                                    decimalSeparator={','}
+                                    onKeyDown={(event) => klikEnter(event)}
+                                    value={getProduct[index].discount_percentage}
+                                    onChange={(e) => ubahJumlahDiskon(e.target.value, index)} key="diskon"
+                                />
+
+                                {/* <input 
+                                style={{ width: "30px" }} 
+                                type="text" 
+                                className="form-control" 
+                                aria-label="Small" 
+                                defaultValue={getProduct[index].discount_percentage} 
+                                onChange={(e) => ubahJumlahDiskon(e.target.value, index)} 
+                                aria-describedby="inputGroup-sizing-sm" /> */}
                                 <div className="input-group-prepend">
-                                    <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
+                                    {/* <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}> */}
+                                    <select
+
+                                        onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
+                                        id="grupSelect"
+                                        className="form-select select-diskon"
+                                        style={{ width: "50%" }}
+                                    >
+                                        <option value="" >
+                                            Pilih
+                                        </option>
+                                        <option selected value="%" >
+                                            %
+                                        </option>
+                                        <option value="diskonuang">
+                                            {namaMataUang}
+                                        </option>
+                                    </select>
+                                    {/* </span> */}
+                                </div>
+                            </>
+
+                            : getProduct[index].fixed_discount != 0 ?
+                                <>
+                                    {
+                                        // namaMataUang === 'Rp' ?
+                                        < CurrencyFormat
+                                            className=' text-center form-control'
+                                            style={{ width: "50%", fontSize: "10px!important" }}
+                                            thousandSeparator={'.'}
+                                            onKeyDown={(event) => klikEnter(event)}
+                                            decimalSeparator={','}
+                                            value={getProduct[index].fixed_discount.replace('.', ',')}
+                                            key="diskon"
+                                            onChange={(e) => ubahJumlahDiskon(e.target.value, index)}
+                                        />
+                                        // : < CurrencyFormat className=' text-center form-control ' style={{ width: "30px", fontSize: "10px!important" }}  thousandSeparator={'.'} decimalSeparator={','} value={Number(getProduct[index].fixed_discount).toLocaleString('id')} key="diskon"  onChange={(e) => ubahJumlahDiskon(e.target.value, index)}/>
+
+                                    }
+
+                                    <div className="input-group-prepend">
                                         <select
 
                                             onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
                                             id="grupSelect"
                                             className="form-select select-diskon"
-                                            style={{ width: "70px" }}
+                                            style={{ width: "50%" }}
                                         >
                                             <option value="" >
                                                 Pilih
                                             </option>
-                                            <option selected value="%" >
+                                            <option value="%" >
+                                                %
+                                            </option>
+                                            <option selected value="diskonuang">
+                                                {namaMataUang}
+                                            </option>
+                                        </select>
+
+                                    </div></> : <>
+                                    <CurrencyFormat
+                                        className='text-center editable-input'
+                                        style={{ width: "50%" }}
+                                        thousandSeparator={'.'}
+                                        decimalSeparator={','}
+                                        onKeyDown={(event) => klikEnter(event)}
+                                        value={getProduct[index].fixed_discount}
+                                        onChange={(e) => ubahJumlahDiskon(e.target.value, index)} key="diskon"
+                                    />
+
+                                    {/* <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" defaultValue={getProduct[index].fixed_discount} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" /> */}
+                                    <div className="input-group-prepend">
+                                        <select
+
+                                            onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
+                                            id="grupSelect"
+                                            className="form-select select-diskon"
+                                            style={{ width: "50%" }}
+                                        >
+
+                                            <option value="%" >
                                                 %
                                             </option>
                                             <option value="diskonuang">
                                                 {namaMataUang}
                                             </option>
                                         </select>
-                                    </span>
-                                </div>
-                            </> 
-                            
-                            : getProduct[index].fixed_discount != 0 ?
-                                <>
-                                    {
-                                        // namaMataUang === 'Rp' ?
-                                            < CurrencyFormat className=' text-center form-control' style={{ width: "30px", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={getProduct[index].fixed_discount.replace('.', ',')} key="diskon" onChange={(e) => ubahJumlahDiskon(e.target.value, index)}/>
-                                            // : < CurrencyFormat className=' text-center form-control ' style={{ width: "30px", fontSize: "10px!important" }}  thousandSeparator={'.'} decimalSeparator={','} value={Number(getProduct[index].fixed_discount).toLocaleString('id')} key="diskon"  onChange={(e) => ubahJumlahDiskon(e.target.value, index)}/>
 
-                                    }
-
-                                    {/* <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" defaultValue={
-                                        convertToRupiahTabel1(getProduct[index].fixed_discount)} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" /> */}
-                                    <div className="input-group-prepend">
-                                        <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
-                                            <select
-
-                                                onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
-                                                id="grupSelect"
-                                                className="form-select select-diskon"
-                                                style={{ width: "70px" }}
-                                            >
-                                                <option value="" >
-                                                    Pilih
-                                                </option>
-                                                <option value="%" >
-                                                    %
-                                                </option>
-                                                <option selected value="diskonuang">
-                                                    {namaMataUang}
-                                                </option>
-                                            </select>
-                                        </span>
-                                    </div></> : <>
-                                    <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" defaultValue={getProduct[index].fixed_discount} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" />
-                                    <div className="input-group-prepend">
-                                        <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
-                                            <select
-
-                                                onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
-                                                id="grupSelect"
-                                                className="form-select select-diskon"
-                                                style={{ width: "70px" }}
-                                            >
-                                                {/* <option selected value="" >
-                                     Pilih
-                                 </option> */}
-                                                <option value="%" >
-                                                    %
-                                                </option>
-                                                <option value="diskonuang">
-                                                    {namaMataUang}
-                                                </option>
-                                            </select>
-                                        </span>
                                     </div></>
                     }
 

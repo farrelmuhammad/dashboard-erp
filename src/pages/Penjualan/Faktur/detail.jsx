@@ -588,7 +588,20 @@ const DetailFaktur = () => {
         {
             title: 'Nama Produk Alias',
             dataIndex: 'product_alias_name',
-            width: '12%',
+            width: '8%',
+            render(text, record) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: <div>{text}</div>
+                };
+            }
+        },
+        {
+            title: 'Nama Produk Alias',
+            dataIndex: 'product_name',
+            width: '8%',
             render(text, record) {
                 return {
                     props: {
@@ -601,7 +614,7 @@ const DetailFaktur = () => {
         {
             title: 'Qty',
             dataIndex: 'quantity',
-            width: '7%',
+            width: '10%',
             align: 'center',
             render(text, record) {
                 return {
@@ -629,7 +642,7 @@ const DetailFaktur = () => {
         {
             title: 'Harga',
             dataIndex: 'price',
-            width: '13%',
+            width: '15%',
             align: 'center',
             render(text, record) {
                 return {
@@ -657,7 +670,7 @@ const DetailFaktur = () => {
         {
             title: 'Discount',
             dataIndex: 'discount_percentage',
-            width: '10%',
+            width: '15%',
             align: 'center',
             render(text, record) {
                 return {
@@ -709,7 +722,7 @@ const DetailFaktur = () => {
         {
             title: 'PPN',
             dataIndex: 'ppn',
-            width: '5%',
+            width: '10%',
             align: 'center',
             render(text, record) {
                 return {
@@ -722,7 +735,7 @@ const DetailFaktur = () => {
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '13%',
+            width: '20%',
             align: 'center',
             render(text, record) {
                 return {

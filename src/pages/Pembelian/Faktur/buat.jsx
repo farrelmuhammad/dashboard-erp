@@ -1193,7 +1193,7 @@ const BuatFakturPembelian = () => {
         let tmpDataCentang = [...tmpCentang]
 
         //pengecekan centang
-        if (grup == "Lokal") {
+        if (grup == "Lokal") { 
             for (let i = 0; i < getDataProduct.length; i++) {
                 if (i == index) {
                     tmpDataBaru.push({
