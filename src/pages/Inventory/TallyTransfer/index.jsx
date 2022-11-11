@@ -31,7 +31,7 @@ const TallySheetPembelian = () => {
     return (
       <>
         {userAccess?.map(d => {
-          if (d.ability_name === "create-product") {
+          if (d.ability_name === "create-tax") {
             return (
               <PageHeader
                 ghost={false}

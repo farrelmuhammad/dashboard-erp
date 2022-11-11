@@ -140,15 +140,15 @@ const BuatTally = () => {
 
     const handleChangeProduct = (value, record, idx) => {
         let status = ''
-        for (let i = 0; i < idProductSelect[record].length; i++) {
-            if (idProductSelect[record][i] == value.value) {
-                status = 'ada'
-                Swal.fire("Data Sudah Ada!", `${value.label} sudah ada di baris ${i + 1}`, "error");
-            }
-        }
+        // for (let i = 0; i < idProductSelect[record].length; i++) {
+        //     if (idProductSelect[record][i] == value.value) {
+        //         status = 'ada'
+        //         Swal.fire("Data Sudah Ada!", `${value.label} sudah ada di baris ${i + 1}`, "error");
+        //     }
+        // }
 
         // jika data belum dipilih sebelumnya 
-        if (status != 'ada') {
+        // if (status != 'ada') {
             let idKey = [];
             let key = [];
             let store = [];
@@ -174,7 +174,7 @@ const BuatTally = () => {
             }
             setSelectedProduct(store2);
             setIdProductSelect(key);
-        }
+        // }
     };
 
     const valueRenderer = (cell) => cell.value;

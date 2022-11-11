@@ -337,15 +337,15 @@ const EditTally = () => {
         console.log(selectedProduct)
         let status = ''
         let tmp = []
-        for (let i = 0; i < selectedProduct.length; i++) {
-            if (selectedProduct[i].value == value.value && selectedProduct[idx].value != value.value) {
-                status = 'ada'
-                Swal.fire("Data Sudah Ada!", `${value.label} sudah ada di baris ${i + 1}`, "error");
-            }
-        }
+        // for (let i = 0; i < selectedProduct.length; i++) {
+        //     if (selectedProduct[i].value == value.value && selectedProduct[idx].value != value.value) {
+        //         status = 'ada'
+        //         Swal.fire("Data Sudah Ada!", `${value.label} sudah ada di baris ${i + 1}`, "error");
+        //     }
+        // }
 
         // jika data belum dipilih sebelumnya 
-        if (status != 'ada') {
+        // if (status != 'ada') {
             let key = [];
             let store2 = [];
 
@@ -361,7 +361,7 @@ const EditTally = () => {
             }
             setSelectedProduct(store2);
             setProductId(key);
-        }
+        // }
 
     };
 
@@ -1856,7 +1856,7 @@ const EditTally = () => {
         let key = 0;
         for (let idx = 0; idx < kuantitasBox.length; idx++) {
             for (let x = 0; x < kuantitasBox[idx].length; x++) {
-                tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + x + "]", kuantitasBox[idx][x])
+                tallySheetData.append("kuantitas_produk_box" + "[" + key + "]" + "[" + x + "]", kuantitasBox[idx][x].toString().replace(',', '.'))
             }
             key++;
         }

@@ -80,13 +80,13 @@ const PesananTable = () => {
               })
             }
             setGetDataSO(tmp)
-            setTableParams({
-                ...tableParams,
-                pagination: {
-                  ...tableParams.pagination,
-                  total: 200,
-                },
-              });
+            // setTableParams({
+            //     ...tableParams,
+            //     pagination: {
+            //       ...tableParams.pagination,
+            //       total: 200,
+            //     },
+            //   });
     
             setIsLoading(false);
            

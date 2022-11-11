@@ -11,11 +11,14 @@ import { useRef } from 'react';
 import logo from "../../Logo.jpeg";
 import { PageHeader } from 'antd';
 import CurrencyFormat from 'react-currency-format';
+import { SettingsOverscan } from '@mui/icons-material';
+import { update } from 'lodash';
 
 export const DetailPesanan = () => {
     // const token = jsCookie.get("auth");
     const { id } = useParams();
     const [dataSO, setDataSO] = useState([]);
+    const [canEdit, setCanEdit] = useState([]);
     const [customer, setCustomer] = useState([]);
     const [status, setStatus] = useState([]);
     const [details, setDetails] = useState([]);
@@ -147,6 +150,9 @@ export const DetailPesanan = () => {
         })
             .then((res) => {
                 const getData = res.data.data;
+                // console.log(dataSO)
+                setCanEdit(getData[0].can['update-sales_order'])
+                // console.log()
                 setDataSO(getData);
                 setCode(getData[0].code);
                 setDate(getData[0].date);
@@ -493,30 +499,56 @@ export const DetailPesanan = () => {
                 <div className="row">
                     <div className="col text-title text-start">
                         <div className="text-title text-start mb-4">
-                            <PageHeader
-                                ghost={false}
-                                onBack={() => window.history.back()}
-                                title="Detail Pesanan"
-                                extra={[
-                                    <Tooltip title="Edit" placement="bottom">
-                                        <Link to={`/pesanan/edit/${id}`}>
-                                            <Button
-                                                type="primary"
-                                                icon={<EditOutlined />}
-                                            />
-                                        </Link>
-                                    </Tooltip>,
-                                    <Tooltip title="Cetak" placement="bottom">
-                                        <Button
-                                            type="primary"
-                                            icon={<PrinterOutlined />}
-                                            style={{ background: "orange", borderColor: "orange" }}
-                                            onClick={handlePrint}
-                                        />
-                                    </Tooltip>,
-                                ]}
-                            >
-                            </PageHeader>
+                            {
+                                canEdit ?
+                                    <PageHeader
+                                        ghost={false}
+                                        onBack={() => window.history.back()}
+                                        title="Detail Pesanan"
+                                        extra=
+                                        {
+                                            [
+                                                <Tooltip title="Edit" placement="bottom" display='none'>
+                                                    <Link to={`/pesanan/edit/${id}`}>
+                                                        <Button
+                                                            type="primary"
+                                                            icon={<EditOutlined />}
+                                                        />
+                                                    </Link>
+                                                </Tooltip>,
+                                                <Tooltip title="Cetak" placement="bottom">
+                                                    <Button
+                                                        type="primary"
+                                                        icon={<PrinterOutlined />}
+                                                        style={{ background: "orange", borderColor: "orange" }}
+                                                        onClick={handlePrint}
+                                                    />
+                                                </Tooltip>,
+                                            ]
+                                        }
+                                    >
+                                    </PageHeader> :
+                                    <PageHeader
+                                        ghost={false}
+                                        onBack={() => window.history.back()}
+                                        title="Detail Pesanan"
+                                        extra=
+                                        {
+                                            [
+                                                <Tooltip title="Cetak" placement="bottom">
+                                                    <Button
+                                                        type="primary"
+                                                        icon={<PrinterOutlined />}
+                                                        style={{ background: "orange", borderColor: "orange" }}
+                                                        onClick={handlePrint}
+                                                    />
+                                                </Tooltip>,
+                                            ]
+                                        }
+                                    >
+                                    </PageHeader>
+                            }
+
                             {/* <h3 className="title fw-bold">Detail Pesanan</h3> */}
                         </div>
                     </div>
@@ -605,6 +637,7 @@ export const DetailPesanan = () => {
                     </div>
                 </div>
             </form>
+            
             <form className="p-3 mb-5 bg-body rounded">
                 <div className="text-title text-start mb-4">
                     <div className="row">

@@ -1,12 +1,12 @@
 import './form.css'
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate , useParams} from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import Url from "../../../Config";;
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
-import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, Typography, Tooltip , PageHeader} from 'antd'
-import { DeleteOutlined, PlusOutlined , PrinterOutlined, FileTextOutlined } from '@ant-design/icons'
+import { Button, Checkbox, Form, Input, InputNumber, Modal, Select, Space, Table, Tag, Typography, Tooltip, PageHeader } from 'antd'
+import { DeleteOutlined, PlusOutlined,EditOutlined, PrinterOutlined, FileTextOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
@@ -138,6 +138,7 @@ const DetailPelunasan = () => {
     const [mataUangT, setMataUangT] = useState(' Rupiah')
 
     const [beCust, setBECust] = useState("")
+    const [canEdit, setCanEdit] = useState("")
 
     const handleChangeCustomer = (value) => {
         setSelectedCustomer(value);
@@ -253,7 +254,7 @@ const DetailPelunasan = () => {
                     props: {
                         style: { background: "#f5f5f5" }
                     },
-                    children: <CurrencyFormat disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp.' + ' '} value={Number(text).toFixed(2).replace('.' , ',')} />
+                    children: <CurrencyFormat disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp.' + ' '} value={Number(text).toFixed(2).replace('.', ',')} />
                 }
             }
             // render: (record) => {
@@ -418,7 +419,7 @@ const DetailPelunasan = () => {
 
 
     const loadnamaCOA = async (inputValue) => {
-      await  axios.get(`${Url}/chart_of_accounts?id=${inputValue}`, {
+        await axios.get(`${Url}/chart_of_accounts?id=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -431,9 +432,9 @@ const DetailPelunasan = () => {
     };
 
 
-    const sip = 
-    salesInvoicePayment.map((item, i) => (
-         item.sales_invoice_code + '\n' 
+    const sip =
+        salesInvoicePayment.map((item, i) => (
+            item.sales_invoice_code + '\n'
 
         ))
 
@@ -446,6 +447,7 @@ const DetailPelunasan = () => {
         })
             .then((res) => {
                 let getData = res.data.data[0]
+                setCanEdit(getData.can['update-sales_invoice_payment'])
                 setDataHeader(getData)
                 setDataIDCoa(getData.chart_of_account_id)
                 setGetStatus(getData.status)
@@ -471,17 +473,17 @@ const DetailPelunasan = () => {
 
                 // let disc = [];
                 // let ppn = [];
-                
+
                 // for(let i=0; i< salesRetur.length; i++){
                 //     disc[i] = salesRetur[i].discount_percentage;
                 //     ppn[i] = salesRetur[i].ppn;  
                 // }
-    
+
                 // setDiskonPersen(disc);
                 // setJumlahPPN(ppn);
                 // console.log(diskonPersen)
 
-                 //console.log(salesRetur)
+                //console.log(salesRetur)
 
                 // if(getData.sales_return_details[0].currency){
 
@@ -628,74 +630,74 @@ const DetailPelunasan = () => {
     const componentRef = useRef();
     const handlePrint = useReactToPrint({
         content: () => componentRef.current,
-         copyStyles: true,
-       //pageStyle: pageStyle
-        
+        copyStyles: true,
+        //pageStyle: pageStyle
+
     })
 
-   // const componentRef1 = useRef();
+    // const componentRef1 = useRef();
     const componentRef1 = useRef(null);
     const handlePrint1 = useReactToPrint({
         content: () => componentRef1.current,
-         copyStyles: true,
-       //pageStyle: pageStyle
-        
+        copyStyles: true,
+        //pageStyle: pageStyle
+
     })
 
     const dataFaktur = [
-    ...salesInvoicePayment.map((item , i ) => ({
-        no_faktur: item.sales_invoice_code,
-        total : <>
-                <CurrencyFormat disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp.' + ' '} value={Number(item.sales_invoice_total_payment).toFixed(2).replace('.' , ',')} />
-        </>,
-        sisa: <>
-        {
-            item.remains < 0 ? 
-             <CurrencyFormat disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp.' + ' '} value={Number(0).toFixed(2).replace('.' , ',')} /> :
-            <CurrencyFormat disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp.' + ' '} value={Number(item.remains).toFixed(2).replace('.' , ',')} />
-        }
-        </>,
-        bayar: item.paid,
-    }))
+        ...salesInvoicePayment.map((item, i) => ({
+            no_faktur: item.sales_invoice_code,
+            total: <>
+                <CurrencyFormat disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp.' + ' '} value={Number(item.sales_invoice_total_payment).toFixed(2).replace('.', ',')} />
+            </>,
+            sisa: <>
+                {
+                    item.remains < 0 ?
+                        <CurrencyFormat disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp.' + ' '} value={Number(0).toFixed(2).replace('.', ',')} /> :
+                        <CurrencyFormat disabled className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp.' + ' '} value={Number(item.remains).toFixed(2).replace('.', ',')} />
+                }
+            </>,
+            bayar: item.paid,
+        }))
     ]
 
     return (
         <>
 
 
-        <div style={{ display: "none"}} >
-                <div ref={componentRef} className="p-4" style={{width:"100%"}} >
+            <div style={{ display: "none" }} >
+                <div ref={componentRef} className="p-4" style={{ width: "100%" }} >
 
-  <table style={{width:"100%"}}>
-    <thead>
-      <tr>
-        <td>
-         
-          <div className="page-header-space"></div>
-          <div className="page-header">
-                 <div className='row'>
-          <div className='d-flex mb-3 float-container' style={{position:"fixed", height:"100px", top:"0"}}>
-                
-                
-               
-                      <div className='col-1' style={{marginTop:"10px"}}><img src={logo} width="60px"></img></div>
-                      <div className='col-4' style={{marginTop:"10px", marginRight:"100px"}}>
-                      <div className='ms-2' >
-                          <div className='header-cetak'><b>PT. BUMI MAESTROAYU</b></div>
-                          <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
-                          <div className='header-cetak'>JAKARTA SELATAN 12760</div>
-                          <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
-                      </div>
-                      </div>
-                     
-                
-               
-                <div className='col'>
-                <div className='col float-child'>
-                    <div className='col' width="100px"></div>
+                    <table style={{ width: "100%" }}>
+                        <thead>
+                            <tr>
+                                <td>
 
-                {/* <div className=' mt-3 mb-4 col d-flex justify-content-right ps-4 pe-4' height="100px" style={{ fontSize: "12px", fontStyle:"bold"}}> */}
-                    {/* <div className='col-6'>
+                                    <div className="page-header-space"></div>
+                                    <div className="page-header">
+                                        <div className='row'>
+                                            <div className='d-flex mb-3 float-container' style={{ position: "fixed", height: "100px", top: "0" }}>
+
+
+
+                                                <div className='col-1' style={{ marginTop: "10px" }}><img src={logo} width="60px"></img></div>
+                                                <div className='col-4' style={{ marginTop: "10px", marginRight: "100px" }}>
+                                                    <div className='ms-2' >
+                                                        <div className='header-cetak'><b>PT. BUMI MAESTROAYU</b></div>
+                                                        <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
+                                                        <div className='header-cetak'>JAKARTA SELATAN 12760</div>
+                                                        <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
+                                                    </div>
+                                                </div>
+
+
+
+                                                <div className='col'>
+                                                    <div className='col float-child'>
+                                                        <div className='col' width="100px"></div>
+
+                                                        {/* <div className=' mt-3 mb-4 col d-flex justify-content-right ps-4 pe-4' height="100px" style={{ fontSize: "12px", fontStyle:"bold"}}> */}
+                                                        {/* <div className='col-6'>
                           <div className="d-flex flex-row">
                           <label className='col-8'>No. Pembayaran</label>
                               <div className='col-12'> : {dataHeader.code}</div>
@@ -707,7 +709,7 @@ const DetailPelunasan = () => {
                           </div>
                         
                       </div> */}
-                      {/* <div className='col-6'>
+                                                        {/* <div className='col-6'>
                         <div className="d-flex flex-row">
                               <label className='col-8'>No. Faktur</label>
                               <div className='col-8'> : {dataHeader.purchase_invoice.code}</div>
@@ -722,58 +724,58 @@ const DetailPelunasan = () => {
                               <div className='col-6'> : {dataHeader.supplier.business_entity} {dataHeader.supplier.name}  </div>
                           </div>
                       </div> */}
-                  {/* </div> */}
-                </div>
-                </div>
+                                                        {/* </div> */}
+                                                    </div>
+                                                </div>
 
-            </div>
-            </div>
-        
-        <br/>
-      
-   
-        <div className='mt-5 mb-2 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold", textAlign:"center"}}>
-                      <div className='align-items-center' style={{ fontSize: "14px", textDecoration: "underline", textAlign:"center"}}>VOUCHER KAS MASUK</div>
-                      <div style={{ fontSize: "10px", marginTop: "-5px" }}>NO. {dataHeader.code}</div>
-        </div>
-        <br/>
+                                            </div>
+                                        </div>
 
-        
-        <div className='mt-2 mb-1 col d-flex justify-content-center ps-4 pe-4 '  style={{ fontSize: "12px", width:"100%" }}>
-                      <div className='col-6'>
-                          <div className="d-flex flex-row">
-                              <label className='col-6'>Divisi</label>
-                              <div className='col-6'> : Purchasing</div>
-                          </div>
-                          <div className="d-flex flex-row">
-                              <label className='col-6'>Rekening </label>
-                              <div className='col-6'> : {namaCOA} </div>
-                          </div>
-                          
-                      </div>
-                      <div className='col-6'>
-                        <div className="d-flex flex-row">
-                                <label className='col-6'>Kepada</label>
-                                {
-                                    beCust == 'Lainnya' ? 
-                                    <div className='col-6'> : {namaCust}</div> :
-                                    <div className='col-6'> : {beCust} {namaCust}</div>
-                                }
-                               
-                            </div>
-                          <div className="d-flex flex-row">
-                              <label className='col-6'>Tanggal</label>
-                              <div className='col-6'> : {dataHeader.date} </div>
-                          </div>
-                        
-                          
-                      </div>
-                      <div>
-                        
-                      </div>
-                  </div>
+                                        <br />
 
-        {/* <div className='mt-2 mb-4 col d-flex justify-content-left ps-4 pe-4'  style={{ fontSize: "12px", fontWeight:"bold" }}>
+
+                                        <div className='mt-5 mb-2 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold", textAlign: "center" }}>
+                                            <div className='align-items-center' style={{ fontSize: "14px", textDecoration: "underline", textAlign: "center" }}>VOUCHER KAS MASUK</div>
+                                            <div style={{ fontSize: "10px", marginTop: "-5px" }}>NO. {dataHeader.code}</div>
+                                        </div>
+                                        <br />
+
+
+                                        <div className='mt-2 mb-1 col d-flex justify-content-center ps-4 pe-4 ' style={{ fontSize: "12px", width: "100%" }}>
+                                            <div className='col-6'>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>Divisi</label>
+                                                    <div className='col-6'> : Purchasing</div>
+                                                </div>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>Rekening </label>
+                                                    <div className='col-6'> : {namaCOA} </div>
+                                                </div>
+
+                                            </div>
+                                            <div className='col-6'>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>Kepada</label>
+                                                    {
+                                                        beCust == 'Lainnya' ?
+                                                            <div className='col-6'> : {namaCust}</div> :
+                                                            <div className='col-6'> : {beCust} {namaCust}</div>
+                                                    }
+
+                                                </div>
+                                                <div className="d-flex flex-row">
+                                                    <label className='col-6'>Tanggal</label>
+                                                    <div className='col-6'> : {dataHeader.date} </div>
+                                                </div>
+
+
+                                            </div>
+                                            <div>
+
+                                            </div>
+                                        </div>
+
+                                        {/* <div className='mt-2 mb-4 col d-flex justify-content-left ps-4 pe-4'  style={{ fontSize: "12px", fontWeight:"bold" }}>
                       <div className='col-6 col-md-4'>
                           <div className="d-flex flex-row">
                               <label className='col-6'>Divisi</label>
@@ -789,72 +791,72 @@ const DetailPelunasan = () => {
                           </div>
                       </div>
                   </div> */}
-                </div>
-        </td>
-      </tr>
-    </thead>
+                                    </div>
+                                </td>
+                            </tr>
+                        </thead>
 
-    <tbody>
-      <tr>
-        <td>
-          <div className="page" style={{lineHeight:"3", margin:"0"}}>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div className="page" style={{ lineHeight: "3", margin: "0" }}>
 
-          <div className='mt-2 ps-3 pe-3' >
+                                        <div className='mt-2 ps-3 pe-3' >
 
-                <table style={{ fontSize: "10px", width: "100%", pageBreakAfter:"auto"}}>
-                    <tr className='border' style={{ height: "40px", pageBreakInside:"avoid", pageBreakAfter:"auto" }}>  
-                        <th width="50px" className='text-center border'>No</th>
-                        <th width="300px" className='text-center border'>Deskripsi</th>
-                        <th width="80px" className='text-center border'>Jumlah</th>
-                     
-                    
-                    </tr>
-                    <tbody className="border">
-                        {
-                            salesInvoicePayment.map((item, i) => (
-                                <tr style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} >
-                                    <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {i + 1} </td>
-                                    <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'>Pelunasan Penjualan {getCode} </td>
-                                    <td style={{ pageBreakInside:"avoid", pageBreakAfter:"auto"}} className='border-isi text-center'> {
-                                 < CurrencyFormat  disabled className=' text-center editable-input edit-disabled' style={{width: "70%", fontSize: "10px!important" }} prefix={'Rp '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.paid).toFixed(2).replace('.' , ',')} key="diskon" /> 
-                                    } </td>
-            
-                                </tr>
-                                ))
-                            
-                        }
-                    </tbody>
-                </table>
-
-            <div className='d-flex mt-1 ps-1 pe-1' style={{marginBottom:'2px', height:'65%'}}>
-                    
-             
-             <div style={{width:'40%', alignItems:'end', marginLeft:'450px'}}>
-
-             <div className='d-flex' style={{fontSize:"10px"}}>
-                                <label className='col-6'><b> Total :</b></label>
-                               
-                                <div width="100%">{
-                                   < CurrencyFormat  disabled className=' text-end editable-input edit-disabled' style={{fontWeight:'bold' ,width: "70%", fontSize: "10px!important" }} prefix={'Rp '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toFixed(2).replace('.' , ',')} key="diskon" /> 
-                               }  </div>
-                                <div>
-                                </div>
-                            </div>
-                      
-             </div>
-                    </div>
+                                            <table style={{ fontSize: "10px", width: "100%", pageBreakAfter: "auto" }}>
+                                                <tr className='border' style={{ height: "40px", pageBreakInside: "avoid", pageBreakAfter: "auto" }}>
+                                                    <th width="50px" className='text-center border'>No</th>
+                                                    <th width="300px" className='text-center border'>Deskripsi</th>
+                                                    <th width="80px" className='text-center border'>Jumlah</th>
 
 
-            <div className="row" style={{ marginLeft:'5px', height:"80px", alignItems:"start", fontSize:'12px'}}> 
-            Terbilang: {Terbilang(totalAkhir)} Rupiah
-              {/* <div className="col-2" style={{alignItems:"start", fontSize:"12px"}}>
+                                                </tr>
+                                                <tbody className="border">
+                                                    {
+                                                        salesInvoicePayment.map((item, i) => (
+                                                            <tr style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} >
+                                                                <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'> {i + 1} </td>
+                                                                <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'>Pelunasan Penjualan {getCode} </td>
+                                                                <td style={{ pageBreakInside: "avoid", pageBreakAfter: "auto" }} className='border-isi text-center'> {
+                                                                    < CurrencyFormat disabled className=' text-center editable-input edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.paid).toFixed(2).replace('.', ',')} key="diskon" />
+                                                                } </td>
+
+                                                            </tr>
+                                                        ))
+
+                                                    }
+                                                </tbody>
+                                            </table>
+
+                                            <div className='d-flex mt-1 ps-1 pe-1' style={{ marginBottom: '2px', height: '65%' }}>
+
+
+                                                <div style={{ width: '40%', alignItems: 'end', marginLeft: '450px' }}>
+
+                                                    <div className='d-flex' style={{ fontSize: "10px" }}>
+                                                        <label className='col-6'><b> Total :</b></label>
+
+                                                        <div width="100%">{
+                                                            < CurrencyFormat disabled className=' text-end editable-input edit-disabled' style={{ fontWeight: 'bold', width: "70%", fontSize: "10px!important" }} prefix={'Rp '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toFixed(2).replace('.', ',')} key="diskon" />
+                                                        }  </div>
+                                                        <div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+
+                                            <div className="row" style={{ marginLeft: '5px', height: "80px", alignItems: "start", fontSize: '12px' }}>
+                                                Terbilang: {Terbilang(totalAkhir)} Rupiah
+                                                {/* <div className="col-2" style={{alignItems:"start", fontSize:"12px"}}>
               <b> Terbilang : {Terbilang(totalP) +  mataUang} </b>
                 </div> */}
-               {/* <div className="col-10">
+                                                {/* <div className="col-10">
                 {
                     
                 } */}
-               {/* <textarea
+                                                {/* <textarea
                                 className="form-control"
                                 id="form4Example3"
                                 rows="2"
@@ -864,16 +866,16 @@ const DetailPelunasan = () => {
                                 fontSize={"10px"}
                                 disabled
                             /> */}
-              
-            {/* </div> */}
-            </div>
-       
 
-            </div>
+                                                {/* </div> */}
+                                            </div>
 
 
+                                        </div>
 
-        {/* <div className='mt-4 ps-4 pe-4' style={{fontSize:"13px"}}>
+
+
+                                        {/* <div className='mt-4 ps-4 pe-4' style={{fontSize:"13px"}}>
 
 
 
@@ -954,224 +956,257 @@ const DetailPelunasan = () => {
             </div>
 
         </div> */}
-                    </div>
-                    </td>
-                </tr>
-                </tbody>
-                <tfoot style={{position:"fixed", marginTop:"400px"}}>
-                        <tr>
-                            <td>
-                            
-                            <div className="page-footer-space"></div>
-                            <div className="page-footer" style={{position:"fixed", Bottom:"0px", width:"92%", marginRight:"5px", marginLeft:"5px"}} >
-                            <div className='d-flex' style={{width:"100%", bottom:"0"}}>
-                            <table style={{ fontSize: "10px", width: "100%", height:"100%", marginRight:"5px", marginLeft:"5px"}} >
-                                <tr className='text-center border' style={{ height: "50px", width:"70%" }}>
-                                    <th width="35px" className='border'>Dibuat</th>
-                                    <th width="35px" className='border'>Mengetahui</th>
-                                    <th width="35px" className='border'>Disetujui</th>
-                                    <th width="35px" className='border'>Diterima</th>
-                                </tr>
-                            
-                                        <tr className='text-center border ' style={{ height: "80px" ,width:"70%"}}>
-                                        
-                                        <td width="35px" className='border'><b>_________________</b></td>
-                                        <td width="35px"className='border'><b>_________________</b></td>
-                                        <td width="35px"className='border'><b>_________________</b></td>
-                                        <td width="35px"className='border'><b>_________________</b></td>
-                                        </tr>
-                            </table>
-                            </div>
-                            </div>
-                            </td>
-                        </tr>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot style={{ position: "fixed", marginTop: "400px" }}>
+                            <tr>
+                                <td>
+
+                                    <div className="page-footer-space"></div>
+                                    <div className="page-footer" style={{ position: "fixed", Bottom: "0px", width: "92%", marginRight: "5px", marginLeft: "5px" }} >
+                                        <div className='d-flex' style={{ width: "100%", bottom: "0" }}>
+                                            <table style={{ fontSize: "10px", width: "100%", height: "100%", marginRight: "5px", marginLeft: "5px" }} >
+                                                <tr className='text-center border' style={{ height: "50px", width: "70%" }}>
+                                                    <th width="35px" className='border'>Dibuat</th>
+                                                    <th width="35px" className='border'>Mengetahui</th>
+                                                    <th width="35px" className='border'>Disetujui</th>
+                                                    <th width="35px" className='border'>Diterima</th>
+                                                </tr>
+
+                                                <tr className='text-center border ' style={{ height: "80px", width: "70%" }}>
+
+                                                    <td width="35px" className='border'><b>_________________</b></td>
+                                                    <td width="35px" className='border'><b>_________________</b></td>
+                                                    <td width="35px" className='border'><b>_________________</b></td>
+                                                    <td width="35px" className='border'><b>_________________</b></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
                         </tfoot>
                     </table>
 
-                    </div>
-                    </div>
-
-
-        <div style={{ display: "none"}} >
-                <div ref={componentRef1} className="p-4" style={{width:"100%"}} >
-
-  <table style={{width:"100%"}}>
-    <thead>
-      <tr>
-        <td>
-         
-          <div className="page-header-space"></div>
-          <div className="page-header">
-            <div className='row'>
-           
-                <div className='d-flex mb-3 float-container' style={{position:"fixed", height:"100px", top:"0"}}>
-                <div className='col-1' style={{ marginTop: "10px" }}><img src={logo} width="60px"></img></div>
-                  <div className='col-4' style={{ marginTop: "10px", marginRight: "100px" }}>
-                        <div className='ms-2' >
-                        <div className='header-cetak'><b>PT. BUMI MAESTROAYU</b></div>
-                        <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
-                        <div className='header-cetak'>JAKARTA SELATAN 12760</div>
-                        <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
-                        </div>
-                    </div>
-               
-
-                <div className='col float-child' style={{width:"50%", alignItems:"right"}}>
-                    <div height="100px"></div>
-
-                <div className=' mt-4 mb-4 col d-flex justify-content-right ps-4 pe-4' height="100px" style={{ fontSize: "12px", fontStyle:"bold"}}>
-                      <div className='col-md-4'>
-                        <div className="d-flex flex-row">
-                              <label className='col-6'>No. Kwitansi</label>
-                              <div className='col-8'> : {getCode}</div>
-                          </div>
-                          <div className="d-flex flex-row">
-                          <label className='col-6'>Tanggal</label>
-                              <div className='col-8'> : {dataHeader.date}</div>
-                          </div>
-                      </div>
-                  </div>
                 </div>
-                </div>
-
-            </div>
-        
-        <br/>
-        <br/>
-        <br/>
-   
-        <div className='mt-3 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold", textAlign:"center"}}>
-                      <div className='align-items-center' style={{ fontSize: "15px", textDecoration: "underline", textAlign:"center"}}>KWITANSI</div>
-                  </div>
-                    <br/>
-                </div>
-        </td>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr>
-        <td>
-          <div className="page" style={{lineHeight:"3", margin:"0"}}>
-
-        <div className='mt-2 ps-2 pe-2' style={{fontSize:"13px"}}>
-
-
-
-           <div className="row" style={{marginBottom:"5px", height:"80px", display:"flex", alignItems:"center"}}>
-              <div className="col-5" style={{alignItems:"center"}}>
-                 <b> Sudah Terima Dari</b>
-                </div>
-               <div className="col-7 " style={{fontSize:"10px"}} >
-                {
-                    beCust == 'Lainnya' ? 
-                    <input
-                    value={namaCust}
-                     id="inputNama3"
-                     className='form-control'
-                     type="Nama"
-                     width={"80%"}
-                     height={"30px"}
-                     fontSize={"10px"}
-                    
-                  /> : 
-                  <input
-                  value= {beCust + " " + namaCust}
-                   id="inputNama3"
-                   className='form-control'
-                   type="Nama"
-                   width={"80%"}
-                   height={"30px"}
-                   fontSize={"10px"}
-                  
-                /> 
-                }
-                 
-            </div>
             </div>
 
-            <div className="row" style={{marginBottom:"5px", height:"80px", alignItems:"center"}}> 
-              <div className="col-5" style={{alignItems:"center"}}>
-              <b> Uang Sejumlah </b>
-                </div>
-               <div className="col-7">
-               <textarea
-                                className="form-control"
-                                id="form4Example3"
-                                rows="2"
-                                value={Terbilang((totalAkhir)) + mataUangT }
-                                width={"80%"}
-                                height={"30px"}
-                                fontSize={"10px"}
-                            />
-              
-            </div>
-            </div>
 
-            <div className="row" style={{marginBottom:"5px", height:"80px", alignItems:"center"}}>
-              <div className="col-5" style={{alignItems:"center"}}>
-               <b> Untuk Pembayaran </b>
-                </div>
-               <div className="col-7" >
-                    <textarea
-                                className="form-control"
-                                id="form4Example3"
-                                value={
-                                sip.join('')
-                                 }
-                                width={"80%"}
-                                height={"30px"}
-                                fontSize={"10px"}
-                                style={{overflow:"hidden"}} 
-                            />
-            </div>
-            </div>
+            <div style={{ display: "none" }} >
+                <div ref={componentRef1} className="p-4" style={{ width: "100%" }} >
 
-            
-            <div className="row" style={{marginBottom:"5px", height:"80px", alignItems:"center"}}>
-              <div className="col-5" style={{alignItems:"center"}}>
-             <b>     Jumlah </b>
-                </div>
-               <div className="col-7 text-start" style={{fontSize:"12px"}}>
-                  < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "100%",height:"40px", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" width="100%" height="40px" style={{width:"100%", height:"40px"}} className="form-control form-control-sm" />} />
-            </div>
-            </div>
+                    <table style={{ width: "100%" }}>
+                        <thead>
+                            <tr>
+                                <td>
 
-        </div>
-                    </div>
-                    </td>
-                </tr>
-                </tbody>
+                                    <div className="page-header-space"></div>
+                                    <div className="page-header">
+                                        <div className='row'>
+
+                                            <div className='d-flex mb-3 float-container' style={{ position: "fixed", height: "100px", top: "0" }}>
+                                                <div className='col-1' style={{ marginTop: "10px" }}><img src={logo} width="60px"></img></div>
+                                                <div className='col-4' style={{ marginTop: "10px", marginRight: "100px" }}>
+                                                    <div className='ms-2' >
+                                                        <div className='header-cetak'><b>PT. BUMI MAESTROAYU</b></div>
+                                                        <div className='header-cetak'>JL. RAYA DUREN TIGA NO. 11</div>
+                                                        <div className='header-cetak'>JAKARTA SELATAN 12760</div>
+                                                        <div className='header-cetak'>TELP. (021)7981368 - 7943968 FAX. 7988488 - 7983249</div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div className='col float-child' style={{ width: "50%", alignItems: "right" }}>
+                                                    <div height="100px"></div>
+
+                                                    <div className=' mt-4 mb-4 col d-flex justify-content-right ps-4 pe-4' height="100px" style={{ fontSize: "12px", fontStyle: "bold" }}>
+                                                        <div className='col-md-4'>
+                                                            <div className="d-flex flex-row">
+                                                                <label className='col-6'>No. Kwitansi</label>
+                                                                <div className='col-8'> : {getCode}</div>
+                                                            </div>
+                                                            <div className="d-flex flex-row">
+                                                                <label className='col-6'>Tanggal</label>
+                                                                <div className='col-8'> : {dataHeader.date}</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <br />
+                                        <br />
+                                        <br />
+
+                                        <div className='mt-3 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold", textAlign: "center" }}>
+                                            <div className='align-items-center' style={{ fontSize: "15px", textDecoration: "underline", textAlign: "center" }}>KWITANSI</div>
+                                        </div>
+                                        <br />
+                                    </div>
+                                </td>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div className="page" style={{ lineHeight: "3", margin: "0" }}>
+
+                                        <div className='mt-2 ps-2 pe-2' style={{ fontSize: "13px" }}>
+
+
+
+                                            <div className="row" style={{ marginBottom: "5px", height: "80px", display: "flex", alignItems: "center" }}>
+                                                <div className="col-5" style={{ alignItems: "center" }}>
+                                                    <b> Sudah Terima Dari</b>
+                                                </div>
+                                                <div className="col-7 " style={{ fontSize: "10px" }} >
+                                                    {
+                                                        beCust == 'Lainnya' ?
+                                                            <input
+                                                                value={namaCust}
+                                                                id="inputNama3"
+                                                                className='form-control'
+                                                                type="Nama"
+                                                                width={"80%"}
+                                                                height={"30px"}
+                                                                fontSize={"10px"}
+
+                                                            /> :
+                                                            <input
+                                                                value={beCust + " " + namaCust}
+                                                                id="inputNama3"
+                                                                className='form-control'
+                                                                type="Nama"
+                                                                width={"80%"}
+                                                                height={"30px"}
+                                                                fontSize={"10px"}
+
+                                                            />
+                                                    }
+
+                                                </div>
+                                            </div>
+
+                                            <div className="row" style={{ marginBottom: "5px", height: "80px", alignItems: "center" }}>
+                                                <div className="col-5" style={{ alignItems: "center" }}>
+                                                    <b> Uang Sejumlah </b>
+                                                </div>
+                                                <div className="col-7">
+                                                    <textarea
+                                                        className="form-control"
+                                                        id="form4Example3"
+                                                        rows="2"
+                                                        value={Terbilang((totalAkhir)) + mataUangT}
+                                                        width={"80%"}
+                                                        height={"30px"}
+                                                        fontSize={"10px"}
+                                                    />
+
+                                                </div>
+                                            </div>
+
+                                            <div className="row" style={{ marginBottom: "5px", height: "80px", alignItems: "center" }}>
+                                                <div className="col-5" style={{ alignItems: "center" }}>
+                                                    <b> Untuk Pembayaran </b>
+                                                </div>
+                                                <div className="col-7" >
+                                                    <textarea
+                                                        className="form-control"
+                                                        id="form4Example3"
+                                                        value={
+                                                            sip.join('')
+                                                        }
+                                                        width={"80%"}
+                                                        height={"30px"}
+                                                        fontSize={"10px"}
+                                                        style={{ overflow: "hidden" }}
+                                                    />
+                                                </div>
+                                            </div>
+
+
+                                            <div className="row" style={{ marginBottom: "5px", height: "80px", alignItems: "center" }}>
+                                                <div className="col-5" style={{ alignItems: "center" }}>
+                                                    <b>     Jumlah </b>
+                                                </div>
+                                                <div className="col-7 text-start" style={{ fontSize: "12px" }}>
+                                                    < CurrencyFormat className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "100%", height: "40px", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" width="100%" height="40px" style={{ width: "100%", height: "40px" }} className="form-control form-control-sm" />} />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
 
                     </table>
 
-                    </div>
-                    </div>
+                </div>
+            </div>
 
             <form className="p-3 mb-3 bg-body rounded">
-            <PageHeader
-                className="bg-body rounded mb-2"
-                onBack={() => window.history.back()}
-                title="Detail Pelunasan Penjualan"
-                extra={[
-                    <Tooltip title="Cetak" placement="bottom">
-                    <Button
-                        type="primary"
-                        icon={<PrinterOutlined />}
-                        style={{ background: "orange", borderColor: "orange" }}
-                        onClick={handlePrint}
-                    />
-                    </Tooltip>,     
-                     <Tooltip title="Kwitansi" placement="bottom">
-                     <Button
-                         type="primary"
-                         icon={<FileTextOutlined />}
-                         style={{ background: "green", borderColor: "green" }}
-                         onClick={handlePrint1}
-                     />
-                     </Tooltip>, 
-                ]}
-            ></PageHeader>
+                {
+                    canEdit ?
+                        <PageHeader
+                            className="bg-body rounded mb-2"
+                            onBack={() => window.history.back()}
+                            title="Detail Pelunasan Penjualan"
+                            extra={[
+                                <Link to={`/pelunasan/edit/${id}`}>
+                                    <Button
+                                        type="primary"
+                                        icon={<EditOutlined />}
+                                    />
+                                </Link>,
+                                <Tooltip title="Cetak" placement="bottom">
+                                    <Button
+                                        type="primary"
+                                        icon={<PrinterOutlined />}
+                                        style={{ background: "orange", borderColor: "orange" }}
+                                        onClick={handlePrint}
+                                    />
+                                </Tooltip>,
+                                <Tooltip title="Kwitansi" placement="bottom">
+                                    <Button
+                                        type="primary"
+                                        icon={<FileTextOutlined />}
+                                        style={{ background: "green", borderColor: "green" }}
+                                        onClick={handlePrint1}
+                                    />
+                                </Tooltip>,
+                            ]}
+                        ></PageHeader> :
+                        <PageHeader
+                            className="bg-body rounded mb-2"
+                            onBack={() => window.history.back()}
+                            title="Detail Pelunasan Penjualan"
+                            extra={[
+                                <Tooltip title="Cetak" placement="bottom">
+                                    <Button
+                                        type="primary"
+                                        icon={<PrinterOutlined />}
+                                        style={{ background: "orange", borderColor: "orange" }}
+                                        onClick={handlePrint}
+                                    />
+                                </Tooltip>,
+                                <Tooltip title="Kwitansi" placement="bottom">
+                                    <Button
+                                        type="primary"
+                                        icon={<FileTextOutlined />}
+                                        style={{ background: "green", borderColor: "green" }}
+                                        onClick={handlePrint1}
+                                    />
+                                </Tooltip>,
+                            ]}
+                        ></PageHeader>
+                }
+
                 {/* <div className="text-title text-start mb-4">
                     <h4 className="title fw-bold">Detail Pelunasan</h4>
                 </div> */}
@@ -1262,7 +1297,7 @@ const DetailPelunasan = () => {
 
                             </div>
                         </div>
-                            <div className="row mb-3">
+                        <div className="row mb-3">
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Status</label>
                             <div className="col-sm-4 p-1">
                                 {getStatus === 'Submitted' ? <Tag color="blue">{getStatus}</Tag> : getStatus === 'Draft' ? <Tag color="orange">{getStatus}</Tag> : getStatus === 'Done' ? <Tag color="green">{getStatus}</Tag> : <Tag color="red">{getStatus}</Tag>}
@@ -1344,7 +1379,7 @@ const DetailPelunasan = () => {
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={3} className="text-end">Total yang dibayarkan</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                        < CurrencyFormat disabled className=' text-end editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalTotal).toFixed(2).replace('.', ',')} key="diskon" />
+                                            < CurrencyFormat disabled className=' text-end editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalTotal).toFixed(2).replace('.', ',')} key="diskon" />
                                             {/* <Text type="danger">{totalTotal}</Text> */}
                                         </Table.Summary.Cell>
                                         {/* <Table.Summary.Cell index={2}>
@@ -1362,7 +1397,7 @@ const DetailPelunasan = () => {
                         }}
                     />
                 </div>
-{/* 
+                {/* 
                 <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
                     <button
                         type="button"

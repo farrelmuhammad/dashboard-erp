@@ -1,6 +1,6 @@
 import './form.css'
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams , Link} from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import { Table, Tag } from 'antd'
@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { PageHeader, Tooltip, Button } from 'antd';
 import { useReactToPrint } from 'react-to-print';
 import logo from "../../Logo.jpeg";
-import { BarsOutlined, DeleteOutlined, EditOutlined, LoadingOutlined, MinusOutlined, PlusOutlined, PrinterOutlined } from '@ant-design/icons'
+import { BarsOutlined, DeleteOutlined, LoadingOutlined, MinusOutlined, EditOutlined, PrinterOutlined } from '@ant-design/icons'
 
 const DetailFakturPembelian = () => {
     // const auth.token = jsCookie.get("auth");
@@ -44,6 +44,7 @@ const DetailFakturPembelian = () => {
     const [getStatus, setGetStatus] = useState()
     const [mataUang, setMataUang] = useState('Rp ')
     const [beCust, setBECust] = useState("");
+    const [canEdit, setCanEdit] = useState("");
 
 
     const convertToRupiahTabel = (angka) => {
@@ -69,6 +70,7 @@ const DetailFakturPembelian = () => {
         })
             .then((res) => {
                 let getData = res.data[0]
+                setCanEdit(getData.can['update-purchase_invoice'])
                 setBiaya(getData.purchase_invoice_costs)
                 setCredit(getData.purchase_invoice_credit_notes)
                 setGetStatus(getData.status)
@@ -177,22 +179,22 @@ const DetailFakturPembelian = () => {
                     {
                         item.discount_percentage == 0 && item.fixed_discount == 0 ? <div>-</div> :
                             item.discount_percentage != 0 ?
-                                    < CurrencyFormat suffix=' %' disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.discount_percentage).toFixed(2).replace('.', ',')} key="diskon" />
+                                < CurrencyFormat suffix=' %' disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.discount_percentage).toFixed(2).replace('.', ',')} key="diskon" />
 
-                                   
+
                                 :
                                 item.fixed_discount != 0 ?
-                                 
-                                        <>
+
+                                    <>
                                         {
                                             grup === 'Lokal' ?
 
                                                 < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.fixed_discount).toFixed(2).replace('.', ',')} key="diskon" />
                                                 : < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(item.fixed_discount).toLocaleString('id')} key="diskon" />
                                         }
-                                        </>
+                                    </>
 
-                                 : null
+                                    : null
                     }
 
                 </>,
@@ -739,22 +741,48 @@ const DetailFakturPembelian = () => {
                 <div className="row">
                     <div className="col text-title text-start">
                         <div className="text-title text-start mb-4">
-                            <PageHeader
-                                ghost={false}
-                                onBack={() => window.history.back()}
-                                title="Detail Faktur Pembelian"
-                                extra={[
-                                    <Tooltip title="Cetak" placement="bottom">
-                                        <Button
-                                            type="primary"
-                                            icon={<PrinterOutlined />}
-                                            style={{ background: "orange", borderColor: "orange" }}
-                                            onClick={handlePrint}
-                                        />
-                                    </Tooltip>,
-                                ]}
-                            >
-                            </PageHeader>
+                            {
+                                canEdit ?
+                                    <PageHeader
+                                        ghost={false}
+                                        onBack={() => window.history.back()}
+                                        title="Detail Faktur Pembelian"
+                                        extra={[
+                                            <Link to={`/fakturpembelian/edit/${id}`}>
+                                                <Button
+                                                    type="primary"
+                                                    icon={<EditOutlined />}
+                                                />
+                                            </Link>,
+                                            <Tooltip title="Cetak" placement="bottom">
+                                                <Button
+                                                    type="primary"
+                                                    icon={<PrinterOutlined />}
+                                                    style={{ background: "orange", borderColor: "orange" }}
+                                                    onClick={handlePrint}
+                                                />
+                                            </Tooltip>,
+                                        ]}
+                                    >
+                                    </PageHeader> :
+                                    <PageHeader
+                                        ghost={false}
+                                        onBack={() => window.history.back()}
+                                        title="Detail Faktur Pembelian"
+                                        extra={[
+                                            <Tooltip title="Cetak" placement="bottom">
+                                                <Button
+                                                    type="primary"
+                                                    icon={<PrinterOutlined />}
+                                                    style={{ background: "orange", borderColor: "orange" }}
+                                                    onClick={handlePrint}
+                                                />
+                                            </Tooltip>,
+                                        ]}
+                                    >
+                                    </PageHeader>
+                            }
+
                         </div>
                     </div>
                     {/* <div className="col button-add text-end me-3">
