@@ -1487,7 +1487,7 @@ const BuatTallySheet = () => {
 
     useEffect(() => {
         const getFaktur = async () => {
-            const res = await axios.get(`${Url}/tally_sheet_ins_available_purchase_invoices?kode=${query}&id_pemasok=${supplier}`, {
+            const res = await axios.get(`${Url}/tally_sheet_ins_available_purchase_invoices?kode=${query}&id_pelanggan=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -1521,7 +1521,7 @@ const BuatTallySheet = () => {
         };
 
         if (query.length === 0 || query.length > 2) getFaktur();
-    }, [query, supplier])
+    }, [query, customer])
 
     function klikUbahSumber(value) {
         setSumber(value);

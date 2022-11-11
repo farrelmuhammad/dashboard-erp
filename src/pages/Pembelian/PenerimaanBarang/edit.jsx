@@ -40,7 +40,7 @@ const EditPenerimaanBarang = () => {
     const [gudang, setGudang] = useState();
     const [sumber, setSumber] = useState('');
     const [date, setDate] = useState();
-    const [catatan, setCatatan] = useState();
+    const [catatan, setCatatan] = useState('');
 
     useEffect(() => {
         const getProduct = async () => {
@@ -207,7 +207,9 @@ const EditPenerimaanBarang = () => {
                 setDataPenerimaan(getData);
                 setDate(getData.date);
                 setStatus(getData.status)
-                setCatatan(getData.notes)
+                if(getData.notes){
+                    setCatatan(getData.notes)
+                }
                 if (getData.customer_id != null) {
                     setSumber('Retur')
                     console.log('Retur')
@@ -238,7 +240,7 @@ const EditPenerimaanBarang = () => {
                 }
                 setDataTS(tmp);
                 setLoading(false);
-                console.log(supplierId)
+                // console.log(supplierId)
             })
             .catch((err) => {
                 // Jika Gagal
@@ -387,11 +389,16 @@ const EditPenerimaanBarang = () => {
         console.log(dataTS)
         const formData = new URLSearchParams();
         formData.append("tanggal", date);
-        formData.append("grup", grup);
-        formData.append("pemasok", supplierId);
+        if(sumber == 'Retur'){
+            formData.append("pelanggan", customerId);
+        }
+        else if(sumber == 'Pembelian'){
+            formData.append("grup", grup);
+            formData.append("pemasok", supplierId);
+        }
         formData.append("catatan", catatan);
         // formData.append("referensi", dataPenerimaan.reference);
-        formData.append("gudang", dataPenerimaan.warehouse_id);
+        // formData.append("gudang", dataPenerimaan.warehouse_id);
         formData.append("id_tally_sheet[]", dataTS[0].id);
         formData.append("status", "Submitted");
 
@@ -419,7 +426,7 @@ const EditPenerimaanBarang = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error,
+                        text: err.response.data.message,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -434,12 +441,18 @@ const EditPenerimaanBarang = () => {
     const handleDraft = async () => {
         const formData = new URLSearchParams();
         formData.append("tanggal", date);
-        formData.append("grup", grup);
-        formData.append("pemasok", supplierId);
+        if(sumber == 'Retur'){
+            formData.append("pelanggan", customerId);
+        }
+        else if(sumber == 'Pembelian'){
+            formData.append("grup", grup);
+            formData.append("pemasok", supplierId);
+        }
+        
         formData.append("catatan", catatan);
 
         // formData.append("alamat", "30");
-        formData.append("gudang", dataPenerimaan.warehouse_id);
+        // formData.append("gudang", dataPenerimaan.warehouse_id);
 
         // for (let x = 0; x < dataTS.length; x++) {
         formData.append("id_tally_sheet[]", dataTS[0].id);
@@ -471,7 +484,7 @@ const EditPenerimaanBarang = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error,
+                        text: err.response.data.message,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
