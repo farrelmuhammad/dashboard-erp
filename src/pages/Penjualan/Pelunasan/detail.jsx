@@ -16,6 +16,7 @@ import CurrencyFormat from 'react-currency-format';
 import { useReactToPrint } from 'react-to-print';
 import Terbilang from 'terbilang-ts';
 import logo from "../../Logo.jpeg";
+import angkaTerbilang from '@develoka/angka-terbilang-js';
 
 const { Text } = Typography;
 
@@ -768,6 +769,11 @@ const DetailPelunasan = () => {
                                                     <div className='col-6'> : {dataHeader.date} </div>
                                                 </div>
 
+                                                <div className="d-flex flex-row p-2" style={{float:"right", alignContent:"right"}}>
+                                                    <div className='col-10'>
+                                                            {getStatus === 'Cancelled'  ?  <Tag color="red">{getStatus}</Tag> : null }
+                                                    </div>
+                                                </div>
 
                                             </div>
                                             <div>
@@ -837,7 +843,7 @@ const DetailPelunasan = () => {
                                                         <label className='col-6'><b> Total :</b></label>
 
                                                         <div width="100%">{
-                                                            < CurrencyFormat disabled className=' text-end editable-input edit-disabled' style={{ fontWeight: 'bold', width: "70%", fontSize: "10px!important" }} prefix={'Rp '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toFixed(2).replace('.', ',')} key="diskon" />
+                                                            < CurrencyFormat disabled className=' text-end editable-input edit-disabled' style={{ fontWeight: 'bold', width: "70%", fontSize: "10px!important" }} prefix={'Rp '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalAkhir).toString().replace('.', ',')} key="diskon" />
                                                         }  </div>
                                                         <div>
                                                         </div>
@@ -848,7 +854,7 @@ const DetailPelunasan = () => {
 
 
                                             <div className="row" style={{ marginLeft: '5px', height: "80px", alignItems: "start", fontSize: '12px' }}>
-                                                Terbilang: {Terbilang(totalAkhir)} Rupiah
+                                                Terbilang: {angkaTerbilang(Number(totalAkhir).toString().replace('.', ','), {decimal: ','})} Rupiah
                                                 {/* <div className="col-2" style={{alignItems:"start", fontSize:"12px"}}>
               <b> Terbilang : {Terbilang(totalP) +  mataUang} </b>
                 </div> */}
@@ -1021,8 +1027,8 @@ const DetailPelunasan = () => {
                                                 <div className='col float-child' style={{ width: "50%", alignItems: "right" }}>
                                                     <div height="100px"></div>
 
-                                                    <div className=' mt-4 mb-4 col d-flex justify-content-right ps-4 pe-4' height="100px" style={{ fontSize: "12px", fontStyle: "bold" }}>
-                                                        <div className='col-md-4'>
+                                                    <div className=' mt-4 mb-4 col d-flex justify-content-right ps-2 pe-2' height="100px" style={{ fontSize: "12px", fontStyle: "bold" }}>
+                                                        <div className='col-md-6'>
                                                             <div className="d-flex flex-row">
                                                                 <label className='col-6'>No. Kwitansi</label>
                                                                 <div className='col-8'> : {getCode}</div>
@@ -1031,6 +1037,13 @@ const DetailPelunasan = () => {
                                                                 <label className='col-6'>Tanggal</label>
                                                                 <div className='col-8'> : {dataHeader.date}</div>
                                                             </div>
+
+                                                            <div className="d-flex flex-row p-2" style={{float:"right", alignContent:"right"}}>
+                                                                    <div className='col-12' style={{marginRight:'2px'}}>
+                                                                            {getStatus === 'Cancelled'  ?  <Tag color="red">{getStatus}</Tag> : null }
+                                                                    </div>
+                                                            </div>
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1101,7 +1114,7 @@ const DetailPelunasan = () => {
                                                         className="form-control"
                                                         id="form4Example3"
                                                         rows="2"
-                                                        value={Terbilang((totalAkhir)) + mataUangT}
+                                                         value={angkaTerbilang(Number(totalAkhir).toString().replace('.', ','), {decimal: ','}) + mataUangT}
                                                         width={"80%"}
                                                         height={"30px"}
                                                         fontSize={"10px"}

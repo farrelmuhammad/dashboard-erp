@@ -129,7 +129,7 @@ const FakturPembelianTable = () => {
         try {
           axios({
             method: "patch",
-            url: `${Url}/purchase_invoices/cancel/id_faktur_pembelian=${id}`,
+            url: `${Url}/purchase_invoices/cancel?id_faktur_pembelian=${id}`,
             headers: {
               Accept: "application/json",
               Authorization: `Bearer ${auth.token}`,
@@ -323,6 +323,10 @@ const FakturPembelianTable = () => {
   const handleTableChange = (pagination, filters, sorter) => {
     setTableParams({
       pagination,
+      // pagination: {
+      //   ...tableParams.pagination,
+      //   total: 200,
+      // },
       filters,
       ...sorter,
     });
@@ -366,7 +370,7 @@ const FakturPembelianTable = () => {
       width: '25%',
       sorter: (a, b) => a.total.length - b.total.length,
       sortDirections: ['descend', 'ascend'],
-      // ...getColumnSearchProps('total'),
+       ...getColumnSearchProps('total'),
       //   render: (text) => {
       //     return Number(text).toFixed(2).replace('.', ',')
       // },
@@ -391,7 +395,7 @@ const FakturPembelianTable = () => {
         {
           title: 'Tally Sheet',
           dataIndex: 'tally_sheet_status',
-          key: 'tally_sheet_status',
+          key: 'tally_status',
           align: 'center',
           width: '15%',
           render: (_, { tally_status }) => (

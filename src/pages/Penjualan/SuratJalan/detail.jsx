@@ -425,10 +425,16 @@ export const DetailSuratJalan = () => {
                             </div>
                          */}
 
-                                    </div>
-                                    <div>
+                         
+                                    <div className='col-12'>
+                                            <div className="d-flex flex-row p-1" style={{float:"right", alignContent:"right"}}>
+                                                {status === 'Cancelled'  ?  <Tag color="red">{status}</Tag> : null }
+                                            </div>
+                                            <br/>
+                                        </div>
 
                                     </div>
+
                                 </div>
 
                             </tr>

@@ -63,6 +63,7 @@ const EditReturPembelian = () => {
     const [dataHeader, setDataHeader] = useState([])
     const [getStatus, setGetStatus] = useState()
     const [produkRetur, setProdukRetur] = useState([])
+    const [notes, setNotes] = useState('')
 
     function klikEnter(event) {
         if (event.code == "Enter") {
@@ -87,6 +88,10 @@ const EditReturPembelian = () => {
                 setSubTotal(getData.subtotal);
                 setGrandTotalDiscount(getData.discount);
                 setTotalPpn(getData.ppn.toString().replace('.', ','))
+
+                if(getData.notes != null){
+                    setNotes(getData.notes)
+                }
 
                 let total = Number(getData.subtotal) - Number(getData.discount) + Number(getData.ppn)
                 setTotalKeseluruhan(total)
@@ -696,10 +701,10 @@ const EditReturPembelian = () => {
         e.preventDefault();
         const dataRetur = new URLSearchParams();
         dataRetur.append("tanggal", dataHeader.date);
-        dataRetur.append("catatan", dataHeader.notes);
+        dataRetur.append("catatan", notes);
         dataRetur.append("pemasok", dataHeader.supplier_id);
         dataRetur.append("id_faktur_pembelian", fakturId);
-        dataRetur.append('ppn', totalPpn);
+        dataRetur.append('ppn', totalPpn.toString().replace(',','.'));
         dataRetur.append('status', 'Submitted')
 
         for (let i = 0; i < tampilProduk.length; i++) {
@@ -752,10 +757,10 @@ const EditReturPembelian = () => {
         e.preventDefault();
         const dataRetur = new URLSearchParams();
         dataRetur.append("tanggal", dataHeader.date);
-        dataRetur.append("catatan", dataHeader.notes);
+        dataRetur.append("catatan", notes);
         dataRetur.append("pemasok", dataHeader.supplier_id);
         dataRetur.append("id_faktur_pembelian", fakturId);
-        dataRetur.append('ppn', totalPpn);
+        dataRetur.append('ppn', totalPpn.toString().replace(',','.'));
         dataRetur.append('status', 'Draft')
 
         console.log(tampilProduk)
@@ -931,13 +936,32 @@ const EditReturPembelian = () => {
                         <div className="row mb-3">
                             <label htmlFor="inputPassword3" className="col-sm-4 col-form-label">Catatan</label>
                             <div className="col-sm-7">
-                                <textarea
+                                {/* <>
+                                {
+                                    dataHeader.notes != null ? 
+                                    <textarea
                                     className="form-control"
                                     id="form4Example3"
                                     rows="4"
                                     disabled
                                     value={dataHeader.notes}
-                                />
+                                /> :
+                                <textarea
+                                className="form-control"
+                                id="form4Example3"
+                                rows="4"
+                                disabled
+                                value={''}
+                            />
+                                }
+                                </> */}
+                                    <textarea
+                                className="form-control"
+                                id="form4Example3"
+                                rows="4"
+                                disabled
+                                value={notes}
+                            />
                             </div>
                         </div>
 
@@ -1021,6 +1045,7 @@ const EditReturPembelian = () => {
                             <div className="col-sm-6">
                                 {
                                     mataUang === 'Rp ' ?
+                                    
                                         <CurrencyFormat className=' editable-input form-control' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang} onKeyDown={(event) => klikEnter(event)} value={totalPpn.toString().replace('.', ',')} onChange={(e) => klikTambahPpn(e.target.value)} key="ppn" /> :
                                         //  < CurrencyFormat disabled className='form-control form-control-sm edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toFixed(2).replace('.',',')} key="diskon" /> :
                                         < CurrencyFormat className='form-control  editable-input' style={{ width: "70%", fontSize: "10px!important" }} prefix={mataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn).toLocaleString('id')} onChange={(e) => klikTambahPpn(e.target.value)} key="diskon" />

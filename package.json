@@ -13,6 +13,7 @@
     "@ant-design/icons": "^4.7.0",
     "@ant-design/plots": "^1.2.2",
     "@babel/polyfill": "^7.12.1",
+    "@develoka/angka-terbilang-js": "^1.4.2",
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@fortawesome/fontawesome-svg-core": "^6.2.0",

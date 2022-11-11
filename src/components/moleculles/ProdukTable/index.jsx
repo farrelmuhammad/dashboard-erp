@@ -23,6 +23,8 @@ const ProdukTable = () => {
   const [ellipsis, setEllipsis] = useState(true);
   const [dataTampil, setDataTampil] = useState([]);
 
+  const [dataMerek, setDataMerek] = useState([])
+
 
   const { id } = useParams();
 
@@ -151,17 +153,28 @@ const ProdukTable = () => {
       title: 'Merek',
       dataIndex: 'brand',
       key: 'brand',
-      // width: '15%',
+      width: '10%',
       ...getColumnSearchProps('brand'),
       // sorter: true,
-      // sortDirections: ['descend', 'ascend'],
-      // render: (brand) => brand.name
+      sortDirections: ['descend', 'ascend'],
+      render: (text,index) => text
     },
+    // {
+    //   title: 'Merek',
+    //   dataIndex: 'brand',
+    //   key: 'brand',
+    //   // width: '15%',
+    //   ...getColumnSearchProps('brand'),
+    //   // sorter: true,
+    //   // sortDirections: ['descend', 'ascend'],
+    //   //render: (brand) => brand.name
+    //   render: (piece) => piece.name 
+    // },
     {
       title: 'Kategori',
       dataIndex: 'category',
       key: 'category',
-      ...getColumnSearchProps('category'),
+      ...getColumnSearchProps('category.name'),
       render: (category) => category.name
       // render: (text) => (
       //   <Text
@@ -230,6 +243,7 @@ const ProdukTable = () => {
 
   useEffect(() => {
     getProducts();
+    console.log(dataMerek)
   }, []);
 
   const getProducts = async (params = {}) => {
@@ -245,6 +259,8 @@ const ProdukTable = () => {
         const getData = res.data.data
         setProducts(getData)
         console.log(getData);
+
+        setDataMerek(getData[0].brand.name)
 
         setIsLoading(false);
 

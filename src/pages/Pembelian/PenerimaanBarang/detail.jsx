@@ -285,7 +285,7 @@ export const DetailPenerimaanBarang = () => {
                                                 <div className='col float-child'>
                                                     <div className='col' width="100px"></div>
 
-                                                    <div className=' mt-3 mb-4 col d-flex justify-content-right ps-4 pe-4' height="100px" style={{ fontSize: "12px", fontStyle: "bold" }}>
+                                                    <div className=' mt-3 mb-4 col d-flex justify-content-right ps-4 pe-4' height="100px" style={{ maxWidth:"100%", fontSize: "12px", fontStyle: "bold" }}>
                                                         <div className='col-6'>
                                                             <div className="d-flex flex-row">
                                                                 <label className='col-8'>Tanggal</label>
@@ -318,6 +318,14 @@ export const DetailPenerimaanBarang = () => {
                                                                 }
 
                                                             </div>
+                                                          
+                                                            <div className="d-flex flex-row p-2" style={{float:"right", alignContent:"right"}}>
+                                                            <div className='col-12'>
+                                                                 {status === 'Cancelled'  ?  <Tag color="red">{status}</Tag> : null }
+                                                            </div>
+                                                               
+                                                            </div>
+                                           
                                                         </div>
                                                     </div>
                                                 </div>

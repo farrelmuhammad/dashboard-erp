@@ -817,7 +817,15 @@ const DetailRetur = () => {
                                                                         bePelanggan === 'Lainnya' || bePelanggan === 'lainnya' ?
                                                                             '' : bePelanggan} {pelanggan}  </div>
                                                                 </div>
+
+                                                                <div className="d-flex flex-row p-2" style={{float:"right", alignContent:"right"}}>
+                                                                    <div className='col-10'>
+                                                                            {getStatus === 'Cancelled'  ?  <Tag color="red">{getStatus}</Tag> : null }
+                                                                    </div>
+                                                                </div>
+                                                            
                                                             </div>
+                                                        
                                                             {/* <div className='col-6'>
                         <div className="d-flex flex-row">
                               <label className='col-8'>No. Faktur</label>
@@ -844,7 +852,7 @@ const DetailRetur = () => {
                                         <br />
                                         <br />
 
-                                        <div className='mt-5 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold", textAlign: "center" }}>
+                                        <div className='mt-3 mb-3 justify-content-center align-items-center d-flex flex-column' style={{ fontWeight: "bold", textAlign: "center" }}>
                                             <div className='align-items-center' style={{ fontSize: "14px", textDecoration: "underline", textAlign: "center" }}>RETUR PENJUALAN</div>
                                             <div className='align-items-center' style={{ fontSize: "10px", textAlign: "center" }}>NO. {dataHeader.code}</div>
                                         </div>

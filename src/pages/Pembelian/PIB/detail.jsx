@@ -273,6 +273,10 @@ export const DetailPIB = () => {
                                                     <div className='col-6'> : {dataHeader.date} </div>
                                                 </div>
 
+                                                <div className="d-flex flex-row p-3" style={{float:"right", alignContent:"right"}}>
+                                                {dataHeader.status === 'Cancelled'  ?  <Tag color="red">{dataHeader.status}</Tag> : null }
+                                                </div>
+
 
                                             </div>
                                             <div>
@@ -306,7 +310,7 @@ export const DetailPIB = () => {
                                 <td>
                                     <div className="page" style={{ lineHeight: "2", margin: "0" }}>
 
-                                        <div className='mt-3 ps-2 pe-2' >
+                                        <div className='mt-2 ps-2 pe-2' >
 
                                             <table style={{ fontSize: "10px", width: "100%", pageBreakAfter: "auto" }}>
                                                 <tr className='border' style={{ height: "40px", pageBreakInside: "avoid", pageBreakAfter: "auto" }}>
@@ -751,7 +755,7 @@ export const DetailPIB = () => {
                                     type="Nama"
                                     className="form-control"
                                     // onChange={(e) => setReferensi(e.target.value)}
-                                    value={dataHeader.reference}
+                                    value={dataHeader.reference != undefined ? dataHeader.reference : ''}
                                     id="inputNama3"
                                     disabled
                                 />

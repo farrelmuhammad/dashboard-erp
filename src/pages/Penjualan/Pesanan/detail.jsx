@@ -312,7 +312,15 @@ export const DetailPesanan = () => {
                                                     }
                                                     {/* <div className='col-6'> : {customer}</div> */}
                                                 </div>
+                                         
                                             </div>
+
+                                            <div className='col-6'>
+                                            <div className="d-flex flex-row p-3" style={{float:"right", alignContent:"right"}}>
+                                                {status === 'Cancelled'  ?  <Tag color="red">{status}</Tag> : null }
+                                            </div>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </td></tr></thead>

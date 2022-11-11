@@ -353,6 +353,10 @@ const DetailPembayaranPembelian = () => {
                                                     <div className='col-6'> : {dataHeader.date} </div>
                                                 </div>
 
+                                                <div className="d-flex flex-row p-3" style={{float:"right", alignContent:"right"}}>
+                                                {status === 'Cancelled'  ?  <Tag color="red">{status}</Tag> : null }
+                                            </div>
+
 
                                             </div>
                                             <div>
