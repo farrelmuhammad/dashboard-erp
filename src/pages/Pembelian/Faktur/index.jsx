@@ -42,7 +42,7 @@ const FakturPembelian = () => {
     message
       .loading('Download sedang diproses', 2.5)
       .then(async () => {
-        await axios.get(`${Url}/purchase_invoices/download_excel?startDate=${startDate}&endDate=${endDate}&group=${groupType}`)
+        await axios.get(`${Url}/purchase_invoices/download_excel?start_date=${startDate}&end_date=${endDate}&group=${groupType}`)
           .then((res) => {
             const getData = res.data;
             if (getData.status === true) {
