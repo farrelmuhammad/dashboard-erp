@@ -40,13 +40,13 @@ const FakturPembelian = () => {
   const handleOk = () => {
     // downloadLaporan()
     message
-      .loading('Action in progress..', 2.5)
+      .loading('Download sedang diproses', 2.5)
       .then(async () => {
         await axios.get(`${Url}/purchase_invoices/download_excel?startDate=${startDate}&endDate=${endDate}&group=${groupType}`)
           .then((res) => {
             const getData = res.data;
             if (getData.status === true) {
-              message.success('Download finished', 2.5)
+              message.success('Download berhasil!', 2.5)
               var file_path = getData.file;
               var a = document.createElement('A');
               a.href = file_path;
