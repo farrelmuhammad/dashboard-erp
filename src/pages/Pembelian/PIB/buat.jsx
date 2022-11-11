@@ -433,7 +433,7 @@ const BuatPIB = () => {
     }
 
     function klikUbahPPn(value) {
-        let hasil = value.toString().replace('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',', '.');
+        let hasil = value.toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',', '.');
         console.log(value)
         setTotalPpn(hasil);
 
@@ -746,7 +746,7 @@ const BuatPIB = () => {
 
             }
             formData.append("tanggal", date);
-            formData.append("nomor_pib", getCode);
+            // formData.append("nomor_pib", getCode);
             formData.append("bagan_akun", bankId);
             formData.append("nomor_bl", noBL);
             formData.append("mata_uang", mataUangId);
