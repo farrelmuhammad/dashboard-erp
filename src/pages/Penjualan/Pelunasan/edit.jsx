@@ -169,7 +169,7 @@ const EditPelunasan = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/sales_invoice_payments_available_sales_invoices?include_sales_invoice_payment_sales_invoices=${id}&kode=${query}&penerima=${customer}`, {
+            const res = await axios.get(`${Url}/sales_invoice_payments_available_sales_invoices?include_sales_invoice_payment_sales_invoices=${id}&kode=${query}&id_penerima=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`

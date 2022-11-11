@@ -130,9 +130,9 @@ const EditCreditNote = () => {
                 setSupplierId(res.data.data[0].supplier.id)
                 setCode(res.data.data[0].code)
 
-                if (res.data.data[0].purchase_invoice) {
+                if (res.data.data[0].purchase_invoice_code) {
 
-                    setSelectedFaktur(res.data.data[0].purchase_invoice.name)
+                    setSelectedFaktur(res.data.data[0].purchase_invoice_code)
                 } else {
 
                     setSelectedFaktur('-')

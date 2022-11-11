@@ -46,7 +46,7 @@ const BuatPIB = () => {
     const [totalAkhir, setTotalAkhir] = useState('');
     const [sisaAkhir, setSisaAkhir] = useState('-')
     const [kurs, setKurs] = useState(0);
-    const [referensi, setReferensi] = useState()
+    const [referensi, setReferensi] = useState('')
 
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [tampilPilihProduk, setTampilPilihProduk] = useState(false)
@@ -273,7 +273,7 @@ const BuatPIB = () => {
     // };
 
     useEffect(() => {
-        axios.get(`${Url}/select_chart_of_accounts?induk=0&kode_kategori[]=111`, {
+        axios.get(`${Url}/select_chart_of_accounts?anak_terakhir=1&kode_kategori[]=111`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
@@ -281,10 +281,10 @@ const BuatPIB = () => {
         }).then((res) => {
             let tmp = []
             //let data = res.data.data
-            for (let x = 0; x < res.data.data.length; x++) {
+            for (let x = 0; x < res.data.length; x++) {
                 tmp.push({
-                    value: res.data.data[x].id,
-                    label: res.data.data[x].name,
+                    value: res.data[x].id,
+                    label: res.data[x].name,
                 })
             }
             setDataBank(tmp)
@@ -589,10 +589,10 @@ const BuatPIB = () => {
             const formData = new FormData();
             formData.append("tanggal", date);
             if (code) {
-                formData.append("code", code);
+                formData.append("kode", code);
 
             }
-            formData.append("nomor_pib", getCode);
+            // formData.append("nomor_pib", getCode);
             formData.append("bagan_akun", bankId);
             formData.append("nomor_bl", noBL);
             formData.append("mata_uang", mataUangId);
@@ -734,7 +734,7 @@ const BuatPIB = () => {
             console.log(bankId)
             const formData = new FormData();
             if (code) {
-                formData.append("code", code);
+                formData.append("kode", code);
 
             }
             formData.append("tanggal", date);

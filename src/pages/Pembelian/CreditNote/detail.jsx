@@ -44,9 +44,9 @@ export const DetailCreditNote = () => {
 
                 console.log(code)
                 setSelectedSupplier(getData.supplier_name);
-                if (getData.purchase_invoice) {
+                if (getData.purchase_invoice_code) {
 
-                    setSelectedFaktur(getData.purchase_invoice.name)
+                    setSelectedFaktur(getData.purchase_invoice_code)
                 } else {
 
                     setSelectedFaktur('-')

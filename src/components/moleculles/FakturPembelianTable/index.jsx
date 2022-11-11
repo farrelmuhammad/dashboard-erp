@@ -370,7 +370,7 @@ const FakturPembelianTable = () => {
       width: '25%',
       sorter: (a, b) => a.total.length - b.total.length,
       sortDirections: ['descend', 'ascend'],
-       ...getColumnSearchProps('total'),
+      ...getColumnSearchProps('total'),
       //   render: (text) => {
       //     return Number(text).toFixed(2).replace('.', ',')
       // },
@@ -401,7 +401,7 @@ const FakturPembelianTable = () => {
           render: (_, { tally_status }) => (
             <>
               {/* {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> :  <Tag color="red">{status}</Tag>} */}
-              { tally_status === 'Done' ? <Tag color="green">{tally_status}</Tag> : tally_status === 'Processed' ? <Tag color="purple">{tally_status}</Tag> : <>-</>
+              {tally_status === 'Done' ? <Tag color="green">{tally_status}</Tag> : tally_status === 'Processed' ? <Tag color="purple">{tally_status}</Tag> : <>-</>
               }
             </>
           ),
@@ -418,7 +418,7 @@ const FakturPembelianTable = () => {
           render: (_, { pib_status }) => (
             <>
               {/* {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> :  <Tag color="red">{status}</Tag>} */}
-              { pib_status === 'Done' ? <Tag color="green">{pib_status}</Tag> : pib_status === 'Processed' ? <Tag color="purple">{pib_status}</Tag> : <>-</>
+              {pib_status === 'Done' ? <Tag color="green">{pib_status}</Tag> : pib_status === 'Processed' ? <Tag color="purple">{pib_status}</Tag> : <>-</>
               }
             </>
           ),
@@ -435,7 +435,7 @@ const FakturPembelianTable = () => {
           render: (_, { status }) => (
             <>
               {/* {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> :  <Tag color="red">{status}</Tag>} */}
-              {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Cancelled' ? <Tag color="red">{status}</Tag> : status === 'Processed' ? <Tag color="purple">{status}</Tag> : <>-</>
+              {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="orange">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Cancelled' ? <Tag color="red">{status}</Tag> : status === 'Processed' ? <Tag color="purple">{status}</Tag> : <Tag color="red">{status}</Tag>
               }
             </>
           ),

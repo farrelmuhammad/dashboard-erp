@@ -252,7 +252,7 @@ const BuatPelunasan = () => {
     }, [])
 
     useEffect(() => {
-        axios.get(`${Url}/sales_invoice_payments_available_sales_invoices?penerima=${customer}`, {
+        axios.get(`${Url}/sales_invoice_payments_available_sales_invoices?id_penerima=${customer}`, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${auth.token}`
@@ -265,7 +265,7 @@ const BuatPelunasan = () => {
     useEffect(() => {
         const getProduct = async () => {
             console.log(query)
-            const res = await axios.get(`${Url}/sales_invoice_payments_available_sales_invoices?kode=${query}&penerima=${customer}`, {
+            const res = await axios.get(`${Url}/sales_invoice_payments_available_sales_invoices?kode=${query}&id_penerima=${customer}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`

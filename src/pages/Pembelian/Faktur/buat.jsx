@@ -951,7 +951,7 @@ const BuatFakturPembelian = () => {
     }
     function ubahCOA(value, id) {
         // console.log(tampilCOA)
-        let hasil = value.replace('.', '').replace(/[^0-9_,\.]+/g, "");
+        let hasil = value.replaceAll('.', '').replace(/[^0-9_,\.]+/g, "");
         let hasilHitung = hasil.replace(',', '.')
 
         let tmp = []
@@ -1193,7 +1193,7 @@ const BuatFakturPembelian = () => {
         let tmpDataCentang = [...tmpCentang]
 
         //pengecekan centang
-        if (grup == "Lokal") { 
+        if (grup == "Lokal") {
             for (let i = 0; i < getDataProduct.length; i++) {
                 if (i == index) {
                     tmpDataBaru.push({
@@ -1581,8 +1581,9 @@ const BuatFakturPembelian = () => {
                 formData.append("muatan", muatan.replace(/[^0-9\.]+/g, ""))
             }
 
-            if (code) { getCodeFaktur }
-            formData.append("kode", code);
+            if (code) {
+                formData.append("kode", code);
+            }
             formData.append("karton", ctn);
             formData.append("pemasok", supplier);
             formData.append("catatan", description);
@@ -1731,7 +1732,9 @@ const BuatFakturPembelian = () => {
             }
 
 
-            if (code) { getCodeFaktur }
+            if (code) {
+                formData.append("kode", code);
+            }
             formData.append("karton", ctn);
             formData.append("pemasok", supplier);
             formData.append("catatan", description);
@@ -2253,9 +2256,12 @@ const BuatFakturPembelian = () => {
                             <div className="col-sm-6">{convertToRupiah(totalCOA)} </div>
                         </div>
 
-                        <div className="d-flex justify-content-end mb-3">
-                            <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">Credit Note</label>
-                            <div className="col-sm-6">{convertToRupiah(totalCredit)} </div>
+                        <div className='mt-4' style={{ display: impor ? "block" : "none" }}>
+
+                            <div className="d-flex justify-content-end mb-3">
+                                <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">Credit Note</label>
+                                <div className="col-sm-6">{convertToRupiah(totalCredit)} </div>
+                            </div>
                         </div>
 
                         <div className="d-flex justify-content-end mb-3">

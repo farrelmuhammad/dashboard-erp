@@ -167,7 +167,10 @@ const EditPIB = () => {
                 setTotalAkhir(Number(getData.total).toFixed(2).replace('.', ','))
                 setEstimasiAwal(getData.shipment_period_end_date);
                 setSelectedBank(getData.chart_of_account_name)
-                setReferensi(getData.reference);
+                if (getData.reference) {
+                    setReferensi(getData.reference);
+
+                }
                 setSubTotal(getData.subtotal);
                 setLoading(false);
             })
@@ -716,10 +719,10 @@ const EditPIB = () => {
                             <div className="col-sm-7">
                                 <input
                                     defaultValue={getCode}
+                                    onChange={(e)=> setGetCode(e.target.value)}
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
-                                    disabled
                                 />
                             </div>
                         </div>

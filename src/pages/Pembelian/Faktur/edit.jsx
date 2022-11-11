@@ -84,7 +84,7 @@ const EditFakturPembelian = () => {
         getAkun()
         getCredit()
     }, [])
-    useEffect(()=> {
+    useEffect(() => {
         getCredit()
 
     }, [supplierId])
@@ -106,6 +106,7 @@ const EditFakturPembelian = () => {
                 setGetStatus(getData.status)
                 let total = Number(getData.ppn) - Number(getData.down_payment) + Number(getData.subtotal) - Number(getData.discount)
                 setTotalKeseluruhan(total)
+                setJatuhTempo(getData.due_date)
                 setGrandTotalDiscount(getData.discount)
                 setGrup(getData.supplier._group)
                 if (getData.notes) {
@@ -150,7 +151,7 @@ const EditFakturPembelian = () => {
                         deskripsi: listCredit[i].credit_note.description,
                         jumlah: listCredit[i].credit_note.nominal,
                     })
-                    totalCredit = totalCredit + Number(listCredit[i].total);
+                    totalCredit = totalCredit + Number(listCredit[i].credit_note.nominal);
 
                 }
                 setTotalCredit(totalCredit)
@@ -276,7 +277,7 @@ const EditFakturPembelian = () => {
 
     function getAkun() {
         let tmp = [];
-        axios.get(`${Url}/filter_chart_of_accounts?induk=0&kode_kategori[]=511&kode_kategori[]=512&kode_kategori[]=611&kode_kategori[]=612&kode_kategori[]=811`, {
+        axios.get(`${Url}/select_chart_of_accounts?induk=0&kode_kategori[]=511&kode_kategori[]=512&kode_kategori[]=611&kode_kategori[]=612&kode_kategori[]=811`, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${auth.token}`
@@ -786,6 +787,8 @@ const EditFakturPembelian = () => {
         {
             title: 'Nama Produk',
             dataIndex: 'nama',
+            width: '13%',
+
             render(text) {
                 return {
                     props: {
@@ -798,7 +801,7 @@ const EditFakturPembelian = () => {
         {
             title: 'Qty',
             dataIndex: 'qty',
-            width: '10%',
+            width: '15%',
             align: 'center',
             editable: true,
         },
@@ -826,7 +829,7 @@ const EditFakturPembelian = () => {
         {
             title: 'Discount',
             dataIndex: 'disc',
-            width: '16%',
+            width: '10%',
             align: 'center',
             editable: true,
         },
@@ -1563,6 +1566,7 @@ const EditFakturPembelian = () => {
         formData.append("karton", dataHeader.carton);
         // formData.append("term", term);
         formData.append("uang_muka", uangMuka);
+        formData.append("tanggal_jatuh_tempo", jatuhTempo);
         formData.append("tanggal_jatuh_tempo", dataHeader.due_date);
         formData.append("nomor_kontainer", dataHeader.payload);
         formData.append("id_faktur_pembelian", id);
@@ -1645,6 +1649,7 @@ const EditFakturPembelian = () => {
         e.preventDefault();
         const formData = new URLSearchParams();
         formData.append("tanggal", dataHeader.date);
+        formData.append("tanggal_jatuh_tempo", jatuhTempo);
         formData.append("pemasok", dataHeader.supplier_id);
         formData.append("kode", code);
         formData.append("catatan", description);
@@ -1850,6 +1855,19 @@ const EditFakturPembelian = () => {
                         </div>
                     </div>
                     <div className="col">
+                        <div className="row mb-3">
+                            <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Tanggal Jatuh Tempo</label>
+                            <div className="col-sm-7">
+                                <input
+                                    id="startDate"
+                                    className="form-control"
+                                    type="date"
+                                    defaultValue={jatuhTempo}
+                                    onChange={(e) => setJatuhTempo(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
                         <div className="row mb-3" style={{ display: impor ? "flex" : "none" }}>
                             <label htmlFor="inputNama3" className="col-sm-4 col-form-label" >Muatan</label>
                             <div className="col-sm-7">
@@ -1887,6 +1905,7 @@ const EditFakturPembelian = () => {
                                 />
                             </div>
                         </div>
+
 
 
                         <div className="row mb-3">
@@ -2126,6 +2145,14 @@ const EditFakturPembelian = () => {
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">Biaya</label>
                             <div className="col-sm-6">{convertToRupiah(totalCOA)} </div>
                         </div>
+                        {
+                            grup == 'Impor' ?
+                                <div className="d-flex justify-content-end mb-3">
+                                    <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">Credit Note</label>
+                                    <div className="col-sm-6">{convertToRupiah(totalCredit)} </div>
+                                </div> : null
+                        }
+
                         <div className="d-flex justify-content-end mb-3">
                             <label for="colFormLabelSm" className="col-sm-4 col-form-label col-form-label-sm">Total</label>
                             <div className="col-sm-6">{convertToRupiah(totalKeseluruhan)} </div>

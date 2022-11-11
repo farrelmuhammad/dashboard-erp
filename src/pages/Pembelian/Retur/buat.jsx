@@ -89,19 +89,19 @@ const BuatReturPembelian = () => {
 
     // faktur 
     useEffect(() => {
-        axios.get(`${Url}/select_purchase_invoices/all?status=Submitted&id_pemasok=${supplierId}`, {
+        axios.get(`${Url}/purchase_returns_available_purchase_invoices?id_pemasok=${supplierId}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
         }).then((res) => {
             let tmp = []
-            for (let i = 0; i < res.data.length; i++) {
+            for (let i = 0; i < res.data.data.length; i++) {
 
                 tmp.push({
-                    value: res.data[i].id,
-                    label: res.data[i].code,
-                    info: res.data[i]
+                    value: res.data.data[i].id,
+                    label: res.data.data[i].code,
+                    info: res.data.data[i]
                 });
             }
 
