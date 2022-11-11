@@ -371,89 +371,21 @@ const BuatPesanan = () => {
 
         for (let i = 0; i < product.length; i++) {
             if (checked) {
-                // total += (Number(product[i].quantity) * Number(product[i].price));
-                // totalPerProduk = (Number(product[i].quantity) * Number(product[i].price));
-
                 if (i === index) {
                     tmp[i] = value;
-                    //     console.log(value)
-                    //     if (value == 'percent') {
-                    //         hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                    //         rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
                 }
-                //     else if (value == 'nominal') {
-
-                //         hasilDiskon += Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
-                //         rowDiscount = Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
-                //     }
-                // }
                 else {
                     tmp[i] = jumlahDiskon[i];
-                    //     if (pilihanDiskon[i] == 'percent') {
-                    //         hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                    //         rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                    //     }
-                    //     else if (pilihanDiskon[i] == 'nominal') {
-                    //         hasilDiskon += Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
-                    //         rowDiscount = Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
-                    //     }
                 }
-                // subTotalDiscount = totalPerProduk - rowDiscount;
-                // subTotal += (totalPerProduk * 100) / (100 + product[i].ppn);
-                // totalDiscount += ((rowDiscount * 100) / (100 + product[i].ppn));
-                // totalPpn += ((((totalPerProduk * 100) / (100 + product[i].ppn)) - (rowDiscount * 100) / (100 + product[i].ppn)) * product[i].ppn) / (100);
-                // grandTotal = subTotal - totalDiscount + Number(totalPpn);
-                // setSubTotal(subTotal)
-                // setGrandTotalDiscount(totalDiscount);
-                // setTotalPpn(totalPpn)
-                // setGrandTotal(grandTotal);
-                // console.log(grandTotal)
-
                 setJumlahDiskon(tmp);
-
-
-
             } else {
-                // total += (Number(product[i].quantity) * Number(product[i].price));
-                // totalPerProduk = (Number(product[i].quantity) * Number(product[i].price));
                 if (i === index) {
                     tmp[i] = value;
-                    // if (pilihanDiskon[i] == 'percent') {
-                    //     hasilDiskon += (Number(totalPerProduk) * Number(value) / 100);
-                    //     rowDiscount = (Number(totalPerProduk) * Number(value) / 100);
-                    // }
-                    // else if (pilihanDiskon[i] == 'nominal') {
-
-                    //     hasilDiskon += Number(value.toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
-                    //     rowDiscount = Number(value.toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
-                    // }
                 }
                 else {
                     tmp[i] = jumlahDiskon[i];
-                    // if (pilihanDiskon[i] == 'percent') {
-                    //     hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                    //     rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                    // }
-                    // else if (pilihanDiskon[i] == 'nominal') {
-
-                    //     hasilDiskon += Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
-                    //     rowDiscount = Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
-                    // }
                 }
-
-                // totalDiscount += Number(rowDiscount);
-                // subTotalDiscount = totalPerProduk - rowDiscount;
-                // totalPpn += (subTotalDiscount * Number(product[i].ppn)) / 100;
-                // grandTotal = Number(total) - Number(totalDiscount) + Number(totalPpn);
-
-                // setSubTotal(Number(total));
-                // setGrandTotalDiscount(totalDiscount);
-                // setTotalPpn(totalPpn)
-                // setGrandTotal(grandTotal);
-
                 setJumlahDiskon(tmp);
-                // calculate(product, checked)
-
             }
 
         }
@@ -462,13 +394,6 @@ const BuatPesanan = () => {
 
     }
     const convertToRupiah = (angka, namaMataUang) => {
-        // return <input
-        //     value={namaMataUang + ' ' + angka.toLocaleString('id')}
-        //     readOnly="true"
-        //     className="form-control form-control-sm"
-        //     id="colFormLabelSm"
-        // />
-
         return <>
             {
                 namaMataUang === 'Rp' ?
@@ -483,66 +408,70 @@ const BuatPesanan = () => {
         return < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" />
     }
     const [totalPerProduk, setTotalPerProduk] = useState([]);
-    useEffect(() => {
-        let totalPerProduk = 0;
-        let grandTotal = 0;
-        let total = 0;
-        let hasilDiskon = 0;
-        let subTotal = 0;
-        let totalPpn = 0;
-        let rowDiscount = 0;
-        let subTotalDiscount = 0;
-        let totalDiscount = 0;
-        product.map((values, i) => {
-            if (checked) {
-                total += (Number(values.quantity) * Number(values.price));
-                totalPerProduk = (Number(values.quantity) * Number(values.price));
+    // useEffect(() => {
+    //     let totalPerProduk = 0;
+    //     let grandTotal = 0;
+    //     let total = 0;
+    //     let hasilDiskon = 0;
+    //     let subTotal = 0;
+    //     let totalPpn = 0;
+    //     let rowDiscount = 0;
+    //     let subTotalDiscount = 0;
+    //     let totalDiscount = 0;
+    //     product.map((values, i) => {
+    //         if (checked) {
+    //             total += (Number(values.quantity) * Number(values.price));
+    //             totalPerProduk = (Number(values.quantity) * Number(values.price));
 
-                if (pilihanDiskon[i] == 'percent') {
-                    hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                    rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                }
-                else if (pilihanDiskon[i] == 'nominal') {
+    //             if (pilihanDiskon[i] == 'percent') {
+    //                 hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+    //                 rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+    //             }
+    //             else if (pilihanDiskon[i] == 'nominal') {
 
-                    hasilDiskon += Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
-                    rowDiscount = Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
-                }
-                totalDiscount += ((rowDiscount * 100) / (100 + Number(values.ppn)));
-                subTotalDiscount = totalPerProduk - rowDiscount;
-                subTotal += (subTotalDiscount * 100) / (100 + Number(values.ppn));
-                totalPpn = (subTotal * Number(values.ppn)) / 100;
-                grandTotal = subTotal - hasilDiskon + Number(totalPpn);
+    //                 hasilDiskon += Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
+    //                 rowDiscount = Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
+    //             }
+    //             totalDiscount += ((rowDiscount * 100) / (100 + Number(values.ppn)));
+    //             subTotalDiscount = totalPerProduk - rowDiscount;
+    //             subTotal += (subTotalDiscount * 100) / (100 + Number(values.ppn));
+    //             totalPpn = (subTotal * Number(values.ppn)) / 100;
+    //             grandTotal = subTotal - hasilDiskon + Number(totalPpn);
 
-                setSubTotal(subTotal)
-                 setGrandTotalDiscount(totalDiscount);
-                 setTotalPpn(totalPpn)
-                 setGrandTotal(grandTotal);
-            } else {
-                total += (Number(values.quantity) * Number(values.price));
-                totalPerProduk = (Number(values.quantity) * Number(values.price));
+    //             setSubTotal(subTotal)
+    //              setGrandTotalDiscount(totalDiscount);
+    //              setTotalPpn(totalPpn)
+    //             console.log(totalPpn)
 
-                if (pilihanDiskon[i] == 'percent') {
-                    hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                    rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                }
-                else if (pilihanDiskon[i] == 'nominal') {
+    //              setGrandTotal(grandTotal);
+    //         } else {
+    //             total += (Number(values.quantity) * Number(values.price));
+    //             totalPerProduk = (Number(values.quantity) * Number(values.price));
 
-                    hasilDiskon += Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
-                    rowDiscount = Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
-                }
-                totalDiscount += Number(rowDiscount);
-                subTotal = total - (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                subTotalDiscount = totalPerProduk - rowDiscount;
-                totalPpn += (subTotalDiscount * Number(values.ppn)) / 100;
-                grandTotal = total - totalDiscount + Number(totalPpn);
+    //             if (pilihanDiskon[i] == 'percent') {
+    //                 hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+    //                 rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+    //             }
+    //             else if (pilihanDiskon[i] == 'nominal') {
 
-                 setSubTotal(total)
-                 setGrandTotalDiscount(totalDiscount);
-                setTotalPpn(totalPpn)
-                 setGrandTotal(grandTotal);
-            }
-        })
-    }, [jumlahDiskon]);
+    //                 hasilDiskon += Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
+    //                 rowDiscount = Number(jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
+    //             }
+    //             totalDiscount += Number(rowDiscount);
+    //             subTotal = total - (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+    //             subTotalDiscount = totalPerProduk - rowDiscount;
+    //             totalPpn += (subTotalDiscount * Number(values.ppn)) / 100;
+    //             grandTotal = total - totalDiscount + Number(totalPpn);
+
+    //              setSubTotal(total)
+    //              setGrandTotalDiscount(totalDiscount);
+    //             setTotalPpn(totalPpn)
+    //             console.log(totalPpn)
+
+    //              setGrandTotal(grandTotal);
+    //         }
+    //     })
+    // }, [jumlahDiskon]);
 
     const defaultColumns = [
         {
@@ -747,7 +676,7 @@ const BuatPesanan = () => {
         newData.splice(index, 1, { ...item, ...row });
         setProduct(newData);
         let check_checked = checked;
-        calculate(newData,jumlahDiskon, check_checked);
+        calculate(newData, jumlahDiskon, check_checked);
     };
 
     const calculate = (product, jumlahDiskon, check_checked) => {
@@ -972,7 +901,7 @@ const BuatPesanan = () => {
                 }
                 else if (pilihanDiskon[i] == 'nominal') {
                     userData.append("diskon_tetap[]", jumlahDiskon[i].toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replace(',', '.'));
-                   // userData.append("diskon_tetap[]", jumlahDiskon[i]);
+                    // userData.append("diskon_tetap[]", jumlahDiskon[i]);
                     userData.append("persentase_diskon[]", 0);
                 }
                 userData.append("ppn[]", p.ppn);
