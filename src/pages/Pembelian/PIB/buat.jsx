@@ -357,8 +357,10 @@ const BuatPIB = () => {
 
     const [totalBea, setTotalBea] = useState(0)
     function klikTambahBea(value, rupiah) {
-        let hasil = value.replace('.', '').replace(/[^0-9\.]+/g, "");
+        let hasil = value.toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',', '.');
+       console.log(value)
         setTotalBea(hasil)
+        console.log(hasil)
 
         // menghitung sub total 
         let subTotal = 0;
@@ -388,7 +390,8 @@ const BuatPIB = () => {
     }
 
     function setUbahKurs(value) {
-        let hasil = value.replaceAll('.', '').replace(/[^0-9\.]+/g, "");
+        let hasil = value.toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',', '.');
+        console.log(hasil)
         let tempRupiah = []
         let tempTotal = []
         let subTotal = 0;
@@ -420,21 +423,26 @@ const BuatPIB = () => {
 
     const [totalPph, setTotalPph] = useState(0)
     function klikUbahPPh(value) {
-        let hasil = value.replace('.', '').replace(/[^0-9\.]+/g, "");
+        let hasil = value.toString().replaceAll('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',', '.');
 
         setTotalPph(hasil);
+        console.log(value)
 
         let totalAkhir = Number(hasil) + Number(subTotal) + Number(totalBea) + Number(totalPpn);
         setTotalAkhir(totalAkhir);
     }
 
     function klikUbahPPn(value) {
-        let hasil = value.replace('.', '').replace(/[^0-9\.]+/g, "");
-
+        let hasil = value.toString().replace('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',', '.');
+        console.log(value)
         setTotalPpn(hasil);
 
         let totalAkhir = Number(hasil) + Number(subTotal) + Number(totalBea) + Number(totalPph);
         setTotalAkhir(totalAkhir);
+        console.log(hasil)
+        console.log(subTotal)
+        console.log(totalBea)
+        console.log(totalPph)
     }
 
     function hapusFaktur(id) {
@@ -903,7 +911,7 @@ const BuatPIB = () => {
                             <label htmlFor="inputKode3" className="col-sm-4 col-form-label">Rate Kurs</label>
                             <div className="col-sm-7">
 
-                                <CurrencyFormat prefix='Rp ' className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={kurs} onKeyDown={(event) => klikEnter(event)} onChange={(e) => setUbahKurs(e.target.value)} key="total" />
+                                <CurrencyFormat prefix='Rp ' className='edit-disabled form-control' thousandSeparator={'.'} decimalSeparator={','} value={kurs.toString().replace('.',',')} onKeyDown={(event) => klikEnter(event)} onChange={(e) => setUbahKurs(e.target.value)} key="total" />
 
 
                             </div>
@@ -1053,22 +1061,22 @@ const BuatPIB = () => {
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={6} className="text-end">Bea Masuk</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp ' className='text-center editable-input pib-currencyinput' thousandSeparator={'.'} decimalSeparator={','} value={Number(totalBea)} key="pay" onKeyDown={(event) => klikEnter(event)} onChange={(e) => klikTambahBea(e.target.value, totalRupiah)} />
+                                            <CurrencyFormat prefix='Rp ' className='text-center editable-input pib-currencyinput' thousandSeparator={'.'} decimalSeparator={','} value={totalBea.toString().replace('.',',')} key="pay" onKeyDown={(event) => klikEnter(event)} onChange={(e) => klikTambahBea(e.target.value, totalRupiah)} />
 
-
-                                        </Table.Summary.Cell>
-                                    </Table.Summary.Row>
-                                    <Table.Summary.Row>
-                                        <Table.Summary.Cell index={0} colSpan={6} className="text-end">PPh 22</Table.Summary.Cell>
-                                        <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp ' className='text-center editable-input pib-currencyinput' onKeyDown={(event) => klikEnter(event)} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPpn)} onChange={(e) => klikUbahPPn(e.target.value)} key="pay" />
 
                                         </Table.Summary.Cell>
                                     </Table.Summary.Row>
                                     <Table.Summary.Row>
                                         <Table.Summary.Cell index={0} colSpan={6} className="text-end">PPN</Table.Summary.Cell>
                                         <Table.Summary.Cell index={1}>
-                                            <CurrencyFormat prefix='Rp ' className='text-center editable-input pib-currencyinput' onKeyDown={(event) => klikEnter(event)} thousandSeparator={'.'} decimalSeparator={','} value={Number(totalPph)} onChange={(e) => klikUbahPPh(e.target.value)} key="pay"
+                                            <CurrencyFormat prefix='Rp ' className='text-center editable-input pib-currencyinput' onKeyDown={(event) => klikEnter(event)} thousandSeparator={'.'} decimalSeparator={','} value={totalPpn.toString().replace('.',',')} onChange={(e) => klikUbahPPn(e.target.value)} key="pay" />
+
+                                        </Table.Summary.Cell>
+                                    </Table.Summary.Row>
+                                    <Table.Summary.Row>
+                                        <Table.Summary.Cell index={0} colSpan={6} className="text-end">PPh 22</Table.Summary.Cell>
+                                        <Table.Summary.Cell index={1}>
+                                            <CurrencyFormat prefix='Rp ' className='text-center editable-input pib-currencyinput' onKeyDown={(event) => klikEnter(event)} thousandSeparator={'.'} decimalSeparator={','} value={totalPph.toString().replace('.',',')} onChange={(e) => klikUbahPPh(e.target.value)} key="pay"
                                             />
 
                                         </Table.Summary.Cell>
