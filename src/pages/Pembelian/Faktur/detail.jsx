@@ -509,8 +509,14 @@ const DetailFakturPembelian = () => {
                                                 </div>
 
                                             </div>
-                                        </div>
 
+                                        </div>
+                                        <div className="d-flex flex-row p-2" style={{float:"right", alignContent:"right", marginRight:"5px"}}>
+                                                            <div className='col-2'>
+                                                                 {getStatus === 'Cancelled'  ?  <Tag color="red">{getStatus}</Tag> : null }
+                                                            </div>
+                                                               
+                                            </div>
                                         <br />
                                     </div>
                                 </td>

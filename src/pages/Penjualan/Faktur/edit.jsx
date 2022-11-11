@@ -168,7 +168,7 @@ const EditFaktur = () => {
     const handleChangeTipe = (value) => {
         // console.log(value)
         // setSelectedAddress('')
-        console.log(value)
+        // console.log(value)
         setSelectedType(value);
     };
 
@@ -201,7 +201,7 @@ const EditFaktur = () => {
 
     useEffect(() => {
         setGrandTotal(Number(subTotal) - Number(grandTotalDiscount) + Number(totalPpn) - Number(uangMuka));
-        console.log(Number(subTotal) - Number(grandTotalDiscount) + Number(totalPpn) - Number(uangMuka))
+        // console.log(Number(subTotal) - Number(grandTotalDiscount) + Number(totalPpn) - Number(uangMuka))
     }, [totalPpn, uangMuka, product]);
 
     const getDataFaktur = async () => {
@@ -267,7 +267,7 @@ const EditFaktur = () => {
                             discount_percentage: updatedList[i].discount_percentage,
                             fixed_discount: updatedList[i].fixed_discount,
                             subtotal: updatedList[i].subtotal,
-                            pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'noDisc' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
+                            pilihanDiskon: updatedList[i].fixed_discount == 0 && updatedList[i].discount_percentage == 0 ? 'persen' : updatedList[i].fixed_discount == 0 ? 'persen' : 'nominal',
                             ppn: updatedList[i].ppn,
                             unit: updatedList[i].unit,
                             total: updatedList[i].total
@@ -275,12 +275,13 @@ const EditFaktur = () => {
                         })
                 }
                 setData(tmpData);
+                // console.log(tmpData)
                 setProduct(tmpData)
 
                 for (let i = 0; i < dataSumber.length; i++) {
                     tmpTandaTerima.push(dataSumber[i].id)
                 }
-                console.log(updatedList)
+                // console.log(updatedList)/
                 setIdTandaTerima(tmpTandaTerima)
                 calculate(tmpData, getData.tax_included);
                 setLoading(false);
@@ -308,7 +309,7 @@ const EditFaktur = () => {
             }
 
             setGetDataProduct(tmp);
-            console.log(res.data.data)
+            // console.log(res.data.data)
         };
 
         if (query.length === 0 || query.length > 2) getProduct();
@@ -347,7 +348,7 @@ const EditFaktur = () => {
 
             // jika belum diubah samsek 
             else {
-                console.log("sfsf")
+                // console.log("sfsf")
                 for (let i = 0; i < res.data.length; i++) {
 
                     if (res.data[i].is_checked) {
@@ -429,13 +430,18 @@ const EditFaktur = () => {
         },
         {
             title: 'Nama Produk Alias',
-            width: '17%',
+            width: '8%',
             dataIndex: 'product_alias_name',
+        },
+        {
+            title: 'Nama Produk',
+            width: '8%',
+            dataIndex: 'product_name',
         },
         {
             title: 'Qty',
             dataIndex: 'quantity',
-            width: '12%',
+            width: '10%',
             align: 'center',
             editable: true,
             // render(text, record) {
@@ -455,14 +461,14 @@ const EditFaktur = () => {
         {
             title: 'Harga',
             dataIndex: 'price',
-            width: '10%',
+            width: '15%',
             align: 'center',
             editable: true,
         },
         {
             title: 'Discount',
             dataIndex: 'discount',
-            width: '18%',
+            width: '10%',
             align: 'center',
 
         },
@@ -477,7 +483,7 @@ const EditFaktur = () => {
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '16%',
+            width: '20%',
             align: 'center',
 
         },
@@ -508,6 +514,7 @@ const EditFaktur = () => {
     }
 
     function klikUbahData(y, value, key) {
+        // console.log(value)
         let tmpData = [];
         if (key == 'qty') {
             let hasil = value.replaceAll('.', '');
@@ -629,7 +636,7 @@ const EditFaktur = () => {
         else if (key == 'pilihanDiskon') {
             for (let i = 0; i < data.length; i++) {
                 if (i == y) {
-                    console.log(value)
+                    // console.log(value)
                     if (value == 'nominal') {
                         tmpData.push(
                             {
@@ -706,7 +713,7 @@ const EditFaktur = () => {
         // ubah total 
         let grandTotal;
         let arrTotal = [];
-        console.log(tmpData)
+        // console.log(tmpData)
         for (let i = 0; i < tmpData.length; i++) {
             if (i == y) {
                 if (tmpData[i].pilihanDiskon == 'persen') {
@@ -714,8 +721,9 @@ const EditFaktur = () => {
                     let getDiskon = (Number(total) * Number(tmpData[i].discount_percentage.toString().replace(',', '.'))) / 100;
 
                     let ppn = ((Number(total) - Number(getDiskon)) * tmpData[i].ppn.replace(',', '.')) / 100;
-                    console.log(total)
-                    console.log(ppn)
+                    // console.log(total)
+
+
 
                     grandTotal = Number(total) - Number(getDiskon) + Number(ppn);
                     // console.log(grandTotal)
@@ -753,84 +761,12 @@ const EditFaktur = () => {
             }
         }
 
-        console.log(arrTotal)
+        // console.log(arrTotal)
         setProduct(arrTotal)
         calculate(arrTotal, checked);
         setData(arrTotal)
 
     }
-
-
-
-    // const calculate = (product, check_checked) => {
-    //     console.log(product)
-    //     let totalPerProduk = 0;
-    //     let grandTotal = 0;
-    //     let total = 0;
-    //     let hasilDiskon = 0;
-    //     let subTotal = 0;
-    //     let totalPpn = 0;
-    //     let rowDiscount = 0;
-    //     let subTotalDiscount = 0;
-    //     let totalDiscount = 0;
-    //     product.map((values, i) => {
-    //         // termasuk pajak 
-    //         if (check_checked) {
-    //             total += (Number(values.quantity) * Number(values.price));
-    //             totalPerProduk = (Number(values.quantity) * Number(values.price));
-
-    //             if (values.pilihanDiskon == 'persen') {
-    //                 hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
-    //                 rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
-    //             }
-    //             else if (values.pilihanDiskon == 'nominal') {
-    //                 hasilDiskon += Number(values.fixed_discount);
-    //                 rowDiscount = Number(values.fixed_discount);
-    //             }
-    //             totalDiscount += ((rowDiscount * 100) / (100 + Number(values.ppn)));
-    //             subTotalDiscount = totalPerProduk - rowDiscount;
-    //             subTotal += (subTotalDiscount * 100) / (100 + Number(values.ppn));
-    //             totalPpn = (subTotal * Number(values.ppn)) / 100;
-
-
-    //             grandTotal = subTotal - hasilDiskon + Number(totalPpn);
-
-    //             setSubTotal(subTotal)
-    //             setGrandTotalDiscount(totalDiscount);
-    //             setTotalPpn(totalPpn)
-    //             setGrandTotal(grandTotal);
-    //         }
-
-    //         // tidak termasuk pajak 
-    //         else {
-    //             console.log("sndjsbfj")
-    //             total += (Number(values.quantity) * Number(values.price));
-    //             totalPerProduk = (Number(values.quantity) * Number(values.price));
-
-    //             if (values.pilihanDiskon == 'persen') {
-    //                 hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
-    //                 rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
-    //             }
-    //             else if (values.pilihanDiskon == 'nominal') {
-
-    //                 hasilDiskon += Number(values.fixed_discount);
-    //                 rowDiscount = Number(values.fixed_discount);
-    //             }
-    //             // console.log(hasilDiskon)
-    //             // totalDiscount += ((totalPerProduk * rowDiscount) / 100);
-    //             // totalDiscount = hasilDiskon;
-    //             subTotal = total - (Number(totalPerProduk) * Number(rowDiscount) / 100);
-    //             subTotalDiscount = totalPerProduk - rowDiscount;
-    //             totalPpn += (subTotalDiscount * values.ppn) / 100;
-    //             grandTotal = total - hasilDiskon + Number(totalPpn);
-
-    //             setSubTotal(total)
-    //             setGrandTotalDiscount(hasilDiskon);
-    //             setTotalPpn(totalPpn)
-    //             setGrandTotal(grandTotal);
-    //         }
-    //     })
-    // }
 
     const calculate = (product, check_checked) => {
         // console.log(product)
@@ -845,6 +781,7 @@ const EditFaktur = () => {
         let totalDiscount = 0;
         let total1 = 0;
         let diskon1 = 0;
+        let totalPPN2 = 0
         let totalDiskon2 = 0;
         let subTotDiskon2 = 0;
         let subtotal2 = 0;
@@ -852,39 +789,39 @@ const EditFaktur = () => {
         let databaru = [];
 
         product.map((values, i) => {
+
             // termasuk pajak 
             if (check_checked) {
-                total += (Number(values.quantity.replace(',', '.')) * Number(values.price.replace(',', '.')));
-                totalPerProduk = (Number(values.quantity.replace(',', '.')) * Number(values.price.replace(',', '.')));
-                total1 = (Number(product[i].quantity.replace(',', '.')) * Number(product[i].price.replace(',', '.')));
+                total += (Number(values.quantity.toString().replace(',', '.')) * Number(values.price.toString().replace(',', '.')));
+                totalPerProduk = (Number(values.quantity.toString().replace(',', '.')) * Number(values.price.toString().replace(',', '.')));
+                total1 = (Number(product[i].quantity.toString().replace(',', '.')) * Number(product[i].price.toString().replace(',', '.')));
 
                 if (values.pilihanDiskon == 'persen') {
                     hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage.toString().replace(',', '.')) / 100);
                     rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage.toString().replace(',', '.')) / 100);
 
-                    diskon1 = (Number(total1) * Number(product[i].discount_percentage.replace(',', '.')) / 100);
+                    diskon1 = (Number(total1) * Number(product[i].discount_percentage.toString().replace(',', '.')) / 100);
                 }
                 else if (values.pilihanDiskon == 'nominal') {
                     hasilDiskon += Number(values.fixed_discount.toString().replace(',', '.'));
                     rowDiscount = Number(values.fixed_discount.toString().replace(',', '.'));
 
-                    diskon1 = (Number(product[i].fixed_discount.replace(',', '.')));
+                    diskon1 = (Number(product[i].fixed_discount.toString().replace(',', '.')));
 
+                }
+                else {
+                    diskon1 = 0;
                 }
 
                 // total per produk 
-                totalDiskon2 += ((diskon1 * 100) / (100 + Number(product[i].ppn.replace(',', '.'))));
+                totalDiskon2 += ((diskon1 * 100) / (100 + Number(product[i].ppn.toString().replace(',', '.'))));
                 subTotDiskon2 = total1 - diskon1;
                 subtotal2 = subTotDiskon2;
-
-                // subTotDiskon2 = total1 - diskon1
-                // subtotal2 = (subTotDiskon2 * 100) / (100 + Number(product[i].ppn.replace(',', '.')));
 
                 databaru.push({
                     detail: subtotal2
                 })
 
-                console.log(databaru)
                 setTotal1Produk(databaru);
 
 
@@ -897,29 +834,56 @@ const EditFaktur = () => {
 
 
                 grandTotal = subTotal - hasilDiskon + Number(totalPpn) - Number(uangMuka);
-                console.log(grandTotal)
+                // console.log(grandTotal)
 
                 setSubTotal(subTotal)
                 setGrandTotalDiscount(totalDiscount);
+                console.log(totalDiscount)
                 setTotalPpn(totalPpn)
                 setGrandTotal(grandTotal);
             }
 
             // tidak termasuk pajak 
+
             else {
-                total += (Number(values.quantity.replace(',', '.')) * Number(values.price.replace(',', '.')));
-                console.log(total)
-                totalPerProduk = (Number(values.quantity.replace(',', '.')) * Number(values.price.replace(',', '.')));
+                total += (Number(values.quantity.toString().replace(',', '.')) * Number(values.price.toString().replace(',', '.')));
+                // console.log(total)
+                totalPerProduk = (Number(values.quantity.toString().replace(',', '.')) * Number(values.price.toString().replace(',', '.')));
+                total1 = (Number(product[i].quantity.toString().replace(',', '.')) * Number(product[i].price.toString().replace(',', '.')));
 
                 if (values.pilihanDiskon == 'persen') {
                     hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage.toString().replace(',', '.')) / 100);
                     rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage.toString().replace(',', '.')) / 100);
+                    diskon1 = (Number(total1) * (1 - Number(product[i].discount_percentage.toString().replace(',', '.')) / 100));
+
+
                 }
                 else if (values.pilihanDiskon == 'nominal') {
 
                     hasilDiskon += Number(values.fixed_discount.toString().replace(',', '.'));
                     rowDiscount = Number(values.fixed_discount.toString().replace(',', '.'));
+                    diskon1 = (Number(total1) - Number(product[i].fixed_discount.toString().replace(',', '.')));
+                    // console.log(hasilDiskon)
+
                 }
+                else (
+                    diskon1 = Number(total1)
+
+                )
+
+                console.log(diskon1)
+
+                // total per produk 
+                totalPPN2 = (1 + Number(product[i].ppn.toString().replace(',', '.')) / 100);
+
+                subtotal2 = diskon1 * totalPPN2;
+
+                databaru.push({
+                    detail: subtotal2
+                })
+
+                // console.log(databaru)
+                setTotal1Produk(databaru);
 
                 totalDiscount += Number(rowDiscount);
                 subTotal = total - (Number(totalPerProduk) * Number(rowDiscount) / 100);
@@ -927,8 +891,11 @@ const EditFaktur = () => {
                 totalPpn += (subTotalDiscount * Number(values.ppn.toString().replace(',', '.'))) / 100;
                 grandTotal = total - totalDiscount + Number(totalPpn) - Number(uangMuka);
 
+                // console.log(data)
                 setSubTotal(total)
                 setGrandTotalDiscount(totalDiscount);
+                console.log(totalDiscount)
+
                 setTotalPpn(totalPpn)
                 setGrandTotal(grandTotal);
             }
@@ -1004,7 +971,7 @@ const EditFaktur = () => {
                         statusCek: !getDataSurat[i].statusCek
                     })
                     if (!tmpDataBaru[i].statusCek) {
-                        console.log("dfdf")
+                        // console.log("dfdf")
                         let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.code);
                         tmpDataCentang.splice(idxHapus, 1)
                     }
@@ -1024,7 +991,7 @@ const EditFaktur = () => {
             // setIdTandaTerima(idTerima);
         }
 
-        console.log(tmpDataCentang)
+        // console.log(tmpDataCentang)
         setTmpCentang(tmpDataCentang)
 
         if (tmpDataBaru[index].statusCek) {
@@ -1036,7 +1003,7 @@ const EditFaktur = () => {
 
                     }
                 }
-                setIdTandaTerima(new Set(idTerima));
+                setIdTandaTerima([...new Set(idTerima)]);
 
             }
 
@@ -1048,11 +1015,11 @@ const EditFaktur = () => {
                         idTerima = [...idTandaTerima, getDataSurat[i].detail.id]
                     }
                 }
-                setIdTandaTerima(new Set(idTerima));
+                setIdTandaTerima([...new Set(idTerima)]);
             }
 
 
-            console.log(idTerima)
+            // console.log(idTerima)
             var strParams;
             var updatedList;
             if (sumber == "SO") {
@@ -1097,12 +1064,12 @@ const EditFaktur = () => {
                         }
 
                         setData(tmpData)
-                        calculate(tmpData)
+                        calculate(tmpData, checked)
                     })
             }
 
             else if (sumber == "Surat") {
-                console.log("halloi")
+                // console.log("halloi")
                 for (let i = 0; i < idTerima.length; i++) {
                     if (i == 0) {
                         strParams = "id_surat_jalan[]=" + idTerima[i]
@@ -1145,7 +1112,7 @@ const EditFaktur = () => {
                         }
 
                         setData(tmpData)
-                        calculate(tmpData)
+                        calculate(tmpData, checked)
 
                     })
             }
@@ -1154,7 +1121,7 @@ const EditFaktur = () => {
         else {
             idTerima = [...idTandaTerima]
 
-            console.log(event.target.value.detail.id)
+            // console.log(event.target.value.detail.id)
             for (let i = 0; i < idTerima.length; i++) {
                 if (event.target.value.detail.id == idTerima[i]) {
                     idTerima.splice(i, 1);
@@ -1162,7 +1129,7 @@ const EditFaktur = () => {
             }
             setIdTandaTerima(idTerima)
             // idTerima = [...idTandaTerima]
-            console.log(idTerima)
+            // console.log(idTerima)
 
             if (sumber == "SO") {
                 for (let i = 0; i < idTerima.length; i++) {
@@ -1206,12 +1173,12 @@ const EditFaktur = () => {
                         }
 
                         setData(tmpData)
-                        calculate(tmpData)
+                        calculate(tmpData, checked)
                     })
             }
 
             else if (sumber == "Surat") {
-                console.log("halloi")
+                // console.log("halloi")
                 for (let i = 0; i < idTerima.length; i++) {
                     if (i == 0) {
                         strParams = "id_surat_jalan[]=" + idTerima[i]
@@ -1254,7 +1221,7 @@ const EditFaktur = () => {
                         }
 
                         setData(tmpData)
-                        calculate(tmpData)
+                        calculate(tmpData, checked)
 
                     })
             }
@@ -1351,7 +1318,7 @@ const EditFaktur = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text: err.response.data.message,
                     });
                     // }
                 } else if (err.request) {
@@ -1367,7 +1334,7 @@ const EditFaktur = () => {
     const handleDraft = async (e) => {
         e.preventDefault();
         const userData = new URLSearchParams();
-        console.log(idTandaTerima)
+        // console.log(idTandaTerima)
         userData.append("tanggal", date);
         // userData.append("referensi", referensi);
         userData.append("tipe", selectedType.value);
@@ -1384,7 +1351,7 @@ const EditFaktur = () => {
             userData.append("termasuk_pajak", 0);
 
         }
-        console.log(idTandaTerima)
+        // console.log(idTandaTerima)
         idTandaTerima.map((item, i) => {
             if (sumber == 'SO') {
                 userData.append("id_pesanan_penjualan[]", item);
@@ -1396,7 +1363,7 @@ const EditFaktur = () => {
             }
         })
         userData.append("status", "Draft");
-        console.log(product)
+        // console.log(product)
         product.map((p, i) => {
             userData.append("nama_alias_produk[]", p.product_alias_name);
             userData.append("kuantitas[]", p.quantity.replace(',', '.'));
@@ -1453,7 +1420,7 @@ const EditFaktur = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text: err.response.data.message,
                     });
                     // }
 
@@ -1485,16 +1452,34 @@ const EditFaktur = () => {
             no: i + 1,
             product_alias_name: item.product_alias_name,
             // quantity: item.quantity,
-            quantity: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={data[i].quantity} onChange={(e) => klikUbahData(i, e.target.value, "qty")} />,
+            quantity: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={data[i].quantity.replace('.', ',')} onChange={(e) => klikUbahData(i, e.target.value, "qty")} />,
 
             unit: item.unit,
             price:
-                <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang} onKeyDown={(event) => klikEnter(event)} value={data[i].price} onChange={(e) => klikUbahData(i, e.target.value, "price")} />,
+                <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={mataUang} onKeyDown={(event) => klikEnter(event)} value={data[i].price.replace('.', ',')} onChange={(e) => klikUbahData(i, e.target.value, "price")} />,
             discount:
-                data[i].pilihanDiskon == 'noDisc' ?
-                    <div className='d-flex p-1' style={{ height: "100%" }}>
-                        <input onKeyDown={(event) => klikEnter(event)} style={{ width: "70%", fontSize: "10px!important" }} type="text" className="text-center editable-input" defaultValue={data[i].discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} />
-                        <div className="input-group-prepend"  >
+                // data[i].pilihanDiskon == 'persen' ?
+                //     <div className='d-flex p-1' style={{ height: "100%" }}>
+                //         <input onKeyDown={(event) => klikEnter(event)} style={{ width: "70%", fontSize: "10px!important" }} type="text" className="text-center editable-input" defaultValue={data[i].discount_percentage.replace('.', ',')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} />
+                //         <div className="input-group-prepend"  >
+                //             <select
+                //                 onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
+                //                 id="grupSelect"
+                //                 className="form-select select-diskon"
+                //             >
+                //                 <option selected value="persen" >
+                //                     %
+                //                 </option>
+                //                 <option value="nominal">
+                //                     {mataUang}
+                //                 </option>
+                //             </select>
+                //         </div>
+                //     </div> :
+                data[i].pilihanDiskon == 'persen' ?
+                    <div className='d-flex p-1' style={{ height: "100%" }} >
+                        <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={data[i].discount_percentage.replace('.', ',')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
+                        <div className="input-group-prepend" >
                             <select
                                 onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
                                 id="grupSelect"
@@ -1502,58 +1487,39 @@ const EditFaktur = () => {
                             >
                                 <option selected value="persen" >
                                     %
+
                                 </option>
                                 <option value="nominal">
                                     {mataUang}
                                 </option>
                             </select>
                         </div>
-                    </div> :
-                    data[i].pilihanDiskon == 'persen' ?
-                        <div className='d-flex p-1' style={{ height: "100%" }} >
-                            <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={data[i].discount_percentage} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
+                    </div>
+                    :
+                    data[i].pilihanDiskon == 'nominal' ?
+                        <div className='d-flex p-1' style={{ height: "100%" }}>
+                            <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={data[i].fixed_discount.toString().replace('.', ',')} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
+
                             <div className="input-group-prepend" >
                                 <select
                                     onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
                                     id="grupSelect"
                                     className="form-select select-diskon"
                                 >
-                                    <option selected value="persen" >
+                                    <option value="persen" >
                                         %
 
                                     </option>
-                                    <option value="nominal">
+                                    <option selected value="nominal">
                                         {mataUang}
                                     </option>
                                 </select>
                             </div>
-                        </div>
-                        :
-                        data[i].pilihanDiskon == 'nominal' ?
-                            <div className='d-flex p-1' style={{ height: "100%" }}>
-                                <CurrencyFormat className=' text-center editable-input' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={data[i].fixed_discount} onChange={(e) => klikUbahData(i, e.target.value, "diskonValue")} key="diskon" />
-
-                                <div className="input-group-prepend" >
-                                    <select
-                                        onChange={(e) => klikUbahData(i, e.target.value, "pilihanDiskon")}
-                                        id="grupSelect"
-                                        className="form-select select-diskon"
-                                    >
-                                        <option value="persen" >
-                                            %
-
-                                        </option>
-                                        <option selected value="nominal">
-                                            {mataUang}
-                                        </option>
-                                    </select>
-                                </div>
-                            </div> : null,
-            ppn: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} suffix={'%'} onKeyDown={(event) => klikEnter(event)} value={item.ppn} onChange={(e) => klikUbahData(i, e.target.value, "ppn")} />,
+                        </div> : null,
+            ppn: <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} suffix={'%'} onKeyDown={(event) => klikEnter(event)} value={item.ppn.replace('.', ',')} onChange={(e) => klikUbahData(i, e.target.value, "ppn")} />,
             total:
-                checked === true ?
-                    <CurrencyFormat disabled className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} onKeyDown={(event) => klikEnter(event)} value={Number(total1Produk[i].detail).toFixed(2).replace('.', ',')} /> :
-                    <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} onKeyDown={(event) => klikEnter(event)} value={data[i].total} />,
+                <CurrencyFormat disabled className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} onKeyDown={(event) => klikEnter(event)} value={Number(total1Produk[i].detail).toFixed(2).replace('.', ',')} />,
+            // <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={'Rp '} onKeyDown={(event) => klikEnter(event)} value={Number(data[i].total).toFixed(2).replace('.', ',')} />,
         }))]
 
 
@@ -1602,7 +1568,7 @@ const EditFaktur = () => {
                                 <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Pilih Transaksi</label>
                                 <div className="col-sm-7">
                                     <input
-                                        value={sumber == 'SO' ? 'Uang Muka' : 'Penjualan'}
+                                        value={sumber == 'SO' ? 'Uang Muka' : sumber == 'Surat' ? 'Penjualan' : null}
                                         type="Nama"
                                         className="form-control"
                                         id="inputNama3"
@@ -1690,54 +1656,58 @@ const EditFaktur = () => {
                         <div className="col">
                             <h4 className="title fw-normal">Daftar Surat Jalan</h4>
                         </div>
-                        <div className="col text-end me-2">
-                            <Button
-                                type="primary"
-                                icon={<PlusOutlined />}
-                                onClick={() => setModal2Visible(true)}
-                            />
-                            <Modal
-                                title="Tambah Surat Jalan"
-                                centered
-                                visible={modal2Visible}
-                                onCancel={() => setModal2Visible(false)}
-                                width={800}
-                                // footer={[
-                                //     <Button
-                                //         key="submit"
-                                //         type="primary"
+                        {
+                            sumber ?
+                                <div className="col text-end me-2">
+                                    <Button
+                                        type="primary"
+                                        icon={<PlusOutlined />}
+                                        onClick={() => setModal2Visible(true)}
+                                    />
+                                    <Modal
+                                        title="Tambah Surat Jalan"
+                                        centered
+                                        visible={modal2Visible}
+                                        onCancel={() => setModal2Visible(false)}
+                                        width={800}
+                                        // footer={[
+                                        //     <Button
+                                        //         key="submit"
+                                        //         type="primary"
 
-                                //     >
-                                //         Tambah
-                                //     </Button>,
-                                // ]}
-                                footer={null}
-                            >
-                                <div className="text-title text-start">
-                                    <div className="row">
-                                        <div className="col mb-3">
-                                            <Search
-                                                placeholder="Cari Surat Jalan..."
-                                                style={{
-                                                    width: 400,
-                                                }}
-                                                onChange={(e) => setQuery(e.target.value.toLowerCase())}
-                                            />
+                                        //     >
+                                        //         Tambah
+                                        //     </Button>,
+                                        // ]}
+                                        footer={null}
+                                    >
+                                        <div className="text-title text-start">
+                                            <div className="row">
+                                                <div className="col mb-3">
+                                                    <Search
+                                                        placeholder="Cari Surat Jalan..."
+                                                        style={{
+                                                            width: 400,
+                                                        }}
+                                                        onChange={(e) => setQuery(e.target.value.toLowerCase())}
+                                                    />
+                                                </div>
+                                                <Table
+                                                    columns={columnsModal}
+                                                    dataSource={sumber == 'SO' ? getDataProduct : getDataSurat}
+                                                    scroll={{
+                                                        y: 250,
+                                                    }}
+                                                    pagination={false}
+                                                    loading={isLoading}
+                                                    size="middle"
+                                                />
+                                            </div>
                                         </div>
-                                        <Table
-                                            columns={columnsModal}
-                                            dataSource={sumber == 'SO' ? getDataProduct : getDataSurat}
-                                            scroll={{
-                                                y: 250,
-                                            }}
-                                            pagination={false}
-                                            loading={isLoading}
-                                            size="middle"
-                                        />
-                                    </div>
-                                </div>
-                            </Modal>
-                        </div>
+                                    </Modal>
+                                </div> : null
+                        }
+
                     </div>
                     <Table
                         // components={components}

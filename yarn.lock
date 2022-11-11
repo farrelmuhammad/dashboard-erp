@@ -1683,6 +1683,11 @@
   dependencies:
     "@date-io/core" "^1.1.0"
 
+"@develoka/angka-terbilang-js@^1.4.2":
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/@develoka/angka-terbilang-js/-/angka-terbilang-js-1.4.2.tgz#2756421b24d4dcf04643697c87b204130757bfcd"
+  integrity sha512-eunTDwPs1JmtY1bpP7SBrjjn3eTcy9NcGWUrECbH3CWjfznOsTiNbxLDMGeNxRCUYUR5rL9lI0hr6bTOXeVmzQ==
+
 "@emotion/babel-plugin@^11.10.0":
   version "11.10.2"
   resolved "https://registry.yarnpkg.com/@emotion/babel-plugin/-/babel-plugin-11.10.2.tgz#879db80ba622b3f6076917a1e6f648b1c7d008c7"

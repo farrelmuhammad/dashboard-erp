@@ -588,7 +588,20 @@ const DetailFaktur = () => {
         {
             title: 'Nama Produk Alias',
             dataIndex: 'product_alias_name',
-            width: '12%',
+            width: '8%',
+            render(text, record) {
+                return {
+                    props: {
+                        style: { background: "#f5f5f5" }
+                    },
+                    children: <div>{text}</div>
+                };
+            }
+        },
+        {
+            title: 'Nama Produk Alias',
+            dataIndex: 'product_name',
+            width: '8%',
             render(text, record) {
                 return {
                     props: {
@@ -601,7 +614,7 @@ const DetailFaktur = () => {
         {
             title: 'Qty',
             dataIndex: 'quantity',
-            width: '7%',
+            width: '10%',
             align: 'center',
             render(text, record) {
                 return {
@@ -629,7 +642,7 @@ const DetailFaktur = () => {
         {
             title: 'Harga',
             dataIndex: 'price',
-            width: '13%',
+            width: '15%',
             align: 'center',
             render(text, record) {
                 return {
@@ -657,7 +670,7 @@ const DetailFaktur = () => {
         {
             title: 'Discount',
             dataIndex: 'discount_percentage',
-            width: '10%',
+            width: '15%',
             align: 'center',
             render(text, record) {
                 return {
@@ -709,7 +722,7 @@ const DetailFaktur = () => {
         {
             title: 'PPN',
             dataIndex: 'ppn',
-            width: '5%',
+            width: '10%',
             align: 'center',
             render(text, record) {
                 return {
@@ -722,7 +735,7 @@ const DetailFaktur = () => {
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '13%',
+            width: '20%',
             align: 'center',
             render(text, record) {
                 return {
@@ -908,12 +921,13 @@ const DetailFaktur = () => {
                                             <div style={{ fontSize: "10px", textAlign: 'center' }}>NO. {code}</div>
                                         </div>
 
-                                        <div className='mt-3 mb-2 col d-flex justify-content-start ps-4 pe-4' style={{ fontSize: "12px" }}>
+                                        <div className='mt-3 mb-1 col d-flex justify-content-start ps-4 pe-4' style={{ fontSize: "12px" }}>
 
                                             <div className='col-10'>
                                                 <div className="d-flex flex-row">
                                                     <label className='col-4'>Tanggal</label>
                                                     <div className='col-4'> : {date} </div>
+                                                   
                                                 </div>
                                                 <div className="d-flex flex-row">
                                                     <label className='col-4'>Kepada Yth.</label>
@@ -929,6 +943,14 @@ const DetailFaktur = () => {
                                                     <div className='col-10' style={{ overflowWrap: "break-word", maxWidth: "550px", marginLeft: "3px" }}>
                                                         {selectedAddress.address}, Kel. {kel1}, Kec. {kec1}, Kota {kota1} {kodepos1}
 
+                                                    </div>
+                                                </div>
+                                              
+                                            </div>
+                                            <div className='col-2'>
+                                            <div className="d-flex flex-row p-2" style={{float:"right", alignContent:"right"}}>
+                                                <div className='col-6'>
+                                                        {getStatus === 'Cancelled'  ?  <Tag color="red">{getStatus}</Tag> : null }
                                                     </div>
                                                 </div>
                                             </div>

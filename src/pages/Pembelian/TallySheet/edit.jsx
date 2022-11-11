@@ -57,7 +57,7 @@ const EditTallySheet = () => {
     const [catatan, setCatatan] = useState('')
     const [date, setDate] = useState()
 
-    const[canc, setCancel] = useState(false)
+    const [canc, setCancel] = useState(false)
 
     const [modalListImpor, setModalListImpor] = useState(false);
     const [modalListLokal, setModalListLokal] = useState(false)
@@ -82,7 +82,10 @@ const EditTallySheet = () => {
                 setStatus(getData.status);
                 setSelectedWarehouse(getData.warehouse_name);
                 setWarehouse(getData.warehouse_id);
-                setCatatan(getData.notes)
+                if (getData.notes) {
+                    setCatatan(getData.notes)
+
+                }
                 setDate(getData.date);
 
                 let arrDataLama = [];
@@ -585,7 +588,7 @@ const EditTallySheet = () => {
         let status;
         setLoadingTable(true);
 
-       
+
 
         for (let x = 0; x < product.length; x++) {
             if (product[x].code == code) {
@@ -818,7 +821,7 @@ const EditTallySheet = () => {
                             >
                                 OK
                             </Button>,
-                        ]}  
+                        ]}
                         // onOk={() => setModal2Visible2(false)}
                         width={1000}
                     >
@@ -1456,9 +1459,9 @@ const EditTallySheet = () => {
         // console.log(data)
         console.log(product)
 
-            setQuantityPO(Number(product[indexPO].transaksi_qty).toFixed(2).toString())
-            setIndexPO(indexPO)
-            setModal2Visible2(true)
+        setQuantityPO(Number(product[indexPO].transaksi_qty).toFixed(2).toString())
+        setIndexPO(indexPO)
+        setModal2Visible2(true)
     }
 
     // function klikTampilSheet2() {

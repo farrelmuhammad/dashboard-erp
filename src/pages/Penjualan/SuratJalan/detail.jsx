@@ -121,7 +121,7 @@ export const DetailSuratJalan = () => {
                     setKec1(getData.customer_address.sub_district)
                     setKota1(getData.customer_address.city)
                     setKodePos1(getData.customer_address.postal_code)
-
+                    setDelivered(getData.is_delivered)
                     //console.log(beCust)
                     setSumber('SO')
                 }
@@ -133,7 +133,7 @@ export const DetailSuratJalan = () => {
                     setKec1(getData.supplier_address.sub_district)
                     setKota1(getData.supplier_address.city)
                     setKodePos1(getData.supplier_address.postal_code)
-
+                    setDelivered(true)
                     setSumber('Retur')
                 }
 
@@ -142,7 +142,6 @@ export const DetailSuratJalan = () => {
                 setNotes(getData.notes)
                 setStatus(getData.status)
                 setDetails(getData.delivery_note_details)
-                setDelivered(getData.is_delivered)
                 setLoading(false)
 
                 setRecipientID(getData.recipient_address.customer_id)
@@ -426,10 +425,16 @@ export const DetailSuratJalan = () => {
                             </div>
                          */}
 
-                                    </div>
-                                    <div>
+                         
+                                    <div className='col-12'>
+                                            <div className="d-flex flex-row p-1" style={{float:"right", alignContent:"right"}}>
+                                                {status === 'Cancelled'  ?  <Tag color="red">{status}</Tag> : null }
+                                            </div>
+                                            <br/>
+                                        </div>
 
                                     </div>
+
                                 </div>
 
                             </tr>

@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import Url from '../Config';
+import Swal from 'sweetalert2';
 
 const UserSetting = () => {
     const [user, setUser] = useState('');
@@ -15,6 +16,7 @@ const UserSetting = () => {
     const [getId, setGetId] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(true);
+    const [employeeName, setEmployeeName] = useState('')
 
     const auth = useSelector((state) => state.auth);
 
@@ -28,9 +30,12 @@ const UserSetting = () => {
             .then(res => {
                 const user = res.data;
                 setLoading(false)
+                console.log(user)
                 setUser(user.username)
                 setGetId(user.id)
-                setEmployee(user.employee.name)
+                setEmployee(user.employee.id)
+                setEmployeeName(user.employee.name)
+                
             })
     }
 
@@ -39,11 +44,12 @@ const UserSetting = () => {
     }, [])
 
     const handleSubmit = async (e) => {
+        console.log(employee)
         e.preventDefault();
         const userData = new URLSearchParams();
         userData.append("username", user);
         userData.append("password", password);
-        userData.append("users", employee);
+        userData.append("karyawan", employee);
 
         // for (var pair of userData.entries()) {
         //     console.log(pair[0] + ", " + pair[1]);
@@ -61,12 +67,13 @@ const UserSetting = () => {
             .then(function (response) {
                 //handle success
                 console.log(response);
-
+                Swal.fire("Berhasil Diubah!", "success");
                 navigate("/pajak");
             })
             .catch((err) => {
                 if (err.response) {
                     console.log("err.response ", err.response);
+                    Swal.fire("Gagal Diubah!", "error");
 
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -97,7 +104,7 @@ const UserSetting = () => {
                 title="User Profile"
                 extra={[
                     <Button onClick={() => window.history.back()}>Cancel</Button>,
-                    <Button onClick={handleSubmit} type="primary">Save</Button>
+                    <Button onClick={handleSubmit} type="primary">Simpan</Button>
                 ]}
             >
                 <Row justify="center">
@@ -121,7 +128,7 @@ const UserSetting = () => {
                             style={{
                                 fontSize: 30,
                             }}
-                        >{employee}</Divider>
+                        >{employeeName}</Divider>
                     </Col>
                 </Row>
                 <Row justify="center">

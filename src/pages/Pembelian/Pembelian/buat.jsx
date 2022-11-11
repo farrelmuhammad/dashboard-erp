@@ -79,7 +79,7 @@ const EditableCell = ({
                     },
                 ]}
             >
-                <InputNumber ref={inputRef}  onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
+                <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} min={0} step="0.01" defaultValue={1}
                     thousandSeparator={'.'}
                     decimalSeparator={','}
                     onChange={value => {
@@ -275,7 +275,7 @@ const BuatPesananPembelian = () => {
         },
     ];
 
-    
+
     function tambahPPN(value) {
         let hasil = value.toString().replace('.', '').replace(/[^0-9_,\.]+/g, "").replaceAll(',', '.');
         console.log(hasil)
@@ -445,6 +445,7 @@ const BuatPesananPembelian = () => {
         {
             title: 'Nama Produk',
             dataIndex: 'name',
+            width: '8%',
             render(text) {
                 return {
                     props: {
@@ -465,11 +466,11 @@ const BuatPesananPembelian = () => {
                 return {
                     props: {
                     },
-                    children: 
-                    <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={text} key="qty" />
-                  
-                 
-                     //<div>{Number(text).toFixed(2).replace('.', ',')}</div>
+                    children:
+                        <CurrencyFormat className=' text-center editable-input' thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)} value={text} key="qty" />
+
+
+                    //<div>{Number(text).toFixed(2).replace('.', ',')}</div>
                 };
             }
         },
@@ -490,7 +491,7 @@ const BuatPesananPembelian = () => {
         {
             title: 'Harga',
             dataIndex: 'purchase_price',
-            width: '20%',
+            width: '15%',
             align: 'center',
             editable: true,
             render: (text) => {
@@ -501,7 +502,7 @@ const BuatPesananPembelian = () => {
         {
             title: 'Discount',
             dataIndex: 'diskon',
-            width: '20%',
+            width: '15%',
             align: 'center',
             render: (text, record, index) => {
 
@@ -537,15 +538,35 @@ const BuatPesananPembelian = () => {
 
 
 
-                return <div className="input-group input-group-sm mb-3">
+                return <div className="input-group input-group-sm">
 
 
-                <CurrencyFormat className='text-center editable-input' style={{width:"80px"}} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)}
+                    <CurrencyFormat
+                        className='text-center editable-input'
+                        style={{ width: "80px" }}
+                        thousandSeparator={'.'}
+                        decimalSeparator={','}
+                        onKeyDown={(event) => klikEnter(event)}
                         value={
-                            jumlahDiskon[index]} onChange={(e) => ubahJumlahDiskon( e.target.value, index)} key="diskon" />
-                    
+                            jumlahDiskon[index]} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} key="diskon"
+                    />
+                    <div className="input-group-prepend" >
+                        <select
+                            onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
+                            id="grupSelect"
+                            className="form-select select-diskon"
+                        >
+                            <option value="%" >
+                                %
+
+                            </option>
+                            <option value={namaMataUang}>
+                                {namaMataUang}
+                            </option>
+                        </select>
+                    </div>
                     {/* <input style={{ width: "25px" }} type="text" thousandSeparator={'.'} decimalSeparator={','} className="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} value={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" /> */}
-                    <div className="input-group-prepend">
+                    {/* <div className="input-group-prepend">
                         <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "70px" }}>
                             <select
                                 onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
@@ -553,9 +574,6 @@ const BuatPesananPembelian = () => {
                                 className="form-select select-diskon"
                                 style={{ width: "50px" }}
                             >
-                                {/* <option value="pilih" >
-                            Pilih
-                        </option> */}
                                 <option value="%" >
                                     %
                                 </option>
@@ -564,14 +582,14 @@ const BuatPesananPembelian = () => {
                                 </option>
                             </select>
                         </span>
-                    </div>
+                    </div> */}
                 </div>
             }
         },
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '14%',
+            width: '20%',
             align: 'center',
             render:
                 (text, record, index) => {
@@ -871,12 +889,12 @@ const BuatPesananPembelian = () => {
 
                 }
                 if (pilihanDiskon[i] == '%') {
-                    OrderData.append("persentase_diskon[]", jumlahDiskon[i]);
+                    OrderData.append("persentase_diskon[]", jumlahDiskon[i].toString().replace('.' , ''));
 
                     OrderData.append("diskon_tetap[]", 0);
                 }
                 else if (pilihanDiskon[i] == namaMataUang) {
-                    OrderData.append("diskon_tetap[]", jumlahDiskon[i]);
+                    OrderData.append("diskon_tetap[]", jumlahDiskon[i].toString().replace('.' , ''));
 
                     OrderData.append("persentase_diskon[]", 0);
                 }
@@ -1006,12 +1024,12 @@ const BuatPesananPembelian = () => {
                 OrderData.append("satuan[]", p.unit);
                 OrderData.append("harga[]", p.purchase_price);
                 if (pilihanDiskon[i] == '%') {
-                    OrderData.append("persentase_diskon[]", jumlahDiskon[i]);
+                    OrderData.append("persentase_diskon[]", jumlahDiskon[i].toString().replace('.' , ''));
 
                     OrderData.append("diskon_tetap[]", 0);
                 }
                 else if (pilihanDiskon[i] == namaMataUang) {
-                    OrderData.append("diskon_tetap[]", jumlahDiskon[i]);
+                    OrderData.append("diskon_tetap[]", jumlahDiskon[i].toString().replace('.' , ''));
 
                     OrderData.append("persentase_diskon[]", 0);
                 }
@@ -1292,7 +1310,7 @@ const BuatPesananPembelian = () => {
                             <div className="col-sm-6">
                                 <CurrencyFormat
                                     className='form-control form-control-sm'
-                                    style={{width:"70%"}}
+                                    style={{ width: "70%" }}
                                     thousandSeparator={'.'}
                                     decimalSeparator={','}
                                     prefix={namaMataUang + ' '}

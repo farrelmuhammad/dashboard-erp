@@ -172,7 +172,9 @@ const EditBiayaImport = () => {
           setCategory_id(getData.category.id);
           setKategori(getData.category.name);
         }
-        setReferensi(getData.reference);
+        if( getData.reference != null ){
+          setReferensi(getData.reference) ;
+        } 
 
         setStatus(getData.status);
 
