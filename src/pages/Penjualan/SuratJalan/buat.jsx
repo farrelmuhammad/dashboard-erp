@@ -717,7 +717,7 @@ const BuatSuratJalan = () => {
             }
             else if (sumber == 'Retur') {
                 userData.append("alamat_pemasok", addressId);
-                // userData.append("pemasok", supplier);
+                userData.append("pemasok", supplier);
             }
             tally.map((t) => userData.append("id_tally_sheet[]", t));
             userData.append("status", "Draft");
