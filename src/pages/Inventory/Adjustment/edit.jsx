@@ -660,7 +660,7 @@ const EditAdjustment = () => {
                         value="Draft"
                         onClick={handleDraft}
                     >
-                        Update
+                        Simpan
                     </button>
                     {
                         status != "Done" ?

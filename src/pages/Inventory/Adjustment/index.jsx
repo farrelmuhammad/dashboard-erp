@@ -27,12 +27,12 @@ const Adjustment = () => {
       })
   }, [])
 
-  if (userAccess) {
+  // if (userAccess) {
     return (
       <>
-        {userAccess?.map(d => {
+        {/* {userAccess?.map(d => {
           if (d.ability_name === "create-adjustment") {
-            return (
+            return ( */}
               <PageHeader
                 ghost={false}
                 className="bg-body rounded mb-2"
@@ -48,22 +48,22 @@ const Adjustment = () => {
               >
                 <AdjustmentTable />
               </PageHeader>
-            )
+            {/* )
           }
-        })}
+        })} */}
       </>
     )
-  } else {
-    <>
-      <PageHeader
-        ghost={false}
-        className="bg-body rounded mb-2"
-        title="Daftar Penyesuaian Stok"
-      >
-        <AdjustmentTable />
-      </PageHeader>
-    </>
-  }
+  // } else {
+  //   <>
+  //     <PageHeader
+  //       ghost={false}
+  //       className="bg-body rounded mb-2"
+  //       title="Daftar Penyesuaian Stok"
+  //     >
+  //       <AdjustmentTable />
+  //     </PageHeader>
+  //   </>
+  // }
 };
 
 export default Adjustment;
