@@ -132,6 +132,7 @@ const EditPesanan = () => {
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
     const [pilihanDiskon, setPilihanDiskon] = useState('');
+    const [tmpCentang, setTmpCentang] = useState([])
     const [jumlahDiskon, setJumlahDiskon] = useState([]);
 
     useEffect(() => {
@@ -173,6 +174,8 @@ const EditPesanan = () => {
                 let grandTotal = 0;
                 let total = 0;
                 let hasilDiskon = 0;
+                let tmpCentang = [];
+
                 for (let i = 0; i < getData.sales_order_details.length; i++) {
                     total += (Number(getData.sales_order_details[i].quantity) * Number(getData.sales_order_details[i].price));
                     totalPerProduk = (Number(getData.sales_order_details[i].quantity) * Number(getData.sales_order_details[i].price));
@@ -194,7 +197,14 @@ const EditPesanan = () => {
                         tmpPilihanDiskon[i] = "percent";
                         hasilDiskon += (Number(totalPerProduk) * Number(getData.sales_order_details[i].discount_percentage) / 100);
                     }
+
+                    // menampung data centang 
+                    tmpCentang.push(getData.sales_order_details[i].product_alias_name)
+
                 }
+
+
+                setTmpCentang(tmpCentang)
                 setPilihanDiskon(tmpPilihanDiskon)
                 setJumlahDiskon(temp);
                 setLoading(false)
@@ -249,12 +259,31 @@ const EditPesanan = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
+            let tmp = []
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentang.indexOf(res.data[i].alias_name) >= 0) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: true
+                    });
+                }
+            }
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentang.indexOf(res.data[i].alias_name) < 0) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: false
+                    });
+                }
+
+            }
+
+            setGetDataProduct(tmp);
             // console.log(res.data.map(d => d.id))
         };
 
-        if (query.length === 0 || query.length > 2) getProduct();
-    }, [query])
+        if (query.length >= 0) getProduct();
+    }, [query, tmpCentang])
 
     // Column for modal input product
     const columnsModal = [
@@ -262,23 +291,30 @@ const EditPesanan = () => {
             title: 'Nama Produk',
             dataIndex: 'alias_name',
             key: 'alias_name',
+            render: (_, record) => {
+                return <>{record.detail.alias_name}</>
+            }
         },
         {
             title: 'Stok',
             dataIndex: 'stock',
             width: '15%',
             align: 'center',
+            render: (_, record) => {
+                return <>{record.detail.stock}</>
+            }
         },
         {
             title: 'actions',
             dataIndex: 'address',
             width: '15%',
             align: 'center',
-            render: (_, record) => (
+            render: (_, record, index) => (
                 <>
                     <Checkbox
                         value={record}
-                        onChange={handleCheck}
+                        onChange={event => handleCheck(event, index)}
+                        checked={record.statusCek}
                     // checked={record.key === product.alias_name}
                     // defaultCheckedOptions={product}
                     />
@@ -300,7 +336,7 @@ const EditPesanan = () => {
         let totalDiscount = 0;
         if (pilihanDiskon.length === 0) {
             for (let i = 0; i < product.length; i++) {
-                tmp[i] = '';
+                tmp[i] = 'percent';
             }
             setPilihanDiskon(tmp);
         }
@@ -507,7 +543,7 @@ const EditPesanan = () => {
             {
                 namaMataUang === 'Rp' ?
                     < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
-                    : < CurrencyFormat disabled  className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
+                    : < CurrencyFormat disabled className=' text-start form-control form-control-sm editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" renderText={value => <input value={value} readOnly="true" id="colFormLabelSm" className="form-control form-control-sm" />} />
             }
         </>
     }
@@ -560,7 +596,9 @@ const EditPesanan = () => {
                 return {
                     props: {
                     },
-                    children: <div>{Number(text).toFixed(2).replace('.', ',')}</div>
+                    children:
+                        <div>{< CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.', ',')} key="diskon" />}</div>
+                    // <div>{Number(text).toFixed(2).replace('.', ',')}</div>
                 };
             }
         },
@@ -592,36 +630,6 @@ const EditPesanan = () => {
                 };
             }
         },
-        // {
-        //     title: 'Discount (Rp)',
-        //     dataIndex: 'fixed_discount',
-        //     width: '10%',
-        //     align: 'center',
-        //     editable: true,
-        //     render(text, record) {
-        //         return {
-        //             props: {
-        //                 style: { background: "#f5f5f5" }
-        //             },
-        //             children: <div>Rp. {text}</div>
-        //         };
-        //     }
-        // },
-        // {
-        //     title: 'Discount (%)',
-        //     dataIndex: 'discount_percentage',
-        //     width: '5%',
-        //     align: 'center',
-        //     editable: true,
-        //     render(text, record) {
-        //         return {
-        //             props: {
-        //                 style: { background: "#f5f5f5" }
-        //             },
-        //             children: <div>{text} %</div>
-        //         };
-        //     }
-        // },
         {
             title: 'Discount',
             dataIndex: 'discount',
@@ -630,74 +638,94 @@ const EditPesanan = () => {
             render: (text, record, index) => {
                 return <div className="input-group input-group-sm">
                     {
-                        product[index].discount_percentage != 0 ?
+                        record.discount_percentage != 0 ?
                             <>
-                                <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" defaultValue={product[index].discount_percentage} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" />
+                                <CurrencyFormat
+                                    className='text-center editable-input'
+                                    style={{ width: "50px" }}
+                                    thousandSeparator={'.'}
+                                    decimalSeparator={','}
+                                    onKeyDown={(event) => klikEnter(event)}
+                                    value={record.discount_percentage}
+                                    onChange={(e) => ubahJumlahDiskon(e.target.value, index)} key="diskon"
+                                />
+                                {/* <input style={{ width: "50px" }} type="text" className="form-control" aria-label="Small" defaultValue={record.discount_percentage} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" /> */}
                                 <div className="input-group-prepend">
-                                    <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
+                                    <select
+
+                                        onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
+                                        id="grupSelect"
+                                        className="form-select select-diskon"
+                                    >
+                                        <option value="" >
+                                            Pilih
+                                        </option>
+                                        <option selected value="percent" >
+                                            %
+                                        </option>
+                                        <option value="nominal">
+                                            Rp
+                                        </option>
+                                    </select>
+                                </div>
+                            </>
+                            : record.fixed_discount != 0 ?
+                                <>
+                                    <CurrencyFormat
+                                        className='text-center editable-input'
+                                        style={{ width: "50px" }}
+                                        thousandSeparator={'.'}
+                                        decimalSeparator={','}
+                                        onKeyDown={(event) => klikEnter(event)}
+                                        value={record.fixed_discount}
+                                        onChange={(e) => ubahJumlahDiskon(e.target.value, index)} key="diskon"
+                                    />
+
+                                    {/* <input style={{ width: "50px" }} type="text" className="form-control" aria-label="Small" defaultValue={record.fixed_discount} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" /> */}
+                                    <div className="input-group-prepend">
                                         <select
 
                                             onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
                                             id="grupSelect"
                                             className="form-select select-diskon"
-                                            style={{ width: "70px" }}
                                         >
                                             <option value="" >
                                                 Pilih
                                             </option>
-                                            <option selected value="percent" >
+                                            <option value="percent" >
+                                                %
+                                            </option>
+                                            <option selected value="nominal">
+                                                Rp
+                                            </option>
+                                        </select>
+                                    </div></>
+                                :
+                                <>
+                                    <CurrencyFormat
+                                        className='text-center editable-input'
+                                        style={{ width: "50px" }}
+                                        thousandSeparator={'.'}
+                                        decimalSeparator={','}
+                                        onKeyDown={(event) => klikEnter(event)}
+                                        value={record.discount_percentage}
+                                        onChange={(e) => ubahJumlahDiskon(e.target.value, index)} key="diskon"
+                                    />
+                                    {/* <input style={{ width: "50px" }} type="text" className="form-control" aria-label="Small" defaultValue={record.fixed_discount} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" /> */}
+                                    <div className="input-group-prepend">
+                                        <select
+
+                                            onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
+                                            id="grupSelect"
+                                            className="form-select select-diskon"
+                                        >
+                                            <option value="percent" >
                                                 %
                                             </option>
                                             <option value="nominal">
                                                 Rp
                                             </option>
                                         </select>
-                                    </span>
-                                </div></> : product[index].fixed_discount != 0 ?
-                                <>
-                                    <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" defaultValue={product[index].fixed_discount} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" />
-                                    <div className="input-group-prepend">
-                                        <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
-                                            <select
-
-                                                onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
-                                                id="grupSelect"
-                                                className="form-select select-diskon"
-                                                style={{ width: "70px" }}
-                                            >
-                                                <option value="" >
-                                                    Pilih
-                                                </option>
-                                                <option value="percent" >
-                                                    %
-                                                </option>
-                                                <option selected value="nominal">
-                                                    Rp
-                                                </option>
-                                            </select>
-                                        </span>
-                                    </div></> : <>
-                                    <input style={{ width: "30px" }} type="text" className="form-control" aria-label="Small" defaultValue={product[index].fixed_discount} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} aria-describedby="inputGroup-sizing-sm" />
-                                    <div className="input-group-prepend">
-                                        <span className="input-group-text" id="inputGroup-sizing-sm" style={{ width: "90px" }}>
-                                            <select
-
-                                                onChange={(e) => gantiPilihanDiskon(e.target.value, index)}
-                                                id="grupSelect"
-                                                className="form-select select-diskon"
-                                                style={{ width: "70px" }}
-                                            >
-                                                {/* <option selected value="" >
-                                     Pilih
-                                 </option> */}
-                                                <option value="percent" >
-                                                    %
-                                                </option>
-                                                <option value="nominal">
-                                                    Rp
-                                                </option>
-                                            </select>
-                                        </span>
                                     </div></>
                     }
 
@@ -828,13 +856,13 @@ const EditPesanan = () => {
                 totalPerProduk = (Number(values.quantity) * Number(values.price));
 
                 if (pilihanDiskon[i] == 'percent') {
-                    hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                    rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                    rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
                 }
                 else if (pilihanDiskon[i] == 'nominal') {
 
-                    hasilDiskon += Number(jumlahDiskon[i]);
-                    rowDiscount = Number(jumlahDiskon[i]);
+                    hasilDiskon += Number(values.fixed_discount);
+                    rowDiscount = Number(values.fixed_discount);
                 }
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 subTotal += (totalPerProduk * 100) / (100 + Number(values.ppn));
@@ -844,22 +872,24 @@ const EditPesanan = () => {
                 setSubTotal(subTotal)
                 setGrandTotalDiscount(totalDiscount);
                 setTotalPpn(totalPpn)
+                console.log(values.ppn)
+                console.log(totalPpn)
                 setGrandTotal(grandTotal);
             } else {
                 total += (Number(values.quantity) * Number(values.price));
                 totalPerProduk = (Number(values.quantity) * Number(values.price));
 
                 if (pilihanDiskon[i] == 'percent') {
-                    hasilDiskon += (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
-                    rowDiscount = (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                    hasilDiskon += (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
+                    rowDiscount = (Number(totalPerProduk) * Number(values.discount_percentage) / 100);
                 }
                 else if (pilihanDiskon[i] == 'nominal') {
 
-                    hasilDiskon += Number(jumlahDiskon[i]);
-                    rowDiscount = Number(jumlahDiskon[i]);
+                    hasilDiskon += Number(values.fixed_discount);
+                    rowDiscount = Number(values.fixed_discount);
                 }
                 totalDiscount += Number(rowDiscount);
-                subTotal = total - (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
+                // subTotal = total - (Number(totalPerProduk) * Number(jumlahDiskon[i]) / 100);
                 subTotalDiscount = totalPerProduk - rowDiscount;
                 totalPpn += (subTotalDiscount * Number(values.ppn)) / 100;
                 grandTotal = total - totalDiscount + Number(totalPpn);
@@ -894,15 +924,67 @@ const EditPesanan = () => {
         };
     });
 
-    const handleCheck = (event) => {
-        console.log(event.target.checked)
-        var updatedList = [...product];
-        if (event.target.checked) {
-            updatedList = [...product, event.target.value];
-        } else {
-            updatedList.splice(product.indexOf(event.target.value), 1);
+    const handleCheck = (event, index) => {
+        // console.log(event)
+        let data = event.target.value
+        console.log(data)
+
+        let tmpDataBaru = []
+        // let tmpJumlah = [...jumlahInput]
+        let tmpDataCentang = [...tmpCentang]
+        for (let i = 0; i < getDataProduct.length; i++) {
+            if (i == index) {
+                tmpDataBaru.push({
+                    detail: getDataProduct[i].detail,
+                    statusCek: !getDataProduct[i].statusCek
+                })
+                if (!tmpDataBaru[i].statusCek) {
+                    let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.alias_name);
+                    tmpDataCentang.splice(idxHapus, 1)
+                }
+                else if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.alias_name)
+                }
+            }
+            else {
+                tmpDataBaru.push(getDataProduct[i])
+            }
         }
-        setProduct(updatedList);
+        let unikTmpCentang = [...new Set(tmpDataCentang)]
+        setTmpCentang(unikTmpCentang)
+        setGetDataProduct(tmpDataBaru)
+        var updatedList = [...product];
+
+        // var updatedList = [...product];
+        if (tmpDataBaru[index].statusCek) {
+            let tmpData = {
+                discount_percentage: data.detail.discount,
+                fixed_discount: data.detail.nominal_disc,
+                ppn: data.detail.ppn,
+                price: data.detail.price,
+                product_alias_name: data.detail.alias_name,
+                quantity: data.detail.quantity,
+                subtotal: data.detail.total,
+                subtotal_after_discount: data.detail.nominal_disc != 0 ? data.detail.total - data.detail.nominal_disc : data.detail.total - (data.detail.total * data.detail.discount / 100),
+                total: data.detail.total,
+                unit: data.detail.unit,
+            }
+            updatedList = [...product, tmpData];
+            setProduct(updatedList);
+
+
+        } else {
+            for (let i = 0; i < updatedList.length; i++) {
+                if (updatedList[i].product_alias_name == data.detail.alias_name) {
+                    updatedList.splice(i, 1);
+                }
+            }
+            setProduct(updatedList);
+
+        }
+        calculate(updatedList, checked)
+        console.log(updatedList)
+
         let tmp = [];
         let tmpJumlah = [];
         for (let i = 0; i < updatedList.length; i++) {

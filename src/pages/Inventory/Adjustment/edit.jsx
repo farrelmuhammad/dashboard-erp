@@ -175,6 +175,14 @@ const EditAdjustment = () => {
         })
             .then(res => {
                 const getData = res.data.data;
+                // console.log(getData)
+                let tmpCentang = [];
+                for (let i = 0; i < getData.length; i++) {
+                    tmpCentang.push(getData[i].product_id)
+                }
+
+                setTmpCentang(tmpCentang)
+
                 setProduct(getData);
                 setIsLoading(false);
             })
@@ -202,27 +210,49 @@ const EditAdjustment = () => {
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
+
             let tmp = []
-            for (let x = 0; x < product.length; x++) {
-                for (let i = 0; i < res.data.length; i++) {
-
-                    if (res.data[i].product_id == product[x].product_id) {
-                        tmp.push({
-                            detail: res.data[i],
-                            statusCek: true
-                        });
-                    }
-                    else {
-                        tmp.push({
-                            detail: res.data[i],
-                            statusCek: false
-                        });
-                    }
-
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentang.indexOf(res.data[i].product_id) >= 0) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: true
+                    });
+                }
+            }
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentang.indexOf(res.data[i].product_id) < 0) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: false
+                    });
                 }
 
             }
-            setGetDataProduct(tmp)
+
+            setGetDataProduct(tmp);
+
+            // let tmp = []
+            // for (let x = 0; x < product.length; x++) {
+            //     for (let i = 0; i < res.data.length; i++) {
+
+            //         if (res.data[i].product_id == product[x].product_id) {
+            //             tmp.push({
+            //                 detail: res.data[i],
+            //                 statusCek: true
+            //             });
+            //         }
+            //         else {
+            //             tmp.push({
+            //                 detail: res.data[i],
+            //                 statusCek: false
+            //             });
+            //         }
+
+            //     }
+
+            // }
+            // setGetDataProduct(tmp)
         };
         if (query.length >= 0) getProduct();
     }, [query, warehouse_id, getAdjustment])

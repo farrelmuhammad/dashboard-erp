@@ -645,7 +645,7 @@ const BuatPIB = () => {
                             icon: "error",
                             title: "Oops...",
                             //text: "Data Faktur belum dipilih, silahkan lengkapi datanya dan coba kembali",
-                             text: err.response.data.error,
+                             text: err.response.data.message,
                         });
                     } else if (err.request) {
                         console.log("err.request ", err.request);
@@ -791,7 +791,7 @@ const BuatPIB = () => {
                             icon: "error",
                             title: "Oops...",
                            // text: "Data Faktur belum dipilih, silahkan lengkapi datanya dan coba kembali",
-                             text: err.response.data.error,
+                             text: err.response.data.message,
                         });
                     } else if (err.request) {
                         console.log("err.request ", err.request);

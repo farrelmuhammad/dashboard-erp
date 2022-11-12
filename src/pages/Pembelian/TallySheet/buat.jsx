@@ -1439,7 +1439,7 @@ const BuatTallySheet = () => {
             // setGetDataDetailPO(res.data.data.map(d => d.purchase_order_details))
         };
 
-        if (query.length === 0 || query.length > 2) getProduct();
+        if (query.length >=0) getProduct();
     }, [query, supplier])
 
     useEffect(() => {
@@ -1481,13 +1481,13 @@ const BuatTallySheet = () => {
             // setGetDataDetailPO(res.data.data.map(d => d.purchase_order_details))
         };
 
-        if (query.length === 0 || query.length > 2) getRetur();
-    }, [query, supplier])
+        if (query.length >= 0) getRetur();
+    }, [query, customer])
 
 
     useEffect(() => {
         const getFaktur = async () => {
-            const res = await axios.get(`${Url}/tally_sheet_ins_available_purchase_invoices?kode=${query}&id_pelanggan=${customer}`, {
+            const res = await axios.get(`${Url}/tally_sheet_ins_available_purchase_invoices?kode=${query}&id_pemasok=${supplier}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
@@ -1510,18 +1510,11 @@ const BuatTallySheet = () => {
                     });
                 }
             }
-            // for (let i = 0; i < res.data.data.length; i++) {
-            //     tmp.push({
-            //         detail: res.data.data[i],
-            //         statusCek: false
-            //     });
-            // }
             setGetDataFaktur(tmp)
-            // setGetDataFaktur(res.data.data);
         };
 
-        if (query.length === 0 || query.length > 2) getFaktur();
-    }, [query, customer])
+        if (query.length >= 0) getFaktur();
+    }, [query, supplier])
 
     function klikUbahSumber(value) {
         setSumber(value);

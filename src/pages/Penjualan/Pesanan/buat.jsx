@@ -582,9 +582,16 @@ const BuatPesanan = () => {
             render: (text, record, index) => {
                 return <div className="input-group input-group-sm mb-3">
 
-                    <CurrencyFormat className='text-center editable-input' style={{ width: "80px" }} thousandSeparator={'.'} decimalSeparator={','} onKeyDown={(event) => klikEnter(event)}
+                    <CurrencyFormat
+                        className='text-center editable-input'
+                        style={{ width: "80px" }}
+                        thousandSeparator={'.'}
+                        decimalSeparator={','}
+                        onKeyDown={(event) => klikEnter(event)}
                         value={
-                            jumlahDiskon[index]} onChange={(e) => ubahJumlahDiskon(e.target.value, index)} key="diskon" />
+                            jumlahDiskon[index]}
+                        onChange={(e) => ubahJumlahDiskon(e.target.value, index)} key="diskon"
+                    />
 
 
                     {/* <input style={{ width: "20px" }} type="text" className="form-control" aria-label="Small" onChange={(e) => ubahJumlahDiskon(e.target.value, index)} defaultValue={jumlahDiskon[index]} aria-describedby="inputGroup-sizing-sm" /> */}

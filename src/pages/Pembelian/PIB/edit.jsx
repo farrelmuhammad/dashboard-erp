@@ -573,7 +573,7 @@ const EditPIB = () => {
         e.preventDefault();
         const formData = new URLSearchParams();
         formData.append("tanggal", date);
-        formData.append("nomor_pib", getCode);
+        formData.append("kode", getCode);
         formData.append("bagan_akun", bankId);
         formData.append("nomor_bl", noBL);
         formData.append("mata_uang", mataUangId);
@@ -616,7 +616,7 @@ const EditPIB = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text: err.response.data.message,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);
@@ -633,7 +633,7 @@ const EditPIB = () => {
         console.log(bankId)
         const formData = new URLSearchParams();
         formData.append("tanggal", date);
-        formData.append("nomor_pib", getCode);
+        formData.append("kode", getCode);
         formData.append("bagan_akun", bankId);
         formData.append("nomor_bl", noBL);
         formData.append("mata_uang", mataUangId);
@@ -677,7 +677,7 @@ const EditPIB = () => {
                     Swal.fire({
                         icon: "error",
                         title: "Oops...",
-                        text: err.response.data.error.nama,
+                        text: err.response.data.message,
                     });
                 } else if (err.request) {
                     console.log("err.request ", err.request);

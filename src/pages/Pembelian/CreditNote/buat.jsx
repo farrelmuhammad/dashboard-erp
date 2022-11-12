@@ -172,12 +172,12 @@ const BuatCreditNote = () => {
         setSelectedBiaya(value);
     };
     const loadOptionsBiaya = (inputValue) => {
-        return fetch(`${Url}/select_costs?name=${inputValue}`, {
+        return axios.get(`${Url}/costs?anak_terakhir=1&name=${inputValue}`, {
             headers: {
                 Accept: "application/json",
                 Authorization: `Bearer ${auth.token}`,
             },
-        }).then((res) => res.json());
+        }).then((res) => res.data.data);
     };
 
 
