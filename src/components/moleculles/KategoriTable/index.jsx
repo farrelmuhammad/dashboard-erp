@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { useRef } from "react";
 import { Button, Input, Space, Table, Typography } from "antd";
 import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 import { toTitleCase } from "../../../utils/helper";
 const { Text } = Typography;
 
@@ -25,6 +26,48 @@ const KategoriTable = () => {
   const [ellipsis, setEllipsis] = useState(true);
 
   const { id } = useParams();
+
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    fetch(`${Url}/categories?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+
+        const getData = data
+        setCategories(getData)
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -99,8 +142,12 @@ const KategoriTable = () => {
         }}
       />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => {
+      if (record[dataIndex]) {
+
+        return record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+      }
+    },
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -129,6 +176,8 @@ const KategoriTable = () => {
       key: 'code',
       width: '15%',
       ...getColumnSearchProps('code'),
+      sorter: (a, b) => a.code.length - b.code.length,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Kategori',
@@ -144,6 +193,8 @@ const KategoriTable = () => {
       dataIndex: 'description',
       key: 'description',
       ...getColumnSearchProps('description'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
       render: (text) => (
         <Text
           style={
@@ -200,26 +251,36 @@ const KategoriTable = () => {
     },
   ];
 
-  useEffect(() => {
-    getCategories();
-  }, []);
-
-  const getCategories = async () => {
-    axios
-      .get(`${Url}/categories`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-      .then(res => {
-        const getData = res.data.data
-        setCategories(getData)
-        // setStatus(getData.map(d => d.status))
-        setIsLoading(false);
-        console.log(getData)
-      })
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
   };
+
+
+
+  // useEffect(() => {
+  //   getCategories();
+  // }, []);
+
+  // const getCategories = async () => {
+  //   axios
+  //     .get(`${Url}/categories`, {
+  //       headers: {
+  //         Accept: "application/json",
+  //         Authorization: `Bearer ${auth.token}`,
+  //       },
+  //     })
+  //     .then(res => {
+  //       const getData = res.data.data
+  //       setCategories(getData)
+  //       // setStatus(getData.map(d => d.status))
+  //       setIsLoading(false);
+  //       console.log(getData)
+  //     })
+  // };
 
   const deleteCategories = async (id, code) => {
     Swal.fire({
@@ -239,7 +300,7 @@ const KategoriTable = () => {
               Authorization: `Bearer ${auth.token}`,
             },
           });
-          getCategories();
+          fetchData();
           Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
         }
       })
@@ -251,6 +312,7 @@ const KategoriTable = () => {
         size="small"
         loading={isLoading}
         columns={columns}
+        onChange={handleTableChange}
         pagination={{ pageSize: 10 }}
         dataSource={categories}
         scroll={{

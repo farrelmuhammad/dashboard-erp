@@ -139,7 +139,7 @@ const CreateAdjustment = () => {
         updatedList = []
         setProduct(updatedList);
 
-    };
+    }; 
     // load options using API call
     const loadOptionsWarehouse = (inputValue) => {
         return fetch(`${Url}/select_warehouses?limit=10&nama=${inputValue}&tipe=internal`, {
@@ -166,16 +166,37 @@ const CreateAdjustment = () => {
                         statusCek: true
                     });
                 }
-                else {
+            }
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentang.indexOf(res.data[i].product_id) < 0) {
                     tmp.push({
                         detail: res.data[i],
                         statusCek: false
                     });
                 }
 
-
             }
+
             setGetDataProduct(tmp);
+
+            // let tmp = []
+            // for (let i = 0; i < res.data.length; i++) {
+            //     if (tmpCentang.indexOf(res.data[i].product_id) >= 0) {
+            //         tmp.push({
+            //             detail: res.data[i],
+            //             statusCek: true
+            //         });
+            //     }
+            //     else {
+            //         tmp.push({
+            //             detail: res.data[i],
+            //             statusCek: false
+            //         });
+            //     }
+
+
+            // }
+            // setGetDataProduct(tmp);
         };
         if (query.length >= 0) getProduct();
     }, [query, warehouse_id])
@@ -358,7 +379,13 @@ const CreateAdjustment = () => {
                     detail: getDataProduct[i].detail,
                     statusCek: !getDataProduct[i].statusCek
                 })
-                // tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+                if (!tmpDataBaru[i].statusCek) {
+                    let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.product_id);
+                    tmpDataCentang.splice(idxHapus, 1)
+                }
+                else if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+                }
 
             }
             else {
@@ -366,16 +393,16 @@ const CreateAdjustment = () => {
             }
 
 
-            if (tmpDataBaru[i].statusCek == true) {
-                tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
-            }
-            else {
-                let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.product_id);
-                if (index >= 0) {
-                    tmpDataCentang.splice(index, 1)
-                }
-                // tmpDataCentang.push('')
-            }
+            // if (tmpDataBaru[i].statusCek == true) {
+            //     tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+            // }
+            // else {
+            //     let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.product_id);
+            //     if (index >= 0) {
+            //         tmpDataCentang.splice(index, 1)
+            //     }
+            //     // tmpDataCentang.push('')
+            // }
         }
         let unikTmpCentang = [...new Set(tmpDataCentang)]
         setTmpCentang(unikTmpCentang)

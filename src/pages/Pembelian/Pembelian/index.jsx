@@ -27,16 +27,16 @@ const PesananPembelian = () => {
       })
   }, [])
 
-  if (userAccess) {
+  // if (userAccess) {
     return (
       <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
         <div className="row">
           <div className="col text-title text-start">
             <h5 className="title fw-bold">Daftar Pesanan Pembelian</h5>
           </div>
-          {userAccess?.map(d => {
-            if (d.ability_name === "create-sales_order") {
-              return (
+          {/* {userAccess?.map(d => {
+            if (d.ability_name === "create-sales_order") { */}
+              {/* return ( */}
                 <div className="col button-add text-end me-3">
                   <Link to="/pesananpembelian/buat">
                     <Button
@@ -45,27 +45,30 @@ const PesananPembelian = () => {
                     />
                   </Link>
                 </div>
-              )
+              {/* )
             }
-          })}
+          })} */}
         </div>
-        {userAccess?.map(d => {
+        
+        <PesananPembelianTable />
+            
+        {/* {userAccess?.map(d => {
           if (d.ability_name === "create-piece") {
             return (
               <PesananPembelianTable />
             )
           }
-        })}
+        })} */}
       </div>
     )
-  } else {
-    <div>
-      <div className="text-title text-start">
-        <h3 className="title fw-bold">Daftar Bagian</h3>
-      </div>
-      <PesananPembelianTable />
-    </div>
-  }
+  // } else {
+  //   <div>
+  //     <div className="text-title text-start">
+  //       <h3 className="title fw-bold">Daftar Bagian</h3>
+  //     </div>
+  //     <PesananPembelianTable />
+  //   </div>
+  // }
 }
 
 export default PesananPembelian;

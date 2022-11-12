@@ -4,6 +4,7 @@ import { useState } from "react";
 import Url from "../../../Config";
 import Swal from "sweetalert2";
 import { useEffect } from "react";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 import { Link, useParams } from "react-router-dom";
 import { Button, Input, Space, Table, Typography } from "antd";
 import { useSelector } from "react-redux";
@@ -27,6 +28,48 @@ const ProdukTable = () => {
 
 
   const { id } = useParams();
+
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    fetch(`${Url}/products?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+        const getData = data
+        setProducts(getData)
+        setDataMerek(getData[0].brand.name)
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -101,8 +144,13 @@ const ProdukTable = () => {
         }}
       />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => {
+      if (record[dataIndex]) {
+
+        return record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+      }
+    }
+    ,
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -124,6 +172,16 @@ const ProdukTable = () => {
     //   ),
   });
 
+
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
   const columns = [
     {
       title: 'Kode',
@@ -131,6 +189,8 @@ const ProdukTable = () => {
       key: 'code',
       width: '12%',
       ...getColumnSearchProps('code'),
+      sorter: (a, b) => a.code.length - b.code.length,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Nama Produk',
@@ -138,6 +198,8 @@ const ProdukTable = () => {
       key: 'name',
       width: '24%',
       ...getColumnSearchProps('name'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Bagian',
@@ -145,7 +207,7 @@ const ProdukTable = () => {
       key: 'piece',
       width: '10%',
       ...getColumnSearchProps('piece'),
-      // sorter: true,
+      sorter: true,
       sortDirections: ['descend', 'ascend'],
       render: (piece) => piece.name
     },
@@ -155,7 +217,7 @@ const ProdukTable = () => {
       key: 'brand',
       width: '10%',
       ...getColumnSearchProps('brand'),
-      // sorter: true,
+      sorter: true,
       sortDirections: ['descend', 'ascend'],
       // render: (text,index) => text
     },
@@ -175,6 +237,8 @@ const ProdukTable = () => {
       dataIndex: 'category',
       key: 'category',
       ...getColumnSearchProps('category.name'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
       render: (category) => category.name
       // render: (text) => (
       //   <Text
@@ -241,32 +305,32 @@ const ProdukTable = () => {
     },
   ];
 
-  useEffect(() => {
-    getProducts();
-    console.log(dataMerek)
-  }, []);
+  // useEffect(() => {
+  //   getProducts();
+  //   console.log(dataMerek)
+  // }, []);
 
-  const getProducts = async (params = {}) => {
-    setIsLoading(true);
-    await axios
-      .get(`${Url}/products`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-      .then(res => {
-        const getData = res.data.data
-        setProducts(getData)
-        console.log(getData);
+  // const getProducts = async (params = {}) => {
+  //   setIsLoading(true);
+  //   await axios
+  //     .get(`${Url}/products`, {
+  //       headers: {
+  //         Accept: "application/json",
+  //         Authorization: `Bearer ${auth.token}`,
+  //       },
+  //     })
+  //     .then(res => {
+  //       const getData = res.data.data
+  //       setProducts(getData)
+  //       console.log(getData);
 
-        setDataMerek(getData[0].brand.name)
+  //       setDataMerek(getData[0].brand.name)
 
-        setIsLoading(false);
+  //       setIsLoading(false);
 
-        //console.log(getData)
-      })
-  };
+  //       //console.log(getData)
+  //     })
+  // };
 
   const deleteProducts = async (id) => {
     await axios.delete(`${Url}/products/${id}`, {
@@ -275,7 +339,7 @@ const ProdukTable = () => {
         Authorization: `Bearer ${auth.token}`,
       },
     });
-    getProducts();
+    fetchData();
     Swal.fire("Berhasil Dihapus!", `${id} Berhasil hapus`, "success");
   };
 
@@ -285,6 +349,8 @@ const ProdukTable = () => {
         size="small"
         loading={isLoading}
         columns={columns}
+        onChange={handleTableChange}
+
         pagination={{ pageSize: 10 }}
         dataSource={products}
         scroll={{

@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { Button, Input, Space, Table, Typography } from "antd";
 import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import { toTitleCase } from "../../../utils/helper";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 import { useRef } from "react";
 const { Text } = Typography;
 
@@ -25,6 +26,50 @@ const PenggunaTable = () => {
   const [ellipsis, setEllipsis] = useState(true);
 
   const { id } = useParams();
+
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    console.log(qs.stringify(getParams(tableParams)))
+    fetch(`${Url}/users?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+        const getData = data
+        setUsers(getData)
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+ 
+
+
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -122,6 +167,14 @@ const PenggunaTable = () => {
     //   ),
   });
 
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
   const columns = [
     {
       title: 'Kode',
@@ -129,6 +182,9 @@ const PenggunaTable = () => {
       key: 'code',
       width: '15%',
       ...getColumnSearchProps('code'),
+      sorter: (a, b) => a.code.length - b.code.length,
+      // ...getColumnSearchProps('code', 'No. Transaksi'),
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Grup',
@@ -136,8 +192,8 @@ const PenggunaTable = () => {
       key: 'groups',
       width: '30%',
       ...getColumnSearchProps('groups'),
-      sorter: true,
-      sortDirections: ['descend', 'ascend'],
+      // sorter: true,
+      // sortDirections: ['descend', 'ascend'],
       render: (groups) => groups.join(" ")
     },
     {
@@ -146,6 +202,8 @@ const PenggunaTable = () => {
       width: '30%',
       key: 'username',
       ...getColumnSearchProps('username'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
       // render: (text) => (
       //   <Text
       //     style={
@@ -202,26 +260,26 @@ const PenggunaTable = () => {
     },
   ];
 
-  useEffect(() => {
-    getUsers();
-  }, []);
+  // useEffect(() => {
+  //   getUsers();
+  // }, []);
 
-  const getUsers = async () => {
-    axios
-      .get(`${Url}/users`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-      .then(res => {
-        const getData = res.data.data
-        setUsers(getData)
-        // setStatus(getData.map(d => d.status))
-        setIsLoading(false);
-        console.log(getData)
-      })
-  };
+  // const getUsers = async () => {
+  //   axios
+  //     .get(`${Url}/users`, {
+  //       headers: {
+  //         Accept: "application/json",
+  //         Authorization: `Bearer ${auth.token}`,
+  //       },
+  //     })
+  //     .then(res => {
+  //       const getData = res.data.data
+  //       setUsers(getData)
+  //       // setStatus(getData.map(d => d.status))
+  //       setIsLoading(false);
+  //       console.log(getData)
+  //     })
+  // };
 
   const deleteUsers = async (id, code) => {
     Swal.fire({
@@ -241,7 +299,7 @@ const PenggunaTable = () => {
               Authorization: `Bearer ${auth.token}`,
             },
           });
-          getUsers();
+          fetchData();
           Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
         }
       })
@@ -255,6 +313,7 @@ const PenggunaTable = () => {
         size="small"
         loading={isLoading}
         columns={columns}
+        onChange={handleTableChange}
         pagination={{ pageSize: 10 }}
         dataSource={users}
         scroll={{

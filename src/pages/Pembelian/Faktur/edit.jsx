@@ -1119,7 +1119,7 @@ const EditFakturPembelian = () => {
                             decimalSeparator={','}
                             prefix={mataUang + ' '}
                             onKeyDown={(event) => klikEnter(event)}
-                            value={item.jumlah.replace('.', ',')}
+                            value={item.jumlah.toString().replace('.', ',')}
                             onChange={(e) => ubahCOA(e.target.value, i)} key="coa" />
                         //     :
 

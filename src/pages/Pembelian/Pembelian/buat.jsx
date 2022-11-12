@@ -194,8 +194,6 @@ const BuatPesananPembelian = () => {
 
             }
 
-            // let urut = tmp.sort()
-            // console.log(urut)
             setGetDataProduct(tmp);
         };
 
@@ -735,16 +733,6 @@ const BuatPesananPembelian = () => {
             else {
                 tmpDataBaru.push(getDataProduct[i])
             }
-
-            // if (tmpDataBaru[i].statusCek == true) {
-            //     tmpDataCentang.push(tmpDataBaru[i].detail.id)
-            // }
-            // else {
-            //     let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.id);
-            //     if (index >= 0) {
-            //         tmpDataCentang.splice(index, 1)
-            //     }
-            // }
         }
 
         let unikTmpCentang = [...new Set(tmpDataCentang)]
@@ -827,7 +815,7 @@ const BuatPesananPembelian = () => {
         //             icon: "error",
         //             title: "Oops...",
         //             text: "Data Mata Uang kosong, Silahkan Lengkapi datanya ",
-        //         });
+        //         }); 
         //     }
         // }
         else if (!supplier) {

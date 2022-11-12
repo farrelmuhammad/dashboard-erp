@@ -8,6 +8,7 @@ import { Link, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Button, Input, Space, Table, Typography } from "antd";
 import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 import { toTitleCase } from "../../../utils/helper";
 const { Text } = Typography;
 
@@ -24,6 +25,47 @@ const GrupTable = () => {
   const [ellipsis, setEllipsis] = useState(true);
 
   const { id } = useParams();
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    fetch(`${Url}/groups?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+        const getData = data
+        setGroups(getData)
+        // setStatus(getData.map(d => d.status))
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -98,8 +140,14 @@ const GrupTable = () => {
         }}
       />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => {
+      if (record[dataIndex]) {
+
+        return record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+      }
+    }
+
+    ,
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -121,6 +169,14 @@ const GrupTable = () => {
     //   ),
   });
 
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
   const columns = [
     {
       title: 'Kode',
@@ -128,6 +184,8 @@ const GrupTable = () => {
       key: 'code',
       width: '15%',
       ...getColumnSearchProps('code'),
+      sorter: (a, b) => a.code.length - b.code.length,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Nama Grup',
@@ -142,6 +200,8 @@ const GrupTable = () => {
       title: 'Keterangan',
       dataIndex: 'description',
       key: 'description',
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
       ...getColumnSearchProps('description'),
       render: (text) => (
         <Text
@@ -199,26 +259,26 @@ const GrupTable = () => {
     },
   ];
 
-  useEffect(() => {
-    getGroups();
-  }, []);
+  // useEffect(() => {
+  //   getGroups();
+  // }, []);
 
-  const getGroups = async () => {
-    axios
-      .get(`${Url}/groups`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-      .then(res => {
-        const getData = res.data.data
-        setGroups(getData)
-        // setStatus(getData.map(d => d.status))
-        setIsLoading(false);
-        console.log(getData)
-      })
-  };
+  // const getGroups = async () => {
+  //   axios
+  //     .get(`${Url}/groups`, {
+  //       headers: {
+  //         Accept: "application/json",
+  //         Authorization: `Bearer ${auth.token}`,
+  //       },
+  //     })
+  //     .then(res => {
+  //       const getData = res.data.data
+  //       setGroups(getData)
+  //       // setStatus(getData.map(d => d.status))
+  //       setIsLoading(false);
+  //       console.log(getData)
+  //     })
+  // };
 
   const deleteGroups = async (id) => {
     Swal.fire({
@@ -238,7 +298,7 @@ const GrupTable = () => {
               Authorization: `Bearer ${auth.token}`,
             },
           });
-          getGroups();
+          fetchData();
           Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
         }
       })
@@ -251,6 +311,7 @@ const GrupTable = () => {
         loading={isLoading}
         columns={columns}
         pagination={{ pageSize: 10 }}
+        onChange={handleTableChange}
         dataSource={groups}
         scroll={{
           y: 295,
