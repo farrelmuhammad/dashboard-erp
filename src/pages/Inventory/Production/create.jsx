@@ -173,15 +173,17 @@ const CreateProduction = () => {
                         statusCek: true
                     });
                 }
-                else {
+            }
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentangInput.indexOf(res.data[i].product_id) < 0) {
                     tmp.push({
                         detail: res.data[i],
                         statusCek: false
                     });
                 }
 
-
             }
+
             setGetDataProduct(tmp);
         };
 
@@ -204,16 +206,38 @@ const CreateProduction = () => {
                         statusCek: true
                     });
                 }
-                else {
+            }
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentangOutput.indexOf(res.data[i].product_id) < 0) {
                     tmp.push({
                         detail: res.data[i],
                         statusCek: false
                     });
                 }
 
-
             }
+
             setGetDataOutput(tmp);
+            // console.log(tmp)
+
+            // let tmp = []
+            // for (let i = 0; i < res.data.length; i++) {
+            //     if (tmpCentangOutput.indexOf(res.data[i].product_id) >= 0) {
+            //         tmp.push({
+            //             detail: res.data[i],
+            //             statusCek: true
+            //         });
+            //     }
+            //     else {
+            //         tmp.push({
+            //             detail: res.data[i],
+            //             statusCek: false
+            //         });
+            //     }
+
+
+            // }
+            // setGetDataOutput(tmp);
         };
 
         if (query_out.length >= 0) getProductOut();
@@ -385,21 +409,16 @@ const CreateProduction = () => {
                         detail: getDataProduct[i].detail,
                         statusCek: !getDataProduct[i].statusCek
                     })
-                    // tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
-
+                    if (!tmpDataBaru[i].statusCek) {
+                        let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.product_id);
+                        tmpDataCentang.splice(idxHapus, 1)
+                    }
+                    else if (tmpDataBaru[i].statusCek == true) {
+                        tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+                    }
                 }
                 else {
                     tmpDataBaru.push(getDataProduct[i])
-                }
-                if (tmpDataBaru[i].statusCek == true) {
-                    tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
-                }
-                else {
-                    let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.product_id);
-                    if (index >= 0) {
-                        tmpDataCentang.splice(index, 1)
-                    }
-                    // tmpDataCentang.push('')
                 }
             }
             let unikTmpCentang = [...new Set(tmpDataCentang)]
@@ -438,21 +457,16 @@ const CreateProduction = () => {
                         detail: getDataOutput[i].detail,
                         statusCek: !getDataOutput[i].statusCek
                     })
-                    // tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
-
+                    if (!tmpDataBaru[i].statusCek) {
+                        let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.product_id);
+                        tmpDataCentang.splice(idxHapus, 1)
+                    }
+                    else if (tmpDataBaru[i].statusCek == true) {
+                        tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+                    }
                 }
                 else {
                     tmpDataBaru.push(getDataOutput[i])
-                }
-                if (tmpDataBaru[i].statusCek == true) {
-                    tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
-                }
-                else {
-                    let index = tmpDataCentang.indexOf(tmpDataBaru[i].detail.product_id);
-                    if (index >= 0) {
-                        tmpDataCentang.splice(index, 1)
-                    }
-                    // tmpDataCentang.push('')
                 }
             }
             let unikTmpCentang = [...new Set(tmpDataCentang)]
@@ -627,10 +641,10 @@ const CreateProduction = () => {
                             </div>
                         </div>
                         <div className="form-group row mb-1">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Input</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Bahan Baku</label>
                             <div className="col-sm-8">
                                 <AsyncSelect
-                                    placeholder="Pilih Gudang Input..."
+                                    placeholder="Pilih Gudang Bahan Baku..."
                                     cacheOptions
                                     defaultOptions
                                     value={selectedWarehouseInput}
@@ -642,10 +656,10 @@ const CreateProduction = () => {
                             </div>
                         </div>
                         <div className="form-group row mb-1">
-                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Output</label>
+                            <label htmlFor="inputNama3" className="col-sm-4 col-form-label">Gudang Hasil Produksi</label>
                             <div className="col-sm-8">
                                 <AsyncSelect
-                                    placeholder="Pilih Gudang Output..."
+                                    placeholder="Pilih Gudang Hasil Produksi..."
                                     cacheOptions
                                     defaultOptions
                                     value={selectedWarehouseOutput}

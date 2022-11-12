@@ -12,7 +12,7 @@ import { toTitleCase } from '../../../utils/helper';
 import qs from "https://cdn.skypack.dev/qs@6.11.0";
 
 const ProductionTable = () => {
-  const [searchText, setSearchText] = useState('');
+    const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);
     const [getDataProduction, setGetDataProduction] = useState([]);
@@ -23,10 +23,10 @@ const ProductionTable = () => {
 
     const [tableParams, setTableParams] = useState({
         pagination: {
-          current: 1,
-          pageSize: 10,
+            current: 1,
+            pageSize: 10,
         },
-      });
+    });
 
     const deleteProduction = async (id) => {
         Swal.fire({
@@ -51,6 +51,38 @@ const ProductionTable = () => {
             }
         })
 
+
+    };
+
+    const cancelProduction = async (id, code) => {
+        Swal.fire({
+            title: 'Apakah Anda Yakin?',
+            text: "Status data akan diubah ",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                try {
+                    axios({
+                        method: "patch",
+                        url: `${Url}/productions/cancel/${id}`,
+                        headers: {
+                            Accept: "application/json",
+                            Authorization: `Bearer ${auth.token}`,
+                        },
+                    })
+
+                    getProduction();
+                    Swal.fire("Berhasil Dibatalkan!", `${code} Dibatalkan`, "success");
+                }
+                catch (err) {
+                    console.log(err);
+                }
+            }
+        })
 
     };
 
@@ -152,9 +184,9 @@ const ProductionTable = () => {
 
     const handleTableChange = (pagination, filters, sorter) => {
         setTableParams({
-          pagination,
-          filters,
-          ...sorter,
+            pagination,
+            filters,
+            ...sorter,
         });
     };
     const getParams = (params) => ({
@@ -163,7 +195,7 @@ const ProductionTable = () => {
         ...params,
     });
 
-    const getProduction= async (params = {}) => {
+    const getProduction = async (params = {}) => {
         setIsLoading(true);
         await axios.get(`${Url}/productions?${qs.stringify(getParams(tableParams))}`, {
             headers: {
@@ -179,16 +211,16 @@ const ProductionTable = () => {
                 setTableParams({
                     ...tableParams,
                     pagination: {
-                      ...tableParams.pagination,
-                      total: 200,
+                        ...tableParams.pagination,
+                        total: 200,
                     },
-                  });
+                });
             })
     }
 
     useEffect(() => {
         getProduction();
-      }, [JSON.stringify(tableParams)]);
+    }, [JSON.stringify(tableParams)]);
 
     const columns = [
         {
@@ -249,41 +281,90 @@ const ProductionTable = () => {
             align: 'center',
             render: (_, record) => (
                 <>
-                    {record.status === 'Done' || record.status === 'Submitted' || record.status === 'Processed'? (
-                        <Space size="middle">
-                        <Link to={`/produksi/detail/${record.id}`}>
-                            <Button
-                                size='small'
-                                type="primary"
-                                icon={<InfoCircleOutlined />}
-                            />
-                        </Link>
+                    <Space size="middle">
+                        {record.can['read-production'] ? (
+                            <Link to={`/produksi/detail/${record.id}`}>
+                                <Button
+                                    size='small'
+                                    type="primary"
+                                    icon={<InfoCircleOutlined />}
+                                />
+                            </Link>
+                        ) : null}
+                        {
+                            record.can['cancel-production'] ? (
+
+                                <Button
+                                    size='small'
+                                    type="danger"
+                                    icon={<CloseOutlined />}
+                                    onClick={() => cancelProduction(record.id, record.code)}
+                                />
+
+                            ) : null
+                        }
+                        {
+                            record.can['delete-production'] ? (
+                                <Space size="middle">
+                                    <Button
+                                        size='small'
+                                        type="danger"
+                                        icon={<DeleteOutlined />}
+                                        onClick={() => deleteProduction(record.id, record.code)}
+                                    />
+                                </Space>
+                            ) : null
+                        }
+                        {
+                            record.can['update-production'] ? (
+                                <Link to={`/produksi/edit/${record.id}`}>
+                                    <Button
+                                        size='small'
+                                        type="success"
+                                        icon={<EditOutlined />}
+                                    />
+                                </Link>
+                            ) : null
+                        }
                     </Space>
-                    ) : (
-                        <Space size="middle">
-                        <Link to={`/produksi/detail/${record.id}`}>
-                            <Button
-                                size='small'
-                                type="primary"
-                                icon={<InfoCircleOutlined />}
-                            />
-                        </Link>
-                        <Link to={`/produksi/edit/${record.id}`}>
-                            <Button
-                                size='small'
-                                type="success"
-                                icon={<EditOutlined />}
-                            />
-                        </Link>
-                        <Button
-                            size='small'
-                            type="danger"
-                            icon={<DeleteOutlined />}
-                            onClick={() => deleteProduction(record.id)}
-                        />
-                    </Space>
-                    )}
                 </>
+
+                // <>
+                //     {record.status === 'Done' || record.status === 'Submitted' || record.status === 'Processed'? (
+                //         <Space size="middle">
+                //         <Link to={`/produksi/detail/${record.id}`}>
+                //             <Button
+                //                 size='small'
+                //                 type="primary"
+                //                 icon={<InfoCircleOutlined />}
+                //             />
+                //         </Link>
+                //     </Space>
+                //     ) : (
+                //         <Space size="middle">
+                //         <Link to={`/produksi/detail/${record.id}`}>
+                //             <Button
+                //                 size='small'
+                //                 type="primary"
+                //                 icon={<InfoCircleOutlined />}
+                //             />
+                //         </Link>
+                //         <Link to={`/produksi/edit/${record.id}`}>
+                //             <Button
+                //                 size='small'
+                //                 type="success"
+                //                 icon={<EditOutlined />}
+                //             />
+                //         </Link>
+                //         <Button
+                //             size='small'
+                //             type="danger"
+                //             icon={<DeleteOutlined />}
+                //             onClick={() => deleteProduction(record.id)}
+                //         />
+                //     </Space>
+                //     )}
+                // </>
             ),
         },
     ];

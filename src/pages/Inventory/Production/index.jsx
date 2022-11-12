@@ -27,12 +27,12 @@ const Production = () => {
       })
   }, [])
 
-  if (userAccess) {
+  // if (userAccess) {
     return (
       <>
-        {userAccess?.map(d => {
+        {/* {userAccess?.map(d => {
           if (d.ability_name === "create-adjustment") {
-            return (
+            return ( */}
               <PageHeader
                 ghost={false}
                 className="bg-body rounded mb-2"
@@ -48,9 +48,9 @@ const Production = () => {
               >
                 <ProductionTable />
               </PageHeader>
-            )
+            {/* )
           }
-        })}
+        })} */}
       </>
       // <div className="container   p-3 mb-5 bg-body rounded d-flex flex-column">
       //   <div className="row">
@@ -81,15 +81,15 @@ const Production = () => {
       //   })}
       // </div>
     )
-  } else {
-    <PageHeader
-      ghost={false}
-      className="bg-body rounded mb-2"
-      title="Daftar Produksi"
-    >
-      <ProductionTable />
-    </PageHeader>
-  }
+  // } else {
+  //   <PageHeader
+  //     ghost={false}
+  //     className="bg-body rounded mb-2"
+  //     title="Daftar Produksi"
+  //   >
+  //     <ProductionTable />
+  //   </PageHeader>
+  // }
 };
 
 export default Production;

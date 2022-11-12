@@ -134,6 +134,10 @@ const EditProduction = () => {
     const [selectedValue, setSelectedCustomer] = useState(null);
     const [modal2Visible, setModal2Visible] = useState(false);
     const [modal2VisibleOutput, setModal2VisibleOutput] = useState(false);
+    const [tmpCentangInput, setTmpCentangInput] = useState([]);
+    const [tmpCentangOutput, setTmpCentangOutput] = useState([]);
+
+
 
     const cardOutline = {
         borderTop: '3px solid #007bff',
@@ -158,7 +162,9 @@ const EditProduction = () => {
                 setWarehouseInputName(getData.whinput.name);
                 setWarehouseOutput(getData.whoutput.id);
                 setWarehouseOutputName(getData.whoutput.name);
-                setNotes(getData.notes);
+                if (getData.notes) {
+                    setNotes(getData.notes);
+                }
                 setStatus(getData.status);
                 setLoading(false);
             })
@@ -182,6 +188,13 @@ const EditProduction = () => {
         })
             .then(res => {
                 const getData = res.data.data
+
+                let tmpCentang = [];
+                for (let i = 0; i < getData.length; i++) {
+                    tmpCentang.push(getData[i].product_id)
+                }
+                setTmpCentangInput(tmpCentang)
+
                 setProduct(getData)
                 setIsLoading(false);
             })
@@ -202,6 +215,12 @@ const EditProduction = () => {
             .then(res => {
                 const getData = res.data.data
                 setProductOutput(getData)
+                let tmpCentang = [];
+                for (let i = 0; i < getData.length; i++) {
+                    tmpCentang.push(getData[i].product_id)
+                }
+
+                setTmpCentangOutput(tmpCentang)
                 setIsLoading(false);
             })
     }
@@ -228,43 +247,90 @@ const EditProduction = () => {
 
     useEffect(() => {
         const getProduct = async () => {
-            const res = await axios.get(`${Url}/select_stock_warehouses?product_name=${query}`, {
+            const res = await axios.get(`${Url}/select_stock_warehouses?product_name=${query}&warehouse_id=${warehouse_input}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataProduct(res.data);
+            console.log(res)
+            let tmp = []
+            for (let i = 0; i < res.data.length; i++) {
+                // console.log(tmpCentangInput.indexOf(res.data[i].product_id))
+                if (tmpCentangInput.indexOf(res.data[i].product_id) >= 0) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: true
+                    });
+                }
+            }
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentangInput.indexOf(res.data[i].product_id) < 0) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: false
+                    });
+                }
+
+            }
+
+            setGetDataProduct(tmp);
         };
 
-        if (query.length === 0 || query.length > 2) getProduct();
-    }, [query])
+        if (query.length >= 0) getProduct();
+    }, [query, warehouse_input, tmpCentangInput])
 
     useEffect(() => {
         const getProductOut = async () => {
-            const res = await axios.get(`${Url}/select_stock_warehouses?product_name=${query_out}`, {
+            const res = await axios.get(`${Url}/select_stock_warehouses?product_name=${query_out}&warehouse_id=${warehouse_output}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': `Bearer ${auth.token}`
                 }
             })
-            setGetDataOutput(res.data);
+            let tmp = []
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentangOutput.indexOf(res.data[i].product_id) >= 0) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: true
+                    });
+                }
+            }
+            for (let i = 0; i < res.data.length; i++) {
+                if (tmpCentangOutput.indexOf(res.data[i].product_id) < 0) {
+                    tmp.push({
+                        detail: res.data[i],
+                        statusCek: false
+                    });
+                }
+
+            }
+
+            setGetDataOutput(tmp);
         };
 
-        if (query_out.length === 0 || query_out.length > 2) getProductOut();
-    }, [query_out])
+        if (query_out.length >= 0) getProductOut();
+    }, [query_out,warehouse_output , tmpCentangOutput])
 
     // Column for modal input product
     const columnsModal = [
         {
             title: 'Nama Produk',
             dataIndex: 'product_name',
+            render: (_, record) => {
+                return <>{record.detail.product_name}</>
+            }
         },
         {
             title: 'Stok',
             dataIndex: 'qty',
             width: '15%',
             align: 'center',
+            render: (_, record) => {
+                return <>{record.detail.qty.toString().replace('.', ',')}</>
+
+            }
         },
         {
             title: 'actions',
@@ -272,13 +338,22 @@ const EditProduction = () => {
             width: '15%',
             align: 'center',
             render:
-                (text, record, index) => {
+                (_, record, index) => {
                     if (checked === "input") {
-                        return <Checkbox value={record} onChange={event => handleCheck(event, 'input')} />
+                        return <Checkbox value={record} checked={record.statusCek} onChange={event => handleCheck(event, index, 'input')} />
                     } else if (record) {
-                        return <Checkbox value={record} onChange={event => handleCheck(event, 'output')} />
+                        return <Checkbox value={record} checked={record.statusCek} onChange={event => handleCheck(event, index, 'output')} />
                     }
                 }
+
+            // render:
+            //     (text, record, index) => {
+            //         if (checked === "input") {
+            //             return <Checkbox value={record} onChange={event => handleCheck(event, 'input')} />
+            //         } else if (record) {
+            //             return <Checkbox value={record} onChange={event => handleCheck(event, 'output')} />
+            //         }
+            //     }
         },
     ];
     const defaultColumns = [
@@ -399,23 +474,87 @@ const EditProduction = () => {
         };
     });
 
-    const handleCheck = (event, param) => {
+    const handleCheck = (event, index, param) => {
 
         if (param === "input") {
-            var updatedList = [...product];
-            // console.log(event.target.checked, param,updatedList);
-            if (event.target.checked) {
-                updatedList = [...product, event.target.value];
-            } else {
-                updatedList.splice(product.indexOf(event.target.value), 1);
+            let data = event.target.value
+            let tmpDataBaru = []
+            // let tmpJumlah = [...jumlahInput]
+            let tmpDataCentang = [...tmpCentangInput]
+            for (let i = 0; i < getDataProduct.length; i++) {
+                if (i == index) {
+                    tmpDataBaru.push({
+                        detail: getDataProduct[i].detail,
+                        statusCek: !getDataProduct[i].statusCek
+                    })
+                    if (!tmpDataBaru[i].statusCek) {
+                        let idxHapus = tmpCentangInput.indexOf(tmpDataBaru[i].detail.product_id);
+                        tmpDataCentang.splice(idxHapus, 1)
+                    }
+                    else if (tmpDataBaru[i].statusCek == true) {
+                        tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+                    }
+                }
+                else {
+                    tmpDataBaru.push(getDataProduct[i])
+                }
             }
+            let unikTmpCentang = [...new Set(tmpDataCentang)]
+            setTmpCentangInput(unikTmpCentang)
+            setGetDataProduct(tmpDataBaru)
+            var updatedList = [...product];
+
+            // var updatedList = [...product];
+            if (tmpDataBaru[index].statusCek) {
+                updatedList = [...product, data.detail];
+            } else {
+                for (let i = 0; i < updatedList.length; i++) {
+                    if (updatedList[i].product_id == data.detail.product_id) {
+                        updatedList.splice(i, 1);
+                    }
+                }
+
+                // updatedList.splice(product.indexOf(event.target.value), 1);
+            }
+
             setProduct(updatedList);
         } else {
+            let data = event.target.value
+
+            let tmpDataBaru = []
+            // let tmpJumlah = [...jumlahOutput]
+            let tmpDataCentang = [...tmpCentangOutput]
+            for (let i = 0; i < getDataOutput.length; i++) {
+                if (i == index) {
+                    tmpDataBaru.push({
+                        detail: getDataOutput[i].detail,
+                        statusCek: !getDataOutput[i].statusCek
+                    })
+                    if (!tmpDataBaru[i].statusCek) {
+                        let idxHapus = tmpCentangOutput.indexOf(tmpDataBaru[i].detail.product_id);
+                        tmpDataCentang.splice(idxHapus, 1)
+                    }
+                    else if (tmpDataBaru[i].statusCek == true) {
+                        tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+                    }
+                }
+                else {
+                    tmpDataBaru.push(getDataOutput[i])
+                }
+            }
+            let unikTmpCentang = [...new Set(tmpDataCentang)]
+            setTmpCentangOutput(unikTmpCentang)
+            setGetDataOutput(tmpDataBaru)
             var updatedListOutput = [...productOutput];
-            if (event.target.checked) {
-                updatedListOutput = [...productOutput, event.target.value];
+            if (tmpDataBaru[index].statusCek) {
+                updatedListOutput = [...productOutput, data.detail];
             } else {
-                updatedListOutput.splice(productOutput.indexOf(event.target.value), 1);
+                for (let i = 0; i < updatedListOutput.length; i++) {
+                    if (updatedListOutput[i].product_id == data.detail.product_id) {
+                        updatedListOutput.splice(i, 1);
+                        // tmpJumlah.splice(i, 1)
+                    }
+                }
             }
             setProductOutput(updatedListOutput);
         }
@@ -766,27 +905,38 @@ const EditProduction = () => {
                     onChange={(e) => setProductOutput(e.target.value)}
                 />
                 <div className="d-grid gap-2 d-md-flex justify-content-md-end mt-2" role="group" aria-label="Basic mixed styles example">
-                    <button
-                        type="button"
-                        className="btn btn-success rounded m-1"
-                        value="Draft"
-                        onClick={handleDraft}
-                    >
-                        Update
-                    </button>
+
                     {
-                        status != "Submitted" ?
+                        status == "Submitted" ?
                             <button
                                 type="button"
-                                className="btn btn-primary rounded m-1"
-                                value="Submitted"
-                                onChange={(e) => setStatus(e.target.value)}
+                                className="btn btn-success rounded m-1"
+                                value="Draft"
                                 onClick={handleSubmit}
-                                width="100px"
                             >
-                                Submit
+                                Simpan
                             </button>
-                            : null
+                            :
+                            <>
+                                <button
+                                    type="button"
+                                    className="btn btn-success rounded m-1"
+                                    value="Draft"
+                                    onClick={handleDraft}
+                                >
+                                    Simpan
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary rounded m-1"
+                                    value="Submitted"
+                                    onChange={(e) => setStatus(e.target.value)}
+                                    onClick={handleSubmit}
+                                    width="100px"
+                                >
+                                    Submit
+                                </button>
+                            </>
                     }
                 </div>
             </PageHeader>
