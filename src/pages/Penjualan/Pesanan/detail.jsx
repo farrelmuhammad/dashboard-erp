@@ -42,7 +42,7 @@ export const DetailPesanan = () => {
         return <>
             {
                 namaMataUang === 'Rp' ?
-                    < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp.' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" />
+                    < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={'Rp ' + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toFixed(2).replace('.', ',')} key="diskon" />
                     : < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} prefix={namaMataUang + ' '} thousandSeparator={'.'} decimalSeparator={','} value={Number(angka).toLocaleString('id')} key="diskon" />
 
             }
@@ -60,14 +60,16 @@ export const DetailPesanan = () => {
         {
             title: 'Nama Produk',
             dataIndex: 'product_alias_name',
+            width: '8%',
         },
         {
             title: 'Qty',
             dataIndex: 'quantity',
-            width: '8%',
+            width: '12%',
             align: 'center',
             render(text, record) {
-                return <div>{Number(text).toFixed(2).replace('.', ',')}</div>
+                return < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.', ',')} key="diskon" />
+                // <div>{Number(text).toFixed(2).replace('.', ',')}</div>
             }
         },
         {
@@ -90,23 +92,32 @@ export const DetailPesanan = () => {
                 };
             }
         },
-        {
-            title: 'Disc(%)',
-            dataIndex: 'discount_percentage',
-            width: '8%',
-            align: 'center',
-        },
+        // {
+        //     title: 'Disc(%)',
+        //     dataIndex: 'discount_percentage',
+        //     width: '15%',
+        //     align: 'center',
+        // },
         {
             title: 'Disc(Rp)',
             dataIndex: 'fixed_discount',
-            width: '8%',
+            width: '15%',
             align: 'center',
             render(text, record) {
                 return {
                     props: {
                         style: { borderWidth: "0px", textAlign: 'center' }
                     },
-                    children: <div style={{ borderWidth: "0px" }}>< CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.', ',')} key="diskon" /></div>
+                    children:
+                        <div style={{ borderWidth: "0px" }}>
+                            {
+                                record.discount_percentage != 0 ?
+                                    < CurrencyFormat disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(record.discount_percentage).toFixed(2).replace('.', ',')} key="diskon" />
+                                    :
+                                    < CurrencyFormat prefix={namaMataUang + ' '} disabled className=' text-left editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(record.fixed_discount).toFixed(2).replace('.', ',')} key="diskon" />
+
+                            }
+                        </div>
                 };
             }
         },
@@ -119,7 +130,7 @@ export const DetailPesanan = () => {
         {
             title: 'Jumlah',
             dataIndex: 'total',
-            width: '17%',
+            width: '20%',
             align: 'center',
             render(text, record) {
                 return {
@@ -312,13 +323,13 @@ export const DetailPesanan = () => {
                                                     }
                                                     {/* <div className='col-6'> : {customer}</div> */}
                                                 </div>
-                                         
+
                                             </div>
 
                                             <div className='col-6'>
-                                            <div className="d-flex flex-row p-3" style={{float:"right", alignContent:"right"}}>
-                                                {status === 'Cancelled'  ?  <Tag color="red">{status}</Tag> : null }
-                                            </div>
+                                                <div className="d-flex flex-row p-3" style={{ float: "right", alignContent: "right" }}>
+                                                    {status === 'Cancelled' ? <Tag color="red">{status}</Tag> : null}
+                                                </div>
                                             </div>
 
                                         </div>
@@ -512,7 +523,7 @@ export const DetailPesanan = () => {
                                     <PageHeader
                                         ghost={false}
                                         onBack={() => window.history.back()}
-                                        title="Detail Pesanan"
+                                        title="Detail Pesanan Penjualan"
                                         extra=
                                         {
                                             [
@@ -645,7 +656,7 @@ export const DetailPesanan = () => {
                     </div>
                 </div>
             </form>
-            
+
             <form className="p-3 mb-5 bg-body rounded">
                 <div className="text-title text-start mb-4">
                     <div className="row">
