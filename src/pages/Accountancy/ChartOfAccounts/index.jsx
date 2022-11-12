@@ -14,20 +14,20 @@ const ChartOfAccounts = () => {
   const auth = useSelector(state => state.auth);
   const [userAccess, setUserAccess] = useState([])
 
-  useEffect(() => {
-    axios.get(`${Url}/get_user_access_rights`, {
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${auth.token}`
-      }
-    })
-      .then(res => {
-        setUserAccess(res.data)
-        console.log(res.data)
-      })
-  }, [])
+  // useEffect(() => {
+  //   axios.get(`${Url}/get_user_access_rights`, {
+  //     headers: {
+  //       'Accept': 'application/json',
+  //       'Authorization': `Bearer ${auth.token}`
+  //     }
+  //   })
+  //     .then(res => {
+  //       setUserAccess(res.data)
+  //       console.log(res.data)
+  //     })
+  // }, [])
 
-  if (userAccess) {
+  // if (userAccess) {
     return (
       <>
         <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
@@ -35,9 +35,9 @@ const ChartOfAccounts = () => {
             <div className="col text-title text-start">
               <h4 className="title fw-bold">Daftar Chart of Accounts</h4>
             </div>
-            {userAccess?.map(d => {
+            {/* {userAccess?.map(d => {
               if (d.ability_name === "create-sales_order") {
-                return (
+                return ( */}
                   <div className="col button-add text-end me-3">
                     <Link to="/coa/buat">
                       <Button
@@ -46,28 +46,28 @@ const ChartOfAccounts = () => {
                       />
                     </Link>
                   </div>
-                )
+                {/* )
               }
-            })}
+            })} */}
           </div>
-          {userAccess?.map(d => {
+          {/* {userAccess?.map(d => {
             if (d.ability_name === "create-piece") {
-              return (
+              return ( */}
                 <CoaTable />
-              )
+              {/* )
             }
-          })}
+          })} */}
         </div>
       </>
     )
-  } else {
-    <div>
-      <div className="text-title text-start">
-        <h4 className="title fw-bold">Chart of accounts</h4>
-      </div>
-      <CoaTable />
-    </div>
-  }
+  // } else {
+  //   <div>
+  //     <div className="text-title text-start">
+  //       <h4 className="title fw-bold">Chart of accounts</h4>
+  //     </div>
+  //     <CoaTable />
+  //   </div>
+  // }
 }
 
 export default ChartOfAccounts;

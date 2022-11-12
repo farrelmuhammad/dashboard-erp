@@ -15,6 +15,8 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { formatQuantity, toTitleCase } from "../../../utils/helper";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
+
 const { Text } = Typography;
 
 const PajakTable = () => {
@@ -28,7 +30,78 @@ const PajakTable = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [ellipsis, setEllipsis] = useState(true);
 
+  const [dataTampil, setDataTampil] = useState([]);
+
+
   const { id } = useParams();
+
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    console.log(qs.stringify(getParams(tableParams)))
+    fetch(`${Url}/taxes?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+        const getData = data;
+        setTaxes(getData)
+       
+        console.log(taxes)
+
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+             id: getData[i].id,
+             can: getData[i].can,
+             code: getData[i].code,
+             type: getData[i].type,
+             rate : getData[i].rate,
+          })
+        }
+
+        setDataTampil(tmp)
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+
+
+  
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -140,6 +213,8 @@ const PajakTable = () => {
       key: "code",
       width: "15%",
       ...getColumnSearchProps("code"),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: "Nama Pajak",
@@ -147,8 +222,10 @@ const PajakTable = () => {
       key: "type",
       width: "30%",
       ...getColumnSearchProps("type"),
-      sorter: (a, b) => a.type.length - b.type.length,
-      sortDirections: ["ascend", "descend"],
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+      // sorter: (a, b) => a.type.length - b.type.length,
+      // sortDirections: ["ascend", "descend"],
     },
     {
       title: "Persentase",
@@ -156,6 +233,8 @@ const PajakTable = () => {
       key: "rate",
       ...getColumnSearchProps("rate"),
       render: (text) => <div>{formatQuantity(text)} %</div>,
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
       // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
       // sortDirections: ['descend', 'ascend'],
     },
@@ -193,26 +272,26 @@ const PajakTable = () => {
     },
   ];
 
-  useEffect(() => {
-    getTaxes();
-  }, []);
+  // useEffect(() => {
+  //   getTaxes();
+  // }, []);
 
-  const getTaxes = async () => {
-    axios
-      .get(`${Url}/taxes`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-      .then((res) => {
-        const getData = res.data.data;
-        setTaxes(getData);
-        // setStatus(getData.map(d => d.status))
-        setIsLoading(false);
-        console.log(getData);
-      });
-  };
+  // const getTaxes = async () => {
+  //   axios
+  //     .get(`${Url}/taxes`, {
+  //       headers: {
+  //         Accept: "application/json",
+  //         Authorization: `Bearer ${auth.token}`,
+  //       },
+  //     })
+  //     .then((res) => {
+  //       const getData = res.data.data;
+  //       setTaxes(getData);
+  //       // setStatus(getData.map(d => d.status))
+  //       setIsLoading(false);
+  //       console.log(getData);
+  //     });
+  // };
 
   const deleteTaxes = async (id) => {
     await axios.delete(`${Url}/taxes/${id}`, {
@@ -231,8 +310,9 @@ const PajakTable = () => {
         size="small"
         loading={isLoading}
         columns={columns}
+        onChange={handleTableChange}
         pagination={{ pageSize: 10 }}
-        dataSource={taxes}
+        dataSource={dataTampil}
         scroll={{
           y: 295,
         }}

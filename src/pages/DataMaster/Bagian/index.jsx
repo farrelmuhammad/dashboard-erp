@@ -13,24 +13,24 @@ const Bagian = () => {
   const auth = useSelector(state => state.auth);
   const [userAccess, setUserAccess] = useState([])
 
-  useEffect(() => {
-    axios.get(`${Url}/get_user_access_rights`, {
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${auth.token}`
-      }
-    })
-      .then(res => {
-        setUserAccess(res.data)
-        console.log(res.data)
-      })
-  }, [])
+  // useEffect(() => {
+  //   axios.get(`${Url}/get_user_access_rights`, {
+  //     headers: {
+  //       'Accept': 'application/json',
+  //       'Authorization': `Bearer ${auth.token}`
+  //     }
+  //   })
+  //     .then(res => {
+  //       setUserAccess(res.data)
+  //       console.log(res.data)
+  //     })
+  // }, [])
 
-  if (userAccess) {
-    return (
-      <>
-        {userAccess?.map(d => {
-          if (d.ability_name === "create-piece") {
+  // if (userAccess) {
+    // return (
+    //   <>
+    //     {userAccess?.map(d => {
+    //       if (d.ability_name === "create-piece") {
             return (
               <PageHeader
                 ghost={false}
@@ -45,30 +45,31 @@ const Bagian = () => {
                   </Link>
                 ]}
               >
-                {userAccess?.map(d => {
-                  if (d.ability_name === "read-piece") {
-                    return (
+                {/* {userAccess?.map(d => {
+                  if (d.ability_name === "read-piece") { */}
+                    {/* return ( */}
                       <BagianTable />
-                    )
-                  }
-                })}
+                    {/* ) */}
+                  {/* }
+                })} */}
               </PageHeader >
             )
-          }
-        })}
-      </>
-    )
-  } else {
-    <>
-      <PageHeader
-        ghost={false}
-        className="bg-body rounded mb-2"
-        title="Daftar Bagian"
-      >
-        <BagianTable />
-      </PageHeader >
-    </>
-  }
+      //     }
+      //   })}
+      // </>
+  //   )
+  // } 
+  // else {
+  //   <>
+  //     <PageHeader
+  //       ghost={false}
+  //       className="bg-body rounded mb-2"
+  //       title="Daftar Bagian"
+  //     >
+  //       <BagianTable />
+  //     </PageHeader >
+  //   </>
+  // }
 }
 
 export default Bagian

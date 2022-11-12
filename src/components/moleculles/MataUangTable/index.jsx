@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { Button, Input, Space, Table, Tag } from "antd";
 import { useRef } from "react";
 import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 
 const MataUangTable = () => {
   const auth = useSelector(state => state.auth);
@@ -18,6 +19,76 @@ const MataUangTable = () => {
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const [dataTampil, setDataTampil] = useState([]);
+
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    console.log(qs.stringify(getParams(tableParams)))
+    fetch(`${Url}/currencies?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+        const getData = data;
+        setMataUang(getData)
+       
+        console.log(mataUang)
+
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+             id: getData[i].id,
+             can: getData[i].can,
+             code: getData[i].code,
+             name: getData[i].name,
+             description : getData[i].description,
+          })
+        }
+
+        setDataTampil(tmp)
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+
+
+  
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
 
   const { id } = useParams();
 
@@ -106,7 +177,7 @@ const MataUangTable = () => {
 
   const columns = [
     {
-      title: 'Kode.',
+      title: 'Kode',
       dataIndex: 'code',
       key: 'code',
       width: '10%',
@@ -166,26 +237,26 @@ const MataUangTable = () => {
     },
   ];
 
-  useEffect(() => {
-    getMataUang();
-  }, []);
+  // useEffect(() => {
+  //   getMataUang();
+  // }, []);
 
-  const getMataUang = async () => {
-    axios
-      .get(`${Url}/currencies`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-      .then(res => {
-        const getData = res.data.data
-        setMataUang(getData)
-        // setStatus(getData.map(d => d.status))
-        setIsLoading(false);
-        console.log(getData)
-      })
-  };
+  // const getMataUang = async () => {
+  //   axios
+  //     .get(`${Url}/currencies`, {
+  //       headers: {
+  //         Accept: "application/json",
+  //         Authorization: `Bearer ${auth.token}`,
+  //       },
+  //     })
+  //     .then(res => {
+  //       const getData = res.data.data
+  //       setMataUang(getData)
+  //       // setStatus(getData.map(d => d.status))
+  //       setIsLoading(false);
+  //       console.log(getData)
+  //     })
+  // };
 
   // const deleteMataUang = async (id) => {
   //   await axios.delete(`${Url}/currencies/${id}`, {
@@ -231,8 +302,9 @@ const MataUangTable = () => {
         size="small"
         loading={isLoading}
         columns={columns}
+        onChange={handleTableChange}
         pagination={{ pageSize: 10 }}
-        dataSource={mataUang}
+        dataSource={dataTampil}
         scroll={{
           y: 295,
         }}

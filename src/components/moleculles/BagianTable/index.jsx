@@ -10,6 +10,7 @@ import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from
 import { useRef } from "react";
 import { Button, Input, Space, Table, Typography } from "antd";
 import { toTitleCase } from "../../../utils/helper";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 const { Text } = Typography;
 
 
@@ -25,6 +26,8 @@ const BagianTable = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [ellipsis, setEllipsis] = useState(true);
 
+  const [dataTampil, setDataTampil] = useState([]);
+
   const { id } = useParams();
 
   const [tableParams, setTableParams] = useState({
@@ -33,6 +36,52 @@ const BagianTable = () => {
       pageSize: 10,
     },
   });
+
+
+  const fetchData = () => {
+    setIsLoading(true);
+    console.log(qs.stringify(getParams(tableParams)))
+    fetch(`${Url}/pieces&${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+        
+        const getData = data;
+        setPieces(getData)
+        console.log(getData)
+        
+        console.log(data)
+        let tmp = []
+        for (let i = 0; i < data.length; i++) {
+          tmp.push({
+            id: data[i].id,
+            code: data[i].code,
+            name: data[i].name,
+            description: data[i].description,
+          })
+        }
+        //setPieces(tmp)
+        setDataTampil(tmp)
+
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+ 
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -139,7 +188,7 @@ const BagianTable = () => {
       width: '15%',
       ...getColumnSearchProps('code'),
       sorter: (a, b) => a.code.length - b.code.length,
-      sortDirections: ['ascend', 'descend'],
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Bagian',
@@ -147,8 +196,8 @@ const BagianTable = () => {
       key: 'name',
       width: '30%',
       ...getColumnSearchProps('name'),
-      sorter: (a, b) => a.name.length - b.name.length,
-      sortDirections: ['ascend', 'descend'],
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Keterangan',
@@ -211,36 +260,36 @@ const BagianTable = () => {
     },
   ];
 
-  useEffect(() => {
-    getPieces();
-  }, []);
+  // useEffect(() => {
+  //   getPieces();
+  // }, []);
 
-  const getPieces = async () => {
-    await axios
-      .get(`${Url}/pieces`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-      .then(res => {
-        const getData = res.data.data
-        setCode(getData.code)
+  // const getPieces = async () => {
+  //   await axios
+  //     .get(`${Url}/pieces`, {
+  //       headers: {
+  //         Accept: "application/json",
+  //         Authorization: `Bearer ${auth.token}`,
+  //       },
+  //     })
+  //     .then(res => {
+  //       const getData = res.data.data
+  //       setCode(getData.code)
 
-        let data = []
-        for (let i = 0; i < getData.length; i++) {
-          data.push({
-            id: getData[i].id,
-            code: getData[i].code,
-            name: getData[i].name,
-            description: getData[i].description,
-          })
-        }
+  //       let data = []
+  //       for (let i = 0; i < getData.length; i++) {
+  //         data.push({
+  //           id: getData[i].id,
+  //           code: getData[i].code,
+  //           name: getData[i].name,
+  //           description: getData[i].description,
+  //         })
+  //       }
 
-        setPieces(data)
-        setIsLoading(false);
-      })
-  };
+  //       setPieces(data)
+  //       setIsLoading(false);
+  //     })
+  // };
 
   const deletePieces = async (id, code) => {
     Swal.fire({
@@ -272,7 +321,8 @@ const BagianTable = () => {
         size="small"
         loading={isLoading}
         columns={columns}
-        dataSource={pieces}
+        onChange={handleTableChange}
+        dataSource={dataTampil}
         pagination={{ pageSize: 10 }}
         scroll={{
           y: 295,

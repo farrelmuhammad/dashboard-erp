@@ -20,10 +20,65 @@ const CoaTable = () => {
     // const token = jsCookie.get('auth');
     const auth = useSelector(state => state.auth);
 
+    const [dataTampil, setDataTampil] = useState([]);
 
     const { id } = useParams();
 
+    //   const fetchData = () => {
+    //     setIsLoading(true);
+    //     console.log(qs.stringify(getParams(tableParams)))
+    //     fetch(`${Url}/chart_of_accounts?${qs.stringify(getParams(tableParams))}`, {
+    //       headers: {
+    //         Accept: "application/json",
+    //         Authorization: `Bearer ${auth.token}`,
+    //       },
+    //     }).then((res) => res.json())
+    //       .then(({ data }) => {
+    //         const getData = data;
+    //         setGetDataSO(getData)
+           
+    //         console.log(getDataSO)
     
+    //         // let tmp = []
+    //         // for (let i = 0; i < getData.length; i++) {
+    //         //   tmp.push({
+    //         //      id: getData[i].id,
+    //         //      can: getData[i].can,
+    //         //      code: getData[i].code,
+    //         //      name: getData[i].name,
+    //         //      description : getData[i].description,
+    //         //   })
+    //         // }
+    
+    //       //  setDataTampil(tmp)
+    //         setIsLoading(false);
+    //         setTableParams({
+    //           ...tableParams,
+    //           pagination: {
+    //             ...tableParams.pagination,
+    //             total: 200,
+    //           },
+    //         });
+    //       });
+    //   };
+    
+    
+   
+    
+      
+      const handleTableChange = (pagination, filters, sorter) => {
+        setTableParams({
+          pagination,
+          filters,
+          ...sorter,
+        });
+      };
+    
+    
+
+
+
+
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: 1,
@@ -75,6 +130,26 @@ const CoaTable = () => {
           .then(({ data }) => {
             const getData = data
             setGetDataSO(getData)
+            console.log(getData)
+
+            let tmp = []
+            for (let i = 0; i < getData.length; i++) {
+              tmp.push({
+                 id: getData[i].id,
+                 can: getData[i].can,
+                 code: getData[i].code,
+                 name: getData[i].name,
+                 //description : getData[i].description,
+                 total:getData[i].total,
+                 category_name: getData[i].chart_of_account_category.name
+                 
+              })
+            }
+    
+            setDataTampil(tmp)
+
+
+
             setIsLoading(false);
             setTableParams({
               ...tableParams,
@@ -85,6 +160,11 @@ const CoaTable = () => {
             });
           });
       };
+
+      useEffect(() => {
+        fetchData();
+      }, [JSON.stringify(tableParams)]);
+    
 
     const deleteSalesOrder = async (id) => {
         await axios.delete(`${Url}/chart_of_accounts/${id}`, {
@@ -210,26 +290,26 @@ const CoaTable = () => {
         //   ),
     });
 
-    useEffect(() => {
-        getSalesOrder()
-    }, [])
+    // useEffect(() => {
+    //     getSalesOrder()
+    // }, [])
 
-    const getSalesOrder = async (params = {}) => {
-        setIsLoading(true);
-        await axios.get(`${Url}/chart_of_accounts`, {
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${auth.token}`
-            }
-        })
-            .then(res => {
-                const getData = res.data.data
-                setGetDataSO(getData)
-                setStatus(getData.map(d => d.status))
-                setIsLoading(false);
-                console.log(getData[0].can)
-            })
-    }
+    // const getSalesOrder = async (params = {}) => {
+    //     setIsLoading(true);
+    //     await axios.get(`${Url}/chart_of_accounts`, {
+    //         headers: {
+    //             'Accept': 'application/json',
+    //             'Authorization': `Bearer ${auth.token}`
+    //         }
+    //     })
+    //         .then(res => {
+    //             const getData = res.data.data
+    //             setGetDataSO(getData)
+    //             setStatus(getData.map(d => d.status))
+    //             setIsLoading(false);
+    //             console.log(getData[0].can)
+    //         })
+    // }
 
     const columns = [
         {
@@ -242,8 +322,8 @@ const CoaTable = () => {
         },
         {
             title: 'Kategori Akun',
-            dataIndex: 'chart_of_account_category_id',
-            key: 'code',
+            dataIndex: 'category_name',
+            key: 'category_name',
             width: '20%',
             ...getColumnSearchProps('code'),
             sorter: true,
@@ -253,16 +333,20 @@ const CoaTable = () => {
             title: 'Kode',
             dataIndex: 'code',
             key: 'code',
-            ...getColumnSearchProps('customer_id'),
+            ...getColumnSearchProps('code'),
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
             // sorter: (a, b) => a.customer_id.length - b.customer_id.length,
             // sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Nama Akun',
             dataIndex: 'name',
-            key: 'total',
+            key: 'name',
             width: '20%',
-            ...getColumnSearchProps('total'),
+            ...getColumnSearchProps('name'),
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Total',
@@ -275,7 +359,9 @@ const CoaTable = () => {
             //         {status === 'Submitted' ? <Tag color="blue">{status}</Tag> : status === 'Draft' ? <Tag color="volcano">{status}</Tag> : status === 'Done' ? <Tag color="green">{status}</Tag> : status === 'Processed' ? <Tag color="orange">{status}</Tag> : <Tag color="red">{status}</Tag>}
             //     </>
             // ),
-            ...getColumnSearchProps('status'),
+            //...getColumnSearchProps('status'),
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
         },
         {
             title: 'Actions',
@@ -324,8 +410,9 @@ const CoaTable = () => {
         size="small"
         loading={isLoading}
         columns={columns}
+        onChange={handleTableChange}
         pagination={{ pageSize: 10 }}
-        dataSource={getDataSO}
+        dataSource={dataTampil}
         scroll={{
             y: 240,
         }}

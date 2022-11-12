@@ -157,7 +157,7 @@ const ProdukTable = () => {
       ...getColumnSearchProps('brand'),
       // sorter: true,
       sortDirections: ['descend', 'ascend'],
-      render: (text,index) => text
+      // render: (text,index) => text
     },
     // {
     //   title: 'Merek',

@@ -10,6 +10,8 @@ import { Button, Input, Space, Table, Typography } from "antd";
 import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import { toTitleCase } from "../../../utils/helper";
 import { useRef } from "react";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
+
 const { Text } = Typography;
 
 const TipeProdukTable = () => {
@@ -21,8 +23,78 @@ const TipeProdukTable = () => {
   const [searchedColumn, setSearchedColumn] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [ellipsis, setEllipsis] = useState(true);
+  const [dataTampil, setDataTampil] = useState([]);
 
   const { id } = useParams();
+
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    console.log(qs.stringify(getParams(tableParams)))
+    fetch(`${Url}/types?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+        const getData = data;
+        setTypes(getData)
+       
+        console.log(types)
+
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+             id: getData[i].id,
+             can: getData[i].can,
+             code: getData[i].code,
+             name: getData[i].name,
+             description : getData[i].description,
+          })
+        }
+
+        setDataTampil(tmp)
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+
+
+  
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
+
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -127,6 +199,8 @@ const TipeProdukTable = () => {
       key: 'code',
       width: '15%',
       ...getColumnSearchProps('code'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Bagian',
@@ -142,6 +216,8 @@ const TipeProdukTable = () => {
       dataIndex: 'description',
       key: 'description',
       ...getColumnSearchProps('description'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
       render: (text) => (
         <Text
           style={
@@ -198,26 +274,26 @@ const TipeProdukTable = () => {
     },
   ];
 
-  useEffect(() => {
-    getTypes();
-  }, []);
+  // useEffect(() => {
+  //   getTypes();
+  // }, []);
 
-  const getTypes = async () => {
-    axios
-      .get(`${Url}/types`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-      .then(res => {
-        const getData = res.data.data
-        setTypes(getData)
-        // setStatus(getData.map(d => d.status))
-        setIsLoading(false);
-        console.log(getData)
-      })
-  };
+  // const getTypes = async () => {
+  //   axios
+  //     .get(`${Url}/types`, {
+  //       headers: {
+  //         Accept: "application/json",
+  //         Authorization: `Bearer ${auth.token}`,
+  //       },
+  //     })
+  //     .then(res => {
+  //       const getData = res.data.data
+  //       setTypes(getData)
+  //       // setStatus(getData.map(d => d.status))
+  //       setIsLoading(false);
+  //       console.log(getData)
+  //     })
+  // };
 
   const deleteTypes = async (id) => {
     await axios.delete(`${Url}/types/${id}`, {
@@ -237,8 +313,9 @@ const TipeProdukTable = () => {
         size="small"
         loading={isLoading}
         columns={columns}
+        onChange={handleTableChange}
         pagination={{ pageSize: 10 }}
-        dataSource={types}
+        dataSource={dataTampil}
         scroll={{
           y: 295,
         }}

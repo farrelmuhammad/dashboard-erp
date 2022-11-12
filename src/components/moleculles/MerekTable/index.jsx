@@ -10,6 +10,7 @@ import { Button, Input, Space, Table, Typography } from "antd";
 import { useRef } from "react";
 import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import { toTitleCase } from "../../../utils/helper";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 const { Text } = Typography;
 
 
@@ -24,7 +25,77 @@ const MerekTable = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [ellipsis, setEllipsis] = useState(true);
 
+  const [dataTampil, setDataTampil] = useState([]);
+
   const { id } = useParams();
+
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    console.log(qs.stringify(getParams(tableParams)))
+    fetch(`${Url}/brands?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+        const getData = data;
+        setBrands(getData)
+       
+        console.log(brands)
+
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+             id: getData[i].id,
+             can: getData[i].can,
+             code: getData[i].code,
+             name: getData[i].name,
+             description : getData[i].description,
+          })
+        }
+
+        setDataTampil(tmp)
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+
+
+  
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -129,6 +200,8 @@ const MerekTable = () => {
       key: 'code',
       width: '15%',
       ...getColumnSearchProps('code'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Nama Merk',
@@ -144,6 +217,8 @@ const MerekTable = () => {
       dataIndex: 'description',
       key: 'description',
       ...getColumnSearchProps('description'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
       render: (text) => (
         <Text
           style={
@@ -200,26 +275,26 @@ const MerekTable = () => {
     },
   ];
 
-  useEffect(() => {
-    getBrands();
-  }, []);
+  // useEffect(() => {
+  //   getBrands();
+  // }, []);
 
-  const getBrands = async () => {
-    axios
-      .get(`${Url}/brands`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-      .then(res => {
-        const getData = res.data.data
-        setBrands(getData)
-        // setStatus(getData.map(d => d.status))
-        setIsLoading(false);
-        console.log(getData)
-      })
-  };
+  // const getBrands = async () => {
+  //   axios
+  //     .get(`${Url}/brands`, {
+  //       headers: {
+  //         Accept: "application/json",
+  //         Authorization: `Bearer ${auth.token}`,
+  //       },
+  //     })
+  //     .then(res => {
+  //       const getData = res.data.data
+  //       setBrands(getData)
+  //       // setStatus(getData.map(d => d.status))
+  //       setIsLoading(false);
+  //       console.log(getData)
+  //     })
+  // };
 
   const deleteBrands = async (id) => {
     Swal.fire({
@@ -251,8 +326,9 @@ const MerekTable = () => {
         size="small"
         loading={isLoading}
         columns={columns}
+        onChange={handleTableChange}
         pagination={{ pageSize: 10 }}
-        dataSource={brands}
+        dataSource={dataTampil}
         scroll={{
           y: 295,
         }}

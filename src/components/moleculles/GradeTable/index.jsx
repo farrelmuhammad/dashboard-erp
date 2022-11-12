@@ -10,6 +10,8 @@ import { Button, Input, Space, Table, Typography } from "antd";
 import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import { toTitleCase } from "../../../utils/helper";
 import { useSelector } from "react-redux";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
+
 const { Text } = Typography;
 
 const GradeTable = () => {
@@ -23,8 +25,81 @@ const GradeTable = () => {
   const [searchedColumn, setSearchedColumn] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [ellipsis, setEllipsis] = useState(true);
+  const [dataTampil, setDataTampil] = useState([]);
 
   const { id } = useParams();
+
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    console.log(qs.stringify(getParams(tableParams)))
+    fetch(`${Url}/grades?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+        const getData = data;
+        setGrades(getData)
+       
+        console.log(grades)
+
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+             id: getData[i].id,
+             can: getData[i].can,
+             code: getData[i].code,
+             name: getData[i].name,
+             description : getData[i].description,
+            // status: getData[i].status,
+            // customer_name: getData[i].customer_name ? getData[i].customer_name : <div className="text-start">-</div>,
+            // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : <div className="text-start">-</div>,
+            // warehouse_name: getData[i].warehouse_name ? getData[i].warehouse_name : <div className="text-start">-</div>,
+          })
+        }
+
+        setDataTampil(tmp)
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+
+
+  
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -129,6 +204,8 @@ const GradeTable = () => {
       key: 'code',
       width: '10%',
       ...getColumnSearchProps('code'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Nama Grade',
@@ -144,6 +221,8 @@ const GradeTable = () => {
       dataIndex: 'description',
       key: 'description',
       ...getColumnSearchProps('description'),
+      sorter:true,
+      sortDirections:['descend','ascend'],
       render: (text) => (
         <Text
           style={
@@ -252,7 +331,8 @@ const GradeTable = () => {
         size="small"
         loading={isLoading}
         columns={columns}
-        dataSource={grades}
+        onChange={handleTableChange}
+        dataSource={dataTampil}
         pagination={{ pageSize: 10 }}
         scroll={{
           y: 295,

@@ -11,6 +11,9 @@ import { useRef } from "react";
 import { Button, Input, Space, Table, Typography } from "antd";
 import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
 import { toTitleCase } from "../../../utils/helper";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
+
+
 const { Text } = Typography;
 
 const GudangTable = () => {
@@ -26,7 +29,77 @@ const GudangTable = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [ellipsis, setEllipsis] = useState(true);
 
+  const [dataTampil, setDataTampil] = useState([]);
+
   const { id } = useParams();
+
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    console.log(qs.stringify(getParams(tableParams)))
+    fetch(`${Url}/warehouses?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+        const getData = data;
+        setWarehouses(getData)
+       
+        console.log(warehouses)
+
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+             id: getData[i].id,
+             can: getData[i].can,
+             code: getData[i].code,
+             name: getData[i].name,
+             address : getData[i].address,
+          })
+        }
+
+        setDataTampil(tmp)
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+
+
+  
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -131,6 +204,8 @@ const GudangTable = () => {
       key: 'code',
       width: '10%',
       ...getColumnSearchProps('code'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: 'Nama Gudang',
@@ -146,6 +221,8 @@ const GudangTable = () => {
       dataIndex: 'address',
       key: 'address',
       ...getColumnSearchProps('address'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
       render: (text) => (
         <Text
           style={
@@ -202,26 +279,26 @@ const GudangTable = () => {
     },
   ];
 
-  useEffect(() => {
-    getWarehouses();
-  }, []);
+  // useEffect(() => {
+  //   getWarehouses();
+  // }, []);
 
-  const getWarehouses = async () => {
-    axios
-      .get(`${Url}/warehouses`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-      .then(res => {
-        const getData = res.data.data
-        setWarehouses(getData)
-        // setStatus(getData.map(d => d.status))
-        setIsLoading(false);
-        console.log(getData)
-      })
-  };
+  // const getWarehouses = async () => {
+  //   axios
+  //     .get(`${Url}/warehouses`, {
+  //       headers: {
+  //         Accept: "application/json",
+  //         Authorization: `Bearer ${auth.token}`,
+  //       },
+  //     })
+  //     .then(res => {
+  //       const getData = res.data.data
+  //       setWarehouses(getData)
+  //       // setStatus(getData.map(d => d.status))
+  //       setIsLoading(false);
+  //       console.log(getData)
+  //     })
+  // };
 
   const deleteWarehouses = async (id, code) => {
     Swal.fire({
@@ -253,8 +330,9 @@ const GudangTable = () => {
         size="small"
         loading={isLoading}
         columns={columns}
+        onChange={handleTableChange}
         pagination={{ pageSize: 10 }}
-        dataSource={warehouses}
+        dataSource={dataTampil}
         scroll={{
           y: 295,
         }}
