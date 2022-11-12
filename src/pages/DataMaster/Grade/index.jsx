@@ -13,25 +13,25 @@ const Grade = () => {
   const auth = useSelector(state => state.auth);
   const [userAccess, setUserAccess] = useState([])
 
-  // useEffect(() => {
-  //   axios.get(`${Url}/get_user_access_rights?ability_name=create-grade`, {
-  //     headers: {
-  //       'Accept': 'application/json',
-  //       'Authorization': `Bearer ${auth.token}`
-  //     }
-  //   })
-  //     .then(res => {
-  //       setUserAccess(res.data)
-  //       console.log(res.data)
-  //     })
-  // }, [])
+  useEffect(() => {
+    axios.get(`${Url}/get_user_access_rights?ability_name=create-grade`, {
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${auth.token}`
+      }
+    })
+      .then(res => {
+        setUserAccess(res.data)
+        console.log(res.data)
+      })
+  }, [])
 
 
-  // if (userAccess) {
-  //   return (
-  //     <>
-  //       {userAccess?.map(d => {
-  //         if (d.ability_name === "create-grade") {
+  if (userAccess) {
+    return (
+      <>
+        {userAccess?.map(d => {
+          if (d.ability_name === "create-grade") {
             return (
               <PageHeader
                 ghost={false}
@@ -49,31 +49,31 @@ const Grade = () => {
                 <GradeTable />
               </PageHeader>
             )
-  //         }
-  //       })}
-  //     </>
-  //   )
-  // } else {
-  //   return (
-  //     <>
-  //       <PageHeader
-  //         ghost={false}
-  //         className="bg-body rounded mb-2"
-  //         title="Daftar Grade Produk"
-  //       // extra={[
-  //       //   <Link to="/produk/buat">
-  //       //     <Button
-  //       //       type="primary"
-  //       //       icon={<PlusOutlined />}
-  //       //     />
-  //       //   </Link>,
-  //       // ]}
-  //       >
-  //         <GradeTable />
-  //       </PageHeader>
-  //     </>
-  //   )
-  // }
+          }
+        })}
+      </>
+    )
+  } else {
+    return (
+      <>
+        <PageHeader
+          ghost={false}
+          className="bg-body rounded mb-2"
+          title="Daftar Grade Produk"
+        // extra={[
+        //   <Link to="/produk/buat">
+        //     <Button
+        //       type="primary"
+        //       icon={<PlusOutlined />}
+        //     />
+        //   </Link>,
+        // ]}
+        >
+          <GradeTable />
+        </PageHeader>
+      </>
+    )
+  }
 }
 
 export default Grade

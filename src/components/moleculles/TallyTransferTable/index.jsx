@@ -260,6 +260,17 @@ const TallyTransferTable = () => {
               </Link>
             ) : null}
             {
+              record.can['update-tally_sheet'] ? (
+                <Link to={`/tallytransfer/edit/${record.id}`}>
+                  <Button
+                    size='small'
+                    type="success"
+                    icon={<EditOutlined />}
+                  />
+                </Link>
+              ) : null
+            }
+            {
               record.can['cancel-tally_sheet'] ? (
 
                 <Button
@@ -283,17 +294,7 @@ const TallyTransferTable = () => {
                 </Space>
               ) : null
             }
-            {
-              record.can['update-tally_sheet'] ? (
-                <Link to={`/tallytransfer/edit/${record.id}`}>
-                  <Button
-                    size='small'
-                    type="success"
-                    icon={<EditOutlined />}
-                  />
-                </Link>
-              ) : null
-            }
+      
           </Space>
         </>
       )

@@ -1,12 +1,12 @@
 import './form.css'
 import jsCookie from "js-cookie";
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import Url from '../../../Config';
 import axios from 'axios';
 import AsyncSelect from "react-select/async";
 import { Button, Checkbox, Form, Input, InputNumber, Modal, PageHeader, Select, Skeleton, Space, Table, Tag } from 'antd'
-import { PlusOutlined, ArrowLeftOutlined } from '@ant-design/icons'
+import { PlusOutlined, ArrowLeftOutlined , EditOutlined } from '@ant-design/icons'
 import Column from 'antd/lib/table/Column';
 import { Option } from 'antd/lib/mentions';
 import Swal from 'sweetalert2';
@@ -462,6 +462,14 @@ const DetailAdjustment = () => {
                 className="bg-body rounded mb-2"
                 onBack={() => window.history.back()}
                 title="Detail Penyesuaian Stok"
+                extra={[
+                    <Link to={`/adjustment/edit/${id}`}>
+                        <Button
+                            type="primary"
+                            icon={<EditOutlined />}
+                        />
+                    </Link>,
+                ]}
             >
                 <div className="row">
                     <div className="col-md-6">

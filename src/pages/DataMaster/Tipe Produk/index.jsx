@@ -29,24 +29,24 @@ const TipeProduk = () => {
   //     })
   // }, [])
 
-  // useEffect(() => {
-  //   axios.get(`${Url}/get_user_access_rights?ability_name=create-type`, {
-  //     headers: {
-  //       'Accept': 'application/json',
-  //       'Authorization': `Bearer ${auth.token}`
-  //     }
-  //   })
-  //     .then(res => {
-  //       setUserAccess(res.data)
-  //       console.log(res.data)
-  //     })
-  // }, [])
+  useEffect(() => {
+    axios.get(`${Url}/get_user_access_rights?ability_name=create-type`, {
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${auth.token}`
+      }
+    })
+      .then(res => {
+        setUserAccess(res.data)
+        console.log(res.data)
+      })
+  }, [])
 
-  // if (userAccess) {
-  //   return (
-  //     <>
-  //       {userAccess?.map(d => {
-  //         if (d.ability_name === "create-type") {
+  if (userAccess) {
+    return (
+      <>
+        {userAccess?.map(d => {
+          if (d.ability_name === "create-type") {
             return (
               <PageHeader
                 ghost={false}
@@ -64,22 +64,21 @@ const TipeProduk = () => {
                 <TipeProdukTable />
               </PageHeader>
             )
-  //         }
-  //       })}
-  //     </>
-  //   )
-  // } 
-  // else {
-  //   <>
-  //     <PageHeader
-  //       ghost={false}
-  //       className="bg-body rounded mb-2"
-  //       title="Daftar Tipe Produk"
-  //     >
-  //       <TipeProdukTable />
-  //     </PageHeader>
-  //   </>
-  // }
+          }
+        })}
+      </>
+    )
+  } else {
+    <>
+      <PageHeader
+        ghost={false}
+        className="bg-body rounded mb-2"
+        title="Daftar Tipe Produk"
+      >
+        <TipeProdukTable />
+      </PageHeader>
+    </>
+  }
 }
 
 export default TipeProduk

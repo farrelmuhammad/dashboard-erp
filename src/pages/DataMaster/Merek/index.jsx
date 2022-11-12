@@ -13,24 +13,24 @@ const Merek = () => {
   const auth = useSelector(state => state.auth);
   const [userAccess, setUserAccess] = useState([])
 
-  // useEffect(() => {
-  //   axios.get(`${Url}/get_user_access_rights?ability_name=create-brand`, {
-  //     headers: {
-  //       'Accept': 'application/json',
-  //       'Authorization': `Bearer ${auth.token}`
-  //     }
-  //   })
-  //     .then(res => {
-  //       setUserAccess(res.data)
-  //       console.log(res.data)
-  //     })
-  // }, [])
+  useEffect(() => {
+    axios.get(`${Url}/get_user_access_rights?ability_name=create-brand`, {
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${auth.token}`
+      }
+    })
+      .then(res => {
+        setUserAccess(res.data)
+        console.log(res.data)
+      })
+  }, [])
 
-  // if (userAccess) {
-  //   return (
-  //     <>
-  //       {userAccess?.map(d => {
-  //         if (d.ability_name === "create-brand") {
+  if (userAccess) {
+    return (
+      <>
+        {userAccess?.map(d => {
+          if (d.ability_name === "create-brand") {
             return (
               <PageHeader
                 ghost={false}
@@ -48,21 +48,21 @@ const Merek = () => {
                 <MerekTable />
               </PageHeader>
             )
-  //         }
-  //       })}
-  //     </>
-  //   )
-  // } else {
-  //   <>
-  //     <PageHeader
-  //       ghost={false}
-  //       className="bg-body rounded mb-2"
-  //       title="Daftar Merek Produk"
-  //     >
-  //       <MerekTable />
-  //     </PageHeader>
-  //   </>
-  // }
+          }
+        })}
+      </>
+    )
+  } else {
+    <>
+      <PageHeader
+        ghost={false}
+        className="bg-body rounded mb-2"
+        title="Daftar Merek Produk"
+      >
+        <MerekTable />
+      </PageHeader>
+    </>
+  }
 }
 
 export default Merek
