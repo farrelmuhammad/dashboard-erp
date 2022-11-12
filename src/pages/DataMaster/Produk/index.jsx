@@ -15,24 +15,24 @@ const Produk = () => {
   const auth = useSelector(state => state.auth);
   const [userAccess, setUserAccess] = useState([])
 
-  useEffect(() => {
-    axios.get(`${Url}/get_user_access_rights?ability_name=create-product`, {
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${auth.token}`
-      }
-    })
-      .then(res => {
-        setUserAccess(res.data)
-        console.log(res.data)
-      })
-  }, [])
+  // useEffect(() => {
+  //   axios.get(`${Url}/get_user_access_rights?ability_name=create-product`, {
+  //     headers: {
+  //       'Accept': 'application/json',
+  //       'Authorization': `Bearer ${auth.token}`
+  //     }
+  //   })
+  //     .then(res => {
+  //       setUserAccess(res.data)
+  //       console.log(res.data)
+  //     })
+  // }, [])
 
-  if (userAccess) {
-    return (
-      <>
-        {userAccess?.map(d => {
-          if (d.ability_name === "create-product") {
+  // if (userAccess) {
+  //   return (
+  //     <>
+  //       {userAccess?.map(d => {
+  //         if (d.ability_name === "create-product") {
             return (
               <PageHeader
                 ghost={false}
@@ -50,9 +50,9 @@ const Produk = () => {
                 <ProdukTable />
               </PageHeader>
             )
-          }
-        })}
-      </>
+      //     }
+      //   })}
+      // </>
       // <div className="container p-3 mb-5 bg-body rounded d-flex flex-column">
       //   <div className="row">
       //     <div className="col text-title text-start">
@@ -75,14 +75,14 @@ const Produk = () => {
       //   </div>
       //   <ProdukTable />
       // </div>
-    )
-  } else {
-    return (
-      <>
-        <PageHeader
-          ghost={false}
-          className="bg-body rounded mb-2"
-          title="Daftar Produk"
+  //   )
+  // } else {
+  //   return (
+  //     <>
+  //       <PageHeader
+  //         ghost={false}
+  //         className="bg-body rounded mb-2"
+  //         title="Daftar Produk"
         // extra={[
         //   <Link to="/produk/buat">
         //     <Button
@@ -91,18 +91,18 @@ const Produk = () => {
         //     />
         //   </Link>,
         // ]}
-        >
-          <ProdukTable />
-        </PageHeader>
-      </>
-    )
+    //     >
+    //       <ProdukTable />
+    //     </PageHeader>
+    //   </>
+    // )
     // <div>
     //   <div className="text-title text-start">
     //     <h5 className="title fw-bold">Daftar Produk</h5>
     //   </div>
     //   <ProdukTable />
     // </div>
-  }
+  // }
 }
 
 export default Produk

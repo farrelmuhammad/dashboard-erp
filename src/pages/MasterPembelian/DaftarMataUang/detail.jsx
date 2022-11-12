@@ -32,6 +32,7 @@ const DetailMataUang = () => {
     getDataCOAName2(UMP)
     getDataCOAName3(cn)
     getDataCOAName4(sk)
+    loadOptionsCategory()
   }, []);
 
   const getDetailSupplier = async () => {
@@ -43,12 +44,12 @@ const DetailMataUang = () => {
     })
     .then((res) => {
       setData(res.data.data);
-      console.log(res.data.data)
+      console.log(res)
 
-      setHU(res.data.data[0].accounts_payable)
-      setUMP(res.data.data[0].prepaid_expenses)
-      setCN(res.data.data[0].credit_note_account)
-      setSK(res.data.data[0].exchange_rate_difference)
+      // setHU(res.data.data[0].accounts_payable)
+      // setUMP(res.data.data[0].prepaid_expenses)
+      // setCN(res.data.data[0].credit_note_account)
+      // setSK(res.data.data[0].exchange_rate_difference)
 
       
       console.log(res.data.data[0].prepaid_expenses)
@@ -58,6 +59,16 @@ const DetailMataUang = () => {
       console.log(err);
     });
   }
+
+  
+  const loadOptionsCategory = () => {
+    return fetch(`${Url}/currencies?id=${id}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => console.log(res));
+  };
 
   const getDataCOAName = async (idCOA) => {
   await  axios.get(`${Url}/chart_of_accounts?id=${idCOA}`, {
@@ -181,15 +192,15 @@ const DetailMataUang = () => {
                 Keterangan
               </label>
               <div className="col-sm-10">
-              {data.map((d) => (
+              {/* {data.map((d) => ( */}
                   <input
                     type="Nama"
                     className="form-control"
                     id="inputNama3"
                     disabled
-                    value={d.description}
+                    value={''}
                   />
-              ))}
+              {/* ))} */}
               </div>
             </div>
             <div className="row mb-3">
@@ -202,7 +213,7 @@ const DetailMataUang = () => {
               className="form-control"
               id="inputNama3"
               disabled
-              value={dataHU}
+             // value={dataHU}
               
               />
               </div>
@@ -219,7 +230,7 @@ const DetailMataUang = () => {
                     className="form-control"
                     id="inputNama3"
                     disabled
-                    value={dataUMP}
+                 //   value={dataUMP}
               />
               </div>
             </div>
@@ -235,7 +246,7 @@ const DetailMataUang = () => {
                     className="form-control"
                     id="inputNama3"
                     disabled
-                    value={dataCN}
+                   // value={dataCN}
                   />
             
               </div>
@@ -252,7 +263,7 @@ const DetailMataUang = () => {
                     className="form-control"
                     id="inputNama3"
                     disabled
-                    value={dataSK}
+                   // value={dataSK}
                   />
              
               </div>

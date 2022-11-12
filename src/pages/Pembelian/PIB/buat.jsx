@@ -644,8 +644,8 @@ const BuatPIB = () => {
                         Swal.fire({
                             icon: "error",
                             title: "Oops...",
-                            text: "Data Faktur belum dipilih, silahkan lengkapi datanya dan coba kembali",
-                            // text: err.response.data.error,
+                            //text: "Data Faktur belum dipilih, silahkan lengkapi datanya dan coba kembali",
+                             text: err.response.data.error,
                         });
                     } else if (err.request) {
                         console.log("err.request ", err.request);
@@ -790,8 +790,8 @@ const BuatPIB = () => {
                         Swal.fire({
                             icon: "error",
                             title: "Oops...",
-                            text: "Data Faktur belum dipilih, silahkan lengkapi datanya dan coba kembali",
-                            // text: err.response.data.error.nama,
+                           // text: "Data Faktur belum dipilih, silahkan lengkapi datanya dan coba kembali",
+                             text: err.response.data.error,
                         });
                     } else if (err.request) {
                         console.log("err.request ", err.request);

@@ -174,15 +174,23 @@ const CreateGoodsRequest = () => {
                         statusCek: true
                     });
                 }
-                else {
-                    tmp.push({
-                        detail: res.data[i],
-                        statusCek: false
-                    });
-                }
-
-
+                // else {
+                //     tmp.push({
+                //         detail: res.data[i],
+                //         statusCek: false
+                //     });
+                // }
+//
             }
+            for(let i=0; i < res.data.length; i++){
+                if(tmpCentang.indexOf(res.data[i].product_id) < 0)
+                tmp.push({
+                    detail:res.data[i],
+                    statusCek:false
+                })
+            }
+
+
             setGetDataProduct(tmp);
         };
 
@@ -378,6 +386,13 @@ const CreateGoodsRequest = () => {
                     detail: getDataProduct[i].detail,
                     statusCek: !getDataProduct[i].statusCek
                 })
+                if (!tmpDataBaru[i].statusCek) {
+                    let idxHapus = tmpCentang.indexOf(tmpDataBaru[i].detail.product_id);
+                    tmpDataCentang.splice(idxHapus, 1)
+                }
+                else if (tmpDataBaru[i].statusCek == true) {
+                    tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
+                }
                 // tmpDataCentang.push(tmpDataBaru[i].detail.product_id)
 
             }

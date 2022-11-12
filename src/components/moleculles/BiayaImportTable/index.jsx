@@ -19,8 +19,12 @@ const BiayaImportTable = () => {
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [dataTampil, setDataTampil] = useState([]);
 
   const { id } = useParams();
+
+
+  
 
   const [tableParams, setTableParams] = useState({
     pagination: {
@@ -46,6 +50,25 @@ const BiayaImportTable = () => {
       .then(({ data }) => {
         const getData = data
         setBiayaImport(getData)
+
+
+        
+        let tmp = []
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+             id: getData[i].id,
+             can: getData[i].can,
+             code: getData[i].code,
+             name: getData[i].name,
+             reference : getData[i].reference,
+            //  total:getData[i].total,
+            //  category_name: getData[i].chart_of_account_category.name
+             
+          })
+        }
+
+        setDataTampil(tmp)
+
         setIsLoading(false);
         setTableParams({
           ...tableParams,
@@ -311,7 +334,7 @@ const BiayaImportTable = () => {
         columns={columns}
         pagination={{ pageSize: 10 }}
         onChange={handleTableChange}
-        dataSource={biayaImport}
+        dataSource={dataTampil}
         scroll={{
           y: 295,
         }}

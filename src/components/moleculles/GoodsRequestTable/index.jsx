@@ -277,7 +277,30 @@ const GoodsRequestTable = () => {
                                 />
                             </Link>
                         </Space>
-                    ) : null
+                    ) : record.status === 'Draft' ? 
+                        <Space size="middle">
+                            <Link to={`/permintaanbarang/detail/${record.id}`}>
+                                <Button
+                                    size='small'
+                                    type="primary"
+                                    icon={<InfoCircleOutlined />}
+                                />
+                            </Link>
+                            <Link to={`/permintaanbarang/edit/${record.id}`}>
+                                <Button
+                                    size='small'
+                                    type="success"
+                                    icon={<EditOutlined />}
+                                />
+                            </Link>
+                            <Button
+                                size='small'
+                                type="danger"
+                                icon={<CloseOutlined />}
+                            // onClick={() => cancelTallySheet(record.id, record.code)}
+                            />
+                        </Space>
+                        : null
                     }
                 </>
             ),

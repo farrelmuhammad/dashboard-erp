@@ -239,7 +239,7 @@ const EditAdjustment = () => {
             width: '15%',
             align: 'center',
             render: (text) => {
-                return <>{text.toString().replace('.', ',')}</>
+                return < CurrencyFormat disabled className=' text-center editable-input  edit-disabled' style={{ width: "70%", fontSize: "10px!important" }} thousandSeparator={'.'} decimalSeparator={','} value={Number(text).toFixed(2).replace('.', ',')} key="diskon" />
 
             }
         },
@@ -267,10 +267,11 @@ const EditAdjustment = () => {
             dataIndex: 'qty_before',
             width: '30%',
             align: 'center',
-            // render: (text) => {
-            //     return <>{text.toString().replace('.', ',')}</>
+            render: (text) => {
+                return <>{
+                    text.toString().replace('.', ',')}</>
 
-            // }
+            }
         },
         {
             title: 'Qty saat ini',
