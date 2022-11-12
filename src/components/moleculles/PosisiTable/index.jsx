@@ -15,6 +15,7 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { toTitleCase } from "../../../utils/helper";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 const { Text } = Typography;
 
 const PosisiTable = () => {
@@ -28,6 +29,47 @@ const PosisiTable = () => {
   const [ellipsis, setEllipsis] = useState(true);
 
   const { id } = useParams();
+
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    fetch(`${Url}/positions?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+        const getData = data;
+        setPositions(getData);
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -109,8 +151,13 @@ const PosisiTable = () => {
         }}
       />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => {
+
+      if (record[dataIndex]) {
+        return record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+
+      }
+    },
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -132,6 +179,15 @@ const PosisiTable = () => {
     //   ),
   });
 
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
+
   const columns = [
     {
       title: "Kode",
@@ -139,6 +195,8 @@ const PosisiTable = () => {
       key: "code",
       width: "10%",
       ...getColumnSearchProps("code"),
+      sorter: (a, b) => a.code.length - b.code.length,
+      sortDirections: ["ascend", "descend"],
     },
     {
       title: "Posisi",
@@ -154,6 +212,8 @@ const PosisiTable = () => {
       dataIndex: "description",
       key: "description",
       ...getColumnSearchProps("description"),
+      sorter: true,
+      sortDirections: ["ascend", "descend"],
       render: (text) => (
         <Text
           style={
@@ -206,26 +266,26 @@ const PosisiTable = () => {
     },
   ];
 
-  useEffect(() => {
-    getPositions();
-  }, []);
+  // useEffect(() => {
+  //   getPositions();
+  // }, []);
 
-  const getPositions = async () => {
-    axios
-      .get(`${Url}/positions`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-      .then((res) => {
-        const getData = res.data.data;
-        setPositions(getData);
-        // setStatus(getData.map(d => d.status))
-        setIsLoading(false);
-        console.log(getData);
-      });
-  };
+  // const getPositions = async () => {
+  //   axios
+  //     .get(`${Url}/positions`, {
+  //       headers: {
+  //         Accept: "application/json",
+  //         Authorization: `Bearer ${auth.token}`,
+  //       },
+  //     })
+  //     .then((res) => {
+  //       const getData = res.data.data;
+  //       setPositions(getData);
+  //       // setStatus(getData.map(d => d.status))
+  //       setIsLoading(false);
+  //       console.log(getData);
+  //     });
+  // };
 
   const deletePositions = async (id, code) => {
     Swal.fire({
@@ -245,7 +305,7 @@ const PosisiTable = () => {
               Authorization: `Bearer ${auth.token}`,
             },
           });
-          getPositions();
+          fetchData();
           Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
         }
       })
@@ -258,6 +318,7 @@ const PosisiTable = () => {
         loading={isLoading}
         columns={columns}
         pagination={{ pageSize: 10 }}
+        onChange={handleTableChange}
         dataSource={positions}
         scroll={{
           y: 295,

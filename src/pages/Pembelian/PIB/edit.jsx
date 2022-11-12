@@ -38,6 +38,7 @@ const EditPIB = () => {
     const [fakturId, setFakturId] = useState();
     const [getCode, setGetCode] = useState('');
     const [totalBea, setTotalBea] = useState(0)
+    const [getStatus, setGetStatus] = useState()
     const [mataUangId, setMataUangId] = useState();
 
     const [selectedBank, setSelectedBank] = useState()
@@ -147,6 +148,7 @@ const EditPIB = () => {
                 setDataPIB(tmpDataPIB)
                 setOptionsFaktur(tmp)
                 setTerm(getData.term)
+                setGetStatus(getData.status)
 
                 // data header 
                 setGetCode(getData.code);
@@ -719,7 +721,7 @@ const EditPIB = () => {
                             <div className="col-sm-7">
                                 <input
                                     defaultValue={getCode}
-                                    onChange={(e)=> setGetCode(e.target.value)}
+                                    onChange={(e) => setGetCode(e.target.value)}
                                     type="Nama"
                                     className="form-control"
                                     id="inputNama3"
@@ -972,24 +974,40 @@ const EditPIB = () => {
 
 
                 <div className="btn-group" role="group" aria-label="Basic mixed styles example" style={{ float: 'right', position: 'relative' }}>
-                    <button
-                        type="button"
-                        className="btn btn-success rounded m-1"
-                        value="Draft"
-                        onClick={handleDraft}
-                        width="100px"
-                    >
-                        Simpan
-                    </button>
-                    <button
-                        type="button"
-                        className="btn btn-primary rounded m-1"
-                        value="Submitted"
-                        onClick={handleSubmit}
-                        width="100px"
-                    >
-                        Submit
-                    </button>
+                    {
+                        getStatus == 'Draft' ?
+                            <>
+                                <button
+                                    type="button"
+                                    className="btn btn-success rounded m-1"
+                                    value="Draft"
+                                    onClick={handleDraft}
+                                    width="100px"
+                                >
+                                    Simpan
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary rounded m-1"
+                                    value="Submitted"
+                                    onClick={handleSubmit}
+                                    width="100px"
+                                >
+                                    Submit
+                                </button>
+                            </> :
+                            <button
+                                type="button"
+                                className="btn btn-success rounded m-1"
+                                value="Draft"
+                                onClick={handleSubmit}
+                                width="100px"
+                            >
+                                Simpan
+                            </button>
+
+                    }
+
                     {/* <button
                         type="button"
                         width="100px"

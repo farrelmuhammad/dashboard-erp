@@ -15,6 +15,7 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { toTitleCase } from "../../../utils/helper";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 import { positions } from "@mui/system";
 const { Text } = Typography;
 
@@ -32,6 +33,61 @@ const KaryawanTable = () => {
   const [dataTampil, setDataTampil] = useState([]);
 
   const { id } = useParams();
+
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    fetch(`${Url}/employees?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+
+        const getData = data;
+        setGetDataTally(getData);
+
+        // agar bisa di search
+        let tmp = [];
+        for (let i = 0; i < getData.length; i++) {
+          tmp.push({
+            id: getData[i].id,
+            can: getData[i].can,
+            code: getData[i].code,
+            name: getData[i].name,
+            department: getData[i].department.name,
+            position: getData[i].position.name,
+          });
+        }
+        setDataTampil(tmp);
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -113,8 +169,13 @@ const KaryawanTable = () => {
         }}
       />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => {
+      if (record[dataIndex]) {
+
+        return record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+      }
+    }
+      ,
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -143,6 +204,9 @@ const KaryawanTable = () => {
       key: "code",
       width: "20%",
       ...getColumnSearchProps("code"),
+      
+      sorter: (a, b) => a.code.length - b.code.length,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: "Nama Karyawan",
@@ -159,7 +223,7 @@ const KaryawanTable = () => {
       key: "department",
       width: "30%",
       ...getColumnSearchProps("department"),
-      sorter: (a, b) => a.department.length - b.department.length,
+      sorter: (a, b) => a.department - b.department.length,
       sortDirections: ["ascend", "descend"],
       //render: (department) => department.name,
     },
@@ -202,57 +266,54 @@ const KaryawanTable = () => {
     },
   ];
 
-  useEffect(() => {
-    getEmployees();
-  }, []);
-
-  const getEmployees = async (params = {}) => {
-    setIsLoading(true);
-    await axios
-      .get(`${Url}/employees`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-      .then((res) => {
-        const getData = res.data.data;
-        setGetDataTally(getData);
-        // if (getData.supplier_id) {
-        //   setSumber('Retur')
-        // }
-        // else {
-        //   setSumber('SO')
-        // }
-
-        // agar bisa di search
-        let tmp = [];
-        for (let i = 0; i < getData.length; i++) {
-          tmp.push({
-            id: getData[i].id,
-            can: getData[i].can,
-            code: getData[i].code,
-            name: getData[i].name,
-            department: getData[i].department.name,
-            position: getData[i].position.name,
-            // customer_name: getData[i].customer_name ? getData[i].customer_name : '',
-            // supplier_name: getData[i].supplier_name ? getData[i].supplier_name : '',
-            // date: getData[i].date,
-            // status: getData[i].status,
-            // warehouse: getData[i].warehouse.name
-          });
-        }
-        setDataTampil(tmp);
-        setIsLoading(false);
-
-        // const getData = res.data.data
-        // setEmployees(getData)
-        // // setDepartment(getData.department.name)
-        // // setStatus(getData.map(d => d.status))
-        // setIsLoading(false);
-        // // console.log(getData)
-      });
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
   };
+
+  // useEffect(() => {
+  //   getEmployees();
+  // }, []);
+
+  // const getEmployees = async (params = {}) => {
+  //   setIsLoading(true);
+  //   await axios
+  //     .get(`${Url}/employees`, {
+  //       headers: {
+  //         Accept: "application/json",
+  //         Authorization: `Bearer ${auth.token}`,
+  //       },
+  //     })
+  //     .then((res) => {
+  //       const getData = res.data.data;
+  //       setGetDataTally(getData);
+
+  //       // agar bisa di search
+  //       let tmp = [];
+  //       for (let i = 0; i < getData.length; i++) {
+  //         tmp.push({
+  //           id: getData[i].id,
+  //           can: getData[i].can,
+  //           code: getData[i].code,
+  //           name: getData[i].name,
+  //           department: getData[i].department.name,
+  //           position: getData[i].position.name,
+  //         });
+  //       }
+  //       setDataTampil(tmp);
+  //       setIsLoading(false);
+
+  //       // const getData = res.data.data
+  //       // setEmployees(getData)
+  //       // // setDepartment(getData.department.name)
+  //       // // setStatus(getData.map(d => d.status))
+  //       // setIsLoading(false);
+  //       // // console.log(getData)
+  //     });
+  // };
 
   const deleteEmployees = async (id, code) => {
     Swal.fire({
@@ -272,7 +333,7 @@ const KaryawanTable = () => {
               Authorization: `Bearer ${auth.token}`,
             },
           });
-          getEmployees();
+          fetchData();
           Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
         }
       })
@@ -285,6 +346,7 @@ const KaryawanTable = () => {
         loading={isLoading}
         columns={columns}
         pagination={{ pageSize: 10 }}
+        onChange={handleTableChange}
         dataSource={dataTampil}
         scroll={{
           y: 295,

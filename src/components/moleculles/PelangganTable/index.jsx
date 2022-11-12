@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
 import { Button, Input, Space, Table, Tag } from "antd";
 import { useRef } from "react";
 import { DeleteOutlined, EditOutlined, InfoCircleOutlined, SearchOutlined } from "@ant-design/icons";
@@ -20,6 +21,46 @@ const PelangganTable = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const { id } = useParams();
+
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    fetch(`${Url}/customers?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+        const getData = data
+        setCustomers(getData)
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -94,8 +135,11 @@ const PelangganTable = () => {
         }}
       />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => {
+      if(record[dataIndex]){
+        return   record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+      }
+    },
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -150,6 +194,10 @@ const PelangganTable = () => {
       key: 'status',
       align: 'center',
       width: '20%',
+
+      ...getColumnSearchProps('status'),
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
       render: (_, { status }) => (
         <>
           {status === 'Active' ? <Tag color="blue">{status}</Tag> : <Tag color="red">{status}</Tag>}
@@ -190,25 +238,33 @@ const PelangganTable = () => {
     },
   ];
 
-  useEffect(() => {
-    getCustomers();
-  }, []);
+  // useEffect(() => {
+  //   getCustomers();
+  // }, []);
 
-  const getCustomers = async () => {
-    axios
-      .get(`${Url}/customers`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-      .then(res => {
-        const getData = res.data.data
-        setCustomers(getData)
-        // setStatus(getData.map(d => d.status))
-        setIsLoading(false);
-        console.log(getData)
-      })
+  // const getCustomers = async () => {
+  //   axios
+  //     .get(`${Url}/customers`, {
+  //       headers: {
+  //         Accept: "application/json",
+  //         Authorization: `Bearer ${auth.token}`,
+  //       },
+  //     })
+  //     .then(res => {
+  //       const getData = res.data.data
+  //       setCustomers(getData)
+  //       // setStatus(getData.map(d => d.status))
+  //       setIsLoading(false);
+  //       console.log(getData)
+  //     })
+  // };
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
   };
 
   const deleteCustomers = async (id, code) => {
@@ -229,7 +285,7 @@ const PelangganTable = () => {
               Authorization: `Bearer ${auth.token}`,
             },
           });
-          getCustomers();
+          fetchData();
           Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
         }
       })
@@ -243,6 +299,8 @@ const PelangganTable = () => {
         columns={columns}
         pagination={{ pageSize: 10 }}
         dataSource={customers}
+        onChange={handleTableChange}
+
         scroll={{
           y: 295,
         }}

@@ -43,89 +43,89 @@ const SuratJalanTable = () => {
 
     const [tableParams, setTableParams] = useState({
         pagination: {
-          current: 1,
-          pageSize: 10,
+            current: 1,
+            pageSize: 10,
         },
-      });
-    
-      const getParams = (params) => ({
+    });
+
+    const getParams = (params) => ({
         results: params.pagination?.pageSize,
         page: params.pagination?.current,
         ...params,
-      });
-    
-      const fetchData = () => {
+    });
+
+    const fetchData = () => {
         setIsLoading(true);
         console.log(qs.stringify(getParams(tableParams)))
         fetch(`${Url}/delivery_notes?${qs.stringify(getParams(tableParams))}`, {
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${auth.token}`,
-          },
+            headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+            },
         }).then((res) => res.json())
-          .then(({ data }) => {
+            .then(({ data }) => {
 
-            const getData = data
-            setGetDataSO(getData)
+                const getData = data
+                setGetDataSO(getData)
 
-            let tmp = []
-            for (let i = 0; i < getData.length; i++) {
-                tmp.push({
-                    id: getData[i].id,
-                    can: getData[i].can,
-                    date: getData[i].date,
-                    code: getData[i].code,
-                    customer_name: getData[i].customer_name ? getData[i].customer_name : <div className='text-center'>-</div>,
-                    supplier_name: getData[i].supplier_name ? getData[i].supplier_name : <div className='text-center'>-</div>,
-                    vehicle: getData[i].vehicle,
-                    status: getData[i].status,
-                })
-            }
+                let tmp = []
+                for (let i = 0; i < getData.length; i++) {
+                    tmp.push({
+                        id: getData[i].id,
+                        can: getData[i].can,
+                        date: getData[i].date,
+                        code: getData[i].code,
+                        customer_name: getData[i].customer_name ? getData[i].customer_name : <div className='text-center'>-</div>,
+                        supplier_name: getData[i].supplier_name ? getData[i].supplier_name : <div className='text-center'>-</div>,
+                        vehicle: getData[i].vehicle,
+                        status: getData[i].status,
+                    })
+                }
 
-            setDataTampil(tmp)
-            setStatus(getData.map(d => d.status))
-            setIsLoading(false);
-            setTableParams({
-                ...tableParams,
-                pagination: {
-                  ...tableParams.pagination,
-                  total: 200,
-                },
-              });
+                setDataTampil(tmp)
+                setStatus(getData.map(d => d.status))
+                setIsLoading(false);
+                setTableParams({
+                    ...tableParams,
+                    pagination: {
+                        ...tableParams.pagination,
+                        total: 200,
+                    },
+                });
 
-            // console.log(getData)
+                // console.log(getData)
 
 
-            // // let tmp = []
-            // for (let i = 0; i < data.length; i++) {
-            //   tmp.push({
-            //     id: data[i].id,
-            //     can: data[i].can,
-            //     code: data[i].code,
-            //     customer_name: data[i].customer_name ? data[i].customer_name : '',
-            //     supplier_name: data[i].supplier_name ? data[i].supplier_name : '',
-            //     date: data[i].date,
-            //     status: data[i].status,
-            //     warehouse_name: data[i].warehouse.name
-            //   })
-            // }
-            // setGetDataTally(tmp)
-    
-            // setIsLoading(false);
-            // setTableParams({
-            //   ...tableParams,
-            //   pagination: {
-            //     ...tableParams.pagination,
-            //     total: 200,
-            //   },
-            // });
-          });
-      };
-    
-    
-      useEffect(() => {
+                // // let tmp = []
+                // for (let i = 0; i < data.length; i++) {
+                //   tmp.push({
+                //     id: data[i].id,
+                //     can: data[i].can,
+                //     code: data[i].code,
+                //     customer_name: data[i].customer_name ? data[i].customer_name : '',
+                //     supplier_name: data[i].supplier_name ? data[i].supplier_name : '',
+                //     date: data[i].date,
+                //     status: data[i].status,
+                //     warehouse_name: data[i].warehouse.name
+                //   })
+                // }
+                // setGetDataTally(tmp)
+
+                // setIsLoading(false);
+                // setTableParams({
+                //   ...tableParams,
+                //   pagination: {
+                //     ...tableParams.pagination,
+                //     total: 200,
+                //   },
+                // });
+            });
+    };
+
+
+    useEffect(() => {
         fetchData();
-      }, [JSON.stringify(tableParams)]);
+    }, [JSON.stringify(tableParams)]);
 
 
     const handleChangeCustomer = (value) => {
@@ -375,8 +375,13 @@ const SuratJalanTable = () => {
                 }}
             />
         ),
-        onFilter: (value, record) =>
-            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+        onFilter: (value, record) => {
+            if (record[dataIndex]) {
+
+                return record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+            }
+        }
+        ,
         onFilterDropdownVisibleChange: (visible) => {
             if (visible) {
                 setTimeout(() => searchInput.current?.select(), 100);

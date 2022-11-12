@@ -187,8 +187,13 @@ const CoaTable = () => {
                 }}
             />
         ),
-        onFilter: (value, record) =>
-            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+        onFilter: (value, record) => {
+            if (record[dataIndex]) {
+
+                return record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+              }
+        }
+        ,
         onFilterDropdownVisibleChange: (visible) => {
             if (visible) {
                 setTimeout(() => searchInput.current?.select(), 100);

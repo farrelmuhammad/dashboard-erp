@@ -32,7 +32,7 @@ const PesananPembelianTable = () => {
         results: params.pagination?.pageSize,
         page: params.pagination?.current,
         ...params,
-    }); 
+    });
 
     const fetchData = () => {
         setIsLoading(true);
@@ -268,8 +268,13 @@ const PesananPembelianTable = () => {
                 }}
             />
         ),
-        onFilter: (value, record) =>
-            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+        onFilter: (value, record) => {
+            if (record[dataIndex]) {
+
+                return record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+            }
+        }
+        ,
         onFilterDropdownVisibleChange: (visible) => {
             if (visible) {
                 setTimeout(() => searchInput.current?.select(), 100);
@@ -378,7 +383,7 @@ const PesananPembelianTable = () => {
             sortDirections: ['descend', 'ascend'],
         },
         {
-            title: 'Supplier', 
+            title: 'Supplier',
             dataIndex: 'supplier_name',
             key: 'supplier_name',
             width: '20%',
@@ -412,7 +417,7 @@ const PesananPembelianTable = () => {
 
         },
         {
-            title: 'Reference', 
+            title: 'Reference',
             dataIndex: 'reference',
             key: 'reference',
             width: '20%',
@@ -510,7 +515,7 @@ const PesananPembelianTable = () => {
         },
     ];
 
-    
+
     return <Table
         size="small"
         loading={isLoading}

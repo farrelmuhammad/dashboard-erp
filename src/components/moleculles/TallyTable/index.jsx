@@ -39,7 +39,6 @@ const TallyTable = () => {
 
   const fetchData = () => {
     setIsLoading(true);
-    console.log(qs.stringify(getParams(tableParams)))
     fetch(`${Url}/tally_sheets?tipe=Sales&${qs.stringify(getParams(tableParams))}`, {
       headers: {
         Accept: "application/json",
@@ -77,7 +76,7 @@ const TallyTable = () => {
   useEffect(() => {
     fetchData();
   }, [JSON.stringify(tableParams)]);
- 
+
 
   const deleteTallySheet = async (id, code) => {
     Swal.fire({
@@ -103,7 +102,7 @@ const TallyTable = () => {
     })
 
   };
- 
+
   const cancelTallySheet = async (id, code) => {
     Swal.fire({
       title: 'Apakah Anda Yakin?',
@@ -209,7 +208,13 @@ const TallyTable = () => {
         }}
       />
     ),
-    onFilter: (value, record) => record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => {
+      if (record[dataIndex]) {
+
+        return record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+      }
+    }
+    ,
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);

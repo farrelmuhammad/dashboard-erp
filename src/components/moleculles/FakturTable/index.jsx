@@ -22,7 +22,7 @@ const FakturTable = () => {
   const auth = useSelector(state => state.auth);
   const [dataTampil, setDataTampil] = useState([]);
 
-   const [tableParams, setTableParams] = useState({
+  const [tableParams, setTableParams] = useState({
     pagination: {
       current: 1,
       pageSize: 10,
@@ -242,8 +242,11 @@ const FakturTable = () => {
         }}
       />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => {
+      if (record[dataIndex]) {
+        return record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+      }
+    },
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);

@@ -8,6 +8,8 @@ import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Button, Input, Popconfirm, Space, Table, Typography } from "antd";
+import qs from "https://cdn.skypack.dev/qs@6.11.0";
+
 import {
   DeleteOutlined,
   EditOutlined,
@@ -29,6 +31,51 @@ const DepartemenTable = () => {
   const [ellipsis, setEllipsis] = useState(true);
 
   const { id } = useParams();
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 10,
+    },
+  });
+
+  const getParams = (params) => ({
+    results: params.pagination?.pageSize,
+    page: params.pagination?.current,
+    ...params,
+  });
+
+  const fetchData = () => {
+    setIsLoading(true);
+    fetch(`${Url}/departments?${qs.stringify(getParams(tableParams))}`, {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+    }).then((res) => res.json())
+      .then(({ data }) => {
+        const getData = data;
+        setDepartments(getData);
+        // setStatus(getData.map(d => d.status))
+        setIsLoading(false);
+        console.log(getData);
+
+        setIsLoading(false);
+        setTableParams({
+          ...tableParams,
+          pagination: {
+            ...tableParams.pagination,
+            total: 200,
+          },
+        });
+      });
+  };
+
+
+  useEffect(() => {
+    fetchData();
+  }, [JSON.stringify(tableParams)]);
+
+
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -110,8 +157,13 @@ const DepartemenTable = () => {
         }}
       />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => {
+      if (record[dataIndex]) {
+       return record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+
+      }
+    },
+
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -133,6 +185,14 @@ const DepartemenTable = () => {
     //   ),
   });
 
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+      filters,
+      ...sorter,
+    });
+  };
+
   const columns = [
     {
       title: "Kode",
@@ -140,6 +200,8 @@ const DepartemenTable = () => {
       key: "code",
       width: "10%",
       ...getColumnSearchProps("code"),
+      sorter: (a, b) => a.code.length - b.code.length,
+      sortDirections: ['descend', 'ascend'],
     },
     {
       title: "Departemen",
@@ -155,6 +217,8 @@ const DepartemenTable = () => {
       dataIndex: "description",
       key: "description",
       ...getColumnSearchProps("description"),
+      sorter: true,
+      sortDirections: ["ascend", "descend"],
       render: (text) => (
         <Text
           style={
@@ -207,26 +271,26 @@ const DepartemenTable = () => {
     },
   ];
 
-  useEffect(() => {
-    getDepartments();
-  }, []);
+  // useEffect(() => {
+  //   getDepartments();
+  // }, []);
 
-  const getDepartments = async () => {
-    axios
-      .get(`${Url}/departments`, {
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-      })
-      .then((res) => {
-        const getData = res.data.data;
-        setDepartments(getData);
-        // setStatus(getData.map(d => d.status))
-        setIsLoading(false);
-        console.log(getData);
-      });
-  };
+  // const getDepartments = async () => {
+  //   axios
+  //     .get(`${Url}/departments`, {
+  //       headers: {
+  //         Accept: "application/json",
+  //         Authorization: `Bearer ${auth.token}`,
+  //       },
+  //     })
+  //     .then((res) => {
+  //       const getData = res.data.data;
+  //       setDepartments(getData);
+  //       // setStatus(getData.map(d => d.status))
+  //       setIsLoading(false);
+  //       console.log(getData);
+  //     });
+  // };
 
   const deleteDepartments = async (id, code) => {
     Swal.fire({
@@ -246,7 +310,7 @@ const DepartemenTable = () => {
               Authorization: `Bearer ${auth.token}`,
             },
           });
-          getDepartments();
+          fetchData();
           Swal.fire("Berhasil Dihapus!", `${code} Berhasil hapus`, "success");
         }
       })
@@ -260,6 +324,8 @@ const DepartemenTable = () => {
         columns={columns}
         pagination={{ pageSize: 10 }}
         dataSource={departments}
+        onChange={handleTableChange}
+
         scroll={{
           y: 295,
         }}

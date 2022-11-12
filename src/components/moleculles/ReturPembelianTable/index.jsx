@@ -54,7 +54,7 @@ const ReturPembelianTable = () => {
             can: getData[i].can,
             code: getData[i].code,
             date: getData[i].date, total:
-              <CurrencyFormat className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={getData[i].currency_name? getData[i].currency_name : mataUang + ' '} value={Number(getData[i].total).toFixed(2).replace('.', ',')} />,
+              <CurrencyFormat className=' text-center edit-disabled editable-input' thousandSeparator={'.'} decimalSeparator={','} prefix={getData[i].currency_name ? getData[i].currency_name : mataUang + ' '} value={Number(getData[i].total).toFixed(2).replace('.', ',')} />,
 
             status: getData[i].status,
             supplier: getData[i].supplier.name ? getData[i].supplier.name : <div className="text-center">-</div>,
@@ -214,8 +214,13 @@ const ReturPembelianTable = () => {
         }}
       />
     ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => {
+      if (record[dataIndex]) {
+
+        return record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+      }
+    }
+    ,
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
