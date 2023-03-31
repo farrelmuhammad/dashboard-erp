@@ -13,8 +13,8 @@ import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 const Dashboard = lazy(() => import('./Dashboard'));
 
 export default function Login() {
-  const [username, setUserName] = useState('admin');
-  const [password, setPassword] = useState('admin');
+  const [username, setUserName] = useState();
+  const [password, setPassword] = useState();
   const navigate = useNavigate();
   // const isLoggedIn = jsCookie.get('auth')
   // const isLoggedIn = !!useSelector((state) => state.auth.token);
@@ -51,79 +51,62 @@ export default function Login() {
         toast.addEventListener("mouseleave", Swal.resumeTimer);
       },
     });
+    const userData = new URLSearchParams();
+    userData.append("username", username);
+    userData.append("password", password);
+    axios({
+      method: "post",
+      url: `${Url}/login`,
+      data: userData,
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          dispatch(
+            setData({
+              token: res.data,
+            })
+          );
+          navigate(location.state?.referrer || '/');
+          // navigate("/");
+          setTimeout(window.location.reload.bind(window.location), 10);
+          toastMixin.fire({
+            animation: true,
+            title: "Signed in Successfully",
+          });
+        }
+        else{
+     
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        console.log(login_attempts)
+        if(login_attempts == 0){
+          // alert("No Login Attempts Available");
+          // console.log("habis")
+         }
+         else {
+          login_attempts = login_attempts - 1;
+         // console.log("sisa")
+           if(login_attempts == 0)
+           {
+            setIsDisabled(true)
+            setTimeout(window.location.reload.bind(window.location), 300000);
+            
+            // document.getElementById("name").disabled=true;
+            // document.getElementById("pass").disabled=true;
+            // document.getElementById("form1").disabled=true;
+           }
 
-    // make login statis without dispatch
-    if (username === "admin" && password === "admin") {
-      // navigate(location.state?.referrer || '/');
-      // setTimeout(window.location.reload.bind(window.location), 10);
-      toastMixin.fire({
-        animation: true,
-        title: "Signed in Successfully",
+
+         }
+
+        toastMixin.fire({
+          icon: "error",
+          animation: true,
+          title: "Not match!",
+        });
       });
-    } else {
-      toastMixin.fire({
-        icon: "error",
-        animation: true,
-        title: "Not match!",
-      });
-    }
-
-    // const userData = new URLSearchParams();
-    // userData.append("username", username);
-    // userData.append("password", password);
-    // axios({
-    //   method: "post",
-    //   url: `${Url}/login`,
-    //   data: userData,
-    // })
-    //   .then((res) => {
-    //     if (res.status === 200) {
-    //       dispatch(
-    //         setData({
-    //           token: res.data,
-    //         })
-    //       );
-    //       navigate(location.state?.referrer || '/');
-    //       // navigate("/");
-    //       setTimeout(window.location.reload.bind(window.location), 10);
-    //       toastMixin.fire({
-    //         animation: true,
-    //         title: "Signed in Successfully",
-    //       });
-    //     }
-    //     else{
-
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //     console.log(login_attempts)
-    //     if(login_attempts == 0){
-    //       // alert("No Login Attempts Available");
-    //       // console.log("habis")
-    //      }
-    //      else {
-    //       login_attempts = login_attempts - 1;
-    //      // console.log("sisa")
-    //        if(login_attempts == 0)
-    //        {
-    //         setIsDisabled(true)
-    //         setTimeout(window.location.reload.bind(window.location), 300000);
-
-    //         // document.getElementById("name").disabled=true;
-    //         // document.getElementById("pass").disabled=true;
-    //         // document.getElementById("form1").disabled=true;
-    //        }
-
-
-    //      }
-
-    //     toastMixin.fire({
-    //       icon: "error",
-    //       animation: true,
-    //       title: "Not match!",
-    //     });
-    //   });
   };
 
   // if (isLoggedIn) {
@@ -157,7 +140,7 @@ export default function Login() {
 
                         <div className="form-outline mb-2">
                           <Input
-                            disabled={isDisabled}
+                          disabled = {isDisabled}
                             id="name"
                             size="large"
                             placeholder="input username"
@@ -170,7 +153,7 @@ export default function Login() {
 
                         <div className="form-outline mb-2">
                           <Input.Password
-                            disabled={isDisabled}
+                          disabled={isDisabled}
                             placeholder="input password"
                             id="pass"
                             size="large"

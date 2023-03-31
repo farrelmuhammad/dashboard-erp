@@ -37,8 +37,7 @@ const App = () => {
   let timer;
   const [collapsed, setCollapsed] = useState(false);
 
-  // const isLoggedIn = !!useSelector(state => state.auth.token);
-  const isLoggedIn = true;
+  const isLoggedIn = !!useSelector(state => state.auth.token);
 
   const navigate = useNavigate()
 

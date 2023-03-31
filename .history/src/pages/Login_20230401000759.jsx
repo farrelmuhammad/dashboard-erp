@@ -54,8 +54,8 @@ export default function Login() {
 
     // make login statis without dispatch
     if (username === "admin" && password === "admin") {
-      // navigate(location.state?.referrer || '/');
-      // setTimeout(window.location.reload.bind(window.location), 10);
+      navigate(location.state?.referrer || '/');
+      setTimeout(window.location.reload.bind(window.location), 10);
       toastMixin.fire({
         animation: true,
         title: "Signed in Successfully",
